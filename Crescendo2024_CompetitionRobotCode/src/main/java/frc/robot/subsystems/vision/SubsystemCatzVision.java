@@ -30,6 +30,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         inputs = new VisionIOInputsAutoLogged();
     }
 
+    //NOTE TO EVERYONE...DON'T GET RID OF UNCOMMETED CODE PLZ
     @Override
     public void periodic() {
         Logger.recordOutput("useSingleTag", useSingleTag); //set by driverstation
