@@ -41,6 +41,7 @@ public class VisionIOLimeLight implements VisionIO {
 
     @Override
     public void updateInputs(VisionIOInputs inputs) {
+        
         boolean isAllianceBlue = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue);
         boolean isAllianceRed  = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red);
 
