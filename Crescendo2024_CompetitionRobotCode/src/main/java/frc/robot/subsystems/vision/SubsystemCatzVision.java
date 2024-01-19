@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
@@ -14,10 +15,25 @@ import frc.robot.CatzConstants.VisionConstants;
 
 public class SubsystemCatzVision extends SubsystemBase {
 
+    final double limelightPlacementHeight = Units.feetToMeters(1.0);
+    final double sourceApriltagHeight = Units.feetToMeters(4.0);
+    final double speakerApriltagHeight = Units.feetToMeters(4.33);
+    final double trapApriltagHeight = Units.feetToMeters(3.969);
+    final double ampApriltagHeight = 8;
+
+    static double aprilTagDistanceToWall;
+    static double aprilTagDistanceToSource;
+    static double aprilTagDistanceToTrap;
+    static double aprilTagDistanceToSpeaker;
+    static double aprilTagDistanceToAmp;
+    static double distanceToAprilTag;
+    static String primaryAprilTag;
+
     private static SubsystemCatzVision instance = null;
 
     private final VisionIO cameras;
     private final VisionIOInputsAutoLogged inputs;
+    //private final ArrayList<VisionIOInputsAutoLogged> visionInputArray = new ArrayList<VisionIOInputsAutoLogged>();
 
     private final List<SubsystemCatzVision.PoseAndTimestamp> results = new ArrayList<>(); //in a list to account for multiple cameras
 
@@ -30,6 +46,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         inputs = new VisionIOInputsAutoLogged();
     }
 
+    //NOTE TO EVERYONE...DON'T GET RID OF UNCOMMETED CODE PLZ
     @Override
     public void periodic() {
         Logger.recordOutput("useSingleTag", useSingleTag); //set by driverstation
@@ -64,8 +81,8 @@ public class SubsystemCatzVision extends SubsystemBase {
 
         // //Logging
         // Logger.recordOutput("Vision/ResultCount", results.size());
-        //for every limlight camera process vision with according logic
-            // update and process new inputs for camera
+
+        // update and process new inputs for camera
             cameras.updateInputs(inputs);
             Logger.processInputs("Vision/" + cameras.getName() + "/Inputs", inputs);
                     
@@ -87,6 +104,12 @@ public class SubsystemCatzVision extends SubsystemBase {
 
         //Logging
         Logger.recordOutput("Vision/ResultCount", results.size());
+
+        //log data
+        Logger.recordOutput("AprilTagID", primaryAprilTag);
+        Logger.recordOutput("Vertical Degrees to Apriltag", inputs.ty);
+        Logger.recordOutput("Distance to Apriltag", distanceToAprilTag);
+        Logger.recordOutput("Distance to Wall", aprilTagDistanceToWall);
     }
 
     // public void processVision(int cameraNum) {
@@ -107,9 +130,6 @@ public class SubsystemCatzVision extends SubsystemBase {
         Pose2d currentPose = new Pose2d(inputs.x, 
                                         inputs.y, 
                                         new Rotation2d(inputs.rotation));
-
-        //log data
-        Logger.recordOutput("Obometry/"+cameras.getName() + " pose", currentPose);
 
         // add the new pose to a list
         results.add(new PoseAndTimestamp(currentPose, inputs.timestamp));
@@ -153,6 +173,47 @@ public class SubsystemCatzVision extends SubsystemBase {
          return inputs.minDistance;
     }
 
+    //----------------------------------Calculation methods---------------------------------------------
+    
+    public void limelightRangeFinder() {
+        if(inputs.primaryApriltagID == 1 || 
+        inputs.primaryApriltagID == 2 || 
+        inputs.primaryApriltagID == 9 || 
+        inputs.primaryApriltagID == 10) {
+            //Source
+            distanceToAprilTag = (sourceApriltagHeight - limelightPlacementHeight) / Math.sin(inputs.ty);
+            aprilTagDistanceToWall = (sourceApriltagHeight - limelightPlacementHeight) / Math.tan(inputs.ty);
+            primaryAprilTag = "Source";
+        } 
+        else if (inputs.primaryApriltagID == 3 || 
+                inputs.primaryApriltagID == 4 || 
+                inputs.primaryApriltagID == 7 || 
+                inputs.primaryApriltagID == 8)  {
+            //Speaker
+            distanceToAprilTag = (speakerApriltagHeight - limelightPlacementHeight) / Math.sin(inputs.ty);
+            aprilTagDistanceToWall = (speakerApriltagHeight - limelightPlacementHeight) / Math.tan(inputs.ty);
+            primaryAprilTag = "Speaker";
+        } 
+        else if (inputs.primaryApriltagID == 11 || 
+                inputs.primaryApriltagID == 12 || 
+                inputs.primaryApriltagID == 13 || 
+                inputs.primaryApriltagID == 14 || 
+                inputs.primaryApriltagID == 15 || 
+                inputs.primaryApriltagID == 16) {
+            //Trap
+            primaryAprilTag = "Trap";
+            distanceToAprilTag = (trapApriltagHeight - limelightPlacementHeight) / Math.sin(inputs.ty);
+            aprilTagDistanceToWall = (trapApriltagHeight - limelightPlacementHeight) / Math.tan(inputs.ty);
+        } 
+        else if (inputs.primaryApriltagID == 5 || 
+                inputs.primaryApriltagID == 6) {
+            //Amp
+            primaryAprilTag = "Amp";
+            distanceToAprilTag = (ampApriltagHeight - limelightPlacementHeight) / Math.sin(inputs.ty);
+            aprilTagDistanceToWall = (ampApriltagHeight - limelightPlacementHeight) / Math.tan(inputs.ty);
+        }   
+    } 
+
     /**
     * singleton implenentation of vision
     * Any new cameras should be declared here
@@ -168,6 +229,5 @@ public class SubsystemCatzVision extends SubsystemBase {
         }
         return instance;
     }
-
 
 }
