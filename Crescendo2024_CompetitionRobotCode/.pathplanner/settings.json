@@ -3,7 +3,12 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "5 gp path"
+    "3 gp auto",
+    "5 gp path",
+    "6 Note Auton 5940",
+    "Scoring C2-4",
+    "Scoring C1-3",
+    "Scoring C5-3"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
