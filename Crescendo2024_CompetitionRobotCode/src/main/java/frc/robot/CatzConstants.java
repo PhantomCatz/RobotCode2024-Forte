@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Utils.CatzMechanismPosition;
 /***
  * CatzConstants
  * @version 1.0
@@ -49,6 +50,19 @@ public final class CatzConstants {
   public static final int kDriverFieldOrientedButtonIdx = 1;
 
   public static final double kDeadband = 0.1;
+  }
+
+  public static final class CazMechanismConstants {
+    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition();
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition();
+    public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition();
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition();
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
+    public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
+    public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
+    public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition();
+
   }
 
   public static final class VisionConstants {
@@ -85,6 +99,7 @@ public final class CatzConstants {
     public static final int RT_BACK_ENC_PORT = 7;
     public static final int RT_FRNT_ENC_PORT = 8;
 
+    //--------------------------------------MTR CONFIGS------------------------------------
     public static final int     CURRENT_LIMIT_AMPS            = 55;
     public static final int     CURRENT_LIMIT_TRIGGER_AMPS    = 55;
     public static final double  CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
@@ -94,12 +109,13 @@ public final class CatzConstants {
     public static final double  NEUTRAL_TO_FULL_SECONDS       = 0.1;
     public static final double  VEL_FF                        = 1.5;
 
+
+
     public static final Pose2d initPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
     private static final double MODULE_DISTANCE_FROM_CENTER = 0.298 * Math.sqrt(2);
 
     public static final double ESTIMATION_COEFFICIENT = 0.025;
 
-    //not following the original coordinate system since the robot coordinate system is inverted
     private static final Translation2d SWERVE_LEFT_FRONT_LOCATION  = new Translation2d(MODULE_DISTANCE_FROM_CENTER, MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
     private static final Translation2d SWERVE_LEFT_BACK_LOCATION   = new Translation2d(-MODULE_DISTANCE_FROM_CENTER, MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
     private static final Translation2d SWERVE_RIGHT_BACK_LOCATION  = new Translation2d(-MODULE_DISTANCE_FROM_CENTER, -MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
@@ -148,10 +164,34 @@ public final class CatzConstants {
         MODULE_DISTANCE_FROM_CENTER
     );
 
+    public static final boolean ENABLE_INITIAL_REPLANNING = true;
+    public static final boolean ENABLE_DYNAMIC_REPLANNING = true;
+    public static final double REPLANNING_ERROR_THRESHOLD_METERS = 0.3;
+    public static final double REPLANNING_ERROR_SPIKE_THRESHOLD_METERS = 0.3;
+    
     public static final HolonomicPathFollowerConfig pathFollowingConfig = new HolonomicPathFollowerConfig( 
+        new PIDConstants(0.01), //Translational PID constants
+        new PIDConstants(0.01), //Rotational PID constants
         MAX_SPEED, // Max module speed, in m/s
         MODULE_DISTANCE_FROM_CENTER, // Drive base radius in meters. Distance from robot center to furthest module.
-        new ReplanningConfig()); // Default path replanning config. See the API for the options here
+        new ReplanningConfig(ENABLE_INITIAL_REPLANNING, ENABLE_DYNAMIC_REPLANNING, REPLANNING_ERROR_THRESHOLD_METERS, REPLANNING_ERROR_SPIKE_THRESHOLD_METERS),
+        0.02); 
   }
+
+  //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
+  public static final class ElevatorConstants {
+
+  }
+  
+  //any type of Intake Mtr Config Constnats/Logic Constants should go here 
+  public static final class IntakeConstants {
+
+  }
+
+  //any type of Shooter Mtr Config Constnats/Logic Constants should go here 
+  public static final class ShooterConstants {
+
+  }
+  
 
 }

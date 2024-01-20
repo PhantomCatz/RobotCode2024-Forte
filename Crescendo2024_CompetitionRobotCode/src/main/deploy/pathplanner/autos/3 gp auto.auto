@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3GPAuto1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3GPAuto2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3GPAuto3"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

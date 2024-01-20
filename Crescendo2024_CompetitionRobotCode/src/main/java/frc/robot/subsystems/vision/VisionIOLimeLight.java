@@ -31,15 +31,14 @@ public class VisionIOLimeLight implements VisionIO {
         
 
         //debug for ensuring the limelight is communicating properly with networktables
-        /* 
-                new Thread(() -> {
+        new Thread(() -> {
             try {
                 Thread.sleep(1000);
                 NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
             } catch (Exception e) {
             }
         }).start();
-        */
+        
     }
 
     @Override
@@ -50,6 +49,7 @@ public class VisionIOLimeLight implements VisionIO {
         inputs.tv = NetworkTableInstance.getDefault().getTable(name).getEntry("tv").getDouble(0);
         inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0);
         inputs.primaryApriltagID = NetworkTableInstance.getDefault().getTable(name).getEntry("tid").getDouble(0);
+
 
         boolean isAllianceBlue = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue);
         boolean isAllianceRed  = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red);
@@ -83,9 +83,11 @@ public class VisionIOLimeLight implements VisionIO {
                         Math.toRadians(data[5])));  //apriltag yaw component
                                        // .transformBy(cameraOffset); //apply the camera offset TBD this is breaking the limelight
 
+
         // set if the Limelight has a target to loggable boolean
         if (inputs.tv == 1) {
             inputs.hasTarget = true;
+            System.out.println("Vision?");
         } 
         else {
             inputs.hasTarget = false;

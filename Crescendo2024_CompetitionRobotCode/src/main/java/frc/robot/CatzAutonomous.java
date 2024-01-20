@@ -1,11 +1,13 @@
 package frc.robot;
 
+import java.nio.file.Path;
 import java.sql.Driver;
 import java.util.List;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
@@ -29,20 +32,41 @@ public class CatzAutonomous {
     private static LoggedDashboardChooser<DriverStation.Alliance> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
 
+    private static LoggedDashboardChooser<Command> internalPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
+
     public CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", DriverStation.Alliance.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  DriverStation.Alliance.Red);
 
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
+        internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
+
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);;
     }
 
     //configured dashboard
     public Command getCommand() {
         m_driveTrain.resetForAutonomous();
 
-        return autoChooser.getSelected();
+        //return autoChooser.getSelected();
+        return internalPathChooser.get(); //for internal path choosing TBD should we use pathplanners or a coded version?
     }
 
+
+
+    //-------------------------------------------Auton Paths--------------------------------------------
+    private Command bulldozerAuto() {
+        return new SequentialCommandGroup(
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Bulldozer"))
+            );
+    }
+
+    private Command driveTranslateAuto() {
+        return new SequentialCommandGroup(
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
+            );
+    }
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
 
     public Command flyTrajectoryOne() {

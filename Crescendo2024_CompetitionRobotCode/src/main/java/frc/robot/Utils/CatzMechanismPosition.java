@@ -5,9 +5,9 @@
 package frc.robot.Utils;
 
 
-public class CatzManipulatorPosition {
+public class CatzMechanismPosition {
 
-    public CatzManipulatorPosition() {
+    public CatzMechanismPosition() {
 
     }
 

@@ -42,9 +42,10 @@ public class SubsystemCatzVision extends SubsystemBase {
 
     private static SubsystemCatzVision instance = null;
 
-    private final VisionIO cameras;
+    private final VisionIO camera;
     private final VisionIOInputsAutoLogged inputs;
-    //private final ArrayList<VisionIOInputsAutoLogged> visionInputArray = new ArrayList<VisionIOInputsAutoLogged>();
+
+    private final ArrayList<VisionIOInputsAutoLogged> visionInputArray = new ArrayList<VisionIOInputsAutoLogged>();
 
     private final List<SubsystemCatzVision.PoseAndTimestamp> results = new ArrayList<>(); //in a list to account for multiple cameras
 
@@ -52,12 +53,14 @@ public class SubsystemCatzVision extends SubsystemBase {
     private boolean useSingleTag = false;
 
     //constructor for vision subsystem that creates new vision input objects for each camera set in the singleton implementation
-    private SubsystemCatzVision(VisionIO cameras) {
-        this.cameras = cameras;
+    private SubsystemCatzVision(VisionIO camera) {
+        this.camera = camera;
         inputs = new VisionIOInputsAutoLogged();
+        visionInputArray.add(inputs);
     }
 
     //NOTE TO EVERYONE...DON'T GET RID OF UNCOMMETED CODE PLZ (LMAO)
+
     @Override
     public void periodic() {
         Logger.recordOutput("useSingleTag", useSingleTag); //set by driverstation
@@ -93,9 +96,10 @@ public class SubsystemCatzVision extends SubsystemBase {
         // //Logging
         // Logger.recordOutput("Vision/ResultCount", results.size());
 
-        // update and process new inputs for camera
-            cameras.updateInputs(inputs);
-            Logger.processInputs("Vision/" + cameras.getName() + "/Inputs", inputs);
+        //for every limlight camera process vision with according logic
+            // update and process new inputs for camera
+            camera.updateInputs(inputs);
+            Logger.processInputs("Vision/" + camera.getName() + "/Inputs", inputs);
                     
             //checks for when to process vision
             if (inputs.hasTarget && 

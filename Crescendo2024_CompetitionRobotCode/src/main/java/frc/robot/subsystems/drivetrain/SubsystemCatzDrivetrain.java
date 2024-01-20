@@ -108,9 +108,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 toChassisSpeeds(getModuleStates()),
         this::driveRobotWithCorrectedDynamics,
         DriveConstants.pathFollowingConfig,
-        ()->!(DriverStation.
+        ()->(DriverStation.
                 getAlliance().
-                            get() == DriverStation.Alliance.Red),
+                            get() == DriverStation.Alliance.Blue),
         this);
     }
 
