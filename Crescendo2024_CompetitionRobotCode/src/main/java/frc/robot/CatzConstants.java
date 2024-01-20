@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -68,7 +69,7 @@ public final class CatzConstants {
   public static final class VisionConstants {
     public static final double LOWEST_DISTANCE = Units.feetToMeters(10.0);
     
-    public static final Transform3d LIMELIGHT_OFFSET = new Transform3d(0.0, 0.0, 0.0, null); //tbd need to understand how these classese work transform3d vs translation3d
+    public static final Transform3d LIMELIGHT_OFFSET = new Transform3d(0.0, 0.0, 0.0, new Rotation3d()); //tbd need to understand how these classese work transform3d vs translation3d
   }
 
   public static final class TrajectoryConstants {
@@ -115,9 +116,7 @@ public final class CatzConstants {
     //--------------------------------------MTR CONFIGS------------------------------------
 
     public static final double  NEUTRAL_TO_FULL_SECONDS       = 0.1;
-    public static final double  VEL_FF                        = 1.5;
-
-
+    public static final double  VEL_FF                        = 1.086;
 
     public static final Pose2d initPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
     private static final double MODULE_DISTANCE_FROM_CENTER = 0.298 * Math.sqrt(2);
@@ -137,9 +136,9 @@ public final class CatzConstants {
         SWERVE_RIGHT_FRONT_LOCATION
     );
     
-    public static final double MAX_SPEED = 3.0; // meters per second
+    public static final double MAX_SPEED = 4.0; // meters per second
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 6.0; // radians per second
-    public static final double MAX_SPEED_DESATURATION = MAX_SPEED + MAX_ANGSPEED_RAD_PER_SEC * MODULE_DISTANCE_FROM_CENTER;
+    public static final double MAX_SPEED_DESATURATION = 4.0;
 
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction
@@ -166,31 +165,29 @@ public final class CatzConstants {
 
     // calculates target chassis motion when given current position and desired trajectory
     public static final PPHolonomicDriveController ppholonomicDriveController = new PPHolonomicDriveController(
-        new PIDConstants(0.35, 0, 0), // PID values for x offset
+        new PIDConstants(0.35, 0, 0), // PID values for translation
         new PIDConstants(0.35, 0, 0), // PID values for rotation 
         MAX_SPEED,
         MODULE_DISTANCE_FROM_CENTER
     );
 
-    public static final boolean ENABLE_INITIAL_REPLANNING = true;
-    public static final boolean ENABLE_DYNAMIC_REPLANNING = true;
+    public static final boolean ENABLE_INITIAL_REPLANNING = false;
+    public static final boolean ENABLE_DYNAMIC_REPLANNING = false;
     public static final double REPLANNING_ERROR_THRESHOLD_METERS = 0.3;
     public static final double REPLANNING_ERROR_SPIKE_THRESHOLD_METERS = 0.3;
     
     public static final HolonomicPathFollowerConfig pathFollowingConfig = new HolonomicPathFollowerConfig( 
-        new PIDConstants(0.01), //Translational PID constants
-        new PIDConstants(0.01), //Rotational PID constants
+        new PIDConstants(1.5, 0, 0), //Translational PID constants
+        new PIDConstants(1, 0, 0), //Rotational PID constants
         MAX_SPEED, // Max module speed, in m/s
         MODULE_DISTANCE_FROM_CENTER, // Drive base radius in meters. Distance from robot center to furthest module.
         new ReplanningConfig(ENABLE_INITIAL_REPLANNING, ENABLE_DYNAMIC_REPLANNING, REPLANNING_ERROR_THRESHOLD_METERS, REPLANNING_ERROR_SPIKE_THRESHOLD_METERS),
         0.02); 
-  }
+    }
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
   public static final class ElevatorConstants {
     public static int ELEVATOR_MTR_ID = 5;
-
-
   }
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
@@ -204,6 +201,4 @@ public final class CatzConstants {
     public static int SHOOTER_MTR_ID = 6;
     public static int TURRET_MTR_ID = 7;
   }
-  
-
 }

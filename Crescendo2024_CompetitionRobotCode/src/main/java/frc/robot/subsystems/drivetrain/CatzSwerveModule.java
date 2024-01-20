@@ -25,8 +25,7 @@ public class CatzSwerveModule {
     private PIDController m_PID;
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
                 
-
-    private final double kP = 0.15; //cuz error is in tenths place so no need to mutiply kp value
+    private final double kP = 0.25; //cuz error is in tenths place so no need to mutiply kp value
     private final double kI = 0.0;
     private final double kD = 0.0015;
 
@@ -130,10 +129,8 @@ public class CatzSwerveModule {
             //System.out.println("Current " + m_index + ": " + getModuleState());
         }
         //logging
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/current roation" , getAbsEncRadians());
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target Angle", state.angle.getRadians());
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target velocity", driveRPS);
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/current velocity", getModuleState().speedMetersPerSecond);
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target state", state);
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/current state", getModuleState());
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/turn power", steerPIDpwr);
     }
 
