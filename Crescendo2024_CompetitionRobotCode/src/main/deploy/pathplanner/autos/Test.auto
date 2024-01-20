@@ -16,6 +16,12 @@
           "data": {
             "pathName": "DriveStraightFullTurn"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right"
+          }
         }
       ]
     }
