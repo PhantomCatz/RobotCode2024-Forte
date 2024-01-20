@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class VisionIOLimeLight implements VisionIO {
     
-    private String name;
+    public String name;
     private Transform3d cameraOffset;
     private double[] lastData = new double[6];
 
@@ -49,6 +49,7 @@ public class VisionIOLimeLight implements VisionIO {
         inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0);
         inputs.tv = NetworkTableInstance.getDefault().getTable(name).getEntry("tv").getDouble(0);
         inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0);
+        inputs.primaryApriltagID = NetworkTableInstance.getDefault().getTable(name).getEntry("tid").getDouble(0);
 
         boolean isAllianceBlue = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue);
         boolean isAllianceRed  = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red);

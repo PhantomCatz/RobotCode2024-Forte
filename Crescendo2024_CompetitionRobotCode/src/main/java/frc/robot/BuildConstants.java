@@ -7,12 +7,12 @@ public final class BuildConstants {
   public static final String MAVEN_GROUP = "";
   public static final String MAVEN_NAME = "Crescendo2024_CompetitionRobotCode";
   public static final String VERSION = "unspecified";
-  public static final int GIT_REVISION = 24;
-  public static final String GIT_SHA = "4b14b969b308772f9bfac2901f16e38ede79b7bc";
-  public static final String GIT_DATE = "2024-01-14 18:11:40 EST";
-  public static final String GIT_BRANCH = "workingBranch";
-  public static final String BUILD_DATE = "2024-01-14 19:45:13 EST";
-  public static final long BUILD_UNIX_TIME = 1705279513908L;
+  public static final int GIT_REVISION = 4;
+  public static final String GIT_SHA = "529972b5cd524f319a5616209cab7e006601e5e6";
+  public static final String GIT_DATE = "2024-01-19 02:42:53 EST";
+  public static final String GIT_BRANCH = "feature/limelight-calc-config/ct";
+  public static final String BUILD_DATE = "2024-01-19 21:16:07 EST";
+  public static final long BUILD_UNIX_TIME = 1705716967504L;
   public static final int DIRTY = 1;
 
   private BuildConstants(){}

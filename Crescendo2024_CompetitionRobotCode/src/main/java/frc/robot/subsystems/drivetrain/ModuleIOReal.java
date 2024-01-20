@@ -87,7 +87,7 @@ public class ModuleIOReal implements ModuleIO {
 
     @Override
     public void setDriveVelocityIO(double velocity) {
-        DRIVE_MOTOR.setControl(new VelocityVoltage(velocity * DriveConstants.VEL_FF));
+        DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity * DriveConstants.VEL_FF));
     }
 
     @Override

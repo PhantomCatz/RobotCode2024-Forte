@@ -8,18 +8,24 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.VisionConstants;
+import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 
+
+/*
+    Assume the Limelight is the front of the robot
+*/
 public class SubsystemCatzVision extends SubsystemBase {
 
     final double limelightPlacementHeight = Units.feetToMeters(1.0);
     final double sourceApriltagHeight = Units.feetToMeters(4.0);
     final double speakerApriltagHeight = Units.feetToMeters(4.33);
     final double trapApriltagHeight = Units.feetToMeters(3.969);
-    final double ampApriltagHeight = 8;
+    final double ampApriltagHeight = 1.22;
 
     static double aprilTagDistanceToWall;
     static double aprilTagDistanceToSource;
@@ -28,6 +34,11 @@ public class SubsystemCatzVision extends SubsystemBase {
     static double aprilTagDistanceToAmp;
     static double distanceToAprilTag;
     static String primaryAprilTag;
+    static boolean horizontallyAllignedWithAprilTag;
+
+    String name;
+
+    static double horizontalTargetOffset;
 
     private static SubsystemCatzVision instance = null;
 
@@ -46,7 +57,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         inputs = new VisionIOInputsAutoLogged();
     }
 
-    //NOTE TO EVERYONE...DON'T GET RID OF UNCOMMETED CODE PLZ
+    //NOTE TO EVERYONE...DON'T GET RID OF UNCOMMETED CODE PLZ (LMAO)
     @Override
     public void periodic() {
         Logger.recordOutput("useSingleTag", useSingleTag); //set by driverstation
@@ -100,6 +111,7 @@ public class SubsystemCatzVision extends SubsystemBase {
                     processVision();
                 }
             }
+        limelightRangeFinder();
         
 
         //Logging
@@ -177,40 +189,105 @@ public class SubsystemCatzVision extends SubsystemBase {
     
     public void limelightRangeFinder() {
         if(inputs.primaryApriltagID == 1 || 
-        inputs.primaryApriltagID == 2 || 
-        inputs.primaryApriltagID == 9 || 
-        inputs.primaryApriltagID == 10) {
+           inputs.primaryApriltagID == 2 || 
+           inputs.primaryApriltagID == 9 || 
+           inputs.primaryApriltagID == 10) 
+        {
             //Source
+            primaryAprilTag = "Source";
+
+            //vertical distance to target
             distanceToAprilTag = (sourceApriltagHeight - limelightPlacementHeight) / Math.sin(inputs.ty);
             aprilTagDistanceToWall = (sourceApriltagHeight - limelightPlacementHeight) / Math.tan(inputs.ty);
-            primaryAprilTag = "Source";
+
+            //horizontal distance to target
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs.tx);
+            if(Math.abs(horizontalTargetOffset) > 5) // 5 what?? I don't know
+            {
+                System.out.println("Alligned with Target");
+                horizontallyAllignedWithAprilTag = true;
+
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+
+            } else {
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+            }
         } 
         else if (inputs.primaryApriltagID == 3 || 
-                inputs.primaryApriltagID == 4 || 
-                inputs.primaryApriltagID == 7 || 
-                inputs.primaryApriltagID == 8)  {
+                 inputs.primaryApriltagID == 4 || 
+                 inputs.primaryApriltagID == 7 || 
+                 inputs.primaryApriltagID == 8)  
+        {
             //Speaker
+            primaryAprilTag = "Speaker";
+
+            //vertical distance to target
             distanceToAprilTag = (speakerApriltagHeight - limelightPlacementHeight) / Math.sin(inputs.ty);
             aprilTagDistanceToWall = (speakerApriltagHeight - limelightPlacementHeight) / Math.tan(inputs.ty);
-            primaryAprilTag = "Speaker";
+        
+            //horizontal distance to target
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs.tx);
+
+            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) // 5 what?? I don't know
+            {
+                System.out.println("Alligned with Target");
+                horizontallyAllignedWithAprilTag = true;
+
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+
+            } else {
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+            }
         } 
         else if (inputs.primaryApriltagID == 11 || 
-                inputs.primaryApriltagID == 12 || 
-                inputs.primaryApriltagID == 13 || 
-                inputs.primaryApriltagID == 14 || 
-                inputs.primaryApriltagID == 15 || 
-                inputs.primaryApriltagID == 16) {
+                 inputs.primaryApriltagID == 12 || 
+                 inputs.primaryApriltagID == 13 || 
+                 inputs.primaryApriltagID == 14 || 
+                 inputs.primaryApriltagID == 15 || 
+                 inputs.primaryApriltagID == 16) 
+        {
             //Trap
             primaryAprilTag = "Trap";
+
+            //vertical distance to target
             distanceToAprilTag = (trapApriltagHeight - limelightPlacementHeight) / Math.sin(inputs.ty);
             aprilTagDistanceToWall = (trapApriltagHeight - limelightPlacementHeight) / Math.tan(inputs.ty);
+            
+            //horizontal distance to target
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs.tx);  
+            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) // 5 what?? I don't know
+            {
+                System.out.println("Alligned with Target");
+                horizontallyAllignedWithAprilTag = true;
+
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+
+            } else {
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+            }       
         } 
         else if (inputs.primaryApriltagID == 5 || 
-                inputs.primaryApriltagID == 6) {
+                 inputs.primaryApriltagID == 6) 
+        {
             //Amp
             primaryAprilTag = "Amp";
+
+            //vertical distance to target
             distanceToAprilTag = (ampApriltagHeight - limelightPlacementHeight) / Math.sin(inputs.ty);
             aprilTagDistanceToWall = (ampApriltagHeight - limelightPlacementHeight) / Math.tan(inputs.ty);
+
+            //horizontal distance to target
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs.tx);
+            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) // 5 what?? I don't know
+            {
+                System.out.println("Alligned with Target");
+                horizontallyAllignedWithAprilTag = true;
+
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+
+            } else {
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+            }
         }   
     } 
 
