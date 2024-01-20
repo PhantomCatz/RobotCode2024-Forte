@@ -29,7 +29,7 @@ public class VisionIOLimeLight implements VisionIO {
         System.out.println(name);
         System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
         
-        //debug for ensureing the limelight is communicating properly with networktables
+        //debug for ensuring the limelight is communicating properly with networktables
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
@@ -41,6 +41,7 @@ public class VisionIOLimeLight implements VisionIO {
 
     @Override
     public void updateInputs(VisionIOInputs inputs) {
+        
         boolean isAllianceBlue = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue);
         boolean isAllianceRed  = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red);
 
@@ -71,11 +72,12 @@ public class VisionIOLimeLight implements VisionIO {
                         Math.toRadians(data[3]),   //apriltag roll component
                         Math.toRadians(data[4]),   //apriltag pitch componenet
                         Math.toRadians(data[5])))  //apriltag yaw component
-                                        .transformBy(cameraOffset); 
+                                        .transformBy(cameraOffset); //apply the camera offset
 
         // set if the Limelight has a target to loggable boolean
         if (NetworkTableInstance.getDefault().getTable(name).getEntry("tv").getDouble(0) == 1) {
             inputs.hasTarget = true;
+            System.out.println("Vision?");
         } 
         else {
             inputs.hasTarget = false;

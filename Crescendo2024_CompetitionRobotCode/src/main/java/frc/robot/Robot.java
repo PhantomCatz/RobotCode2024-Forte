@@ -33,7 +33,7 @@ public class Robot extends LoggedRobot {
   
   @Override
   public void robotInit() {
-    //Pathfinding.setPathfinder(new LocalADStarAK());
+    Pathfinding.setPathfinder(new LocalADStarAK());
     // Record metadata
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
@@ -77,12 +77,14 @@ public class Robot extends LoggedRobot {
     }
     // Start AdvantageKit logger
     Logger.start();
+
+    //instantiate the robot subsystems and commands using an object
     m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
+    CommandScheduler.getInstance().run(); //YALL BETTER NOT DELETE THIS :D
   }
 
   @Override

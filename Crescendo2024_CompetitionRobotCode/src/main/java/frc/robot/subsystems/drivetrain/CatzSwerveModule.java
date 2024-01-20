@@ -41,7 +41,6 @@ public class CatzSwerveModule {
             case REAL: io = 
                     new ModuleIOReal(driveMotorID, steerMotorID, encoderDIOChannel);
                 break;
-
             case SIM : io = 
                     new ModuleIOSim();
                 break;
