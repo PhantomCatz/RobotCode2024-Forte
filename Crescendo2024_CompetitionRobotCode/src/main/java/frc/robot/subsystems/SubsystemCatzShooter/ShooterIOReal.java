@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.CatzConstants.DriveConstants;
+import frc.robot.CatzConstants.MtrConfigConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 
 public class ShooterIOReal implements ShooterIO {
@@ -60,10 +61,10 @@ public class ShooterIOReal implements ShooterIO {
         talonConfigs.Slot0 = shooterMtrConfigs;
             //current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = DriveConstants.ENABLE_CURRENT_LIMIT;
-        talonConfigs.CurrentLimits.SupplyCurrentLimit       = DriveConstants.CURRENT_LIMIT_AMPS;
-        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = DriveConstants.CURRENT_LIMIT_TRIGGER_AMPS;
-        talonConfigs.CurrentLimits.SupplyTimeThreshold      = DriveConstants.CURRENT_LIMIT_TIMEOUT_SECONDS;
+        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT;
+        talonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
+        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
+        talonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
             //pid

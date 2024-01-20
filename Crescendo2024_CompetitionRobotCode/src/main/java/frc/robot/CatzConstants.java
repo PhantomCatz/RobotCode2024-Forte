@@ -76,6 +76,19 @@ public final class CatzConstants {
     public static final double ALLOWABLE_ROTATION_ERROR = Math.toRadians(2);
   }
 
+  public static final class MtrConfigConstants {
+    //Falcon configuration constants
+    public static final int     FALCON_CURRENT_LIMIT_AMPS            = 55;
+    public static final int     FALCON_CURRENT_LIMIT_TRIGGER_AMPS    = 55;
+    public static final double  FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
+    public static final boolean FALCON_ENABLE_CURRENT_LIMIT          = true;
+
+    //Neo config constants
+    public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
+
+    //Neo 550 config constants
+  }
+
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
 
@@ -100,12 +113,7 @@ public final class CatzConstants {
     public static final int RT_FRNT_ENC_PORT = 8;
 
     //--------------------------------------MTR CONFIGS------------------------------------
-    public static final int     CURRENT_LIMIT_AMPS            = 55;
-    public static final int     CURRENT_LIMIT_TRIGGER_AMPS    = 55;
-    public static final double  CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
-    public static final boolean ENABLE_CURRENT_LIMIT          = true;
 
-    public static final int     STEER_CURRENT_LIMIT_AMPS      = 30;
     public static final double  NEUTRAL_TO_FULL_SECONDS       = 0.1;
     public static final double  VEL_FF                        = 1.5;
 
@@ -180,17 +188,21 @@ public final class CatzConstants {
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
   public static final class ElevatorConstants {
+    public static int ELEVATOR_MTR_ID = 5;
+
 
   }
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
   public static final class IntakeConstants {
-
+    public static int PIVOT_MTR_ID = 2;
+    public static int ROLLER_MTR_ID = 3;
   }
 
   //any type of Shooter Mtr Config Constnats/Logic Constants should go here 
   public static final class ShooterConstants {
-
+    public static int SHOOTER_MTR_ID = 6;
+    public static int TURRET_MTR_ID = 7;
   }
   
 

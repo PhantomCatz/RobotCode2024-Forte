@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.CatzConstants.DriveConstants;
+import frc.robot.CatzConstants.MtrConfigConstants;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -44,7 +45,7 @@ public class ModuleIOReal implements ModuleIO {
         //steer motor setup
         STEER_MOTOR = new CANSparkMax(steerMotorIDIO, MotorType.kBrushless);
         STEER_MOTOR.restoreFactoryDefaults();
-        STEER_MOTOR.setSmartCurrentLimit(DriveConstants.STEER_CURRENT_LIMIT_AMPS);
+        STEER_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
         STEER_MOTOR.setIdleMode(IdleMode.kCoast);
         STEER_MOTOR.enableVoltageCompensation(12.0);
 
@@ -56,10 +57,10 @@ public class ModuleIOReal implements ModuleIO {
         talonConfigs.Slot0 = driveConfigs;
             //current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = DriveConstants.ENABLE_CURRENT_LIMIT;
-        talonConfigs.CurrentLimits.SupplyCurrentLimit       = DriveConstants.CURRENT_LIMIT_AMPS;
-        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = DriveConstants.CURRENT_LIMIT_TRIGGER_AMPS;
-        talonConfigs.CurrentLimits.SupplyTimeThreshold      = DriveConstants.CURRENT_LIMIT_TIMEOUT_SECONDS;
+        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT;
+        talonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
+        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
+        talonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
