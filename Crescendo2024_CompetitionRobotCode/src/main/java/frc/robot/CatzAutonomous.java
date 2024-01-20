@@ -29,14 +29,14 @@ public class CatzAutonomous {
     private static LoggedDashboardChooser<DriverStation.Alliance> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
 
-    private static LoggedDashboardChooser<Command> internalPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
+    //private static LoggedDashboardChooser<Command> internalPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
     public CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", DriverStation.Alliance.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  DriverStation.Alliance.Red);
 
-        internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
-        internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
+        //internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
+        //internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
 
 
         SmartDashboard.putData("Auto Chooser", autoChooser);;

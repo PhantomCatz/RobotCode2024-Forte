@@ -64,7 +64,7 @@ public class ModuleIOReal implements ModuleIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 5.0;
+        driveConfigs.kP = 1.5;
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.05;
             //ramping

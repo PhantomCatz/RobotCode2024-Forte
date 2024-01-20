@@ -177,12 +177,12 @@ public final class CatzConstants {
     public static final double REPLANNING_ERROR_SPIKE_THRESHOLD_METERS = 0.3;
     
     public static final HolonomicPathFollowerConfig pathFollowingConfig = new HolonomicPathFollowerConfig( 
-        new PIDConstants(1.5, 0, 0), //Translational PID constants
-        new PIDConstants(1, 0, 0), //Rotational PID constants
+        new PIDConstants(3.5, 0, 0), //Translational PID constants
+        new PIDConstants(1.25, 0, 0), //Rotational PID constants
         MAX_SPEED, // Max module speed, in m/s
         MODULE_DISTANCE_FROM_CENTER, // Drive base radius in meters. Distance from robot center to furthest module.
         new ReplanningConfig(ENABLE_INITIAL_REPLANNING, ENABLE_DYNAMIC_REPLANNING, REPLANNING_ERROR_THRESHOLD_METERS, REPLANNING_ERROR_SPIKE_THRESHOLD_METERS),
-        0.02); 
+        0.005); 
     }
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
