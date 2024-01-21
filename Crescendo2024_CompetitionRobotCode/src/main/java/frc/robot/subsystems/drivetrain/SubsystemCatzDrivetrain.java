@@ -6,7 +6,9 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindHolonomic;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.VecBuilder;
@@ -28,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.GeometryUtils;
+import frc.robot.Utils.LocalADStarAK;
 import frc.robot.subsystems.vision.SubsystemCatzVision;;
 
 // Drive train subsystem for swerve drive implementation
@@ -99,6 +102,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 DriveConstants.initPose.getRotation(), getModulePositions(), DriveConstants.initPose);
+       
         // Configure AutoBuilder for PathPlanner
         AutoBuilder.configureHolonomic(
         this::getPose,
@@ -112,6 +116,18 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 getAlliance().
                             get() == DriverStation.Alliance.Blue),
         this);
+        
+        //Configure logging trajectories to advantage kit
+        Pathfinding.setPathfinder(new LocalADStarAK());
+        PathPlannerLogging.setLogActivePathCallback(
+            (activepath)->{
+                Logger.recordOutput("Obometry/Trajectory", activepath.toArray(new Pose2d[activepath.size()]));
+            });
+        PathPlannerLogging.setLogTargetPoseCallback(
+            (targetPose)-> {
+                Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
+            });
+
     }
 
     // Periodic update method for the drive train subsystem

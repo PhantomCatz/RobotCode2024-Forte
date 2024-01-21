@@ -22,7 +22,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
             case REAL: io = 
                     new ElevatorIOReal();
                 break;
-
             case SIM : io = null;
                 break;
             default : io = 
