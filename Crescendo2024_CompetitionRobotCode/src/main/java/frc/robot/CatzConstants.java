@@ -3,6 +3,7 @@ package frc.robot;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -136,7 +137,7 @@ public final class CatzConstants {
         SWERVE_RIGHT_FRONT_LOCATION
     );
     
-    public static final double MAX_SPEED = 4.0; // meters per second
+    public static final double MAX_SPEED = 4.81; // meters per second
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 6.0; // radians per second
     public static final double MAX_SPEED_DESATURATION = 4.0;
 
@@ -146,38 +147,13 @@ public final class CatzConstants {
     public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = 0.095;
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
-    //uses a trapezoidal velocity/time graph enforced with a PID loop
-    private static ProfiledPIDController autoTurnPIDController
-            = new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(MAX_ANGSPEED_RAD_PER_SEC, MAX_ANGSPEED_RAD_PER_SEC));
-        //TBD need to validated
-    static{
-        autoTurnPIDController.enableContinuousInput(-Math.PI, Math.PI); //offset clamped between these two values
-        autoTurnPIDController.setTolerance(Math.toRadians(0.1)); //tolerable error
-    }
-    
-    //TBD need to validated
-    // calculates target chassis motion when given current position and desired trajectory
-    public static final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
-        new PIDController(2, 0, 0), // PID values for x offset
-        new PIDController(2, 0, 0), // PID values for y offset
-        autoTurnPIDController // PID values for orientation offset
-    );
-
-    // calculates target chassis motion when given current position and desired trajectory
-    public static final PPHolonomicDriveController ppholonomicDriveController = new PPHolonomicDriveController(
-        new PIDConstants(0.35, 0, 0), // PID values for translation
-        new PIDConstants(0.35, 0, 0), // PID values for rotation 
-        MAX_SPEED,
-        MODULE_DISTANCE_FROM_CENTER
-    );
-
     public static final boolean ENABLE_INITIAL_REPLANNING = false;
     public static final boolean ENABLE_DYNAMIC_REPLANNING = false;
-    public static final double REPLANNING_ERROR_THRESHOLD_METERS = 0.3;
-    public static final double REPLANNING_ERROR_SPIKE_THRESHOLD_METERS = 0.3;
+    public static final double REPLANNING_ERROR_THRESHOLD_METERS = 1;
+    public static final double REPLANNING_ERROR_SPIKE_THRESHOLD_METERS = 1.5;
     
     public static final HolonomicPathFollowerConfig pathFollowingConfig = new HolonomicPathFollowerConfig( 
-        new PIDConstants(3.5, 0, 0), //Translational PID constants
+        new PIDConstants(3, 0, 0), //Translational PID constants 
         new PIDConstants(0, 0, 0), //Rotational PID constants
         MAX_SPEED, // Max module speed, in m/s
         MODULE_DISTANCE_FROM_CENTER, // Drive base radius in meters. Distance from robot center to furthest module.

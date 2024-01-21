@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
@@ -29,14 +30,14 @@ public class CatzAutonomous {
     private static LoggedDashboardChooser<DriverStation.Alliance> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
 
-    //private static LoggedDashboardChooser<Command> internalPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
+    private static LoggedDashboardChooser<Command> internalPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
     public CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", DriverStation.Alliance.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  DriverStation.Alliance.Red);
 
-        //internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
-        //internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
+        internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
+        internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
 
 
         SmartDashboard.putData("Auto Chooser", autoChooser);;
@@ -46,8 +47,8 @@ public class CatzAutonomous {
     public Command getCommand() {
         m_driveTrain.resetForAutonomous();
 
-        return autoChooser.getSelected(); // nanny library on top
-        //return internalPathChooser.get(); //for internal path choosing TBD should we use pathplanners or a coded version?
+        //return autoChooser.getSelected(); // nanny library on top
+        return internalPathChooser.get(); //for internal path choosing TBD should we use pathplanners or a coded version?
     }
 
 
@@ -61,8 +62,10 @@ public class CatzAutonomous {
 
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
-            );
+            Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("DriveStraightFullTurn")));
+            //Commands.waitSeconds(2));
+            //AutoBuilder.followPath(PathPlannerPath.fromPathFile("Right")));
     }
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
 
