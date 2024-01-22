@@ -38,6 +38,7 @@ public class CatzAutonomous {
 
         internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
         internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
+        internalPathChooser.addOption("ScoringC13", scoringC13());
 
 
         SmartDashboard.putData("Auto Chooser", autoChooser);;
@@ -63,9 +64,26 @@ public class CatzAutonomous {
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
             Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile("DriveStraightFullTurn")));
-            //Commands.waitSeconds(2));
-            //AutoBuilder.followPath(PathPlannerPath.fromPathFile("Right")));
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            Commands.waitSeconds(2),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Right")));
+    }
+
+    private Command scoringC13() {
+        return new SequentialCommandGroup(
+            Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(1.27, 7.38, Rotation2d.fromDegrees(0)))),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_1"))),
+            Commands.waitSeconds(4),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_2"))),
+            Commands.waitSeconds(4),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_3"))),
+            Commands.waitSeconds(4),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_4"))),
+            Commands.waitSeconds(4),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_5"))),
+            Commands.waitSeconds(4),
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_6"))));
+        
     }
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
 

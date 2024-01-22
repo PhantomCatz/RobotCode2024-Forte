@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.Utils.LoggedTunableNumber;
 /***
  * CatzConstants
  * @version 1.0
@@ -101,7 +102,7 @@ public final class CatzConstants {
 
     public static final int LT_FRNT_DRIVE_ID = 1;
     public static final int LT_BACK_DRIVE_ID = 3;//TBD put in constants
-    public static final int RT_BACK_DRIVE_ID = 5;
+    public static final int RT_BACK_DRIVE_ID = 22;
     public static final int RT_FRNT_DRIVE_ID = 7;
     
     public static final int LT_FRNT_STEER_ID = 2;
@@ -137,9 +138,9 @@ public final class CatzConstants {
         SWERVE_RIGHT_FRONT_LOCATION
     );
     
-    public static final double MAX_SPEED = 4.81; // meters per second
-    public static final double MAX_ANGSPEED_RAD_PER_SEC = 6.0; // radians per second
-    public static final double MAX_SPEED_DESATURATION = 4.0;
+    public static final double MAX_SPEED = 4.81; // meters per second 4.81
+    public static final double MAX_ANGSPEED_RAD_PER_SEC = 4.0; // radians per second
+    public static final double MAX_SPEED_DESATURATION = 4.81;
 
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction
@@ -149,32 +150,33 @@ public final class CatzConstants {
 
     public static final boolean ENABLE_INITIAL_REPLANNING = false;
     public static final boolean ENABLE_DYNAMIC_REPLANNING = false;
-    public static final double REPLANNING_ERROR_THRESHOLD_METERS = 1;
+    public static final double REPLANNING_ERROR_THRESHOLD_METERS = 0.5;
     public static final double REPLANNING_ERROR_SPIKE_THRESHOLD_METERS = 1.5;
     
+
     public static final HolonomicPathFollowerConfig pathFollowingConfig = new HolonomicPathFollowerConfig( 
-        new PIDConstants(3, 0, 0), //Translational PID constants 
-        new PIDConstants(0, 0, 0), //Rotational PID constants
+        new PIDConstants(3.1, 0, 0.001), //Translational PID constants 
+        new PIDConstants(0.8, 0, 0), //Rotational PID constants 11
         MAX_SPEED, // Max module speed, in m/s
         MODULE_DISTANCE_FROM_CENTER, // Drive base radius in meters. Distance from robot center to furthest module.
         new ReplanningConfig(ENABLE_INITIAL_REPLANNING, ENABLE_DYNAMIC_REPLANNING, REPLANNING_ERROR_THRESHOLD_METERS, REPLANNING_ERROR_SPIKE_THRESHOLD_METERS),
-        0.005); 
+        0.02); 
     }
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
   public static final class ElevatorConstants {
-    public static int ELEVATOR_MTR_ID = 5;
+    public static int ELEVATOR_MTR_ID = 50;
   }
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
   public static final class IntakeConstants {
-    public static int PIVOT_MTR_ID = 2;
-    public static int ROLLER_MTR_ID = 3;
+    public static int PIVOT_MTR_ID = 51;
+    public static int ROLLER_MTR_ID = 52;
   }
 
   //any type of Shooter Mtr Config Constnats/Logic Constants should go here 
   public static final class ShooterConstants {
-    public static int SHOOTER_MTR_ID = 6;
-    public static int TURRET_MTR_ID = 7;
+    public static int SHOOTER_MTR_ID = 53;
+    public static int TURRET_MTR_ID = 54;
   }
 }
