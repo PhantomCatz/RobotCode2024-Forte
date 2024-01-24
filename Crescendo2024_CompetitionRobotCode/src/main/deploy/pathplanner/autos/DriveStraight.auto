@@ -2,7 +2,7 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.0,
+      "x": 2,
       "y": 2
     },
     "rotation": 0
@@ -14,19 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "DriveStraightFullTurn"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right"
+            "pathName": "DriveStraight"
           }
         }
       ]

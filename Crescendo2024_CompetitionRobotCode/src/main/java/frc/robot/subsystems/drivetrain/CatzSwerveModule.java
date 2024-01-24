@@ -23,10 +23,9 @@ public class CatzSwerveModule {
     private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 
     private PIDController m_PID;
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 2.68, 0.24);
                 
-
-    private final double kP = 0.15; //cuz error is in tenths place so no need to mutiply kp value
+    private final double kP = 0.25;
     private final double kI = 0.0;
     private final double kD = 0.0015;
 
@@ -42,7 +41,7 @@ public class CatzSwerveModule {
                     new ModuleIOReal(driveMotorID, steerMotorID, encoderDIOChannel);
                 break;
             case SIM : io = 
-                    new ModuleIOSim();
+                    null;
                 break;
             default : io = 
                     new ModuleIOReal(driveMotorID, steerMotorID, encoderDIOChannel) {};
@@ -120,20 +119,14 @@ public class CatzSwerveModule {
 
         //calculate drive pwr
         double driveRPS = Conversions.MPSToRPS(state.speedMetersPerSecond);
-        //ff drive control
-        //double driveFeedforwardFalcon = m_driveFeedforward.calculate(state.speedMetersPerSecond);
+        //ff drive control 
+        double driveFFRPS = Conversions.MPSToRPS(m_driveFeedforward.calculate(state.speedMetersPerSecond));
         //set drive velocity
-        setDriveVelocity(driveRPS);
+        setDriveVelocity(driveRPS + driveFFRPS);
 
-        if(m_index == 1) {
-            //System.out.println("Target " + m_index + ": " + state);
-            //System.out.println("Current " + m_index + ": " + getModuleState());
-        }
         //logging
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/current roation" , getAbsEncRadians());
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target Angle", state.angle.getRadians());
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target velocity", driveRPS);
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/current velocity", getModuleState().speedMetersPerSecond);
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target state", state);
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/current state", getModuleState());
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/turn power", steerPIDpwr);
     }
 

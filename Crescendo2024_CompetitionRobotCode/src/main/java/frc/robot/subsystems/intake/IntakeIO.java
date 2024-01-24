@@ -1,4 +1,4 @@
-package frc.robot.subsystems.SubsystemCatzIntake;
+package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -12,4 +12,8 @@ public interface IntakeIO {
     public default void updateInputs(IntakeIOInputs inputs) {}
 
     public default void exampleAccessMethod(double test) {}
+
+    public default void deployIntake(boolean enable) {}
+
+    public default void rollerEnable(boolean enable) {}
 }
