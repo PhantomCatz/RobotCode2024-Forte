@@ -138,15 +138,19 @@ public final class CatzConstants {
         SWERVE_RIGHT_FRONT_LOCATION
     );
     
-    public static final double MAX_SPEED = 4.81; // meters per second 4.81
+    //data has been referenced using recalc calculator https://www.reca.lc/drive
+    public static final double MAX_SPEED = 4.45; // meters per second 4.81
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 4.0; // radians per second
-    public static final double MAX_SPEED_DESATURATION = 4.81;
+    public static final double MAX_SPEED_DESATURATION = 4.45; 
 
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction
     
     public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = 0.095;
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
+
+    public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;
+    public static final double FEEDFOWARD_Kv_VELOCITY_ACCELERATION_METERS = 0.24;
 
     public static final boolean ENABLE_INITIAL_REPLANNING = false;
     public static final boolean ENABLE_DYNAMIC_REPLANNING = false;

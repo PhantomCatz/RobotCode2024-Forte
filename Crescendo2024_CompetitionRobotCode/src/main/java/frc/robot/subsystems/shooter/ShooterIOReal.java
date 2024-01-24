@@ -1,4 +1,4 @@
-package frc.robot.subsystems.SubsystemCatzShooter;
+package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;

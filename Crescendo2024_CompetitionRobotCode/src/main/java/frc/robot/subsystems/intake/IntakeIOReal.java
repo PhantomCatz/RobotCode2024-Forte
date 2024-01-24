@@ -1,4 +1,4 @@
-package frc.robot.subsystems.SubsystemCatzIntake;
+package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;

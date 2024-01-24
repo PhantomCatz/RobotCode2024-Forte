@@ -7,8 +7,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
@@ -68,7 +66,6 @@ public class ModuleIOReal implements ModuleIO {
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.05;
             //ramping
-        //talonConfigs.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = DriveConstants.NEUTRAL_TO_FULL_SECONDS;
 
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){
