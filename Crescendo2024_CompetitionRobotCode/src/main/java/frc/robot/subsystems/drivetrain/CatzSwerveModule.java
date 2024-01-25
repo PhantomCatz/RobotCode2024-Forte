@@ -23,7 +23,8 @@ public class CatzSwerveModule {
     private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 
     private PIDController m_PID;
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 2.68, 0.24);
+
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.26);
                 
     private final double kP = 0.25;
     private final double kI = 0.0;
@@ -119,10 +120,11 @@ public class CatzSwerveModule {
 
         //calculate drive pwr
         double driveRPS = Conversions.MPSToRPS(state.speedMetersPerSecond);
-        //ff drive control 
-        double driveFFRPS = Conversions.MPSToRPS(m_driveFeedforward.calculate(state.speedMetersPerSecond));
+
+        //ff drive control
+        double driveFF = m_driveFeedforward.calculate(driveRPS);
         //set drive velocity
-        setDriveVelocity(driveRPS + driveFFRPS);
+        setDriveVelocity(driveRPS + driveFF);
 
         //logging
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/target state", state);

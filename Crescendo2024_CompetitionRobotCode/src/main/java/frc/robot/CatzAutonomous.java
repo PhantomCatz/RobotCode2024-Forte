@@ -1,20 +1,13 @@
 package frc.robot;
 
-import java.nio.file.Path;
-import java.sql.Driver;
-import java.util.List;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -22,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class CatzAutonomous {
@@ -40,8 +34,7 @@ public class CatzAutonomous {
         internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
         internalPathChooser.addOption("ScoringC13", scoringC13());
 
-
-        SmartDashboard.putData("Auto Chooser", autoChooser);;
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     //configured dashboard
@@ -52,38 +45,37 @@ public class CatzAutonomous {
         return internalPathChooser.get(); //for internal path choosing TBD should we use pathplanners or a coded version?
     }
 
-
-
     //-------------------------------------------Auton Paths--------------------------------------------
     private Command bulldozerAuto() {
         return new SequentialCommandGroup(
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Bulldozer"))
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Bulldozer"))
             );
     }
 
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
             Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
             Commands.waitSeconds(2),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile("Right")));
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
+        );
     }
 
     private Command scoringC13() {
         return new SequentialCommandGroup(
             Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(1.27, 7.38, Rotation2d.fromDegrees(0)))),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_1"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
             Commands.waitSeconds(4),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_2"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
             Commands.waitSeconds(4),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_3"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3")),
             Commands.waitSeconds(4),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_4"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
             Commands.waitSeconds(4),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_5"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5")),
             Commands.waitSeconds(4),
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile(("Scoring_C1-3_6"))));
-        
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6"))
+        );
     }
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
 

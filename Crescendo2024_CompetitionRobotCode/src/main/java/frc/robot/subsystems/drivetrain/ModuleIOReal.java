@@ -47,7 +47,6 @@ public class ModuleIOReal implements ModuleIO {
         STEER_MOTOR.setIdleMode(IdleMode.kCoast);
         STEER_MOTOR.enableVoltageCompensation(12.0);
 
-
         //Drive Motor setup
         DRIVE_MOTOR = new TalonFX(driveMotorIDIO);
             //reset to factory defaults
@@ -62,7 +61,7 @@ public class ModuleIOReal implements ModuleIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 1.5;
+        driveConfigs.kP = 2.5;
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.05;
             //ramping
@@ -85,7 +84,7 @@ public class ModuleIOReal implements ModuleIO {
 
     @Override
     public void setDriveVelocityIO(double velocity) {
-        DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity * DriveConstants.VEL_FF));
+        DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity));
     }
 
     @Override
