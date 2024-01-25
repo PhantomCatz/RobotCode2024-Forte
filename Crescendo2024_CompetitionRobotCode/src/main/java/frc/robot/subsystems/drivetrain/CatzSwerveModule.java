@@ -23,7 +23,7 @@ public class CatzSwerveModule {
     private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 
     private PIDController m_PID;
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.26);
                 
     private final double kP = 0.25; //cuz error is in tenths place so no need to mutiply kp value
     private final double kI = 0.0;
@@ -120,9 +120,9 @@ public class CatzSwerveModule {
         //calculate drive pwr
         double driveRPS = Conversions.MPSToRPS(state.speedMetersPerSecond);
         //ff drive control
-        //double driveFeedforwardFalcon = m_driveFeedforward.calculate(state.speedMetersPerSecond);
+        double driveFF = m_driveFeedforward.calculate(driveRPS);
         //set drive velocity
-        setDriveVelocity(driveRPS);
+        setDriveVelocity(driveRPS + driveFF);
 
         if(m_index == 1) {
             //System.out.println("Target " + m_index + ": " + state);

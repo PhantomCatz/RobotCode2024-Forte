@@ -76,7 +76,7 @@ public final class CatzConstants {
 
   public static final class TrajectoryConstants {
     public static final double ALLOWABLE_POSE_ERROR = 0.05;
-    public static final double ALLOWABLE_ROTATION_ERROR = Math.toRadians(2);
+    public static final double ALLOWABLE_ROTATION_ERROR = 5;
   }
 
   public static final class MtrConfigConstants {
@@ -118,9 +118,8 @@ public final class CatzConstants {
     //--------------------------------------MTR CONFIGS------------------------------------
 
     public static final double  NEUTRAL_TO_FULL_SECONDS       = 0.1;
-    public static final double  VEL_FF                        = 1.086;
 
-    public static final Pose2d initPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+    public static final Pose2d initPose = new Pose2d(2, 2, Rotation2d.fromDegrees(0));
     private static final double MODULE_DISTANCE_FROM_CENTER = 0.298 * Math.sqrt(2);
 
     public static final double ESTIMATION_COEFFICIENT = 0.025;
@@ -138,7 +137,7 @@ public final class CatzConstants {
         SWERVE_RIGHT_FRONT_LOCATION
     );
     
-    public static final double MAX_SPEED = 4.81; // meters per second 4.81
+    public static final double MAX_SPEED = 4; // meters per second 4.81
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 4.0; // radians per second
     public static final double MAX_SPEED_DESATURATION = 4.81;
 
@@ -153,6 +152,13 @@ public final class CatzConstants {
     public static final double REPLANNING_ERROR_THRESHOLD_METERS = 0.5;
     public static final double REPLANNING_ERROR_SPIKE_THRESHOLD_METERS = 1.5;
     
+    public static final PPHolonomicDriveController ppholonomicDriveController = new PPHolonomicDriveController(
+        new PIDConstants(1.5, 0, 0), // PID values for offset
+        new PIDConstants(1.5, 0, 0), // PID values for rotation 
+        0.005,
+        MAX_SPEED,
+        MODULE_DISTANCE_FROM_CENTER
+    );
 
     public static final HolonomicPathFollowerConfig pathFollowingConfig = new HolonomicPathFollowerConfig( 
         new PIDConstants(3.1, 0, 0.001), //Translational PID constants 
