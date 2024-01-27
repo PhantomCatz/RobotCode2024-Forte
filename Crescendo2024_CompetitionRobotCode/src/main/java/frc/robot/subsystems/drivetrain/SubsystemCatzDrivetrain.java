@@ -110,7 +110,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         () -> DriveConstants.
             swerveDriveKinematics.
                 toChassisSpeeds(getModuleStates()),
-        this::driveRobotWithCorrectedDynamics,
+        this::driveRobotWithDescritizeCorrectedDynamics,
         DriveConstants.pathFollowingConfig,
         ()->(DriverStation.
                 getAlliance().
@@ -169,7 +169,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     }
 
     // Access method for updating drivetrain instructions
-    public void driveRobotWithCorrectedDynamics(ChassisSpeeds chassisSpeeds) {
+    public void driveRobotWith254CorrectedDynamics(ChassisSpeeds chassisSpeeds) {
         // Apply second-order kinematics to prevent swerve skew
         chassisSpeeds = correctForDynamics(chassisSpeeds);
 
@@ -178,7 +178,12 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         setModuleStates(moduleStates);
     }
 
-    public void driveRobotWithoutCorrectedDynamics(ChassisSpeeds chassisSpeeds) {
+    public void driveRobotWithDescritizeCorrectedDynamics(ChassisSpeeds chassisSpeeds) {
+
+        chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds.vxMetersPerSecond, 
+                                                 chassisSpeeds.vyMetersPerSecond, 
+                                                 chassisSpeeds.omegaRadiansPerSecond, 2);
+                                                 
         // Convert chassis speeds to individual module states and set module states
         SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
         setModuleStates(moduleStates);

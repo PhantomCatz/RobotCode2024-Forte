@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
+import frc.robot.commands.StateMachineCmds.MoveToNewPositionCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
@@ -71,6 +72,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  
    
    private void configureBindings() {
+
+    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CazMechanismConstants.NOTE_POS_SCORING_AMP));
  
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
     // xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());

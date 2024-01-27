@@ -7,8 +7,14 @@ package frc.robot.Utils;
 
 public class CatzMechanismPosition {
 
-    public CatzMechanismPosition() {
+    public double m_elevatorTargetEncPos;
 
+    public CatzMechanismPosition(double elevatorTargetEncPos) {
+        this.m_elevatorTargetEncPos = elevatorTargetEncPos;
+    }
+
+    public double getElevatorTargetEncPos() {
+        return m_elevatorTargetEncPos;
     }
 
 
