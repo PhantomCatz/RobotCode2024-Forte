@@ -110,7 +110,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         () -> DriveConstants.
             swerveDriveKinematics.
                 toChassisSpeeds(getModuleStates()),
-        this::driveRobotWithDescritizeCorrectedDynamics,
+        this::driveRobotWithDescritizeDynamics,
         DriveConstants.pathFollowingConfig,
         ()->(DriverStation.
                 getAlliance().
@@ -178,14 +178,12 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         setModuleStates(moduleStates);
     }
 
-    public void driveRobotWithDescritizeCorrectedDynamics(ChassisSpeeds chassisSpeeds) {
-
-        chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds.vxMetersPerSecond, 
-                                                 chassisSpeeds.vyMetersPerSecond, 
-                                                 chassisSpeeds.omegaRadiansPerSecond, 0.02);
+    public void driveRobotWithDescritizeDynamics(ChassisSpeeds chassisSpeeds) {
+        //correct dynamics with wpilib internal "2nd order kinematics"
+        ChassisSpeeds descreteSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
                                                  
         // Convert chassis speeds to individual module states and set module states
-        SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(descreteSpeeds);
         setModuleStates(moduleStates);
     }
 
@@ -259,12 +257,10 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // reset gyro then flip 180 degrees
     public Command flipGyro() {
-        System.out.println("flipGyroflipGyroflipGyroflipGyroflipGyroflipGyro");
         return runOnce(() -> gyroIO.setAngleAdjustmentIO(getGyroAngle()+180));
     }
 
     public Command resetGyro() {
-        System.out.println("gyroYawgyroYawgyroYawgyroYawgyroYawgyroYawgyroYaw");
         return runOnce(() -> gyroIO.setAngleAdjustmentIO(-gyroInputs.gyroYaw));
     }
 
@@ -339,7 +335,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         return modulePositions;
     }
 
-    //----------------------------------------vsion-----------------------------------------
+    //----------------------------------------vision-----------------------------------------
     public Command toggleVisionEnableCommand() {
         if(isVisionEnabled == true) {
             return run(()-> setVisionEnable(false));

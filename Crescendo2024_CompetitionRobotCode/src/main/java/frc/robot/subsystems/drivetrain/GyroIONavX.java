@@ -12,8 +12,7 @@ public class GyroIONavX implements GyroIO
     }
 
     @Override
-    public void updateInputs(GyroIOInputs inputs) 
-    {
+    public void updateInputs(GyroIOInputs inputs) {
       inputs.gyroAngle = navX.getAngle();
       inputs.gyroYaw = navX.getYaw();
       inputs.gyroRoll = navX.getRoll();
@@ -21,15 +20,13 @@ public class GyroIONavX implements GyroIO
     }
 
     @Override
-    public void resetNavXIO()
-    {
+    public void resetNavXIO(){
         navX.reset();
         navX.setAngleAdjustment(DriveConstants.initPose.getRotation().getDegrees());
     }
 
     @Override
-    public void setAngleAdjustmentIO(double gyroAdjustment) 
-    {
+    public void setAngleAdjustmentIO(double gyroAdjustment) {
         navX.setAngleAdjustment(gyroAdjustment);
     }
 

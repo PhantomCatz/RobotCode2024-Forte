@@ -25,7 +25,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class PPTrajectoryFollowingCmd extends Command {
     private PathPlannerTrajectory.State previousState;
-    private final PPHolonomicDriveController ppcontroller;
+    //private final PPHolonomicDriveController ppcontroller;
     private final HolonomicDriveController hocontroller;
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
     private PathPlannerTrajectory trajectory;
@@ -47,7 +47,7 @@ public class PPTrajectoryFollowingCmd extends Command {
                                         toChassisSpeeds(m_driveTrain.getModuleStates()),
                                 m_driveTrain.getRotation2d());
 
-        ppcontroller = DriveConstants.ppholonomicDriveController;
+        //ppcontroller = DriveConstants.ppholonomicDriveController;
         hocontroller = DriveConstants.holonomicDriveController;
         addRequirements(m_driveTrain);
     }
@@ -64,7 +64,7 @@ public class PPTrajectoryFollowingCmd extends Command {
                                         toChassisSpeeds(m_driveTrain.getModuleStates()), 
                                 m_driveTrain.getRotation2d());
 
-        ppcontroller = DriveConstants.ppholonomicDriveController;
+        //ppcontroller = DriveConstants.ppholonomicDriveController;
         hocontroller = DriveConstants.holonomicDriveController;
 
         addRequirements(m_driveTrain);
@@ -95,6 +95,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         
         // previousState = goal;
 
+        //convert PP trajectory into a wpilib trajectory type to be used with the internal WPILIB trajectory library
         PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
         Rotation2d targetOrientation = goal.targetHolonomicRotation;
         Pose2d currentPose = m_driveTrain.getPose();

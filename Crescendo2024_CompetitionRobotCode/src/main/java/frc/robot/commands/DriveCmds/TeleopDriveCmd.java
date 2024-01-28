@@ -41,10 +41,6 @@ public class TeleopDriveCmd extends Command {
   @Override
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
-    // double xSpeed = -0.0;//supplierLeftJoyY.get();
-    // double ySpeed = 0.8;//-supplierLeftJoyX.get();
-    // double turningSpeed = 0.5;//-supplierRightJoyX.get();
-
     double xSpeed = -supplierLeftJoyY.get();
     double ySpeed = -supplierLeftJoyX.get();
     double turningSpeed = -supplierRightJoyX.get();
@@ -67,7 +63,7 @@ public class TeleopDriveCmd extends Command {
     }
 
     //send new chassisspeeds object to the drivetrain
-    m_driveTrain.driveRobotWithDescritizeCorrectedDynamics(chassisSpeeds);
+    m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
 
     //logging
     Logger.recordOutput("robot xspeed", xSpeed);

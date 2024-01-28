@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.CatzMathUtils;
 import frc.robot.Utils.Conversions;
 
@@ -108,18 +109,27 @@ public class CatzSwerveModule {
      * @param state Desired state with speed and angle.
      */
     public void setDesiredState(SwerveModuleState state) {
-        this.m_state = state;
-        //calculate turn pwr percent
-        double steerPIDpwr = - m_PID.calculate(getAbsEncRadians(), state.angle.getRadians()); 
-        setSteerPower(steerPIDpwr);
+        double unadjustedSpeedSetpoint = state.speedMetersPerSecond;
+        double targetAngleRad          = state.angle.getRadians();
+        double currentAngleRad         = getAbsEncRadians();
+        // Run closed loop drive control
+        // Scale velocity based on turn error
+        // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
+        // towards the setpoint, its velocity should increase. This is achieved by
+        // taking the component of the velocity in the direction of the setpoint.
+        double adjustedSpeedSetpoint = unadjustedSpeedSetpoint * Math.cos(m_PID.getPositionError());        //calculate turn pwr percent
+        double targetDriveVelocity = adjustedSpeedSetpoint/DriveConstants.DRVTRAIN_WHEEL_DIAMETER_METERS/2; //devide sepoint by radius 
 
         //calculate drive pwr
-        double driveRPS = Conversions.MPSToRPS(state.speedMetersPerSecond);
-
+        double driveRPS = Conversions.MPSToRPS(targetDriveVelocity);
         //ff drive control
-        double driveFF = m_driveFeedforward.calculate(driveRPS);
+        double driveRPSFF = m_driveFeedforward.calculate(driveRPS);
         //set drive velocity
-        setDriveVelocity(driveRPS + driveFF);
+        setDriveVelocity(driveRPS + driveRPSFF);
+
+        //calculate steer pwr
+        double steerPIDpwr = - m_PID.calculate(currentAngleRad, targetAngleRad); 
+        setSteerPower(steerPIDpwr);
 
         //logging
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/target state", state);
@@ -143,9 +153,9 @@ public class CatzSwerveModule {
     }
 
     public SwerveModuleState getModuleState() {
-        double velocity = Conversions.RPSToMPS(inputs.driveMtrVelocity);
+        double velocityMPS = Conversions.RPSToMPS(inputs.driveMtrVelocity);
         
-        return new SwerveModuleState(velocity, getCurrentRotation());
+        return new SwerveModuleState(velocityMPS, getCurrentRotation());
     }
 
     public SwerveModulePosition getModulePosition() {

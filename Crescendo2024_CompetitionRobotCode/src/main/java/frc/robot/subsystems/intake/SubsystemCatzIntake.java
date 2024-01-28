@@ -6,6 +6,7 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.subsystems.intake.IntakeIOInputsAutoLogged;
@@ -35,6 +36,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("climb/inputs", inputs);
 
+    if(!DriverStation.isEnabled()) {
+    
+    } 
+    else if(true) {
+
+    }
+    
     // This method will be called once per scheduler run
     io.exampleAccessMethod(0);
   }
