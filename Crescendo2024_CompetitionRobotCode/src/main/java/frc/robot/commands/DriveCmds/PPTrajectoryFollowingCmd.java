@@ -6,9 +6,13 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -21,7 +25,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class PPTrajectoryFollowingCmd extends Command {
     private PathPlannerTrajectory.State previousState;
-    private final PPHolonomicDriveController controller;
+    private final PPHolonomicDriveController ppcontroller;
+    private final HolonomicDriveController hocontroller;
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
     private PathPlannerTrajectory trajectory;
     
@@ -42,7 +47,8 @@ public class PPTrajectoryFollowingCmd extends Command {
                                         toChassisSpeeds(m_driveTrain.getModuleStates()),
                                 m_driveTrain.getRotation2d());
 
-        controller = DriveConstants.ppholonomicDriveController;
+        ppcontroller = DriveConstants.ppholonomicDriveController;
+        hocontroller = DriveConstants.holonomicDriveController;
         addRequirements(m_driveTrain);
     }
 
@@ -58,7 +64,9 @@ public class PPTrajectoryFollowingCmd extends Command {
                                         toChassisSpeeds(m_driveTrain.getModuleStates()), 
                                 m_driveTrain.getRotation2d());
 
-        controller = DriveConstants.ppholonomicDriveController;
+        ppcontroller = DriveConstants.ppholonomicDriveController;
+        hocontroller = DriveConstants.holonomicDriveController;
+
         addRequirements(m_driveTrain);
     }
 
@@ -76,16 +84,28 @@ public class PPTrajectoryFollowingCmd extends Command {
         double currentTime = this.timer.get();
 
         //Determine desired state based on where the robot should be at the current time in the path
-        PathPlannerTrajectory.State goal = (PathPlannerTrajectory.State) trajectory.sample(currentTime);
-        Pose2d currentPosition = m_driveTrain.getPose();
+        // PathPlannerTrajectory.State goal = (PathPlannerTrajectory.State) trajectory.sample(currentTime);
+        // Pose2d currentPosition = m_driveTrain.getPose();
 
-        // obtain target velocity based on current pose and desired state
-        ChassisSpeeds chassisSpeeds = controller.calculateRobotRelativeSpeeds(currentPosition, goal);
+        // // obtain target velocity based on current pose and desired state
+        // ChassisSpeeds chassisSpeeds = controller.calculateRobotRelativeSpeeds(currentPosition, goal);
 
-        // m_driveTrain.driveRobotWithDescritizeCorrectedDynamics(chassisSpeeds);
-        Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
+        // // m_driveTrain.driveRobotWithDescritizeCorrectedDynamics(chassisSpeeds);
+        // Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
         
-        previousState = goal;
+        // previousState = goal;
+
+        PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
+        Rotation2d targetOrientation = goal.targetHolonomicRotation;
+        Pose2d currentPose = m_driveTrain.getPose();
+        Trajectory.State state = new Trajectory.State(currentTime, goal.velocityMps, goal.accelerationMpsSq, new Pose2d(goal.positionMeters, new Rotation2d()), goal.curvatureRadPerMeter);
+
+        ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
+        SwerveModuleState[] targetModuleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(adjustedSpeeds);
+
+        m_driveTrain.setModuleStates(targetModuleStates);
+        
+        Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
     }
 
     @Override
