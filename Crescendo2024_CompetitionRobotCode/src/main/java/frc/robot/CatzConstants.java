@@ -138,10 +138,10 @@ public final class CatzConstants {
     );
     
     //data has been referenced using recalc calculator https://www.reca.lc/drive
-    public static final double MAX_SPEED = 4.45; // meters per second 4.81
+    public static final double MAX_SPEED = Units.feetToMeters(14.34); // meters per second 4.81
 
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 4.0; // radians per second
-    public static final double MAX_SPEED_DESATURATION = 4.45; 
+    public static final double MAX_SPEED_DESATURATION = MAX_SPEED; 
 
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction
@@ -158,20 +158,20 @@ public final class CatzConstants {
     public static final double REPLANNING_ERROR_SPIKE_THRESHOLD_METERS = 1.5;
     
     public static final PPHolonomicDriveController ppholonomicDriveController = new PPHolonomicDriveController(
-        new PIDConstants(1.5, 0, 0), // PID values for offset
-        new PIDConstants(1.5, 0, 0), // PID values for rotation 
-        0.005,
+        new PIDConstants(5.0, 0, 1), // PID values for offset
+        new PIDConstants(5.0, 0, 0), // PID values for rotation 
+        0.02,
         MAX_SPEED,
         MODULE_DISTANCE_FROM_CENTER
     );
 
     public static final HolonomicPathFollowerConfig pathFollowingConfig = new HolonomicPathFollowerConfig( 
-        new PIDConstants(3.1, 0, 0.001), //Translational PID constants 
-        new PIDConstants(0.8, 0, 0), //Rotational PID constants 11
+        new PIDConstants(5, 0, 0.0), //Translational PID constants 
+        new PIDConstants(5, 0, 0), //Rotational PID constants 11
         MAX_SPEED, // Max module speed, in m/s
         MODULE_DISTANCE_FROM_CENTER, // Drive base radius in meters. Distance from robot center to furthest module.
-        new ReplanningConfig(ENABLE_INITIAL_REPLANNING, ENABLE_DYNAMIC_REPLANNING, REPLANNING_ERROR_THRESHOLD_METERS, REPLANNING_ERROR_SPIKE_THRESHOLD_METERS),
-        0.02); 
+        new ReplanningConfig(ENABLE_INITIAL_REPLANNING, ENABLE_DYNAMIC_REPLANNING, REPLANNING_ERROR_THRESHOLD_METERS, REPLANNING_ERROR_SPIKE_THRESHOLD_METERS)
+        ); 
     }
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 

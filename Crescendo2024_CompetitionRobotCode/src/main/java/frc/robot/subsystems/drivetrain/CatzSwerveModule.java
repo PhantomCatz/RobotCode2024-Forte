@@ -14,7 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.CatzConstants;
-import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.CatzMathUtils;
 import frc.robot.Utils.Conversions;
 
@@ -27,8 +26,8 @@ public class CatzSwerveModule {
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.26);
                 
     private final double kP = 0.25;
-    private final double kI = 0.0;
-    private final double kD = 0.0015;
+    private final double kI = 0.00;
+    private final double kD = 0.000;
 
     private double m_wheelOffset;
 
@@ -60,6 +59,9 @@ public class CatzSwerveModule {
 
         //Logging outputs
         Logger.recordOutput("absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
+        //Logger.recordOutput("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
+        //Logger.recordOutput("angletarget" + Integer.toString(m_index) , m_state.angle.getDegrees());
+
 
         SmartDashboard.putNumber("absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
         SmartDashboard.putNumber("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
@@ -67,21 +69,11 @@ public class CatzSwerveModule {
 
     //----------------------------------------Setting pwr methods-------------------------------
     public void setSteerPower(double pwr) {
-        if(CatzConstants.currentMode == CatzConstants.Mode.SIM) {
-           io.setSteerSimPwrIO(pwr);
-        }
-        else {       
             io.setSteerPwrIO(pwr);
-        }
     }
 
     public void setDriveVelocity(double velocity) {
-        if(CatzConstants.currentMode == CatzConstants.Mode.SIM) {
-            
-        }
-        else {
             io.setDriveVelocityIO(velocity);
-        }
     }
 
     public void stopDriving() {
@@ -108,12 +100,15 @@ public class CatzSwerveModule {
         return (inputs.magEncoderValue - m_wheelOffset) * 2 * Math.PI;
     }
 
+    private SwerveModuleState m_state;
+
     /**
      * Sets the desired state for the module.
      *
      * @param state Desired state with speed and angle.
      */
     public void setDesiredState(SwerveModuleState state) {
+        this.m_state = state;
         //calculate turn pwr percent
         double steerPIDpwr = - m_PID.calculate(getAbsEncRadians(), state.angle.getRadians()); 
         setSteerPower(steerPIDpwr);

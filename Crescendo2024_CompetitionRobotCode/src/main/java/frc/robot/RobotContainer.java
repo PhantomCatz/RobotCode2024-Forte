@@ -57,9 +57,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //shooter    = SubsystemCatzShooter.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
-
-    NamedCommands.registerCommand("Print", new PrintCommand("hi"));
-    NamedCommands.registerCommand("End", new PrintCommand("end"));
     
 
      xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
@@ -74,10 +71,12 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    private void configureBindings() {
 
     xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CazMechanismConstants.NOTE_POS_SCORING_AMP));
- 
+    
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
-    // xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
+    xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
     // xboxDrv.start().onTrue(driveTrain.flipGyro());
+    xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
+
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
 
     //shooter activation

@@ -162,7 +162,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
-        Logger.recordOutput("Obometry/pose", getPose());
+        // Logger.recordOutput("Obometry/pose", getPose());
 
         // Update SmartDashboard with the gyro angle
         SmartDashboard.putNumber("gyroAngle", getGyroAngle());
@@ -182,7 +182,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds.vxMetersPerSecond, 
                                                  chassisSpeeds.vyMetersPerSecond, 
-                                                 chassisSpeeds.omegaRadiansPerSecond, 2);
+                                                 chassisSpeeds.omegaRadiansPerSecond, 0.02);
                                                  
         // Convert chassis speeds to individual module states and set module states
         SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
@@ -259,7 +259,13 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // reset gyro then flip 180 degrees
     public Command flipGyro() {
-        return run(() -> gyroIO.resetNavXIO());
+        System.out.println("flipGyroflipGyroflipGyroflipGyroflipGyroflipGyro");
+        return runOnce(() -> gyroIO.setAngleAdjustmentIO(getGyroAngle()+180));
+    }
+
+    public Command resetGyro() {
+        System.out.println("gyroYawgyroYawgyroYawgyroYawgyroYawgyroYawgyroYaw");
+        return runOnce(() -> gyroIO.setAngleAdjustmentIO(-gyroInputs.gyroYaw));
     }
 
     // Get the gyro angle (negative due to the weird coordinate system)
@@ -295,9 +301,10 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     // Get the current pose of the robot
     public Pose2d getPose() {
         Pose2d currentPosition = m_poseEstimator.getEstimatedPosition();
-        currentPosition = new Pose2d(currentPosition.getX(), currentPosition.getY(), getRotation2d());
+        // currentPosition = new Pose2d(currentPosition.getX(), currentPosition.getY(), getRotation2d());
         return currentPosition;
     }
+
 
     //----------------------------------------------Enc resets-------------------------------------------------------
 

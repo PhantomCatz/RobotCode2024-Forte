@@ -33,6 +33,7 @@ public class CatzAutonomous {
         internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
         internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
         internalPathChooser.addOption("ScoringC13", scoringC13());
+        internalPathChooser.addOption("Drive Straight", driveStraight());
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
@@ -75,6 +76,12 @@ public class CatzAutonomous {
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5")),
             Commands.waitSeconds(4),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6"))
+        );
+    }
+
+    private Command driveStraight(){
+        return new SequentialCommandGroup(
+            AutoBuilder.followPath(PathPlannerPath.fromPathFile("DriveStraight"))
         );
     }
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------

@@ -82,7 +82,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         // obtain target velocity based on current pose and desired state
         ChassisSpeeds chassisSpeeds = controller.calculateRobotRelativeSpeeds(currentPosition, goal);
 
-        m_driveTrain.driveRobotWithDescritizeCorrectedDynamics(chassisSpeeds);
+        // m_driveTrain.driveRobotWithDescritizeCorrectedDynamics(chassisSpeeds);
         Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
         
         previousState = goal;

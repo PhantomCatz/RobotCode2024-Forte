@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 4.0,
+        "x": 5.0,
         "y": 2.0
       },
       "prevControl": {
-        "x": 3.0,
+        "x": 4.0,
         "y": 2.0
       },
       "nextControl": null,
@@ -56,5 +56,5 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": null,
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

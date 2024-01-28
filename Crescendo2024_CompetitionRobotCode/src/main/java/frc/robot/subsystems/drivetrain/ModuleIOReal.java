@@ -5,7 +5,6 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -13,7 +12,6 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.MtrConfigConstants;
 
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -63,7 +61,7 @@ public class ModuleIOReal implements ModuleIO {
             //pid
         driveConfigs.kP = 2.5;
         driveConfigs.kI = 0.0;
-        driveConfigs.kD = 0.05;
+        driveConfigs.kD = 0.00;
             //ramping
 
         //check if drive motor is initialized correctly
