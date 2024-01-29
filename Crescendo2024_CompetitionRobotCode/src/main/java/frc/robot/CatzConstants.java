@@ -55,12 +55,12 @@ public final class CatzConstants {
   public static final double kDeadband = 0.1;
   }
 
-  public static final class CazMechanismConstants {
-    //public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition();
+  public static final class CatzMechanismConstants {
+    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 0);
     //public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition();
     //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000);
-    //public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition();
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, 0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, 1);
     //public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
@@ -95,14 +95,14 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
 
-    public static final double LT_FRNT_OFFSET = 0.5112305378; //this one changed
-    public static final double LT_BACK_OFFSET = 0.5446386386;
-    public static final double RT_BACK_OFFSET = 0.7591109064;
-    public static final double RT_FRNT_OFFSET = 0.5363121009;
+    public static final double LT_FRNT_OFFSET =  0.00406;//atlas 0.5112305378; //this one changed
+    public static final double LT_BACK_OFFSET = -0.03950;//0.5446386386;
+    public static final double RT_BACK_OFFSET = -0.25084;//0.7591109064;
+    public static final double RT_FRNT_OFFSET =  0.05098;//0.5363121009;
 
     public static final int LT_FRNT_DRIVE_ID = 1;
-    public static final int LT_BACK_DRIVE_ID = 3;//TBD put in constants
-    public static final int RT_BACK_DRIVE_ID = 22;
+    public static final int LT_BACK_DRIVE_ID = 3;
+    public static final int RT_BACK_DRIVE_ID = 5;
     public static final int RT_FRNT_DRIVE_ID = 7;
     
     public static final int LT_FRNT_STEER_ID = 2;
@@ -111,13 +111,11 @@ public final class CatzConstants {
     public static final int RT_FRNT_STEER_ID = 8;
 
     public static final int LT_FRNT_ENC_PORT = 9;
-    public static final int LT_BACK_ENC_PORT = 6;
+    public static final int LT_BACK_ENC_PORT = 8; //atlas 6
     public static final int RT_BACK_ENC_PORT = 7;
-    public static final int RT_FRNT_ENC_PORT = 8;
+    public static final int RT_FRNT_ENC_PORT = 6; //atlas 8
 
     //--------------------------------------MTR CONFIGS------------------------------------
-
-    public static final double  NEUTRAL_TO_FULL_SECONDS       = 0.1;
 
     public static final Pose2d initPose = new Pose2d(2, 2, Rotation2d.fromDegrees(0));
     private static final double MODULE_DISTANCE_FROM_CENTER = 0.298 * Math.sqrt(2);
@@ -146,7 +144,7 @@ public final class CatzConstants {
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction
     
-    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = 0.095;
+    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(4.5);//atlas 0.095 m
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;

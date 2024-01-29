@@ -70,7 +70,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
    private void configureBindings() {
 
-    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CazMechanismConstants.NOTE_POS_SCORING_AMP));
+    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
     
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
     xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());

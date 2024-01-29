@@ -39,6 +39,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs ", inputs);
+
+    
     // This method will be called once per scheduler run
 
     SmartDashboard.putNumber("velocityBtmLT", inputs.velocityBtmLT);

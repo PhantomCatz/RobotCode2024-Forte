@@ -34,7 +34,7 @@ public class CatzSwerveModule {
 
     private int m_index;
 
-    public CatzSwerveModule(int driveMotorID, int steerMotorID, int encoderDIOChannel, double offset, int index) {
+    public CatzSwerveModule(int driveMotorID, int steerMotorID, int encoderDIOChannel, double offset, int index, double angleOffset) {
         this.m_index = index;
 
         switch (CatzConstants.currentMode) {
@@ -60,7 +60,7 @@ public class CatzSwerveModule {
 
         //Logging outputs
         Logger.recordOutput("absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
-        //Logger.recordOutput("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
+        Logger.recordOutput("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
         //Logger.recordOutput("angletarget" + Integer.toString(m_index) , m_state.angle.getDegrees());
 
 
@@ -128,6 +128,7 @@ public class CatzSwerveModule {
         setDriveVelocity(driveRPS + driveRPSFF);
 
         //calculate steer pwr
+        //negative steer power because of coordinate system
         double steerPIDpwr = - m_PID.calculate(currentAngleRad, targetAngleRad); 
         setSteerPower(steerPIDpwr);
 
@@ -135,6 +136,11 @@ public class CatzSwerveModule {
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/target state", state);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/current state", getModuleState());
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/turn power", steerPIDpwr);
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/currentmoduleangle rad", currentAngleRad);
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/targetmoduleangle rad", targetAngleRad);
+
+
+
     }
 
     //optimze wheel angles before sending to setdesiredstate method for logging

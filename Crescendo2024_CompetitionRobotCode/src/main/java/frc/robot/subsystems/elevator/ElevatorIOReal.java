@@ -68,5 +68,8 @@ public class ElevatorIOReal implements ElevatorIO {
         ElevatorMtr.setControl(new PositionVoltage(newPositionElevator));
     }
 
-
+    @Override
+    public void setElevatorPercentOutput(double speed) {
+        ElevatorMtr.set(speed);
+    }
 }

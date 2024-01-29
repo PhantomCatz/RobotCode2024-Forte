@@ -78,16 +78,16 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Create swerve modules for each corner of the robot
         LT_FRNT_MODULE = new CatzSwerveModule(DriveConstants.LT_FRNT_DRIVE_ID, DriveConstants.LT_FRNT_STEER_ID,
-                DriveConstants.LT_FRNT_ENC_PORT, DriveConstants.LT_FRNT_OFFSET, 0);
+                DriveConstants.LT_FRNT_ENC_PORT, DriveConstants.LT_FRNT_OFFSET, 0,0);
 
         LT_BACK_MODULE = new CatzSwerveModule(DriveConstants.LT_BACK_DRIVE_ID, DriveConstants.LT_BACK_STEER_ID,
-                DriveConstants.LT_BACK_ENC_PORT, DriveConstants.LT_BACK_OFFSET, 1);
+                DriveConstants.LT_BACK_ENC_PORT, DriveConstants.LT_BACK_OFFSET, 1, 0);
 
         RT_BACK_MODULE = new CatzSwerveModule(DriveConstants.RT_BACK_DRIVE_ID, DriveConstants.RT_BACK_STEER_ID,
-                DriveConstants.RT_BACK_ENC_PORT, DriveConstants.RT_BACK_OFFSET, 2);
+                DriveConstants.RT_BACK_ENC_PORT, DriveConstants.RT_BACK_OFFSET, 2, 0);
 
         RT_FRNT_MODULE = new CatzSwerveModule(DriveConstants.RT_FRNT_DRIVE_ID, DriveConstants.RT_FRNT_STEER_ID,
-                DriveConstants.RT_FRNT_ENC_PORT, DriveConstants.RT_FRNT_OFFSET, 3);
+                DriveConstants.RT_FRNT_ENC_PORT, DriveConstants.RT_FRNT_OFFSET, 3, 0);
 
         // Assign swerve modules to the array for easier access
         m_swerveModules[0] = LT_FRNT_MODULE;
@@ -266,7 +266,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Get the gyro angle (negative due to the weird coordinate system)
     public double getGyroAngle() {
-        return -gyroInputs.gyroAngle;
+        return gyroInputs.gyroAngle; //- for atlas
     }
 
     // Get the roll angle of the gyro

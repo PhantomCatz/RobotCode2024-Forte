@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
+import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.intake.IntakeIOInputsAutoLogged;
 
 public class SubsystemCatzIntake extends SubsystemBase {
@@ -16,6 +17,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final IntakeIO io;
   private static SubsystemCatzIntake instance;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+
+  private CatzMechanismPosition m_newPosition;
 
   public SubsystemCatzIntake() {
 
@@ -36,15 +39,23 @@ public class SubsystemCatzIntake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("climb/inputs", inputs);
 
-    if(!DriverStation.isEnabled()) {
-    
-    } 
-    else if(true) {
+    double targetEncPos;
 
+    if(!DriverStation.isEnabled()) {
+      io.setRollerPercentOutput(0);
+      // io.setPivotEncPos(0); *TBD ask kynam
+    } 
+    else if(m_newPosition != null) {
+      targetEncPos = m_newPosition.getPivotTargetEncPos();
+      io.setPivotEncPos(targetEncPos);
+      Logger.recordOutput("targetEncPivot", targetEncPos);
     }
     
-    // This method will be called once per scheduler run
-    io.exampleAccessMethod(0);
+    // This method will be called once
+  }
+
+  public void setNewPos(CatzMechanismPosition newPosition) {
+    this.m_newPosition = newPosition;
   }
 
   // Get the singleton instance of the ClimbSubsystem

@@ -41,14 +41,15 @@ public class SubsystemCatzElevator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator/inputs", inputs);
 
-    double targetEncPosition;
-    if(DriverStation.isDisabled()) {
+    double targetEncPos;
 
+    if(DriverStation.isDisabled()) {
+      io.setElevatorPercentOutput(0);
     }
     else if(m_newPosition != null) {
-      targetEncPosition = m_newPosition.getElevatorTargetEncPos();
-      io.setElevatorPosition(targetEncPosition);
-      Logger.recordOutput("targetEncElevator", targetEncPosition);
+      targetEncPos = m_newPosition.getElevatorTargetEncPos();
+      io.setElevatorPosition(targetEncPos);
+      Logger.recordOutput("targetEncElevator", targetEncPos);
     }
 
     io.exampleAccessMethod(0);
