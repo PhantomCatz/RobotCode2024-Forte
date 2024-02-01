@@ -46,7 +46,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // io.setPivotEncPos(0); *TBD ask kynam
     } 
     else if(m_newPosition != null) {
-      targetEncPos = m_newPosition.getPivotTargetEncPos();
+      targetEncPos = m_newPosition.getIntakePivotTargetEncPos();
       io.setPivotEncPos(targetEncPos);
       Logger.recordOutput("targetEncPivot", targetEncPos);
     }

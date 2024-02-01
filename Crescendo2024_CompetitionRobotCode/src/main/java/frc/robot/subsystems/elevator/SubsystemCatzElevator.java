@@ -51,8 +51,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
       io.setElevatorPosition(targetEncPos);
       Logger.recordOutput("targetEncElevator", targetEncPos);
     }
-
-    io.exampleAccessMethod(0);
   }
 
   public void setNewPos(CatzMechanismPosition newPosition) {

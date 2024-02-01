@@ -56,8 +56,7 @@ public class CatzRGB
 
     private final double THREAD_PERIOD = FLOW_PERIOD / LED_COUNT;
 
-    public CatzRGB()
-    {
+    public CatzRGB() {
         led = new AddressableLED(LED_PWM_PORT);
         ledBuffer = new AddressableLEDBuffer(LED_COUNT);
         led.setLength(LED_COUNT);
@@ -68,10 +67,8 @@ public class CatzRGB
     }
 
     private void threadInit(){//TBD issue with thread...apparent syntax issue?
-        flowThread = new Thread(() ->
-        {
-            while(true)//flowEnabled || rainbowEnabled)
-            { 
+        flowThread = new Thread(() -> {
+            while(true) { 
                 RainbowPeriodic();
                 FlowPeriodic();
                 Timer.delay(THREAD_PERIOD);
@@ -99,22 +96,18 @@ public class CatzRGB
     //why are there two "fillLEDBuffer" methods?
 
     //endpoints are inclusive
-    public void fillLEDBuffer(int first, int last, Color color)
-    {
+    public void fillLEDBuffer(int first, int last, Color color) {
         rainbowEnabled = false;
         flowEnabled = false;
-        for(int i=first; i<=last; i++)
-        {
+        for(int i=first; i<=last; i++) {
             ledBuffer.setLED(i, color);
         }
     }
 
-    public void fillLEDBuffer(Color color)
-    {
+    public void fillLEDBuffer(Color color){
         rainbowEnabled = false;
         flowEnabled = false;
-        for(int i=0; i<LED_COUNT; i++)
-        {
+        for(int i=0; i<LED_COUNT; i++) {
             ledBuffer.setLED(i, color);
         }
     }
@@ -124,7 +117,7 @@ public class CatzRGB
     };
 
     public ColorMethod oneColorFillAllianceColor = (color) -> {
-        fillLEDBuffer(booleanToAllianceColor(DriverStation.getAlliance().get()));
+        fillLEDBuffer(driverStationAllianceToAllianceColor(DriverStation.getAlliance().get()));
     };
 
     public ColorMethod startFlowingRainbow = (color) -> {
@@ -134,17 +127,17 @@ public class CatzRGB
 
         flowEnabled = false;
         rainbowEnabled = false;
-        for(int i=0; i<LED_COUNT; i++){
+        for(int i=0; i<LED_COUNT; i++) {
             ledBuffer.setHSV(i, 180 * i/LED_COUNT, 255, 255);
         }
         rainbowEnabled = true;
     };
 
-    private void RainbowPeriodic(){
-        if(rainbowEnabled){
+    private void RainbowPeriodic() {
+        if(rainbowEnabled) {
             Color tempColor = ledBuffer.getLED(LED_COUNT-1);
 
-            for(int i=LED_COUNT-1; i>0; i--){
+            for(int i=LED_COUNT-1; i>0; i--) {
                 ledBuffer.setLED(i, ledBuffer.getLED(i-1));
             }
 
@@ -169,7 +162,7 @@ public class CatzRGB
         flowEnabled = true;
     };
 
-    private void FlowPeriodic(){
+    private void FlowPeriodic() {
         //does not work for flowing sections that are only 1 LED long
         if(flowEnabled){
             flowFirst = (flowFirst + 1) % LED_COUNT;
@@ -191,14 +184,14 @@ public class CatzRGB
             fillLEDBuffer(LEDSections.IntakeR.start, LEDSections.IntakeR.end, Robot.intakeControlMode.color);
             fillLEDBuffer(LEDSections.ElevatorR.start, LEDSections.ElevatorR.end, Robot.elevatorControlMode.color);
         }
-        else{
+        else {
             Robot.currentGameModeLED.method.execute(Robot.currentGameModeLED.color);
         }
 
         led.setData(ledBuffer);
     }
 
-    public Color booleanToAllianceColor(DriverStation.Alliance color){
+    public Color driverStationAllianceToAllianceColor(DriverStation.Alliance color){
         if(color == DriverStation.Alliance.Blue){
             return Color.kBlue;
         }

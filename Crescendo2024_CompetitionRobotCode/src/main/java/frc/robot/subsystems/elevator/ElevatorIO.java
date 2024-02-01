@@ -12,8 +12,6 @@ public interface ElevatorIO {
 
     public default void updateInputs(ElevatorIOInputs inputs) {}
 
-    public default void exampleAccessMethod(double test) {}
-
     public default void setElevatorPosition(double newPositionElevator) {}
 
     public default void setElevatorPercentOutput(double speed) {}

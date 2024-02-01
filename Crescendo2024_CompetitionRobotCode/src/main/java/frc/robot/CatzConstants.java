@@ -48,11 +48,11 @@ public final class CatzConstants {
   }
 
   public static final class CatzMechanismConstants {
-    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 0);
+    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 0, 0);
     //public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition();
     //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, 0);
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, 1);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, 1, 0);
     //public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
@@ -109,9 +109,9 @@ public final class CatzConstants {
 
     //--------------------------------------MTR CONFIGS------------------------------------
 
-    public static final Pose2d initPose = new Pose2d(2, 2, Rotation2d.fromDegrees(0));
-    private static final double ROBOT_WIDTH = Units.inchesToMeters(24);
-    private static final double ROBOT_LENGTH = Units.inchesToMeters(25);
+    public static final Pose2d initPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+    private static final double ROBOT_WIDTH = Units.inchesToMeters(29);
+    private static final double ROBOT_LENGTH = Units.inchesToMeters(30);
 
     public static final double ESTIMATION_COEFFICIENT = 0.025;
 

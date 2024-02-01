@@ -57,11 +57,6 @@ public class ElevatorIOReal implements ElevatorIO {
         inputs.dummyVariable = 1;
         inputs.elevatorVoltage = ElevatorMtr.getMotorVoltage().getValue();
     }
-
-    @Override
-    public void exampleAccessMethod(double test) {
-  
-    }
     
     @Override
     public void setElevatorPosition(double newPositionElevator) {
