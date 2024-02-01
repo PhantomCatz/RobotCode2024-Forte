@@ -117,11 +117,11 @@ public class CatzSwerveModule {
         // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
-        double adjustedSpeedSetpoint = unadjustedSpeedSetpoint * Math.cos(m_PID.getPositionError());        //calculate turn pwr percent
-        double targetDriveVelocity = adjustedSpeedSetpoint/DriveConstants.DRVTRAIN_WHEEL_DIAMETER_METERS/2; //devide sepoint by radius 
+        //double adjustedSpeedSetpoint = unadjustedSpeedSetpoint * Math.cos(m_PID.getPositionError());        //calculate turn pwr percent
+        //double targetDriveVelocity = adjustedSpeedSetpoint/DriveConstants.DRVTRAIN_WHEEL_DIAMETER_METERS/2; //devide sepoint by radius 
 
         //calculate drive pwr
-        double driveRPS = Conversions.MPSToRPS(targetDriveVelocity);
+        double driveRPS = Conversions.MPSToRPS(unadjustedSpeedSetpoint);
         //ff drive control
         double driveRPSFF = m_driveFeedforward.calculate(driveRPS);
         //set drive velocity

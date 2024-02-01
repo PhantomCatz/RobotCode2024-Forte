@@ -10,8 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -22,8 +20,6 @@ public class CatzAutonomous {
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
 
     private static LoggedDashboardChooser<DriverStation.Alliance> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
-    private SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
-
     private static LoggedDashboardChooser<Command> internalPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
     public CatzAutonomous() {
@@ -33,16 +29,13 @@ public class CatzAutonomous {
         internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
         internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
         internalPathChooser.addOption("ScoringC13", scoringC13());
-        internalPathChooser.addOption("Drive Straight", driveStraight());
-
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        //internalPathChooser.addOption("Drive Straight", driveStraight());
     }
 
     //configured dashboard
     public Command getCommand() {
         m_driveTrain.resetForAutonomous();
 
-        //return autoChooser.getSelected(); // nanny library on top
         return internalPathChooser.get(); //for internal path choosing TBD should we use pathplanners or a coded version?
     }
 
@@ -56,9 +49,9 @@ public class CatzAutonomous {
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
             Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
-            Commands.waitSeconds(2),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
+            // Commands.waitSeconds(2),
+            // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
         );
     }
 
@@ -79,25 +72,25 @@ public class CatzAutonomous {
         );
     }
 
-    private Command driveStraight(){
-        return new SequentialCommandGroup(
-            AutoBuilder.followPath(PathPlannerPath.fromPathFile("DriveStraight"))
-        );
-    }
+    // private Command driveStraight(){
+    //     return new SequentialCommandGroup(
+    //         AutoBuilder.followPath(PathPlannerPath.fromPathFile("DriveStraight"))
+    //     );
+    // }
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
 
     //Automatic pathfinding command
-    public Command autoFindPathOne() {
-                // Create the constraints to use while pathfinding
-            PathConstraints constraints = new PathConstraints(
-            3.0, 4.0, 
-            Units.degreesToRadians(540), Units.degreesToRadians(720));
+    // public Command autoFindPathOne() {
+    //             // Create the constraints to use while pathfinding
+    //         PathConstraints constraints = new PathConstraints(
+    //         3.0, 4.0, 
+    //         Units.degreesToRadians(540), Units.degreesToRadians(720));
 
-        // See the "Follow a single path" example for more info on what gets passed here
-        return AutoBuilder.pathfindThenFollowPath(
-                PathPlannerPath.fromPathFile("driveStraightFullTurn"),
-                constraints,
-                3.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
-        );
-    }
+    //     // See the "Follow a single path" example for more info on what gets passed here
+    //     return AutoBuilder.pathfindThenFollowPath(
+    //             PathPlannerPath.fromPathFile("driveStraightFullTurn"),
+    //             constraints,
+    //             3.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+    //     );
+    // }
 }

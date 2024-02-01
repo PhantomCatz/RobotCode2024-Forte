@@ -102,20 +102,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 DriveConstants.initPose.getRotation(), getModulePositions(), DriveConstants.initPose);
-       
-        // Configure AutoBuilder for PathPlanner
-        AutoBuilder.configureHolonomic(
-        this::getPose,
-        this::resetPosition,
-        () -> DriveConstants.
-            swerveDriveKinematics.
-                toChassisSpeeds(getModuleStates()),
-        this::driveRobotWithDescritizeDynamics,
-        DriveConstants.pathFollowingConfig,
-        ()->(DriverStation.
-                getAlliance().
-                            get() == DriverStation.Alliance.Blue),
-        this);
         
         //Configure logging trajectories to advantage kit
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -266,7 +252,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Get the gyro angle (negative due to the weird coordinate system)
     public double getGyroAngle() {
-        return gyroInputs.gyroAngle; //- for atlas
+        return -gyroInputs.gyroAngle; //- for atlas
     }
 
     // Get the roll angle of the gyro
