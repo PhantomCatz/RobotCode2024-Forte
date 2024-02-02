@@ -7,9 +7,26 @@ package frc.robot.Utils;
 
 public class CatzMechanismPosition {
 
-    public CatzMechanismPosition() {
+    public double m_elevatorTargetEncPos;
+    public double m_intakePivotTargetEncPos;
+    public double m_shooterTargetRPS;
 
+    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetEncPos, double shooterTargetRPS) {
+        this.m_elevatorTargetEncPos = elevatorTargetEncPos;
+        this.m_intakePivotTargetEncPos = intakePivotTargetEncPos;
+        this.m_shooterTargetRPS = shooterTargetRPS;
     }
 
+    public double getElevatorTargetEncPos() {
+        return m_elevatorTargetEncPos;
+    }
+
+    public double getIntakePivotTargetEncPos() {
+        return m_intakePivotTargetEncPos;
+    }
+
+    public double getShooterTargetRPSPos() {
+        return m_intakePivotTargetEncPos;
+    }
 
 }

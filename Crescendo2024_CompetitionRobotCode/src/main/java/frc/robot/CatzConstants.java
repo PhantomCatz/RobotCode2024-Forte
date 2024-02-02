@@ -1,11 +1,5 @@
 package frc.robot;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.PathPlannerLogging;
-import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -14,12 +8,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.Utils.LoggedTunableNumber;
 /***
  * CatzConstants
  * @version 1.0
@@ -55,16 +47,16 @@ public final class CatzConstants {
   public static final double kDeadband = 0.1;
   }
 
-  public static final class CazMechanismConstants {
-    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
-    public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
-    public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
-    public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition();
+  public static final class CatzMechanismConstants {
+    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 0, 0);
+    //public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition();
+    //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, 1, 0);
+    //public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
+    //public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
+    //public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
+    //public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition();
 
   }
 
@@ -76,7 +68,7 @@ public final class CatzConstants {
 
   public static final class TrajectoryConstants {
     public static final double ALLOWABLE_POSE_ERROR = 0.05;
-    public static final double ALLOWABLE_ROTATION_ERROR = Math.toRadians(2);
+    public static final double ALLOWABLE_ROTATION_ERROR = 5;
   }
 
   public static final class MtrConfigConstants {
@@ -95,15 +87,15 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
 
-    public static final double LT_FRNT_OFFSET = 0.5112305378; //this one changed
-    public static final double LT_BACK_OFFSET = 0.5446386386;
-    public static final double RT_BACK_OFFSET = 0.7591109064;
-    public static final double RT_FRNT_OFFSET = 0.5363121009;
+    public static final double LT_FRNT_OFFSET =  0.00406;//atlas 0.5112305378; //this one changed
+    public static final double LT_BACK_OFFSET = -0.03950;//0.5446386386;
+    public static final double RT_BACK_OFFSET = -0.75084;//0.7591109064;
+    public static final double RT_FRNT_OFFSET =  0.55098;//0.5363121009;
 
-    public static final int LT_FRNT_DRIVE_ID = 1;
-    public static final int LT_BACK_DRIVE_ID = 3;//TBD put in constants
-    public static final int RT_BACK_DRIVE_ID = 22;
-    public static final int RT_FRNT_DRIVE_ID = 7;
+    public static final int LT_FRNT_DRIVE_ID = 3;
+    public static final int LT_BACK_DRIVE_ID = 5;
+    public static final int RT_BACK_DRIVE_ID = 7;
+    public static final int RT_FRNT_DRIVE_ID = 1;
     
     public static final int LT_FRNT_STEER_ID = 2;
     public static final int LT_BACK_STEER_ID = 4;
@@ -111,24 +103,22 @@ public final class CatzConstants {
     public static final int RT_FRNT_STEER_ID = 8;
 
     public static final int LT_FRNT_ENC_PORT = 9;
-    public static final int LT_BACK_ENC_PORT = 6;
+    public static final int LT_BACK_ENC_PORT = 8; //atlas 6
     public static final int RT_BACK_ENC_PORT = 7;
-    public static final int RT_FRNT_ENC_PORT = 8;
+    public static final int RT_FRNT_ENC_PORT = 6; //atlas 8
 
     //--------------------------------------MTR CONFIGS------------------------------------
 
-    public static final double  NEUTRAL_TO_FULL_SECONDS       = 0.1;
-    public static final double  VEL_FF                        = 1.086;
-
     public static final Pose2d initPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-    private static final double MODULE_DISTANCE_FROM_CENTER = 0.298 * Math.sqrt(2);
+    private static final double ROBOT_WIDTH = Units.inchesToMeters(24);
+    private static final double ROBOT_LENGTH = Units.inchesToMeters(25);
 
     public static final double ESTIMATION_COEFFICIENT = 0.025;
 
-    private static final Translation2d SWERVE_LEFT_FRONT_LOCATION  = new Translation2d(MODULE_DISTANCE_FROM_CENTER, MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
-    private static final Translation2d SWERVE_LEFT_BACK_LOCATION   = new Translation2d(-MODULE_DISTANCE_FROM_CENTER, MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
-    private static final Translation2d SWERVE_RIGHT_BACK_LOCATION  = new Translation2d(-MODULE_DISTANCE_FROM_CENTER, -MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
-    private static final Translation2d SWERVE_RIGHT_FRONT_LOCATION = new Translation2d(MODULE_DISTANCE_FROM_CENTER, -MODULE_DISTANCE_FROM_CENTER).div(Math.sqrt(2));
+    private static final Translation2d SWERVE_LEFT_FRONT_LOCATION  = new Translation2d(ROBOT_LENGTH, ROBOT_WIDTH).div(2.0);
+    private static final Translation2d SWERVE_LEFT_BACK_LOCATION   = new Translation2d(-ROBOT_LENGTH, ROBOT_WIDTH).div(2.0);
+    private static final Translation2d SWERVE_RIGHT_BACK_LOCATION  = new Translation2d(-ROBOT_LENGTH, -ROBOT_WIDTH).div(2.0);
+    private static final Translation2d SWERVE_RIGHT_FRONT_LOCATION = new Translation2d(ROBOT_LENGTH, -ROBOT_WIDTH).div(2.0);
     
     // calculates the orientation and speed of individual swerve modules when given the motion of the whole robot
     public static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
@@ -139,33 +129,28 @@ public final class CatzConstants {
     );
     
     //data has been referenced using recalc calculator https://www.reca.lc/drive
-    public static final double MAX_SPEED = 4.45; // meters per second 4.81
-    public static final double MAX_ANGSPEED_RAD_PER_SEC = 4.0; // radians per second
-    public static final double MAX_SPEED_DESATURATION = 4.45; 
+    public static final double MAX_SPEED = Units.feetToMeters(14.34); // meters per second 4.81
+
+    public static final double MAX_ANGSPEED_RAD_PER_SEC = 12.0; // radians per second
+    public static final double MAX_SPEED_DESATURATION = MAX_SPEED; 
 
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction
     
-    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = 0.095;
+    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(4);//atlas 0.095 m
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;
     public static final double FEEDFOWARD_Kv_VELOCITY_ACCELERATION_METERS = 0.24;
 
-    public static final boolean ENABLE_INITIAL_REPLANNING = false;
-    public static final boolean ENABLE_DYNAMIC_REPLANNING = false;
-    public static final double REPLANNING_ERROR_THRESHOLD_METERS = 0.5;
-    public static final double REPLANNING_ERROR_SPIKE_THRESHOLD_METERS = 1.5;
-    
+    private static ProfiledPIDController autoTurnPIDController = new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(3,3));
 
-    public static final HolonomicPathFollowerConfig pathFollowingConfig = new HolonomicPathFollowerConfig( 
-        new PIDConstants(3.1, 0, 0.001), //Translational PID constants 
-        new PIDConstants(0.8, 0, 0), //Rotational PID constants 11
-        MAX_SPEED, // Max module speed, in m/s
-        MODULE_DISTANCE_FROM_CENTER, // Drive base radius in meters. Distance from robot center to furthest module.
-        new ReplanningConfig(ENABLE_INITIAL_REPLANNING, ENABLE_DYNAMIC_REPLANNING, REPLANNING_ERROR_THRESHOLD_METERS, REPLANNING_ERROR_SPIKE_THRESHOLD_METERS),
-        0.02); 
-    }
+    public static final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
+      new PIDController(2, 0, 0),
+      new PIDController(2, 0, 0),
+      autoTurnPIDController
+    );     
+  }
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
   public static final class ElevatorConstants {

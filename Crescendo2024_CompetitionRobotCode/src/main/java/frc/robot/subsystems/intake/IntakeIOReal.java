@@ -4,6 +4,8 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -18,7 +20,7 @@ public class IntakeIOReal implements IntakeIO {
     private final DigitalInput beambreak = new DigitalInput(0); 
 
     private final TalonFX pivotMtr;
-    private final TalonFX rollorMtr;
+    private final TalonFX rollerMtr;
 
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
     
@@ -32,9 +34,9 @@ public class IntakeIOReal implements IntakeIO {
             //reset to factory defaults
         pivotMtr.getConfigurator().apply(new TalonFXConfiguration());
                 //Wrist Motor setup
-        rollorMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID); //TBD need mtr id
+        rollerMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID); //TBD need mtr id
             //reset to factory defaults
-        rollorMtr.getConfigurator().apply(new TalonFXConfiguration());
+        rollerMtr.getConfigurator().apply(new TalonFXConfiguration());
         talonConfigs.Slot0 = driveConfigs;
             //current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
@@ -55,7 +57,7 @@ public class IntakeIOReal implements IntakeIO {
             System.out.println("Failed to Configure CAN ID" + IntakeConstants.PIVOT_MTR_ID);
 
         //check if roller motor is initialized correctly
-        initializationStatus = rollorMtr.getConfigurator().apply(talonConfigs);
+        initializationStatus = rollerMtr.getConfigurator().apply(talonConfigs);
         if(!initializationStatus.isOK())
             System.out.println("Failed to Configure CAN ID" + IntakeConstants.ROLLER_MTR_ID);
     
@@ -65,10 +67,34 @@ public class IntakeIOReal implements IntakeIO {
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.dummyVariable = 1;
+        // inputs.rollerVoltage = rollerMtr.getMotorVoltage().getValue();
     }
 
     @Override
     public void exampleAccessMethod(double test) {
   
     }
+
+    @Override
+    public void setPivotEncPos(double targetEncPos) {
+        pivotMtr.setControl(new PositionVoltage(targetEncPos));
+    }
+    
+    @Override
+    public void resetPivotEncPos(double defaultEncPos) {
+        pivotMtr.setPosition(defaultEncPos);
+    }
+
+    @Override
+    public void setRollerPercentOutput(double speed) {
+        rollerMtr.set(speed);
+    }
+
+    @Override
+    public void setRollerVelocity(double velocity) {
+        rollerMtr.setControl(new VelocityVoltage(velocity));
+    }
+
+
+
 }

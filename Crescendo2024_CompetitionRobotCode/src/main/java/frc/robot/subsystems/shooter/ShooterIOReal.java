@@ -10,6 +10,9 @@ import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.MtrConfigConstants;
@@ -17,17 +20,20 @@ import frc.robot.Utils.LoggedTunableNumber;
 
 public class ShooterIOReal implements ShooterIO {
 
+    public final CANSparkMax FEEDER_MOTOR;
+
     //configured from front robot facing perspective
     private final TalonFX SHOOTER_MOTOR_BTM_LT;
     private final TalonFX SHOOTER_MOTOR_BTM_RT;
     private final TalonFX SHOOTER_MOTOR_TOP_RT;
     private final TalonFX SHOOTER_MOTOR_TOP_LT;
-
+    
     //tunable motor velocities
     LoggedTunableNumber shooterVelBtmLt = new LoggedTunableNumber("BtmLtShooter", 70);
     LoggedTunableNumber shooterVelBtmRt = new LoggedTunableNumber("BtmRtShooter", 50);
     LoggedTunableNumber shooterVelTopRt = new LoggedTunableNumber("TopRtShooter", 50);
     LoggedTunableNumber shooterVelTopLt = new LoggedTunableNumber("TopLtShooter", 70);
+    LoggedTunableNumber feederMotor = new LoggedTunableNumber("FeederMotor", -0.5);
 
     TalonFX[] shooterArray = new TalonFX[4];
 
@@ -44,6 +50,13 @@ public class ShooterIOReal implements ShooterIO {
         SHOOTER_MOTOR_BTM_LT = new TalonFX(55); //11 
         SHOOTER_MOTOR_TOP_RT = new TalonFX(48); //7
         SHOOTER_MOTOR_TOP_LT = new TalonFX(37); //31
+
+        FEEDER_MOTOR = new CANSparkMax(21, MotorType.kBrushless);
+        FEEDER_MOTOR.restoreFactoryDefaults();
+        FEEDER_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
+        FEEDER_MOTOR.setIdleMode(IdleMode.kBrake);
+        FEEDER_MOTOR.enableVoltageCompensation(12.0);
+
 
                 //create shooter mtr array for easier calls
         shooterArray[0] = SHOOTER_MOTOR_BTM_RT;
@@ -113,4 +126,18 @@ public class ShooterIOReal implements ShooterIO {
         SHOOTER_MOTOR_TOP_RT.setControl(new DutyCycleOut(0));
         SHOOTER_MOTOR_TOP_LT.setControl(new DutyCycleOut(0));
     }
+
+    
+    public void shootFeederWithVelocity() {
+        FEEDER_MOTOR.set(feederMotor.get());
+    }
+
+    public void shootFeederReverse() {
+        FEEDER_MOTOR.set(-feederMotor.get());
+    }
+
+    public void shootFeederDisabled() {
+        FEEDER_MOTOR.set(0);
+    }
+    
 }

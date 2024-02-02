@@ -63,7 +63,7 @@ public class TeleopDriveCmd extends Command {
     }
 
     //send new chassisspeeds object to the drivetrain
-    m_driveTrain.driveRobotWithCorrectedDynamics(chassisSpeeds);
+    m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
 
     //logging
     Logger.recordOutput("robot xspeed", xSpeed);

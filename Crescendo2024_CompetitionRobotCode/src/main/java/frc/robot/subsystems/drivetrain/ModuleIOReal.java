@@ -5,7 +5,6 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -13,7 +12,6 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.MtrConfigConstants;
 
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -47,7 +45,6 @@ public class ModuleIOReal implements ModuleIO {
         STEER_MOTOR.setIdleMode(IdleMode.kCoast);
         STEER_MOTOR.enableVoltageCompensation(12.0);
 
-
         //Drive Motor setup
         DRIVE_MOTOR = new TalonFX(driveMotorIDIO);
             //reset to factory defaults
@@ -62,10 +59,9 @@ public class ModuleIOReal implements ModuleIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 1.5;
+        driveConfigs.kP = 0.1;
         driveConfigs.kI = 0.0;
-        driveConfigs.kD = 0.05;
-            //ramping
+        driveConfigs.kD = 0.00;
 
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){
@@ -85,7 +81,7 @@ public class ModuleIOReal implements ModuleIO {
 
     @Override
     public void setDriveVelocityIO(double velocity) {
-        DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity * DriveConstants.VEL_FF));
+        DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity));
     }
 
     @Override

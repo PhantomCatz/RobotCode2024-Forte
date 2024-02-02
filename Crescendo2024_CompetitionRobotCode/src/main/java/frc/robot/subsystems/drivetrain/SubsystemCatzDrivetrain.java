@@ -78,16 +78,16 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Create swerve modules for each corner of the robot
         LT_FRNT_MODULE = new CatzSwerveModule(DriveConstants.LT_FRNT_DRIVE_ID, DriveConstants.LT_FRNT_STEER_ID,
-                DriveConstants.LT_FRNT_ENC_PORT, DriveConstants.LT_FRNT_OFFSET, 0);
+                DriveConstants.LT_FRNT_ENC_PORT, DriveConstants.LT_FRNT_OFFSET, 0,0);
 
         LT_BACK_MODULE = new CatzSwerveModule(DriveConstants.LT_BACK_DRIVE_ID, DriveConstants.LT_BACK_STEER_ID,
-                DriveConstants.LT_BACK_ENC_PORT, DriveConstants.LT_BACK_OFFSET, 1);
+                DriveConstants.LT_BACK_ENC_PORT, DriveConstants.LT_BACK_OFFSET, 1, 0);
 
         RT_BACK_MODULE = new CatzSwerveModule(DriveConstants.RT_BACK_DRIVE_ID, DriveConstants.RT_BACK_STEER_ID,
-                DriveConstants.RT_BACK_ENC_PORT, DriveConstants.RT_BACK_OFFSET, 2);
+                DriveConstants.RT_BACK_ENC_PORT, DriveConstants.RT_BACK_OFFSET, 2, 0);
 
         RT_FRNT_MODULE = new CatzSwerveModule(DriveConstants.RT_FRNT_DRIVE_ID, DriveConstants.RT_FRNT_STEER_ID,
-                DriveConstants.RT_FRNT_ENC_PORT, DriveConstants.RT_FRNT_OFFSET, 3);
+                DriveConstants.RT_FRNT_ENC_PORT, DriveConstants.RT_FRNT_OFFSET, 3, 0);
 
         // Assign swerve modules to the array for easier access
         m_swerveModules[0] = LT_FRNT_MODULE;
@@ -102,20 +102,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 DriveConstants.initPose.getRotation(), getModulePositions(), DriveConstants.initPose);
-       
-        // Configure AutoBuilder for PathPlanner
-        AutoBuilder.configureHolonomic(
-        this::getPose,
-        this::resetPosition,
-        () -> DriveConstants.
-            swerveDriveKinematics.
-                toChassisSpeeds(getModuleStates()),
-        this::driveRobotWithCorrectedDynamics,
-        DriveConstants.pathFollowingConfig,
-        ()->(DriverStation.
-                getAlliance().
-                            get() == DriverStation.Alliance.Blue),
-        this);
         
         //Configure logging trajectories to advantage kit
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -162,14 +148,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
-        Logger.recordOutput("Obometry/pose", getPose());
+        // Logger.recordOutput("Obometry/pose", getPose());
 
         // Update SmartDashboard with the gyro angle
         SmartDashboard.putNumber("gyroAngle", getGyroAngle());
     }
 
     // Access method for updating drivetrain instructions
-    public void driveRobotWithCorrectedDynamics(ChassisSpeeds chassisSpeeds) {
+    public void driveRobotWith254CorrectedDynamics(ChassisSpeeds chassisSpeeds) {
         // Apply second-order kinematics to prevent swerve skew
         chassisSpeeds = correctForDynamics(chassisSpeeds);
 
@@ -178,9 +164,12 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         setModuleStates(moduleStates);
     }
 
-    public void driveRobotWithoutCorrectedDynamics(ChassisSpeeds chassisSpeeds) {
+    public void driveRobotWithDescritizeDynamics(ChassisSpeeds chassisSpeeds) {
+        //correct dynamics with wpilib internal "2nd order kinematics"
+        ChassisSpeeds descreteSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
+                                                 
         // Convert chassis speeds to individual module states and set module states
-        SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(descreteSpeeds);
         setModuleStates(moduleStates);
     }
 
@@ -254,12 +243,16 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // reset gyro then flip 180 degrees
     public Command flipGyro() {
-        return run(() -> gyroIO.resetNavXIO());
+        return runOnce(() -> gyroIO.setAngleAdjustmentIO(getGyroAngle()+180));
+    }
+
+    public Command resetGyro() {
+        return runOnce(() -> gyroIO.setAngleAdjustmentIO(-gyroInputs.gyroYaw));
     }
 
     // Get the gyro angle (negative due to the weird coordinate system)
     public double getGyroAngle() {
-        return -gyroInputs.gyroAngle;
+        return -gyroInputs.gyroAngle; //- for atlas
     }
 
     // Get the roll angle of the gyro
@@ -290,9 +283,10 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     // Get the current pose of the robot
     public Pose2d getPose() {
         Pose2d currentPosition = m_poseEstimator.getEstimatedPosition();
-        currentPosition = new Pose2d(currentPosition.getX(), currentPosition.getY(), getRotation2d());
+        // currentPosition = new Pose2d(currentPosition.getX(), currentPosition.getY(), getRotation2d());
         return currentPosition;
     }
+
 
     //----------------------------------------------Enc resets-------------------------------------------------------
 
@@ -327,7 +321,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         return modulePositions;
     }
 
-    //----------------------------------------vsion-----------------------------------------
+    //----------------------------------------vision-----------------------------------------
     public Command toggleVisionEnableCommand() {
         if(isVisionEnabled == true) {
             return run(()-> setVisionEnable(false));
