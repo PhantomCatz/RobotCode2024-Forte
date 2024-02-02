@@ -110,8 +110,8 @@ public final class CatzConstants {
     //--------------------------------------MTR CONFIGS------------------------------------
 
     public static final Pose2d initPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-    private static final double ROBOT_WIDTH = Units.inchesToMeters(29);
-    private static final double ROBOT_LENGTH = Units.inchesToMeters(30);
+    private static final double ROBOT_WIDTH = Units.inchesToMeters(24);
+    private static final double ROBOT_LENGTH = Units.inchesToMeters(25);
 
     public static final double ESTIMATION_COEFFICIENT = 0.025;
 
