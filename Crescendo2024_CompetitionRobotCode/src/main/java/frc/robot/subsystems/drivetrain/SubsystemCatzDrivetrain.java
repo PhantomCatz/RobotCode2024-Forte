@@ -95,10 +95,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         m_swerveModules[2] = RT_BACK_MODULE;
         m_swerveModules[3] = RT_FRNT_MODULE;
 
-        // Zero the gyro and reset drive encoders on initialization
-        flipGyro().execute();
-        resetDriveEncs();
-
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 DriveConstants.initPose.getRotation(), getModulePositions(), DriveConstants.initPose);
@@ -113,6 +109,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             (targetPose)-> {
                 Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
             });
+
+        gyroIO.resetNavXIO();
 
     }
 
@@ -299,7 +297,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Reset gyro and position for autonomous mode
     public void resetForAutonomous() {
-        flipGyro().execute();
+        // flipGyro().execute();
         resetPosition(DriveConstants.initPose);
     }
 

@@ -66,13 +66,7 @@ public class IntakeIOReal implements IntakeIO {
     }
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        inputs.dummyVariable = 1;
         // inputs.rollerVoltage = rollerMtr.getMotorVoltage().getValue();
-    }
-
-    @Override
-    public void exampleAccessMethod(double test) {
-  
     }
 
     @Override

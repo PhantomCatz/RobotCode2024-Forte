@@ -8,7 +8,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -43,15 +42,14 @@ public class CatzAutonomous {
     private Command bulldozerAuto() {
         return new SequentialCommandGroup(
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Bulldozer"))
-            );
+        );
     }
 
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
-            Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
-            // Commands.waitSeconds(2),
-            // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
+            Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),//TBD let's make reset position not hard coded
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
         );
     }
 

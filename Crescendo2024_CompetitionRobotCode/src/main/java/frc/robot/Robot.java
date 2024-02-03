@@ -79,6 +79,8 @@ public class Robot extends LoggedRobot {
 
     //instantiate the robot subsystems and commands using an object
     m_robotContainer = new RobotContainer();
+
+    DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   @Override
