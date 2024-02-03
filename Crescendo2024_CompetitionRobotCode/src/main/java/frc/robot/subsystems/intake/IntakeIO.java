@@ -6,6 +6,7 @@ public interface IntakeIO {
 
     @AutoLog
     public class IntakeIOInputs {
+
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}

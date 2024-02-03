@@ -172,7 +172,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     }
 
     // Set individual module states to each of the swerve modules
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
+    private void setModuleStates(SwerveModuleState[] desiredStates) {
         // Scale down wheel speeds
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.MAX_SPEED_DESATURATION);
 

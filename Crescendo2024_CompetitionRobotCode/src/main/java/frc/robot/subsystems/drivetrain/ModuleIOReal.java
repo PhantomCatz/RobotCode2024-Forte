@@ -68,13 +68,12 @@ public class ModuleIOReal implements ModuleIO {
             initializationStatus = DRIVE_MOTOR.getConfigurator().apply(talonConfigs);
             if(!initializationStatus.isOK())
                 System.out.println("Failed to Configure CAN ID" + driveMotorIDIO);
-            
         }
     }
 
     @Override
     public void updateInputs(ModuleIOInputs inputs) {
-        inputs.driveMtrVelocity = DRIVE_MOTOR.getRotorVelocity().getValue();
+        inputs.driveMtrVelocity =       DRIVE_MOTOR.getRotorVelocity().getValue();
         inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
         inputs.magEncoderValue = magEnc.get();
     }

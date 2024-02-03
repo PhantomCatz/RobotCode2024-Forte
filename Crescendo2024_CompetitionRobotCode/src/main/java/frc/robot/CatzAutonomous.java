@@ -1,13 +1,18 @@
 package frc.robot;
 
+import java.util.List;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -70,25 +75,25 @@ public class CatzAutonomous {
         );
     }
 
-    // private Command driveStraight(){
-    //     return new SequentialCommandGroup(
-    //         AutoBuilder.followPath(PathPlannerPath.fromPathFile("DriveStraight"))
-    //     );
-    // }
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
 
     //Automatic pathfinding command
-    // public Command autoFindPathOne() {
-    //             // Create the constraints to use while pathfinding
-    //         PathConstraints constraints = new PathConstraints(
-    //         3.0, 4.0, 
-    //         Units.degreesToRadians(540), Units.degreesToRadians(720));
+    public Command autoFindPathSource() {
+        //Create a new pathplanner path on the fly
+                // Create the constraints to use while pathfinding
+            PathConstraints constraints = new PathConstraints(
+            3.0, 4.0, 
+            Units.degreesToRadians(540), Units.degreesToRadians(720));
 
-    //     // See the "Follow a single path" example for more info on what gets passed here
-    //     return AutoBuilder.pathfindThenFollowPath(
-    //             PathPlannerPath.fromPathFile("driveStraightFullTurn"),
-    //             constraints,
-    //             3.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
-    //     );
-    // }
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
+                new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
+                new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90))
+                    );
+
+        //send path info to trajectory following command
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            constraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
 }

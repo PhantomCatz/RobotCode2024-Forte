@@ -43,7 +43,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
     if(!DriverStation.isEnabled()) {
       io.setRollerPercentOutput(0);
-      // io.setPivotEncPos(0); *TBD ask kynam
+
     } 
     else if(m_newPosition != null) {
       targetEncPos = m_newPosition.getIntakePivotTargetEncPos();
@@ -51,7 +51,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
       Logger.recordOutput("targetEncPivot", targetEncPos);
     }
     
-    // This method will be called once
   }
 
   public void setNewPos(CatzMechanismPosition newPosition) {
