@@ -87,23 +87,23 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
 
-    public static final double LT_FRNT_OFFSET = 0.5112305378; //this one changed
-    public static final double LT_BACK_OFFSET = 0.5446386386;
-    public static final double RT_BACK_OFFSET = 0.7591109064;
-    public static final double RT_FRNT_OFFSET = 0.5363121009;
+    public static final double LT_FRNT_OFFSET = 0.021711+0.5; //0.5112305378; atlas
+    public static final double LT_BACK_OFFSET = 0.827758; //0.5446386386;
+    public static final double RT_BACK_OFFSET = 0.231237;//0.7591109064;
+    public static final double RT_FRNT_OFFSET = -0.65112+0.5;//0.5363121009;
     // 0.00406; for SN1
 // -0.03950;
 // -0.75084;
 //  0.55098;
 
+    // public static final int LT_FRNT_DRIVE_ID = 1;
+    // public static final int LT_BACK_DRIVE_ID = 3;
+    // public static final int RT_BACK_DRIVE_ID = 22;
+    // public static final int RT_FRNT_DRIVE_ID = 7;
     public static final int LT_FRNT_DRIVE_ID = 1;
     public static final int LT_BACK_DRIVE_ID = 3;
-    public static final int RT_BACK_DRIVE_ID = 22;
-    public static final int RT_FRNT_DRIVE_ID = 7;
-    // public static final int LT_FRNT_DRIVE_ID = 3;
-    // public static final int LT_BACK_DRIVE_ID = 5;
-    // public static final int RT_BACK_DRIVE_ID = 7;
-    // public static final int RT_FRNT_DRIVE_ID = 1; //SN1
+    public static final int RT_BACK_DRIVE_ID = 5;
+    public static final int RT_FRNT_DRIVE_ID = 7; //SN1
     
     public static final int LT_FRNT_STEER_ID = 2;
     public static final int LT_BACK_STEER_ID = 4;
@@ -111,9 +111,9 @@ public final class CatzConstants {
     public static final int RT_FRNT_STEER_ID = 8;
 
     public static final int LT_FRNT_ENC_PORT = 9;
-    public static final int LT_BACK_ENC_PORT = 6; //SN1 8
+    public static final int LT_BACK_ENC_PORT = 8; //SN1 8 //atlas 6
     public static final int RT_BACK_ENC_PORT = 7;
-    public static final int RT_FRNT_ENC_PORT = 8; //SN1 6
+    public static final int RT_FRNT_ENC_PORT = 6; //SN1 6 //atlas 8
 
     //--------------------------------------MTR CONFIGS------------------------------------
 
@@ -153,7 +153,7 @@ public final class CatzConstants {
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;
     public static final double FEEDFOWARD_Kv_VELOCITY_ACCELERATION_METERS = 0.24;
 
-    private static ProfiledPIDController autoTurnPIDController = new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(3,3));
+    private static ProfiledPIDController autoTurnPIDController = new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(3,3));//6
 
     public static final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
       new PIDController(2, 0, 0),

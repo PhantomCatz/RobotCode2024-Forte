@@ -24,7 +24,7 @@ public class CatzSwerveModule {
 
     private PIDController m_PID;
 
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.26);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.0, 0.26);
                 
     private final double kP = 0.25;
     private final double kI = 0.00;

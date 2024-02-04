@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
@@ -54,6 +55,7 @@ public class CatzAutonomous {
         return new SequentialCommandGroup(
             Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),//TBD let's make reset position not hard coded
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            Commands.waitSeconds(1),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
         );
     }
