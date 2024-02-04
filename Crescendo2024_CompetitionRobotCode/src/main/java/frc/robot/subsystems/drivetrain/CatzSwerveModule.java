@@ -24,7 +24,7 @@ public class CatzSwerveModule {
 
     private PIDController m_PID;
 
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.1, 0.26);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.0, 0.26);
                 
     private final double kP = 0.25;
     private final double kI = 0.00;
@@ -113,12 +113,6 @@ public class CatzSwerveModule {
         double targetAngleRad          = state.angle.getRadians();
         double currentAngleRad         = getAbsEncRadians();
         // Run closed loop drive control
-        // Scale velocity based on turn error
-        // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
-        // towards the setpoint, its velocity should increase. This is achieved by
-        // taking the component of the velocity in the direction of the setpoint.
-        //double adjustedSpeedSetpoint = unadjustedSpeedSetpoint * Math.cos(m_PID.getPositionError());        //calculate turn pwr percent
-        //double targetDriveVelocity = adjustedSpeedSetpoint/DriveConstants.DRVTRAIN_WHEEL_DIAMETER_METERS/2; //devide sepoint by radius 
 
         //calculate drive pwr
         double driveRPS = Conversions.MPSToRPS(unadjustedSpeedSetpoint);

@@ -25,7 +25,6 @@ import org.littletonrobotics.junction.Logger;
 
 public class PPTrajectoryFollowingCmd extends Command {
     private PathPlannerTrajectory.State previousState;
-    //private final PPHolonomicDriveController ppcontroller;
     private final HolonomicDriveController hocontroller;
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
     private PathPlannerTrajectory trajectory;
@@ -47,7 +46,6 @@ public class PPTrajectoryFollowingCmd extends Command {
                                         toChassisSpeeds(m_driveTrain.getModuleStates()),
                                 m_driveTrain.getRotation2d());
 
-        //ppcontroller = DriveConstants.ppholonomicDriveController;
         hocontroller = DriveConstants.holonomicDriveController;
         addRequirements(m_driveTrain);
     }
@@ -64,7 +62,6 @@ public class PPTrajectoryFollowingCmd extends Command {
                                         toChassisSpeeds(m_driveTrain.getModuleStates()), 
                                 m_driveTrain.getRotation2d());
 
-        //ppcontroller = DriveConstants.ppholonomicDriveController;
         hocontroller = DriveConstants.holonomicDriveController;
 
         addRequirements(m_driveTrain);
@@ -83,29 +80,24 @@ public class PPTrajectoryFollowingCmd extends Command {
     public void execute() {
         double currentTime = this.timer.get();
 
-        //Determine desired state based on where the robot should be at the current time in the path
-        // PathPlannerTrajectory.State goal = (PathPlannerTrajectory.State) trajectory.sample(currentTime);
-        // Pose2d currentPosition = m_driveTrain.getPose();
-
-        // // obtain target velocity based on current pose and desired state
-        // ChassisSpeeds chassisSpeeds = controller.calculateRobotRelativeSpeeds(currentPosition, goal);
-
-        // // m_driveTrain.driveRobotWithDescritizeCorrectedDynamics(chassisSpeeds);
-        // Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
-        
-        // previousState = goal;
-
-        //convert PP trajectory into a wpilib trajectory type to be used with the internal WPILIB trajectory library
+        //getters from pathplanner and current robot pose
         PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
-        Rotation2d targetOrientation = goal.targetHolonomicRotation;
-        Pose2d currentPose = m_driveTrain.getPose();
-        Trajectory.State state = new Trajectory.State(currentTime, goal.velocityMps, goal.accelerationMpsSq, new Pose2d(goal.positionMeters, new Rotation2d()), goal.curvatureRadPerMeter);
-
-        ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
-        SwerveModuleState[] targetModuleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(adjustedSpeeds);
-
-        m_driveTrain.setModuleStates(targetModuleStates);
+        Rotation2d targetOrientation     = goal.targetHolonomicRotation;
+        Pose2d currentPose               = m_driveTrain.getPose();
         
+        //convert PP trajectory into a wpilib trajectory type to be used with the internal WPILIB trajectory library
+        Trajectory.State state = new Trajectory.State(currentTime, 
+                                                      goal.velocityMps, 
+                                                      goal.accelerationMpsSq, 
+                                                      new Pose2d(goal.positionMeters, new Rotation2d()), 
+                                                      goal.curvatureRadPerMeter);
+
+        //construct chassisspeeds
+        ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
+
+        //send to drivetrain
+        m_driveTrain.driveRobotWithDescritizeDynamics(adjustedSpeeds);
+
         Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
     }
 

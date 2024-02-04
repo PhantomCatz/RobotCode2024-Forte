@@ -54,7 +54,6 @@ public class ElevatorIOReal implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.dummyVariable = 1;
         inputs.elevatorVoltage = ElevatorMtr.getMotorVoltage().getValue();
     }
     
