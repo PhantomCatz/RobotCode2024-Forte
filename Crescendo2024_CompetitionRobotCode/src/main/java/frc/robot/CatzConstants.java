@@ -48,11 +48,11 @@ public final class CatzConstants {
   }
 
   public static final class CatzMechanismConstants {
-    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 0, 0);
+    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 0, 0, 0);
     //public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition();
     //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, 1, 0);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, 0, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, 1, 0, 0);
     //public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
@@ -159,8 +159,8 @@ public final class CatzConstants {
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
   public static final class IntakeConstants {
-    public static int PIVOT_MTR_ID = 51;
-    public static int ROLLER_MTR_ID = 52;
+    public static int PIVOT_MTR_ID = 11;
+    public static int ROLLER_MTR_ID = 12;
   }
 
   //any type of Shooter Mtr Config Constnats/Logic Constants should go here 

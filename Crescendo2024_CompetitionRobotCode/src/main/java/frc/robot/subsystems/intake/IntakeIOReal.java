@@ -3,7 +3,9 @@ package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -14,19 +16,26 @@ import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.IntakeConstants;
 import frc.robot.CatzConstants.MtrConfigConstants;
+import frc.robot.Utils.LoggedTunableNumber;
 
 public class IntakeIOReal implements IntakeIO {
 
-    private final DigitalInput beambreak = new DigitalInput(0); 
+    private final DigitalInput beamBreakBack = new DigitalInput(1);
+    private final DigitalInput beamBreakFront = new DigitalInput(2);
 
     private final TalonFX pivotMtr;
     private final TalonFX rollerMtr;
+    //TBD Might need logic gate for intake methods incase of logic conflict in Robot Container
+    Boolean intakeActive = false;
+
+    LoggedTunableNumber rollerMotor = new LoggedTunableNumber("IntakeRoller", 50);
 
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
     
             //create new config objects
-    private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
-    private Slot0Configs driveConfigs = new Slot0Configs();
+    private TalonFXConfiguration pivotTalonConfigs = new TalonFXConfiguration();
+    private Slot0Configs pivotConfigs = new Slot0Configs();
+    private Slot1Configs rollerConfigs = new Slot1Configs();
 
     public IntakeIOReal() {
                 //Wrist Motor setup
@@ -34,30 +43,35 @@ public class IntakeIOReal implements IntakeIO {
             //reset to factory defaults
         pivotMtr.getConfigurator().apply(new TalonFXConfiguration());
                 //Wrist Motor setup
-        rollerMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID); //TBD need mtr id
+        rollerMtr = new TalonFX(IntakeConstants.ROLLER_MTR_ID); //TBD need mtr id
             //reset to factory defaults
         rollerMtr.getConfigurator().apply(new TalonFXConfiguration());
-        talonConfigs.Slot0 = driveConfigs;
+        pivotTalonConfigs.Slot0 = pivotConfigs;
+        rollerMtr.getConfigurator().apply(new TalonFXConfiguration());
+        pivotTalonConfigs.Slot0 = pivotConfigs;
+        pivotTalonConfigs.Slot1 = rollerConfigs;
             //current limit
-        talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT;
-        talonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
-        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
-        talonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
+        pivotTalonConfigs.CurrentLimits = new CurrentLimitsConfigs();
+        pivotTalonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT;
+        pivotTalonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
+        pivotTalonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
+        pivotTalonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
-        talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        pivotTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 0.1;
-        driveConfigs.kI = 0.0;
-        driveConfigs.kD = 0.001;
+        pivotConfigs.kP = 0.1;
+        pivotConfigs.kI = 0.0;
+        pivotConfigs.kD = 0.001;
 
         //check if wrist motor is initialized correctly
-        initializationStatus = pivotMtr.getConfigurator().apply(talonConfigs);
+        initializationStatus = pivotMtr.getConfigurator().apply(pivotTalonConfigs);
         if(!initializationStatus.isOK())
             System.out.println("Failed to Configure CAN ID" + IntakeConstants.PIVOT_MTR_ID);
 
         //check if roller motor is initialized correctly
-        initializationStatus = rollerMtr.getConfigurator().apply(talonConfigs);
+        initializationStatus = rollerMtr.getConfigurator().apply(pivotConfigs);
+        initializationStatus = rollerMtr.getConfigurator().apply(pivotTalonConfigs);
+        initializationStatus = rollerMtr.getConfigurator().apply(pivotTalonConfigs.Slot1);
         if(!initializationStatus.isOK())
             System.out.println("Failed to Configure CAN ID" + IntakeConstants.ROLLER_MTR_ID);
     
@@ -66,8 +80,15 @@ public class IntakeIOReal implements IntakeIO {
     }
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        inputs.dummyVariable = 1;
-        // inputs.rollerVoltage = rollerMtr.getMotorVoltage().getValue();
+        inputs.rollerVoltage = rollerMtr.getMotorVoltage().getValue();
+        inputs.pivotMtrEncPos = pivotMtr.getPosition().getValue();
+        inputs.rollerVoltage = rollerMtr.getTorqueCurrent().getValue();
+        inputs.pivotMtrPercentOutput = pivotMtr.getDutyCycle().getValue();
+        inputs.rollerPercentOutput = rollerMtr.getDutyCycle().getValue();
+        inputs.rollerVelocity = rollerMtr.getVelocity().getValue();
+        // false is broken true is connected \/ \/
+        inputs.BBBackBroken = beamBreakBack.get();
+        inputs.BBFrontBroken = beamBreakFront.get();
     }
 
     @Override
@@ -79,7 +100,33 @@ public class IntakeIOReal implements IntakeIO {
     public void setPivotEncPos(double targetEncPos) {
         pivotMtr.setControl(new PositionVoltage(targetEncPos));
     }
-    
+
+
+    @Override
+    public void rollerIn() {
+        rollerMtr.set(rollerMotor.get());
+        //intakeActive = true;
+    }
+
+    public void rollerOut() {
+        rollerMtr.set(-rollerMotor.get());
+        //intakeActive = true;
+    }
+// TBD might need logic gate
+    @Override
+    public void rollerDisable() {
+        //if (intakeActive == false) {
+        rollerMtr.set(0);
+        //} else {
+        //intakeActive = false;
+        //}
+    }
+
+    @Override
+    public void setIntakePosition(double targetEncPos) {
+        pivotMtr.setControl(new PositionVoltage(targetEncPos));
+    }
+
     @Override
     public void resetPivotEncPos(double defaultEncPos) {
         pivotMtr.setPosition(defaultEncPos);
@@ -95,6 +142,9 @@ public class IntakeIOReal implements IntakeIO {
         rollerMtr.setControl(new VelocityVoltage(velocity));
     }
 
-
-
+    @Override
+    public void setIntakePivotPercentOutput(double percentOutput) {
+        pivotMtr.setControl(new DutyCycleOut(percentOutput));
+    }
 }
+

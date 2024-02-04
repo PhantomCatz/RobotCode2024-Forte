@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.StateMachineCmds.MoveToNewPositionCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 /**
@@ -34,6 +36,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //subsystems
     private SubsystemCatzDrivetrain driveTrain; 
     private SubsystemCatzVision vision;
+    private SubsystemCatzIntake intake;
     //private SubsystemCatzShooter shooter;
     //private SubsystemCatzClimb climb;
     //private SubsystemCatzElevator arm;
@@ -53,6 +56,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //instantiate subsystems
     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
     vision     = SubsystemCatzVision.getInstance();
+    intake     = SubsystemCatzIntake.getInstance();
 
     //shooter    = SubsystemCatzShooter.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
@@ -69,9 +73,14 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  
    
    private void configureBindings() {
-
+    xboxAux.rightBumper().onTrue(intake.setRollerIn()).onFalse(intake.setRollerDisabled());
+    xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
     xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
-    
+
+    Trigger intakePivotOverride = xboxAux.axisGreaterThan((int) (xboxAux.getLeftY()*100), 10);
+    intakePivotOverride.onTrue(intake.intakePivotOverrideCommand(xboxAux.getLeftY()))
+                       .onFalse(intake.intakePivotOverrideCommand(0));
+
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
     xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
     // xboxDrv.start().onTrue(driveTrain.flipGyro());

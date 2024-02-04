@@ -7,19 +7,22 @@ package frc.robot.subsystems.intake;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.subsystems.intake.IntakeIOInputsAutoLogged;
+import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 
 public class SubsystemCatzIntake extends SubsystemBase {
-  
+
+  private CatzMechanismPosition m_targetPosition;
   private final IntakeIO io;
   private static SubsystemCatzIntake instance;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-
+  private double m_stickAngle;
   private CatzMechanismPosition m_newPosition;
-
+  private boolean rollerEnable;
+  private boolean isBBAllBroken = false;
   public SubsystemCatzIntake() {
 
             switch (CatzConstants.currentMode) {
@@ -38,26 +41,66 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("climb/inputs", inputs);
+    io.setIntakePosition(7);
 
-    double targetEncPos;
-
-    if(!DriverStation.isEnabled()) {
-      io.setRollerPercentOutput(0);
-      // io.setPivotEncPos(0); *TBD ask kynam
-    } 
-    else if(m_newPosition != null) {
-      targetEncPos = m_newPosition.getIntakePivotTargetEncPos();
-      io.setPivotEncPos(targetEncPos);
-      Logger.recordOutput("targetEncPivot", targetEncPos);
-    }
+    /*
+     * Intake Roller Stuff
+     */
     
-    // This method will be called once
+    if (inputs.BBBackBroken == false && inputs.BBFrontBroken == false) {
+      isBBAllBroken = true;
+      io.rollerDisable();
+    } else {
+      isBBAllBroken = false;
+    }
+
+
+
+    /*
+     * Intake Pivot Stuff
+     */
+    if (m_targetPosition != null) {
+      io.setIntakePosition(m_targetPosition.getIntakePivotTargetEncPos());
+    } else {
+      io.setIntakePivotPercentOutput(m_stickAngle);
+    }
   }
 
-  public void setNewPos(CatzMechanismPosition newPosition) {
-    this.m_newPosition = newPosition;
+  public void updateIntakeTargetPosition(CatzMechanismPosition intakeTargetPosition) {
+    this.m_targetPosition = intakeTargetPosition;
   }
 
+  public Command setRollerIn() {
+    if (isBBAllBroken == true) {
+      return run(null);
+    } else {
+    return run(()->io.rollerIn());
+    }
+  }
+
+  public Command setRollerOut() {
+    if (isBBAllBroken == true) {
+      return run(null);
+    } else {
+    return run(()->io.rollerOut());
+    }
+  }
+
+  public Command setRollerDisabled() {
+    if (isBBAllBroken == true) {
+      return run(null);
+    } else {
+      return run(()->rollerEnable = false);
+    }
+  }
+  // 
+  public Command intakePivotOverrideCommand(double stickPwr) {
+    m_stickAngle = stickPwr;
+    return run(()->intakePivotOverrideSet(stickPwr));
+  }
+  public void intakePivotOverrideSet(double stickAngle) {
+    m_stickAngle = stickAngle;
+  }
   // Get the singleton instance of the ClimbSubsystem
   public static SubsystemCatzIntake getInstance() {
       return instance;

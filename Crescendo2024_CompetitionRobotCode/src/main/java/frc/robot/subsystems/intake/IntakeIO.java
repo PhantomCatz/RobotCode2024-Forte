@@ -6,7 +6,13 @@ public interface IntakeIO {
 
     @AutoLog
     public class IntakeIOInputs {
-        public double dummyVariable;
+        public double pivotMtrEncPos;
+        public double pivotMtrPercentOutput;
+        public double rollerVoltage;
+        public double rollerPercentOutput;
+        public double rollerVelocity;
+        public boolean BBFrontBroken;
+        public boolean BBBackBroken;
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}
@@ -17,11 +23,21 @@ public interface IntakeIO {
 
     public default void rollerEnable(boolean enable) {}
 
-    public default void setPivotEncPos(double targetencoderPostion) {}
+    public default void setIntakePosition(double targetencoderPostion) {}
 
     public default void setRollerPercentOutput(double speed) {}
 
     public default void setRollerVelocity(double velocity) {}
 
+    public default void rollerIn() {}
+
+    public default void rollerOut() {}
+
+    public default void rollerDisable() {}
+
+    public default void setPivotEncPos(double targetEncPos) {}
+
     public default void resetPivotEncPos(double defaultEncoderPosition) {}
+
+    public default void setIntakePivotPercentOutput(double percentOutput) {}
 }

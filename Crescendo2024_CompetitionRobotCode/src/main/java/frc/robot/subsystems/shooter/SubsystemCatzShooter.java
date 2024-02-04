@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
+import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.shooter.ShooterIOInputsAutoLogged;
 
 
@@ -18,6 +19,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
   private static SubsystemCatzShooter instance = new SubsystemCatzShooter();
+  private CatzMechanismPosition m_targetPosition;
+
+  private final double TURRET_MIN = -120.0;
+  private final double TURRET_MAX = 120.0;
 
   public SubsystemCatzShooter() {
 
@@ -39,14 +44,22 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs ", inputs);
-
-    
     // This method will be called once per scheduler run
+    if (m_targetPosition != null) {
+      if (m_targetPosition.getshooterTargetHorizontalAngle() > TURRET_MAX || m_targetPosition.getshooterTargetHorizontalAngle() < TURRET_MIN) {
+        io.setTurretPosition(inputs.turretDeg);
+      }
+      else {
+        io.setTurretPosition(m_targetPosition.getshooterTargetHorizontalAngle());
+      }
+    }
 
-    SmartDashboard.putNumber("velocityBtmLT", inputs.velocityBtmLT);
     SmartDashboard.putNumber("velocityBtmRT", inputs.velocityBtmRT);
     SmartDashboard.putNumber("velocityTopRT", inputs.velocityTopRT);
-    SmartDashboard.putNumber("velocityTopLT", inputs.velocityTopLT);
+  }
+  
+  public void updateTurretTargetPosition(CatzMechanismPosition turretTargetPosition) {
+    this.m_targetPosition = turretTargetPosition;
   }
 
   public Command setShooterActive() {

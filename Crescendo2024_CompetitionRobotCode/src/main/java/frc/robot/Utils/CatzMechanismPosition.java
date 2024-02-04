@@ -8,13 +8,15 @@ package frc.robot.Utils;
 public class CatzMechanismPosition {
 
     public double m_elevatorTargetEncPos;
-    public double m_intakePivotTargetEncPos;
-    public double m_shooterTargetRPS;
+    public double m_intakePivotTargetAngle;
+    public double m_shooterTargetHorizontalAngle;
+    public double m_shooterTargetRPSPos;
 
-    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetEncPos, double shooterTargetRPS) {
+    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetAngle, double shooterTargetHorizontalAngle, double shooterTargetRPSPos) {
         this.m_elevatorTargetEncPos = elevatorTargetEncPos;
-        this.m_intakePivotTargetEncPos = intakePivotTargetEncPos;
-        this.m_shooterTargetRPS = shooterTargetRPS;
+        this.m_intakePivotTargetAngle = intakePivotTargetAngle;
+        this.m_shooterTargetHorizontalAngle = shooterTargetHorizontalAngle;
+        this.m_shooterTargetRPSPos = shooterTargetRPSPos;
     }
 
     public double getElevatorTargetEncPos() {
@@ -22,11 +24,15 @@ public class CatzMechanismPosition {
     }
 
     public double getIntakePivotTargetEncPos() {
-        return m_intakePivotTargetEncPos;
+        return m_intakePivotTargetAngle;
     }
 
     public double getShooterTargetRPSPos() {
-        return m_intakePivotTargetEncPos;
+        return m_shooterTargetRPSPos;
+    }
+
+    public double getshooterTargetHorizontalAngle() {
+        return m_shooterTargetHorizontalAngle;
     }
 
 }
