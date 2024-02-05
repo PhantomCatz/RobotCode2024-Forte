@@ -11,8 +11,8 @@ public interface IntakeIO {
         public double rollerVoltage;
         public double rollerPercentOutput;
         public double rollerVelocity;
-        public boolean BBFrontBroken;
-        public boolean BBBackBroken;
+        public boolean BBFrontConnected;
+        public boolean BBBackConnected;
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}

@@ -76,7 +76,7 @@ public class ShooterIOReal implements ShooterIO {
                 //create shooter mtr array for easier calls
         shooterArray[0] = SHOOTER_MOTOR_BTM_RT;
         shooterArray[1] = SHOOTER_MOTOR_TOP_RT;
-        shooterArray[2] = TURRET_MOTOR;
+        //shooterArray[2] = TURRET_MOTOR;
 
             //reset to factory defaults
         SHOOTER_MOTOR_BTM_RT.getConfigurator().apply(new TalonFXConfiguration());

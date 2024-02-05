@@ -159,8 +159,8 @@ public final class CatzConstants {
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
   public static final class IntakeConstants {
-    public static int PIVOT_MTR_ID = 11;
-    public static int ROLLER_MTR_ID = 12;
+    public static int PIVOT_MTR_ID = 12;
+    public static int ROLLER_MTR_ID = 11;
   }
 
   //any type of Shooter Mtr Config Constnats/Logic Constants should go here 

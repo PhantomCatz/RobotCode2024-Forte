@@ -17,13 +17,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   private CatzMechanismPosition m_targetPosition;
   private final IntakeIO io;
-  private static SubsystemCatzIntake instance;
+  private static SubsystemCatzIntake instance = new SubsystemCatzIntake();
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private double m_stickAngle;
   private CatzMechanismPosition m_newPosition;
   private boolean rollerEnable;
   private boolean isBBAllBroken = false;
   public SubsystemCatzIntake() {
+                    System.out.println("awuduawuidawhiudwauadh");
 
             switch (CatzConstants.currentMode) {
             case REAL: io = 
@@ -40,21 +41,15 @@ public class SubsystemCatzIntake extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("climb/inputs", inputs);
+    Logger.processInputs("intake/inputs", inputs);
     io.setIntakePosition(7);
 
     /*
      * Intake Roller Stuff
      */
     
-    if (inputs.BBBackBroken == false && inputs.BBFrontBroken == false) {
-      isBBAllBroken = true;
-      io.rollerDisable();
-    } else {
-      isBBAllBroken = false;
-    }
-
-
+    
+  
 
     /*
      * Intake Pivot Stuff
@@ -71,31 +66,25 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   public Command setRollerIn() {
-    if (isBBAllBroken == true) {
-      return run(null);
-    } else {
-    return run(()->io.rollerIn());
+    if (inputs.BBFrontConnected == false)  {
+     return run(()->io.rollerDisable());
+    } 
+    else{
+     return run(()->io.rollerIn());
     }
   }
 
   public Command setRollerOut() {
-    if (isBBAllBroken == true) {
-      return run(null);
-    } else {
     return run(()->io.rollerOut());
-    }
   }
 
   public Command setRollerDisabled() {
-    if (isBBAllBroken == true) {
-      return run(null);
-    } else {
-      return run(()->rollerEnable = false);
-    }
+      return run(()->io.rollerDisable());
   }
   // 
   public Command intakePivotOverrideCommand(double stickPwr) {
     m_stickAngle = stickPwr;
+    System.out.println("e");
     return run(()->intakePivotOverrideSet(stickPwr));
   }
   public void intakePivotOverrideSet(double stickAngle) {
