@@ -92,28 +92,6 @@ public class IntakeIOReal implements IntakeIO {
         //pivotMtr.setControl(new PositionVoltage(targetEncPos));
     }
 
-
-    @Override
-    public void rollerIn() {
-        rollerMtr.setControl(new DutyCycleOut(rollerMotor.get()));
-        intakeActive = true;
-    }
-
-    public void rollerOut() {
-        rollerMtr.setControl(new DutyCycleOut(-rollerMotor.get()));
-        intakeActive = true;
-    }
-// TBD might need logic gate
-    @Override
-    public void rollerDisable() {
-        // if (intakeActive == false) {
-        rollerMtr.set(0);
-        
-        // } else {
-        // intakeActive = false;
-        // }
-    }
-
     @Override
     public void setIntakePosition(double targetEncPos) {
        // pivotMtr.setControl(new PositionVoltage(targetEncPos));
@@ -127,11 +105,6 @@ public class IntakeIOReal implements IntakeIO {
     @Override
     public void setRollerPercentOutput(double speed) {
         rollerMtr.set(speed);
-    }
-
-    @Override
-    public void setRollerVelocity(double velocity) {
-        rollerMtr.setControl(new VelocityVoltage(velocity));
     }
 
     @Override

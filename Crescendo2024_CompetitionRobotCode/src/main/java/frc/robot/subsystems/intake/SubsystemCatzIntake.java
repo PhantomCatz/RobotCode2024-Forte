@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.Utils.CatzMechanismPosition;
@@ -24,7 +25,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private boolean rollerEnable;
   private boolean isBBAllBroken = false;
   public SubsystemCatzIntake() {
-                    System.out.println("awuduawuidawhiudwauadh");
 
             switch (CatzConstants.currentMode) {
             case REAL: io = 
@@ -47,7 +47,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
     /*
      * Intake Roller Stuff
      */
-    
+      if(inputs.BBFrontConnected == false) {
+        io.rollerDisable();
+      } else {
+      }
     
   
 
@@ -65,22 +68,33 @@ public class SubsystemCatzIntake extends SubsystemBase {
     this.m_targetPosition = intakeTargetPosition;
   }
 
-  public Command setRollerIn() {
-    if (inputs.BBFrontConnected == false)  {
-     return run(()->io.rollerDisable());
-    } 
-    else{
-     return run(()->io.rollerIn());
+  public void pivotFullManual(double fullManualPwr) {
+    m_stickAngle = fullManualPwr;
+    m_targetPosition = null;
+  }
+
+  //-------------------------------------Roller Sequencing--------------------------------
+  public Command rollerIntakeCommand() {
+    return run(()->setRollers(0.6));
+  }
+
+  public Command rollerOutakeCommand() {
+    return run(()-> setRollers(-0.6));
+  }
+
+  public Command rollersOff() {
+    return run(()-> setRollers(0));
+  }
+
+  //void method for setting output to roller motors and checks if note has already been intaked
+  public void setRollers(double output) {
+    if(inputs.BBFrontConnected == false) {
+      io.setRollerPercentOutput(0.0);
+    } else {
+      io.setRollerPercentOutput(output);
     }
   }
 
-  public Command setRollerOut() {
-    return run(()->io.rollerOut());
-  }
-
-  public Command setRollerDisabled() {
-      return run(()->io.rollerDisable());
-  }
   // 
   public Command intakePivotOverrideCommand(double stickPwr) {
     m_stickAngle = stickPwr;
