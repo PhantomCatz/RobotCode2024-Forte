@@ -17,7 +17,7 @@ import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class CatzAutonomous {
-    private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
+    //private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
 
     private static LoggedDashboardChooser<DriverStation.Alliance> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private static LoggedDashboardChooser<Command> internalPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
@@ -34,7 +34,7 @@ public class CatzAutonomous {
 
     //configured dashboard
     public Command getCommand() {
-        m_driveTrain.resetForAutonomous();
+        //m_driveTrain.resetForAutonomous();
 
         return internalPathChooser.get(); //for internal path choosing TBD should we use pathplanners or a coded version?
     }
@@ -42,14 +42,14 @@ public class CatzAutonomous {
     //-------------------------------------------Auton Paths--------------------------------------------
     private Command bulldozerAuto() {
         return new SequentialCommandGroup(
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Bulldozer"))
+           // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Bulldozer"))
             );
     }
 
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
-            Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
+          //  Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),
+          //  new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
             // Commands.waitSeconds(2),
             // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
         );
@@ -57,18 +57,18 @@ public class CatzAutonomous {
 
     private Command scoringC13() {
         return new SequentialCommandGroup(
-            Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(1.27, 7.38, Rotation2d.fromDegrees(0)))),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6"))
+            // Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(1.27, 7.38, Rotation2d.fromDegrees(0)))),
+            // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
+            // Commands.waitSeconds(4),
+            // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
+            // Commands.waitSeconds(4),
+            // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3")),
+            // Commands.waitSeconds(4),
+            // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
+            // Commands.waitSeconds(4),
+            // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5")),
+            // Commands.waitSeconds(4),
+            // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6"))
         );
     }
 

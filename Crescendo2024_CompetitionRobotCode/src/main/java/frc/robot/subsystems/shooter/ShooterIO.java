@@ -5,22 +5,20 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
     @AutoLog
     public class ShooterIOInputs {
-        public double dummyVariable;
-        public double velocityBtmRT;
-        public double velocityTopRT;
-        public double shooterTopPercentOutput;
-        public double shooterBtmPercentOutput;
-        public double shooterTopSupplyCurrent;
-        public double shooterBtmSupplyCurrent;
-        public double shooterTopStatorCurrent;
-        public double shooterBtmStatorCurrent;
-        public double shooterTopTorqueCurrent;
-        public double shooterBtmTorqueCurrent;
+        public double shooterVelocityLT;
+        public double shooterVelocityRT;
+        public double shooterDutyCycleLT;
+        public double shooterDutyCycleRT;
+        public double shooterMotorVoltageLT;
+        public double shooterMotorVoltageRT;
+        public double shooterTorqueCurrentLT;
+        public double shooterTorqueCurrentRT;
         public double feederMotorPercentOutput; 
         public double feederMotorVelocity;
         public double feederMotor2PercentOutput;
         public double feederMotor2Velocity;
-        public double turretDeg;
+        public double shooterVelocityErrorLT;
+        public double shooterVelocityErrorRT;
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}
@@ -32,6 +30,8 @@ public interface ShooterIO {
     public default void shootFeederReverse() {}
 
     public default void setFeederDisabled() {}
+
+    public default void shootFeederWithVelocity() {}
 
     public default void setTurretPosition(double targetEncPos) {}
 

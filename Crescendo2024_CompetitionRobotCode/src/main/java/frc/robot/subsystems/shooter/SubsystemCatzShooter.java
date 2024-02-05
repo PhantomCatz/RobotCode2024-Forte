@@ -47,15 +47,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
     // This method will be called once per scheduler run
     if (m_targetPosition != null) {
       if (m_targetPosition.getshooterTargetHorizontalAngle() > TURRET_MAX || m_targetPosition.getshooterTargetHorizontalAngle() < TURRET_MIN) {
-        io.setTurretPosition(inputs.turretDeg);
       }
       else {
-        io.setTurretPosition(m_targetPosition.getshooterTargetHorizontalAngle());
       }
     }
 
-    SmartDashboard.putNumber("velocityBtmRT", inputs.velocityBtmRT);
-    SmartDashboard.putNumber("velocityTopRT", inputs.velocityTopRT);
+    SmartDashboard.putNumber("velocityBtmRT", inputs.shooterVelocityLT);
+    SmartDashboard.putNumber("velocityTopRT", inputs.shooterVelocityRT);
   }
   
   public void updateTurretTargetPosition(CatzMechanismPosition turretTargetPosition) {
@@ -70,6 +68,17 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return run(()->io.setShooterDisabled());
   }
 
+  public Command setFeedMotor() {
+    return run(()->io.shootFeederWithVelocity());
+  }
+
+  public Command setFeedReverse() {
+      return run(()->io.shootFeederReverse());
+      }
+
+  public Command setFeedMotorDisabled() {
+    return run(()->io.setFeederDisabled());
+  }
   // Get the singleton instance of the ShooterSubsystem
   public static SubsystemCatzShooter getInstance() {
       return instance;

@@ -24,120 +24,120 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class PPTrajectoryFollowingCmd extends Command {
-    private PathPlannerTrajectory.State previousState;
-    //private final PPHolonomicDriveController ppcontroller;
-    private final HolonomicDriveController hocontroller;
-    private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
-    private PathPlannerTrajectory trajectory;
+    // private PathPlannerTrajectory.State previousState;
+    // //private final PPHolonomicDriveController ppcontroller;
+    // private final HolonomicDriveController hocontroller;
+    // private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
+    // private PathPlannerTrajectory trajectory;
     
-    private final Timer timer = new Timer();
-    private final double TIMEOUT_RATIO = 25;
+    // private final Timer timer = new Timer();
+    // private final double TIMEOUT_RATIO = 25;
 
-    /**
-     * The auto balance on charge station command constructor.
-     *
-     * @param drivetrain The coordinator between the gyro and the swerve modules.
-     * @param trajectory          The trajectory to follow.
-     */
-    public PPTrajectoryFollowingCmd(PathPlannerPath newPath) {
-        this.trajectory = new PathPlannerTrajectory(
-                                newPath, 
-                                DriveConstants.
-                                    swerveDriveKinematics.
-                                        toChassisSpeeds(m_driveTrain.getModuleStates()),
-                                m_driveTrain.getRotation2d());
+    // /**
+    //  * The auto balance on charge station command constructor.
+    //  *
+    //  * @param drivetrain The coordinator between the gyro and the swerve modules.
+    //  * @param trajectory          The trajectory to follow.
+    //  */
+    // public PPTrajectoryFollowingCmd(PathPlannerPath newPath) {
+    //     this.trajectory = new PathPlannerTrajectory(
+    //                             newPath, 
+    //                             DriveConstants.
+    //                                 swerveDriveKinematics.
+    //                                     toChassisSpeeds(m_driveTrain.getModuleStates()),
+    //                             m_driveTrain.getRotation2d());
 
-        //ppcontroller = DriveConstants.ppholonomicDriveController;
-        hocontroller = DriveConstants.holonomicDriveController;
-        addRequirements(m_driveTrain);
-    }
+    //     //ppcontroller = DriveConstants.ppholonomicDriveController;
+    //     hocontroller = DriveConstants.holonomicDriveController;
+    //     addRequirements(m_driveTrain);
+    // }
 
-    //Trajectories w/o path planner
-    public PPTrajectoryFollowingCmd(List<Translation2d> bezierPoints, PathConstraints constraints, GoalEndState endRobotState) {
+    // //Trajectories w/o path planner
+    // public PPTrajectoryFollowingCmd(List<Translation2d> bezierPoints, PathConstraints constraints, GoalEndState endRobotState) {
 
-        PathPlannerPath newPath = new PathPlannerPath(bezierPoints, constraints, endRobotState);
+    //     PathPlannerPath newPath = new PathPlannerPath(bezierPoints, constraints, endRobotState);
 
-        this.trajectory = new PathPlannerTrajectory(
-                                newPath, 
-                                DriveConstants.
-                                    swerveDriveKinematics.
-                                        toChassisSpeeds(m_driveTrain.getModuleStates()), 
-                                m_driveTrain.getRotation2d());
+    //     this.trajectory = new PathPlannerTrajectory(
+    //                             newPath, 
+    //                             DriveConstants.
+    //                                 swerveDriveKinematics.
+    //                                     toChassisSpeeds(m_driveTrain.getModuleStates()), 
+    //                             m_driveTrain.getRotation2d());
 
-        //ppcontroller = DriveConstants.ppholonomicDriveController;
-        hocontroller = DriveConstants.holonomicDriveController;
+    //     //ppcontroller = DriveConstants.ppholonomicDriveController;
+    //     hocontroller = DriveConstants.holonomicDriveController;
 
-        addRequirements(m_driveTrain);
-    }
+    //     addRequirements(m_driveTrain);
+    // }
 
-    @Override
-    public void initialize() {
-        // Reset and begin timer
-        timer.reset();
-        timer.start();
-        // Get initial state of path
-        previousState = trajectory.getInitialState();
-    }
+    // @Override
+    // public void initialize() {
+    //     // Reset and begin timer
+    //     timer.reset();
+    //     timer.start();
+    //     // Get initial state of path
+    //     previousState = trajectory.getInitialState();
+    // }
 
-    @Override
-    public void execute() {
-        double currentTime = this.timer.get();
+    // @Override
+    // public void execute() {
+    //     double currentTime = this.timer.get();
 
-        //Determine desired state based on where the robot should be at the current time in the path
-        // PathPlannerTrajectory.State goal = (PathPlannerTrajectory.State) trajectory.sample(currentTime);
-        // Pose2d currentPosition = m_driveTrain.getPose();
+    //     //Determine desired state based on where the robot should be at the current time in the path
+    //     // PathPlannerTrajectory.State goal = (PathPlannerTrajectory.State) trajectory.sample(currentTime);
+    //     // Pose2d currentPosition = m_driveTrain.getPose();
 
-        // // obtain target velocity based on current pose and desired state
-        // ChassisSpeeds chassisSpeeds = controller.calculateRobotRelativeSpeeds(currentPosition, goal);
+    //     // // obtain target velocity based on current pose and desired state
+    //     // ChassisSpeeds chassisSpeeds = controller.calculateRobotRelativeSpeeds(currentPosition, goal);
 
-        // // m_driveTrain.driveRobotWithDescritizeCorrectedDynamics(chassisSpeeds);
-        // Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
+    //     // // m_driveTrain.driveRobotWithDescritizeCorrectedDynamics(chassisSpeeds);
+    //     // Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
         
-        // previousState = goal;
+    //     // previousState = goal;
 
-        //convert PP trajectory into a wpilib trajectory type to be used with the internal WPILIB trajectory library
-        PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
-        Rotation2d targetOrientation = goal.targetHolonomicRotation;
-        Pose2d currentPose = m_driveTrain.getPose();
-        Trajectory.State state = new Trajectory.State(currentTime, goal.velocityMps, goal.accelerationMpsSq, new Pose2d(goal.positionMeters, new Rotation2d()), goal.curvatureRadPerMeter);
+    //     //convert PP trajectory into a wpilib trajectory type to be used with the internal WPILIB trajectory library
+    //     PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
+    //     Rotation2d targetOrientation = goal.targetHolonomicRotation;
+    //     Pose2d currentPose = m_driveTrain.getPose();
+    //     Trajectory.State state = new Trajectory.State(currentTime, goal.velocityMps, goal.accelerationMpsSq, new Pose2d(goal.positionMeters, new Rotation2d()), goal.curvatureRadPerMeter);
 
-        ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
-        SwerveModuleState[] targetModuleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(adjustedSpeeds);
+    //     ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
+    //     SwerveModuleState[] targetModuleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(adjustedSpeeds);
 
-        m_driveTrain.setModuleStates(targetModuleStates);
+    //     m_driveTrain.setModuleStates(targetModuleStates);
         
-        Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
-    }
+    //     Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
+    // }
 
-    @Override
-    public void end(boolean interrupted) {
-        timer.stop(); // Stop timer
-        m_driveTrain.stopDriving();
-    }
+    // @Override
+    // public void end(boolean interrupted) {
+    //     timer.stop(); // Stop timer
+    //     m_driveTrain.stopDriving();
+    // }
 
-    @Override
-    public boolean isFinished() {
-        // Finish command if the total time the path takes is over
-        double currentPosX =        m_driveTrain.getPose().getX();
-        double currentPosY =        m_driveTrain.getPose().getY();
-        double currentRotation =    m_driveTrain.getPose().getRotation().getDegrees();
+    // @Override
+    // public boolean isFinished() {
+    //     // Finish command if the total time the path takes is over
+    //     double currentPosX =        m_driveTrain.getPose().getX();
+    //     double currentPosY =        m_driveTrain.getPose().getY();
+    //     double currentRotation =    m_driveTrain.getPose().getRotation().getDegrees();
 
-        double desiredPosX =        trajectory.getEndState().positionMeters.getX();
-        double desiredPosY =        trajectory.getEndState().positionMeters.getY();
-        double desiredRotation =    trajectory.getEndState().targetHolonomicRotation.getDegrees();
+    //     double desiredPosX =        trajectory.getEndState().positionMeters.getX();
+    //     double desiredPosY =        trajectory.getEndState().positionMeters.getY();
+    //     double desiredRotation =    trajectory.getEndState().targetHolonomicRotation.getDegrees();
 
-        double xError =        Math.abs(desiredPosX - currentPosX);
-        double yError =        Math.abs(desiredPosY - currentPosY);
-        double rotationError = Math.abs(desiredRotation - currentRotation);
+    //     double xError =        Math.abs(desiredPosX - currentPosX);
+    //     double yError =        Math.abs(desiredPosY - currentPosY);
+    //     double rotationError = Math.abs(desiredRotation - currentRotation);
 
-        //System.out.println("X error " + xError);
-        //System.out.println("Y error " + yError);
-        //System.out.println("Angle error " + rotationError);
+    //     //System.out.println("X error " + xError);
+    //     //System.out.println("Y error " + yError);
+    //     //System.out.println("Angle error " + rotationError);
 
-        return (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
-                yError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
-                rotationError < TrajectoryConstants.ALLOWABLE_ROTATION_ERROR) || 
-                timer.hasElapsed(trajectory.getTotalTimeSeconds() * TIMEOUT_RATIO);
-    }
+    //     return (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
+    //             yError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
+    //             rotationError < TrajectoryConstants.ALLOWABLE_ROTATION_ERROR) || 
+    //             timer.hasElapsed(trajectory.getTotalTimeSeconds() * TIMEOUT_RATIO);
+    // }
 
 }
