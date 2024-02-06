@@ -95,8 +95,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     }
   }
 
-  
-  // Get the singleton instance of the ClimbSubsystem
+  // Get the singleton instance of the intake Subsystem
   public static SubsystemCatzIntake getInstance() {
       return instance;
   }
