@@ -20,7 +20,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final IntakeIO io;
   private static SubsystemCatzIntake instance = new SubsystemCatzIntake();
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-  private double m_stickAngle;
+  private double m_pivotManualPwr;
+  private final double ROLLERS_IN = 0.6;
+  private final double ROLLERS_OUT = -0.6;
   private CatzMechanismPosition m_newPosition;
   private boolean rollerEnable;
   private boolean isBBAllBroken = false;
@@ -41,26 +43,17 @@ public class SubsystemCatzIntake extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("intake/inputs", inputs);
-    io.setIntakePosition(7);
-
-    /*
-     * Intake Roller Stuff
-     */
-      if(inputs.BBFrontConnected == false) {
-        io.rollerDisable();
-      } else {
-      }
-    
+    Logger.processInputs("intake/inputs", inputs);    
   
-
     /*
      * Intake Pivot Stuff
      */
-    if (m_targetPosition != null) {
-      io.setIntakePosition(m_targetPosition.getIntakePivotTargetEncPos());
+    if(DriverStation.isDisabled()) {
+      io.setIntakePivotPercentOutput(0.0);
+    } else if (m_targetPosition != null) {
+      io.setIntakePosition(m_targetPosition.getIntakePivotTargetEnc());
     } else {
-      io.setIntakePivotPercentOutput(m_stickAngle);
+      io.setIntakePivotPercentOutput(m_pivotManualPwr);
     }
   }
 
@@ -69,17 +62,24 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   public void pivotFullManual(double fullManualPwr) {
-    m_stickAngle = fullManualPwr;
+    m_pivotManualPwr = fullManualPwr;
     m_targetPosition = null;
+  }
+
+  public Command intakePivotOverrideCommand(double stickPwr) {
+  return run(()->intakePivotOverrideSet(stickPwr));
+  }
+  public void intakePivotOverrideSet(double stickAngle) {
+    m_pivotManualPwr = stickAngle;
   }
 
   //-------------------------------------Roller Sequencing--------------------------------
   public Command rollerIntakeCommand() {
-    return run(()->setRollers(0.6));
+    return run(()->setRollers(ROLLERS_IN));
   }
 
   public Command rollerOutakeCommand() {
-    return run(()-> setRollers(-0.6));
+    return run(()-> setRollers(ROLLERS_OUT));
   }
 
   public Command rollersOff() {
@@ -88,22 +88,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //void method for setting output to roller motors and checks if note has already been intaked
   public void setRollers(double output) {
-    if(inputs.BBFrontConnected == false) {
+    if(!inputs.BBFrontConnected) {
       io.setRollerPercentOutput(0.0);
     } else {
       io.setRollerPercentOutput(output);
     }
   }
 
-  // 
-  public Command intakePivotOverrideCommand(double stickPwr) {
-    m_stickAngle = stickPwr;
-    System.out.println("e");
-    return run(()->intakePivotOverrideSet(stickPwr));
-  }
-  public void intakePivotOverrideSet(double stickAngle) {
-    m_stickAngle = stickAngle;
-  }
+  
   // Get the singleton instance of the ClimbSubsystem
   public static SubsystemCatzIntake getInstance() {
       return instance;

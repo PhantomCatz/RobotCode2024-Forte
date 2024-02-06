@@ -20,15 +20,12 @@ import frc.robot.Utils.LoggedTunableNumber;
 
 public class IntakeIOReal implements IntakeIO {
 
+        LoggedTunableNumber rollerMotor = new LoggedTunableNumber("IntakeRoller", 0.6);
    private final DigitalInput beamBreakBack = new DigitalInput(4);
     private final DigitalInput beamBreakFront = new DigitalInput(5);
 
-   // private final TalonFX pivotMtr;
+    private final TalonFX pivotMtr;
     private final TalonFX rollerMtr;
-    //TBD Might need logic gate for intake methods incase of logic conflict in Robot Container
-    Boolean intakeActive = false;
-
-    LoggedTunableNumber rollerMotor = new LoggedTunableNumber("IntakeRoller", 0.6);
 
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
     
@@ -39,9 +36,9 @@ public class IntakeIOReal implements IntakeIO {
 
     public IntakeIOReal() {
                 //Wrist Motor setup
-       // pivotMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID);
+       pivotMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID);
             //reset to factory defaults
-       // pivotMtr.getConfigurator().apply(new TalonFXConfiguration());
+       pivotMtr.getConfigurator().apply(new TalonFXConfiguration());
                 //Wrist Motor setup
         rollerMtr = new TalonFX(IntakeConstants.ROLLER_MTR_ID);
             //reset to factory defaults
@@ -76,30 +73,30 @@ public class IntakeIOReal implements IntakeIO {
     }
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        inputs.rollerVoltage = rollerMtr.getMotorVoltage().getValue();
-       // inputs.pivotMtrEncPos = pivotMtr.getPosition().getValue();
-        inputs.rollerVoltage = rollerMtr.getTorqueCurrent().getValue();
-        //inputs.pivotMtrPercentOutput = pivotMtr.getDutyCycle().getValue();
-        inputs.rollerPercentOutput = rollerMtr.getDutyCycle().getValue();
-        inputs.rollerVelocity = rollerMtr.getVelocity().getValue();
-        // false is broken true is connected \/ \/
+        inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();
+        inputs.pivotMtrEncPos =         pivotMtr.getPosition().getValue();
+        inputs.rollerVoltage =          rollerMtr.getTorqueCurrent().getValue();
+        inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
+        inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
+        inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
+        //false is broken true is connected \/ \/
         inputs.BBBackConnected = beamBreakBack.get();
         inputs.BBFrontConnected = beamBreakFront.get();
     }
 
     @Override
     public void setPivotEncPos(double targetEncPos) {
-        //pivotMtr.setControl(new PositionVoltage(targetEncPos));
+        pivotMtr.setControl(new PositionVoltage(targetEncPos));
     }
 
     @Override
     public void setIntakePosition(double targetEncPos) {
-       // pivotMtr.setControl(new PositionVoltage(targetEncPos));
+        pivotMtr.setControl(new PositionVoltage(targetEncPos));
     }
 
     @Override
     public void resetPivotEncPos(double defaultEncPos) {
-       // pivotMtr.setPosition(defaultEncPos);
+       pivotMtr.setPosition(defaultEncPos);
     }
 
     @Override
@@ -109,7 +106,7 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setIntakePivotPercentOutput(double percentOutput) {
-       // pivotMtr.setControl(new DutyCycleOut(percentOutput));
+       pivotMtr.set(percentOutput);
     }
 }
 

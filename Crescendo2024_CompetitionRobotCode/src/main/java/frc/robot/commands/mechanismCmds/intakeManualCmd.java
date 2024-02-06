@@ -2,27 +2,19 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.StateMachineCmds;
+package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 
-public class MoveToNewPositionCmd extends Command {
-  /** Creates a new MoveToNewPositionCmd. */
-  SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
-
-  CatzMechanismPosition m_newPosition;
-  public MoveToNewPositionCmd(CatzMechanismPosition newPosition) {
+public class intakeManualCmd extends Command {
+  /** Creates a new manualIntakeCmd. */
+  public intakeManualCmd() {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.m_newPosition = newPosition;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    elevator.setNewPos(m_newPosition);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

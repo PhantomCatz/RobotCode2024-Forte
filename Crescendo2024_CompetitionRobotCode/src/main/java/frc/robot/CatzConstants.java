@@ -45,6 +45,7 @@ public final class CatzConstants {
   public static final int kDriverFieldOrientedButtonIdx = 1;
 
   public static final double kDeadband = 0.1;
+  public static final double kOffPwr = 0.1;
   }
 
   public static final class CatzMechanismConstants {

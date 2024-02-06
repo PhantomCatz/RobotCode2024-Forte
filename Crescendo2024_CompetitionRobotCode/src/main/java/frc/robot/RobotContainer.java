@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -14,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.commands.StateMachineCmds.MoveToNewPositionCmd;
+import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
@@ -86,9 +87,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
     //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
-    Trigger intakePivotOverride = xboxAux.axisGreaterThan((int) (xboxAux.getLeftY()*100), 10);
+    Trigger intakePivotOverride = new Trigger(()-> xboxAux.getLeftY() > OIConstants.kDeadband);
     intakePivotOverride.onTrue(intake.intakePivotOverrideCommand(xboxAux.getLeftY()))
-                       .onFalse(intake.intakePivotOverrideCommand(0));
+                       .onFalse(intake.intakePivotOverrideCommand(OIConstants.kOffPwr));
 
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
     //xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
