@@ -7,32 +7,34 @@ package frc.robot.commands.mechanismCmds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 
 public class MoveToNewPositionCmd extends Command {
-  /** Creates a new MoveToNewPositionCmd. */
+  
   SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
+  SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
+  SubsystemCatzShooter shooter  = SubsystemCatzShooter.getInstance();
 
-  CatzMechanismPosition m_newPosition;
+  private CatzMechanismPosition m_newPosition;
+
   public MoveToNewPositionCmd(CatzMechanismPosition newPosition) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.m_newPosition = newPosition;
+    m_newPosition = newPosition;
+    addRequirements(elevator, intake, shooter);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.setNewPos(m_newPosition);
+    System.out.println("new mechanism set cmd");
+    intake.updateIntakeTargetPosition(m_newPosition.getIntakePivotTargetEnc());
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {}
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;

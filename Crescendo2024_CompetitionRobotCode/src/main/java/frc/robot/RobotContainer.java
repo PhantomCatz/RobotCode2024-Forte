@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
+import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -77,20 +78,25 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
    private void configureBindings() {
     
-    xboxAux.rightBumper().onTrue(intake.rollerIntakeCommand());
-    xboxAux.leftBumper().onTrue(intake.rollerOutakeCommand());
+    xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
+    xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
     //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
     Trigger rollersOffBinding = xboxAux.leftBumper().and(xboxAux.rightBumper());
-    rollersOffBinding.onFalse(intake.rollersOff());
-    rollersOffBinding.onTrue(intake.rollersOff());
+    rollersOffBinding.onTrue(intake.cmdRollerOff());
 
 
     //xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
     //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
     Trigger intakePivotOverride = new Trigger(()-> xboxAux.getLeftY() > OIConstants.kDeadband);
-    intakePivotOverride.onTrue(intake.intakePivotOverrideCommand(xboxAux.getLeftY()))
-                       .onFalse(intake.intakePivotOverrideCommand(OIConstants.kOffPwr));
+    intakePivotOverride.onTrue(intake.cmdFullManual(xboxAux.getLeftY()))
+                       .onFalse(intake.cmdFullManual(OIConstants.kOffPwr));
+
+
+    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
+    xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
+    xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+
 
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
     //xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());

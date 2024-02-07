@@ -20,8 +20,9 @@ import frc.robot.Utils.LoggedTunableNumber;
 
 public class IntakeIOReal implements IntakeIO {
 
-        LoggedTunableNumber rollerMotor = new LoggedTunableNumber("IntakeRoller", 0.6);
-   private final DigitalInput beamBreakBack = new DigitalInput(4);
+    LoggedTunableNumber rollerMotorTunableNumber = new LoggedTunableNumber("IntakeRoller", 0.6);
+    
+    private final DigitalInput beamBreakBack = new DigitalInput(4);
     private final DigitalInput beamBreakFront = new DigitalInput(5);
 
     private final TalonFX pivotMtr;
@@ -79,18 +80,13 @@ public class IntakeIOReal implements IntakeIO {
         inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
         inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
         inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
-        //false is broken true is connected \/ \/
-        inputs.BBBackConnected = beamBreakBack.get();
-        inputs.BBFrontConnected = beamBreakFront.get();
+        //true if beambreak is broken \/ \/
+        inputs.BeamBrkBackBroken = !beamBreakBack.get(); //TBD add method for controling inputs
+        inputs.BeamBrkFrontBroken = !beamBreakFront.get();
     }
 
     @Override
     public void setPivotEncPos(double targetEncPos) {
-        pivotMtr.setControl(new PositionVoltage(targetEncPos));
-    }
-
-    @Override
-    public void setIntakePosition(double targetEncPos) {
         pivotMtr.setControl(new PositionVoltage(targetEncPos));
     }
 
@@ -100,7 +96,7 @@ public class IntakeIOReal implements IntakeIO {
     }
 
     @Override
-    public void setRollerPercentOutput(double speed) {
+    public void setRollerPercentOutputIO(double speed) {
         rollerMtr.set(speed);
     }
 
@@ -108,5 +104,7 @@ public class IntakeIOReal implements IntakeIO {
     public void setIntakePivotPercentOutput(double percentOutput) {
        pivotMtr.set(percentOutput);
     }
+
+
 }
 
