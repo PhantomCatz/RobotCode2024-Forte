@@ -93,10 +93,10 @@ public final class CatzConstants {
     public static final double RT_BACK_OFFSET = -0.75084;//0.7591109064;
     public static final double RT_FRNT_OFFSET =  0.55098;//0.5363121009;
 
-    public static final int LT_FRNT_DRIVE_ID = 3;
-    public static final int LT_BACK_DRIVE_ID = 5;
-    public static final int RT_BACK_DRIVE_ID = 7;
-    public static final int RT_FRNT_DRIVE_ID = 1;
+    public static final int LT_FRNT_DRIVE_ID = 1;
+    public static final int LT_BACK_DRIVE_ID = 3;
+    public static final int RT_BACK_DRIVE_ID = 5;
+    public static final int RT_FRNT_DRIVE_ID = 7;
     
     public static final int LT_FRNT_STEER_ID = 2;
     public static final int LT_BACK_STEER_ID = 4;

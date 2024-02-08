@@ -251,7 +251,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //-------------------------------------Roller methods--------------------------------
   public Command cmdRollerIn() {
-    return run(()-> io.setPivotEncPos(ROLLERS_MTR_PWR_IN));
+    return run(()-> io.setRollerPercentOutputIO(ROLLERS_MTR_PWR_IN));
   }
 
   public Command cmdRollerOut() {
