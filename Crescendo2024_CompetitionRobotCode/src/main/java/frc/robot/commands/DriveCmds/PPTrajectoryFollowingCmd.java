@@ -76,6 +76,8 @@ public class PPTrajectoryFollowingCmd extends Command {
         previousState = trajectory.getInitialState();
     }
 
+    private double prevSpeed = previousState.velocityMps;
+
     @Override
     public void execute() {
         double currentTime = this.timer.get();
@@ -98,7 +100,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         //send to drivetrain
         m_driveTrain.driveRobotWithDescritizeDynamics(adjustedSpeeds);
 
-        Logger.recordOutput("Desired Auto Pose", new Pose2d(goal.positionMeters, goal.targetHolonomicRotation));
+        Logger.recordOutput("Desired Auto Pose", new Pose2d(state.poseMeters.getTranslation(), goal.targetHolonomicRotation));
     }
 
     @Override

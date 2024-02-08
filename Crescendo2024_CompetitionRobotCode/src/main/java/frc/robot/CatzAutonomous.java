@@ -33,6 +33,7 @@ public class CatzAutonomous {
         internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
         internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
         internalPathChooser.addOption("ScoringC13", scoringC13());
+        internalPathChooser.addOption("Curve", curveAuto());
         //internalPathChooser.addOption("Drive Straight", driveStraight());
     }
 
@@ -61,7 +62,8 @@ public class CatzAutonomous {
     private Command curveAuto(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("Curve")),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Curve")) 
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Curve")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right Straight"))
         );
     }
 
@@ -84,7 +86,7 @@ public class CatzAutonomous {
     
     private Command setAutonStartPose(PathPlannerPath startPath){
         return Commands.runOnce(()->{
-            m_driveTrain.resetDriveEncs();
+            // m_driveTrain.resetDriveEncs();
             m_driveTrain.resetPosition(startPath.getStartingDifferentialPose());
         });
     }

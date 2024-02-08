@@ -156,8 +156,8 @@ public final class CatzConstants {
     private static ProfiledPIDController autoTurnPIDController = new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(3,3));//6
 
     public static final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
-      new PIDController(4, 0, 0),
-      new PIDController(4, 0, 0),
+      new PIDController(2, 0, 0),
+      new PIDController(2, 0, 0),
       autoTurnPIDController
     );     
   }
