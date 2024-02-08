@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -39,7 +38,6 @@ public class CatzAutonomous {
 
     //configured dashboard
     public Command getCommand() {
-        m_driveTrain.resetForAutonomous();
 
         return internalPathChooser.get(); //for internal path choosing TBD should we use pathplanners or a coded version?
     }
@@ -53,10 +51,17 @@ public class CatzAutonomous {
 
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
-            Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),//TBD let's make reset position not hard coded
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
-            Commands.waitSeconds(1),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
+            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
+            // Commands.waitSeconds(1),
+            // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
+        );
+    }
+
+    private Command curveAuto(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("Curve")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Curve")) 
         );
     }
 
@@ -75,6 +80,13 @@ public class CatzAutonomous {
             Commands.waitSeconds(4),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6"))
         );
+    }
+    
+    private Command setAutonStartPose(PathPlannerPath startPath){
+        return Commands.runOnce(()->{
+            m_driveTrain.resetDriveEncs();
+            m_driveTrain.resetPosition(startPath.getStartingDifferentialPose());
+        });
     }
 
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
