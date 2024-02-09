@@ -1,0 +1,19 @@
+{
+  "robotWidth": 0.7366,
+  "robotLength": 0.74,
+  "holonomicMode": true,
+  "pathFolders": [
+    "3 gp auto",
+    "5 gp path",
+    "6 Note Auton 5940",
+    "Scoring C2-4",
+    "Scoring C1-3",
+    "Scoring C5-3"
+  ],
+  "autoFolders": [],
+  "defaultMaxVel": 2.0,
+  "defaultMaxAccel": 2.0,
+  "defaultMaxAngVel": 360.0,
+  "defaultMaxAngAccel": 360.0,
+  "maxModuleSpeed": 4.36
+}
