@@ -89,11 +89,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
     
-    xboxDrv.rightTrigger().onTrue(shooter.setFeedMotor())
+    xboxDrv.rightTrigger().onTrue(shooter.setLoadMotor())
                           .onFalse(shooter.setFeedMotorDisabled());
     //shooter activation
-    xboxDrv.x().onTrue(shooter.setShooterActive())
-               .onFalse(shooter.setShooterDisabled());
+    xboxDrv.x().onTrue(shooter.cmdShooterEnabled())
+               .onFalse(shooter.cmdShooterDisabled());
  
    }
 
