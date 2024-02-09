@@ -13,10 +13,12 @@ public interface ShooterIO {
         public double shooterMotorVoltageRT;
         public double shooterTorqueCurrentLT;
         public double shooterTorqueCurrentRT;
-        public double feederMotorPercentOutput; 
-        public double feederMotorVelocity;
-        public double feederMotor2PercentOutput;
-        public double feederMotor2Velocity;
+
+        public double LoadMotorPercentOutput; 
+        public double LoadMotorVelocity;
+        public double FeedPercentOutput;
+        public double FeedVelocity;
+
         public double shooterVelocityErrorLT;
         public double shooterVelocityErrorRT;
     }

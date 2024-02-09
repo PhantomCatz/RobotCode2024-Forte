@@ -88,6 +88,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
 
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
+    
     xboxDrv.rightTrigger().onTrue(shooter.setFeedMotor())
                           .onFalse(shooter.setFeedMotorDisabled());
     //shooter activation

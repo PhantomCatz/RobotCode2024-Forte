@@ -34,10 +34,10 @@ public class ShooterIOReal implements ShooterIO {
     private CANSparkMax FEED_MOTOR;
 
     //tunable motor velocities
-    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 60);
-    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 60);
-    LoggedTunableNumber feederMotor  = new LoggedTunableNumber("FeederMotor",  0.5);
-    LoggedTunableNumber feederMotor2 = new LoggedTunableNumber("FeederMotor2", 0.5);
+    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 75);
+    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 90);
+    LoggedTunableNumber feederMotor  = new LoggedTunableNumber("LoadMotor",  1);
+    LoggedTunableNumber feederMotor2 = new LoggedTunableNumber("FeedMotor", 0.6);
 
 
     TalonFX[] shooterArray = new TalonFX[2];
@@ -68,12 +68,14 @@ public class ShooterIOReal implements ShooterIO {
         SHOOTER_MOTOR_RT = new TalonFX(10);
         SHOOTER_MOTOR_LT = new TalonFX(0);
 
+        //neo
         LOAD_MOTOR = new CANSparkMax(3, MotorType.kBrushless);
         LOAD_MOTOR.restoreFactoryDefaults();
         LOAD_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
         LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.enableVoltageCompensation(12.0);
 
+        //neo 550
         FEED_MOTOR = new CANSparkMax(1, MotorType.kBrushless);
         FEED_MOTOR.restoreFactoryDefaults();
         FEED_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
@@ -129,11 +131,11 @@ public class ShooterIOReal implements ShooterIO {
         inputs.shooterTorqueCurrentLT = SHOOTER_MOTOR_LT.getTorqueCurrent().getValue();
         inputs.shooterTorqueCurrentRT = SHOOTER_MOTOR_RT.getTorqueCurrent().getValue();
 
-        inputs.feederMotorPercentOutput = LOAD_MOTOR.get();
-        inputs.feederMotorVelocity = (LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
+        inputs.LoadMotorPercentOutput = LOAD_MOTOR.get();
+        inputs.LoadMotorVelocity = (LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
 
-        inputs.feederMotor2PercentOutput = FEED_MOTOR.get();
-        inputs.feederMotor2Velocity = (FEED_MOTOR.getEncoder().getVelocity()/60); //to rps
+        inputs.FeedPercentOutput = FEED_MOTOR.get();
+        inputs.FeedVelocity = (FEED_MOTOR.getEncoder().getVelocity()/60); //to rps
 
     }
 
@@ -146,7 +148,7 @@ public class ShooterIOReal implements ShooterIO {
         SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-shooterVelocityLT));
         SHOOTER_MOTOR_RT.setControl(new VelocityVoltage(shooterVelocityRT));
 
-        FEED_MOTOR.set(feederMotor2.get());
+        FEED_MOTOR.set(-feederMotor2.get());
 
     }
 
@@ -164,7 +166,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void shootFeederWithVelocity() {
-        LOAD_MOTOR.set(feederMotor.get());
+        LOAD_MOTOR.set(-feederMotor.get());
     }
 
 
@@ -172,7 +174,7 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void shootFeederReverse() {
 
-        LOAD_MOTOR.set(-feederMotor.get());
+        LOAD_MOTOR.set(feederMotor.get());
     }
 
     
