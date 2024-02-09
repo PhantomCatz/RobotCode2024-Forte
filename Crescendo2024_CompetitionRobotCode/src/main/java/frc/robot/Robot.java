@@ -81,6 +81,7 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     DriverStation.silenceJoystickConnectionWarning(true);
+
   }
 
   @Override
@@ -117,6 +118,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    SubsystemCatzDrivetrain.getInstance().printAverageWheelMagEncValues();
   }
 
   @Override

@@ -26,7 +26,7 @@ public class CatzSwerveModule {
 
     private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.0, 0.26);
                 
-    private final double kP = 0.3;
+    private final double kP = 0.34;
     private final double kI = 0.00;
     private final double kD = 0.000;
 
@@ -75,6 +75,16 @@ public class CatzSwerveModule {
 
     public void setDriveVelocity(double velocity) {
             io.setDriveVelocityIO(velocity);
+    }
+
+    public double getAverageRawMagEnc(){
+        double sum = 0;
+
+        for(int i = 0; i < 100; i++){
+            sum += inputs.magEncoderValue;
+        }
+
+        return sum/100.0;
     }
 
     public void stopDriving() {

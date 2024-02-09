@@ -172,6 +172,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         setModuleStates(moduleStates);
     }
 
+    public void printAverageWheelMagEncValues(){
+        System.out.println("LF: " + m_swerveModules[0].getAverageRawMagEnc());
+        System.out.println("LB: " + m_swerveModules[1].getAverageRawMagEnc());
+        System.out.println("RB: " + m_swerveModules[2].getAverageRawMagEnc());
+        System.out.println("RF: " + m_swerveModules[3].getAverageRawMagEnc());
+
+    }
+
     // Set individual module states to each of the swerve modules
     private void setModuleStates(SwerveModuleState[] desiredStates) {
         // Scale down wheel speeds

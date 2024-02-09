@@ -76,8 +76,6 @@ public class PPTrajectoryFollowingCmd extends Command {
         previousState = trajectory.getInitialState();
     }
 
-    private double prevSpeed = previousState.velocityMps;
-
     @Override
     public void execute() {
         double currentTime = this.timer.get();
@@ -86,7 +84,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
         Rotation2d targetOrientation     = goal.targetHolonomicRotation;
         Pose2d currentPose               = m_driveTrain.getPose();
-        
+        Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         //convert PP trajectory into a wpilib trajectory type to be used with the internal WPILIB trajectory library
         Trajectory.State state = new Trajectory.State(currentTime, 
                                                       goal.velocityMps, 
@@ -94,9 +92,11 @@ public class PPTrajectoryFollowingCmd extends Command {
                                                       new Pose2d(goal.positionMeters, new Rotation2d()), 
                                                       goal.curvatureRadPerMeter);
 
+        Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
         //construct chassisspeeds
         ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
-
+        Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
+        Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
         //send to drivetrain
         m_driveTrain.driveRobotWithDescritizeDynamics(adjustedSpeeds);
 
