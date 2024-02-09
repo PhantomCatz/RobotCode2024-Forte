@@ -26,7 +26,7 @@ public class MoveToNewPositionCmd extends Command {
   @Override
   public void initialize() {
     System.out.println("new mechanism set cmd");
-    intake.updatetargetEncPosition(m_newPosition.getIntakePivotTargetEnc());
+    intake.updateIntakeTargetPosition(m_newPosition.getIntakePivotTargetAngle());
   }
 
   @Override

@@ -84,17 +84,12 @@ public class IntakeIOReal implements IntakeIO {
     }
 
     @Override
-    public void setPivotEncPos(double targetEncPos) {
-        pivotMtr.setControl(new PositionVoltage(targetEncPos));
-    }
-
-    @Override
     public void resetPivotEncPos(double defaultEncPos) {
        pivotMtr.setPosition(defaultEncPos);
     }
 
     @Override
-    public void setRollerPercentOutputIO(double speed) {
+    public void setRollerPercentOutput(double speed) {
         rollerMtr.set(speed);
     }
 

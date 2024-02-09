@@ -69,6 +69,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double m_targetPositionDeg;
   private double numConsectSamples;
   private boolean intakeInPosition;
+  private int rollerRunningMode;
 
 
   private PIDController pid;
@@ -78,15 +79,16 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
     switch (CatzConstants.currentMode) {
       case REAL: io = new IntakeIOReal();
-      break;
-
-      case SIM : io = null;
+                 System.out.println("Intake Configured for Real");
       break;
 
       case REPLAY: io = new IntakeIOReal() {};
+                   System.out.println("Intake Configured for Replayed simulation");
       break;
 
+      case SIM:
       default: io = null;
+               System.out.println("Intake Unconfigured");
       break;
     }
 
@@ -118,22 +120,22 @@ public class SubsystemCatzIntake extends SubsystemBase {
     double currentPositionDeg = inputs.pivotMtrEncPos / WRIST_CNTS_PER_DEGREE;
 
     if(DriverStation.isDisabled()) {
-      io.setRollerPercentOutputIO(0.0);
+      io.setRollerPercentOutput(0.0);
       rollerRunningMode = 0;
       io.setIntakePivotPercentOutput(0.0);
     } else { 
       //robot enabled
 
         if(rollerRunningMode == 2) {
-            io.setRollerPercentOutputIO(ROLLERS_MTR_PWR_OUT); 
+            io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT); 
         } else if(rollerRunningMode == 1) {
               if(inputs.BeamBrkFrontBroken) {
-                io.setRollerPercentOutputIO(0.0);
+                io.setRollerPercentOutput(0.0);
               } else {
-                io.setRollerPercentOutputIO(ROLLERS_MTR_PWR_IN);
+                io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN);
               }
         } else {
-          io.setRollerPercentOutputIO(0.0);
+          io.setRollerPercentOutput(0.0);
         }
 
       //Intake Pivot Logic
@@ -214,11 +216,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
     System.out.println("in auto");
   }
 
-  public void updatetargetEncPosition(double targetEncPos) {
-    io.setPivotEncPos(targetEncPos);
-    System.out.println(targetEncPos);
-  }
-
   public Command cmdSemiManual(double semiManualPwr) {
     return run(()->pivotSemiManual(semiManualPwr));
   }
@@ -263,7 +260,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
     return wristAngle;
   }
 
-  int rollerRunningMode;
   //-------------------------------------Roller methods--------------------------------
   public Command cmdRollerIn() {
     return runOnce(()-> rollerRunningMode = 1);
