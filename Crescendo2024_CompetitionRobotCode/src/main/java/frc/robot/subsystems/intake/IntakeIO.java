@@ -13,6 +13,7 @@ public interface IntakeIO {
         public double rollerVelocity;
         public boolean BeamBrkFrontBroken;
         public boolean BeamBrkBackBroken;
+        public double closedLoopPivotMtr;
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}

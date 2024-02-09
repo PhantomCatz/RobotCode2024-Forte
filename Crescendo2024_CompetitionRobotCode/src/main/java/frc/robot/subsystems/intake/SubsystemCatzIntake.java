@@ -4,12 +4,14 @@
 
 package frc.robot.subsystems.intake;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.Utils.CatzMechanismPosition;
@@ -26,21 +28,21 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //intake rollers Constants
   private final double ROLLERS_MTR_PWR_IN  =  0.6;
-  private final double ROLLERS_MTR_PWR_OUT = -0.6;
+  private final double ROLLERS_MTR_PWR_OUT = -1.0;
 
   //intake roller variables
 
 
   //intake pivot variables
   //constants
-  private final double ENC_TO_INTAKE_GEAR_RATIO = (46.0 / 18.0)* (32.0 / 10.0);
+  private final double ENC_TO_INTAKE_GEAR_RATIO = 6;//(46.0 / 18.0)* (32.0 / 10.0);
   private final double WRIST_CNTS_PER_DEGREE = (2096.0 * ENC_TO_INTAKE_GEAR_RATIO) / 360.0;
 
-  private static final double GROSS_kP = 0.0;
+  private static final double GROSS_kP = 0.01;
   private static final double GROSS_kI = 0.0;
   private static final double GROSS_kD = 0.0;
 
-  private static final double FINE_kP = 0.0;
+  private static final double FINE_kP = 0.01;
   private static final double FINE_kI = 0.0;
   private static final double FINE_kD = 0.0;
 
@@ -116,19 +118,23 @@ public class SubsystemCatzIntake extends SubsystemBase {
     double currentPositionDeg = inputs.pivotMtrEncPos / WRIST_CNTS_PER_DEGREE;
 
     if(DriverStation.isDisabled()) {
+      io.setRollerPercentOutputIO(0.0);
+      rollerRunningMode = 0;
       io.setIntakePivotPercentOutput(0.0);
     } else { 
       //robot enabled
 
-      //if we are outtaking by looking at the hardware mtr pwrs with the flag enabled...ignored logic TBD
-      if(inputs.rollerPercentOutput < 0.0) {
-
-      } else {
-        //Intake Roller Logic
-        if(!inputs.BeamBrkFrontBroken) {
-          cmdRollerOff();
+        if(rollerRunningMode == 2) {
+            io.setRollerPercentOutputIO(ROLLERS_MTR_PWR_OUT); 
+        } else if(rollerRunningMode == 1) {
+              if(inputs.BeamBrkFrontBroken) {
+                io.setRollerPercentOutputIO(0.0);
+              } else {
+                io.setRollerPercentOutputIO(ROLLERS_MTR_PWR_IN);
+              }
+        } else {
+          io.setRollerPercentOutputIO(0.0);
         }
-      }
 
       //Intake Pivot Logic
       if (currentIntakeState == IntakeState.AUTO || 
@@ -160,7 +166,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         //calculate pwr based off given pid values
         pidPower = pid.calculate(currentPositionDeg, m_targetPositionDeg);
         ffPower = calculateGravityFF();
-        m_targetPower = pidPower + ffPower;
+        m_targetPower = pidPower; //+ //ffPower;
 
         // -------------------------------------------------------------
         // checking if we did not get updated position value(Sampling Issue).
@@ -189,12 +195,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
         io.setIntakePivotPercentOutput(m_pivotManualPwr);
       }
     } 
-
+    Logger.recordOutput("intake/manual pwr", m_pivotManualPwr);
     Logger.recordOutput("intake/final pwr", m_targetPower);
     Logger.recordOutput("intake/pidPower", pidPower);
     Logger.recordOutput("intake/ffPower", ffPower);
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
     Logger.recordOutput("intake/currentAngle", currentPositionDeg);
+    Logger.recordOutput("intake/roller target",rollerRunningMode);
+    Logger.recordOutput("intake/working", calcWristAngle());
 
   }
 
@@ -204,6 +212,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
     this.m_targetPositionDeg = intakeTargetAngle;
     currentIntakeState = IntakeState.AUTO;
     System.out.println("in auto");
+  }
+
+  public void updatetargetEncPosition(double targetEncPos) {
+    io.setPivotEncPos(targetEncPos);
+    System.out.println(targetEncPos);
   }
 
   public Command cmdSemiManual(double semiManualPwr) {
@@ -226,12 +239,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   public Command cmdFullManual(double fullManualPwr) {
-    return run(()->pivotFullManual(fullManualPwr));
+    return run(()-> pivotFullManual(fullManualPwr));
   }
+
 
   //full manual
   public void pivotFullManual(double fullManualPwr) {
-    m_pivotManualPwr = fullManualPwr;
+    m_pivotManualPwr = 0.4*fullManualPwr;
     currentIntakeState = IntakeState.FULL_MANUAL;
     System.out.println("in pivot manual");
 
@@ -245,21 +259,22 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   private double calcWristAngle() {
-    double wristAngle = ((inputs.pivotMtrEncPos / WRIST_CNTS_PER_DEGREE));
+    double wristAngle = ((inputs.pivotMtrEncPos / WRIST_CNTS_PER_DEGREE)*1000);
     return wristAngle;
   }
 
+  int rollerRunningMode;
   //-------------------------------------Roller methods--------------------------------
   public Command cmdRollerIn() {
-    return run(()-> io.setRollerPercentOutputIO(ROLLERS_MTR_PWR_IN));
+    return runOnce(()-> rollerRunningMode = 1);
   }
 
   public Command cmdRollerOut() {
-    return run(()->  io.setRollerPercentOutputIO(ROLLERS_MTR_PWR_OUT));
+    return runOnce(()-> rollerRunningMode = 2);
   }
 
   public Command cmdRollerOff() {
-    return run(()->  io.setRollerPercentOutputIO(0.0));
+    return runOnce(()->  rollerRunningMode = 0);
   }
 
 }

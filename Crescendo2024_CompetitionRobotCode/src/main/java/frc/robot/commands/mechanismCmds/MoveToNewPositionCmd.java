@@ -20,13 +20,13 @@ public class MoveToNewPositionCmd extends Command {
 
   public MoveToNewPositionCmd(CatzMechanismPosition newPosition) {
     m_newPosition = newPosition;
-    addRequirements(elevator, intake, shooter);
+    addRequirements(intake);
   }
 
   @Override
   public void initialize() {
     System.out.println("new mechanism set cmd");
-    intake.updateIntakeTargetPosition(m_newPosition.getIntakePivotTargetEnc());
+    intake.updatetargetEncPosition(m_newPosition.getIntakePivotTargetEnc());
   }
 
   @Override

@@ -54,13 +54,12 @@ public class IntakeIOReal implements IntakeIO {
         pivotTalonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
         pivotTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-            //pid
-        pivotConfigs.kP = 0.1;
-        pivotConfigs.kI = 0.0;
-        pivotConfigs.kD = 0.001;
+
+        pivotMtr.setPosition(0);
+        //SensorInitializationStra
 
         //check if wrist motor is initialized correctly
-          //  initializationStatus = pivotMtr.getConfigurator().apply(pivotTalonConfigs);
+        initializationStatus = pivotMtr.getConfigurator().apply(pivotTalonConfigs);
             if(!initializationStatus.isOK())
                 System.out.println("Failed to Configure CAN ID" + IntakeConstants.PIVOT_MTR_ID);
         //check if roller motor is initialized correctly
@@ -69,8 +68,6 @@ public class IntakeIOReal implements IntakeIO {
         if(!initializationStatus.isOK())
             System.out.println("Failed to Configure CAN ID" + IntakeConstants.ROLLER_MTR_ID);
         }
-
-
     }
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
@@ -83,6 +80,7 @@ public class IntakeIOReal implements IntakeIO {
         //true if beambreak is broken \/ \/
         inputs.BeamBrkBackBroken = !beamBreakBack.get(); //TBD add method for controling inputs
         inputs.BeamBrkFrontBroken = !beamBreakFront.get();
+        inputs.closedLoopPivotMtr = pivotMtr.getClosedLoopError().getValue();
     }
 
     @Override
@@ -102,7 +100,7 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setIntakePivotPercentOutput(double percentOutput) {
-       pivotMtr.set(percentOutput);
+       pivotMtr.set(-percentOutput);
     }
 
 

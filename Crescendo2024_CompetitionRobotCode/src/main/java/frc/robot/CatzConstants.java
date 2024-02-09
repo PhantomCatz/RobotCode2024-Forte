@@ -44,7 +44,7 @@ public final class CatzConstants {
   public static final int kDriverRotAxis = 4;
   public static final int kDriverFieldOrientedButtonIdx = 1;
 
-  public static final double kDeadband = 0.1;
+  public static final double kDeadband = 0.3;
   public static final double kOffPwr = 0.1;
   }
 
@@ -52,8 +52,8 @@ public final class CatzConstants {
     public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 0, 0, 0);
     //public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition();
     //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, 0, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, 1, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, -2.11, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, -3.3, 0, 0);
     //public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
