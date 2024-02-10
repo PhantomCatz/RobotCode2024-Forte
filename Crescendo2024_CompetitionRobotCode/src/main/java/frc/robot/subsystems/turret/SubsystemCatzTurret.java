@@ -28,13 +28,17 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //private final double WRIST_CNTS_PER_DEGREE = (2096.0 * ENC_TO_INTAKE_GEAR_RATIO) / 360.0;
 
   private final double TURRET_POWER     = 0.6;
-  private final double TURRET_ENC_TARGE_POS = 0.6;
+ 
 
   private static final double TURRET_kP = 0.0;
   private static final double TURRET_kI = 0.0;
   private static final double TURRET_kD = 0.0;
 
+  private static final int GEAR_RATIO  = 9;
+
   public static double turretEncoderPosition = 0.0;
+
+  private static double turretMovementRange = 120.0;
 
   //variables
   private double m_turretTargetDegree;
@@ -84,17 +88,25 @@ public class SubsystemCatzTurret extends SubsystemBase {
     Logger.processInputs("intake/inputs", inputs);   
     Logger.recordOutput("Turret Encoder", inputs.turretEncValue);
 
-    double currentTurretAngle = inputs.turretEncValue; //TBD make conversion
-    
+    double currentTurretAngle = (inputs.turretEncValue * GEAR_RATIO)/360; //TBD make conversion
+    System.out.println(currentTurretAngle);
+
     turretEncoderPosition = currentTurretAngle;
 
     if(currentTurretState == TurretState.AUTO) {
       
       pidTurretPower = pid.calculate(currentTurretAngle, m_turretTargetDegree);
       io.turretSet(pidTurretPower);
+      System.out.println("h ");
 
     } else {
-      
+      if(turretEncoderPosition <= turretMovementRange && turretEncoderPosition >= -turretMovementRange)
+      {
+        
+      } 
+      else {
+        cmdTurretOff();
+      }
     }
 
 
