@@ -100,8 +100,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
 
-    // xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());
-    // xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
+     xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());
+     xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
+     xboxAux.a().onTrue(turret.resetTurretPosition());
     // xboxAux.start().onTrue(turret.cmdTurretOff());
 
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
@@ -119,11 +120,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
-      driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-                                                      ()-> xboxDrv.getLeftY(),
-                                                      ()-> xboxDrv.getRightX(),
-                                                      ()-> xboxDrv.getRightTriggerAxis(), 
-                                                      ()-> xboxDrv.b().getAsBoolean()));
+      // driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+      //                                                 ()-> xboxDrv.getLeftY(),
+      //                                                 ()-> xboxDrv.getRightX(),
+      //                                                 ()-> xboxDrv.getRightTriggerAxis(), 
+      //                                                 ()-> xboxDrv.b().getAsBoolean()));
     
    }
 

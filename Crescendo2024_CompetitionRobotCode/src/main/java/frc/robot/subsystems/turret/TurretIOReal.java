@@ -48,5 +48,10 @@ public class TurretIOReal implements TurretIO {
     public void turretSetPwr(double outputPwr) {
         turretMtr.set(outputPwr);
     }
+
+    @Override 
+    public void turretSetEncoderPos(double position){
+        turretMtr.getEncoder().setPosition(position);
+    }
 }
 
