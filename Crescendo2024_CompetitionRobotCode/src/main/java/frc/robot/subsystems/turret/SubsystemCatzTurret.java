@@ -50,6 +50,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   private PIDController pid;
 
+  private double TURRET_POSITIVE_MAX_RANGE = 120.0;
+  private double TURRET_NEGATIVE_MAX_RANGE = -120.0;
 
   public SubsystemCatzTurret() {
 
@@ -97,21 +99,21 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
     turretEncoderPosition = currentTurretAngle;
 
-    if(currentTurretState == TurretState.AUTO) {
+    // if(currentTurretState == TurretState.AUTO) {
       
-      pidTurretPower = pid.calculate(currentTurretAngle, m_turretTargetDegree);
-      io.turretSet(pidTurretPower);
-      System.out.println("h ");
+    //   pidTurretPower = pid.calculate(currentTurretAngle, m_turretTargetDegree);
+    //   io.turretSetPwr(pidTurretPower);
+    //   System.out.println("h ");
 
-    } else {
-      if(turretEncoderPosition <= turretMovementRange && turretEncoderPosition >= -turretMovementRange)
-      {
+    // } else {
+    //   if(turretEncoderPosition <= turretMovementRange && turretEncoderPosition >= -turretMovementRange)
+    //   {
         
-      } 
-      else {
-        cmdTurretOff();
-      }
-    }
+    //   } 
+    //   else {
+    //     cmdTurretOff();
+    //   }
+    // }
 
 
 
@@ -131,18 +133,33 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //-------------------------------------Manual methods--------------------------------
   public Command cmdTurretLT() {
     currentTurretState = TurretState.FULL_MANUAL;
-    // return run(()-> io.turretRotate(TURRET_POWER));
-    return run(()-> io.turretSet(-TURRET_POWER));
+    if (turretEncoderPosition > TURRET_POSITIVE_MAX_RANGE && inputs.turretMtrPercentOutput > 0.0) {
+      return run(() -> io.turretSetPwr(0));
+    }
+
+    if (turretEncoderPosition < TURRET_NEGATIVE_MAX_RANGE && inputs.turretMtrPercentOutput < 0.0) {
+      return run(() -> io.turretSetPwr(0));
+    }
+    
+    return run(()-> io.turretSetPwr(-TURRET_POWER));
   }
 
   public Command cmdTurretRT() {
     currentTurretState = TurretState.FULL_MANUAL;
-    return run(()-> io.turretSet(TURRET_POWER));
+    if (turretEncoderPosition > TURRET_POSITIVE_MAX_RANGE && inputs.turretMtrPercentOutput > 0.0) {
+      return run(() -> io.turretSetPwr(0));
+    }
+
+    if (turretEncoderPosition < TURRET_NEGATIVE_MAX_RANGE && inputs.turretMtrPercentOutput < 0.0) {
+      return run(() -> io.turretSetPwr(0));
+    }
+
+    return run(()-> io.turretSetPwr(TURRET_POWER));
   }
 
   public Command cmdTurretOff() {
     currentTurretState = TurretState.FULL_MANUAL;
-    return run(()-> io.turretSet(0.0));
+    return run(()-> io.turretSetPwr(0.0));
   }
 
 }

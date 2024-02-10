@@ -1,5 +1,7 @@
 package frc.robot.subsystems.turret;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -43,7 +45,7 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
-    public void turretSet(double outputPwr) {
+    public void turretSetPwr(double outputPwr) {
         turretMtr.set(outputPwr);
     }
 }
