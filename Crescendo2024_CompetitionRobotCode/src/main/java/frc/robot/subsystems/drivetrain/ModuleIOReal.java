@@ -9,7 +9,6 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.CatzConstants.MtrConfigConstants;
@@ -59,7 +58,7 @@ public class ModuleIOReal implements ModuleIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 0.1;
+        driveConfigs.kP = 2.0;//2.4; //TBD 0.3 has a better graph but it jitters the auton. 0.1 doesnt jitter for auton but slow for telop //for atlas
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.00;
 
@@ -68,13 +67,12 @@ public class ModuleIOReal implements ModuleIO {
             initializationStatus = DRIVE_MOTOR.getConfigurator().apply(talonConfigs);
             if(!initializationStatus.isOK())
                 System.out.println("Failed to Configure CAN ID" + driveMotorIDIO);
-            
         }
     }
 
     @Override
     public void updateInputs(ModuleIOInputs inputs) {
-        inputs.driveMtrVelocity = DRIVE_MOTOR.getRotorVelocity().getValue();
+        inputs.driveMtrVelocity =       DRIVE_MOTOR.getRotorVelocity().getValue();
         inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
         inputs.magEncoderValue = magEnc.get();
     }

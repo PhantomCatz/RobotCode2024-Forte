@@ -50,10 +50,10 @@ public final class CatzConstants {
 
   public static final class CatzMechanismConstants {
     public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 0, 0, 0);
-    //public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition();
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, -66,0,0);
     //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, -2.11, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, -3.3, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, -140, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, -190, 0, 0);
     //public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
@@ -88,10 +88,10 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
 
-    public static final double LT_FRNT_OFFSET =  0.00406;//atlas 0.5112305378; //this one changed
-    public static final double LT_BACK_OFFSET = -0.03950;//0.5446386386;
-    public static final double RT_BACK_OFFSET = -0.75084;//0.7591109064;
-    public static final double RT_FRNT_OFFSET =  0.55098;//0.5363121009;
+    public static final double LT_FRNT_OFFSET =  0.47;//atlas 0.5112305378; //this one changed
+    public static final double LT_BACK_OFFSET = 1.3+0.5;//0.5446386386;
+    public static final double RT_BACK_OFFSET = 0.23;//0.7591109064;
+    public static final double RT_FRNT_OFFSET = -0.15;//0.5363121009;
 
     public static final int LT_FRNT_DRIVE_ID = 1;
     public static final int LT_BACK_DRIVE_ID = 3;

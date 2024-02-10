@@ -35,23 +35,23 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //intake pivot variables
   //constants
-  private final double ENC_TO_INTAKE_GEAR_RATIO = 6;//(46.0 / 18.0)* (32.0 / 10.0);
-  private final double WRIST_CNTS_PER_DEGREE = (2096.0 * ENC_TO_INTAKE_GEAR_RATIO) / 360.0;
+  private final double ENC_TO_INTAKE_GEAR_RATIO = (60 / 20)* (32 / 16);
+  private final double WRIST_CNTS_PER_DEGREE = (2048.0 * ENC_TO_INTAKE_GEAR_RATIO) / 360.0;
 
-  private static final double GROSS_kP = 0.01;
-  private static final double GROSS_kI = 0.0;
-  private static final double GROSS_kD = 0.0;
+  private static final double GROSS_kP = 0.004;
+  private static final double GROSS_kI = 0.000;
+  private static final double GROSS_kD = 0.0000;
 
-  private static final double FINE_kP = 0.01;
-  private static final double FINE_kI = 0.0;
-  private static final double FINE_kD = 0.0;
+  private static final double FINE_kP = 0.02;
+  private static final double FINE_kI = 0.000;
+  private static final double FINE_kD = 0.00;
 
-  private final double PID_FINE_GROSS_THRESHOLD_DEG = 17.0;
+  private final double PID_FINE_GROSS_THRESHOLD_DEG = 20.0;
   private final double ERROR_INTAKE_THRESHOLD_DEG = 5.0;
 
   private final double STOW_CUTOFF = 0.0; //TBD need to dial in
   private final double CENTER_OF_MASS_OFFSET_DEG = 177.0;
-  private final double MAX_GRAVITY_FF = 0.07;
+  private final double MAX_GRAVITY_FF = 0.11;
 
   private final double MANUAL_HOLD_STEP_SIZE = 2.0;
 
@@ -117,7 +117,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     Logger.processInputs("intake/inputs", inputs);   
 
               //collect current targetPosition in degrees
-    double currentPositionDeg = inputs.pivotMtrEncPos / WRIST_CNTS_PER_DEGREE;
+    double currentPositionDeg = calcWristAngle();
 
     if(DriverStation.isDisabled()) {
       io.setRollerPercentOutput(0.0);
@@ -129,7 +129,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         if(rollerRunningMode == 2) {
             io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT); 
         } else if(rollerRunningMode == 1) {
-              if(inputs.BeamBrkFrontBroken) {
+              if(inputs.BeamBrkBackBroken) {
                 io.setRollerPercentOutput(0.0);
               } else {
                 io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN);
@@ -168,16 +168,16 @@ public class SubsystemCatzIntake extends SubsystemBase {
         //calculate pwr based off given pid values
         pidPower = pid.calculate(currentPositionDeg, m_targetPositionDeg);
         ffPower = calculateGravityFF();
-        m_targetPower = pidPower; //+ //ffPower;
+        m_targetPower = pidPower; //+ ffPower;
 
-        // -------------------------------------------------------------
-        // checking if we did not get updated position value(Sampling Issue).
-        // If no change in position, this give invalid target power(kD issue).
-        // Therefore, go with prev targetPower Value.
-        // -------------------------------------------------------------------
-        if (m_prevCurrentPosition == currentPositionDeg) {
-            m_targetPower = prevTargetPwr;
-        }
+        // // -------------------------------------------------------------
+        // // checking if we did not get updated position value(Sampling Issue).
+        // // If no change in position, this give invalid target power(kD issue).
+        // // Therefore, go with prev targetPower Value.
+        // // -------------------------------------------------------------------
+        // if (m_prevCurrentPosition == currentPositionDeg) {
+        //     m_targetPower = prevTargetPwr;
+        // }
 
         // ----------------------------------------------------------------------------------
         // If we are going to Stow Position & have passed the power cutoff angle, set
@@ -186,10 +186,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
         // ----------------------------------------------------------------------------------
         if (m_targetPositionDeg == STOW_ENC_POS && currentPositionDeg > STOW_CUTOFF) {
             m_targetPower = 0.0;
+
         }
 
         //set pivot pwr
-        io.setIntakePivotPercentOutput(m_targetPower);
+        io.setIntakePivotPercentOutput(-m_targetPower);
 
         m_prevCurrentPosition = currentPositionDeg;
         prevTargetPwr = m_targetPower;
@@ -204,7 +205,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
     Logger.recordOutput("intake/currentAngle", currentPositionDeg);
     Logger.recordOutput("intake/roller target",rollerRunningMode);
-    Logger.recordOutput("intake/working", calcWristAngle());
+    Logger.recordOutput("intake/intake angle", calcWristAngle());
 
   }
 
@@ -249,14 +250,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   private double calculateGravityFF() {
-    double radians = Math.toRadians(calcWristAngle() - CENTER_OF_MASS_OFFSET_DEG);
-    double cosineScalar = Math.cos(radians);
+    double radians = Math.toRadians(calcWristAngle()-70);
+    double cosineScalar = Math.sin(radians);
 
     return MAX_GRAVITY_FF * cosineScalar;
   }
 
   private double calcWristAngle() {
-    double wristAngle = ((inputs.pivotMtrEncPos / WRIST_CNTS_PER_DEGREE)*1000);
+    double wristAngle = (((inputs.pivotMtrEncRev *360)/6));
     return wristAngle;
   }
 

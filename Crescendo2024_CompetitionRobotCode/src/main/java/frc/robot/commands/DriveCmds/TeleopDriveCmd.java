@@ -42,12 +42,12 @@ public class TeleopDriveCmd extends Command {
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
     double xSpeed = -supplierLeftJoyY.get();
-    double ySpeed = -supplierLeftJoyX.get();
+    double ySpeed = -supplierLeftJoyX.get(); //-for atlas
     double turningSpeed = -supplierRightJoyX.get();
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
-    xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
-    ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed * DriveConstants.MAX_SPEED: 0.0;
+    xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
+    ySpeed =       Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed * DriveConstants.MAX_SPEED: 0.0;
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed * DriveConstants.MAX_ANGSPEED_RAD_PER_SEC: 0.0;
 
     //Construct desired chassis speeds

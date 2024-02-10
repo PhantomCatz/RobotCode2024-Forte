@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -95,10 +96,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         m_swerveModules[2] = RT_BACK_MODULE;
         m_swerveModules[3] = RT_FRNT_MODULE;
 
-        // Zero the gyro and reset drive encoders on initialization
-        flipGyro().execute();
-        resetDriveEncs();
-
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 DriveConstants.initPose.getRotation(), getModulePositions(), DriveConstants.initPose);
@@ -113,6 +110,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             (targetPose)-> {
                 Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
             });
+
+        gyroIO.resetNavXIO();
 
     }
 
@@ -174,7 +173,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     }
 
     // Set individual module states to each of the swerve modules
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
+    private void setModuleStates(SwerveModuleState[] desiredStates) {
         // Scale down wheel speeds
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.MAX_SPEED_DESATURATION);
 
@@ -299,7 +298,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Reset gyro and position for autonomous mode
     public void resetForAutonomous() {
-        flipGyro().execute();
+        // flipGyro().execute();
         resetPosition(DriveConstants.initPose);
     }
 

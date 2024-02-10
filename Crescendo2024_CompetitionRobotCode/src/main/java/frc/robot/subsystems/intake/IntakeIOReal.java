@@ -53,7 +53,12 @@ public class IntakeIOReal implements IntakeIO {
         pivotTalonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
         pivotTalonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
-        pivotTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        pivotTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+        pivotConfigs.kP = 0.11;
+        pivotConfigs.kI = 0.0;
+        pivotConfigs.kD = 0.0;
+        pivotConfigs.kV = 0.1189;
 
         pivotMtr.setPosition(0);
         //SensorInitializationStra
@@ -72,7 +77,7 @@ public class IntakeIOReal implements IntakeIO {
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();
-        inputs.pivotMtrEncPos =         pivotMtr.getPosition().getValue();
+        inputs.pivotMtrEncRev =         pivotMtr.getPosition().getValue();
         inputs.rollerVoltage =          rollerMtr.getTorqueCurrent().getValue();
         inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
         inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();

@@ -6,7 +6,7 @@ public interface IntakeIO {
 
     @AutoLog
     public class IntakeIOInputs {
-        public double pivotMtrEncPos;
+        public double pivotMtrEncRev;
         public double pivotMtrPercentOutput;
         public double rollerVoltage;
         public double rollerPercentOutput;
