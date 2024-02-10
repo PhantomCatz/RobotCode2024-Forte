@@ -131,26 +131,26 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
 
   //-------------------------------------Manual methods--------------------------------
-  public Command cmdTurretLT() {
+  public Command cmdTurretLT(double mtrPwr) {
     currentTurretState = TurretState.FULL_MANUAL;
-    if (turretEncoderPosition > TURRET_POSITIVE_MAX_RANGE && inputs.turretMtrPercentOutput > 0.0) {
+    if (turretEncoderPosition > TURRET_POSITIVE_MAX_RANGE && mtrPwr > 0.0) {
       return run(() -> io.turretSetPwr(0));
     }
 
-    if (turretEncoderPosition < TURRET_NEGATIVE_MAX_RANGE && inputs.turretMtrPercentOutput < 0.0) {
+    if (turretEncoderPosition < TURRET_NEGATIVE_MAX_RANGE && mtrPwr < 0.0) {
       return run(() -> io.turretSetPwr(0));
     }
-    
+
     return run(()-> io.turretSetPwr(-TURRET_POWER));
   }
 
-  public Command cmdTurretRT() {
+  public Command cmdTurretRT(double mtrPwr) {
     currentTurretState = TurretState.FULL_MANUAL;
-    if (turretEncoderPosition > TURRET_POSITIVE_MAX_RANGE && inputs.turretMtrPercentOutput > 0.0) {
+    if (turretEncoderPosition > TURRET_POSITIVE_MAX_RANGE && mtrPwr > 0.0) {
       return run(() -> io.turretSetPwr(0));
     }
 
-    if (turretEncoderPosition < TURRET_NEGATIVE_MAX_RANGE && inputs.turretMtrPercentOutput < 0.0) {
+    if (turretEncoderPosition < TURRET_NEGATIVE_MAX_RANGE && mtrPwr < 0.0) {
       return run(() -> io.turretSetPwr(0));
     }
 

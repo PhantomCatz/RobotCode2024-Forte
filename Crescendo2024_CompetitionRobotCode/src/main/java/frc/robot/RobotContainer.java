@@ -68,7 +68,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
     
-
      xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
      xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
  
@@ -101,9 +100,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
 
-    xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());
-    xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
-    xboxAux.start().onTrue(turret.cmdTurretOff());
+    // xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());
+    // xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
+    // xboxAux.start().onTrue(turret.cmdTurretOff());
 
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
     //xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
