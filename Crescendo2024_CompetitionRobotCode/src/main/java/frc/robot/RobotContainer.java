@@ -20,6 +20,7 @@ import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 /**
@@ -43,6 +44,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //private SubsystemCatzShooter shooter;
     //private SubsystemCatzClimb climb;
     //private SubsystemCatzElevator arm;
+    private SubsystemCatzTurret turret;
 
     private CatzAutonomous auton = new CatzAutonomous();
 
@@ -60,6 +62,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
     //vision     = SubsystemCatzVision.getInstance();
     intake     = SubsystemCatzIntake.getInstance();
+    turret     = SubsystemCatzTurret.getInstance();
 
    // shooter    = SubsystemCatzShooter.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
@@ -78,25 +81,29 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
    private void configureBindings() {
     
-    xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
-    xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
-    //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
-    Trigger rollersOffBinding = xboxAux.leftBumper().and(xboxAux.rightBumper());
-    rollersOffBinding.onTrue(intake.cmdRollerOff());
+    // xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
+    // xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
+    // //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
+    // Trigger rollersOffBinding = xboxAux.leftBumper().and(xboxAux.rightBumper());
+    // rollersOffBinding.onTrue(intake.cmdRollerOff());
 
 
     //xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
     //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
-    Trigger intakePivotOverride = new Trigger(()-> xboxAux.getLeftY() > OIConstants.kDeadband);
-    intakePivotOverride.onTrue(intake.cmdFullManual(xboxAux.getLeftY()))
-                       .onFalse(intake.cmdFullManual(OIConstants.kOffPwr));
+    // Trigger intakePivotOverride = new Trigger(()-> xboxAux.getLeftY() > OIConstants.kDeadband);
+    // intakePivotOverride.onTrue(intake.cmdFullManual(xboxAux.getLeftY()))
+    //                    .onFalse(intake.cmdFullManual(OIConstants.kOffPwr));
 
 
-    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
-    xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
-    xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+    // xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
+    // xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
+    // xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
+
+    xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());
+    xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
+    xboxAux.start().onTrue(turret.cmdTurretOff());
 
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
     //xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
