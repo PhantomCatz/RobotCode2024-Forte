@@ -34,7 +34,11 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double TURRET_kI = 0.0;
   private static final double TURRET_kD = 0.0;
 
-  private static final int GEAR_RATIO  = 9;
+  private static final int MTR_ENCODER_COUNTS         = 42; //42 counts per revolution
+  private static final int TURRET_GEARBOX_PINION      = 9/1;
+  private static final int TURRET_GEARBOX_TURRET_GEAR = 140/10;
+ 
+  private static final int GEAR_REDUCTION  = 360 / (MTR_ENCODER_COUNTS * TURRET_GEARBOX_PINION *TURRET_GEARBOX_TURRET_GEAR);
 
   public static double turretEncoderPosition = 0.0;
 
@@ -88,7 +92,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     Logger.processInputs("intake/inputs", inputs);   
     Logger.recordOutput("Turret Encoder", inputs.turretEncValue);
 
-    double currentTurretAngle = (inputs.turretEncValue * GEAR_RATIO)/360; //TBD make conversion
+    double currentTurretAngle = inputs.turretEncValue * GEAR_REDUCTION; //TBD make conversion
     System.out.println(currentTurretAngle);
 
     turretEncoderPosition = currentTurretAngle;
