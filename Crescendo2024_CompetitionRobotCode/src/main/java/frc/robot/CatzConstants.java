@@ -87,10 +87,20 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
 
-    public static final double LT_FRNT_OFFSET = 0.5112305378; //0.5112305378; atlas
-    public static final double LT_BACK_OFFSET = 0.5446386386; //0.5446386386;
-    public static final double RT_BACK_OFFSET = 0.7591109064;//0.7591109064;
-    public static final double RT_FRNT_OFFSET = 0.5363121009;//0.5363121009;
+     public static final double LT_FRNT_OFFSET =  -0.2194285554857165; //-0.0013; //MC ID 2
+     public static final double LT_BACK_OFFSET =  0.3238585205964611; //0.0498; //MC ID 4
+     public static final double RT_FRNT_OFFSET =  -0.30105623252640606; //0.0222; //MC ID 8//overtime
+     public static final double RT_BACK_OFFSET =  -0.0855185771379645;
+
+     public static final int LT_FRNT_DRIVE_ID = 1; //overtime
+     public static final int LT_BACK_DRIVE_ID = 3;
+     public static final int RT_BACK_DRIVE_ID = 5;
+     public static final int RT_FRNT_DRIVE_ID = 7;
+
+    // public static final double LT_FRNT_OFFSET = 0.510253350256333775; //0.5112305378; atlas
+    // public static final double LT_BACK_OFFSET = 0.54683660117091502; //0.5446386386;
+    // public static final double RT_BACK_OFFSET = 0.756404343910107;//0.7591109064;
+    // public static final double RT_FRNT_OFFSET = 0.5354068633851713;//0.5363121009;
     // 0.00406; for SN1
 // -0.03950;
 // -0.75084;
@@ -99,11 +109,9 @@ public final class CatzConstants {
     // public static final int LT_FRNT_DRIVE_ID = 1;
     // public static final int LT_BACK_DRIVE_ID = 3;
     // public static final int RT_BACK_DRIVE_ID = 22;
-    // public static final int RT_FRNT_DRIVE_ID = 7;
-    public static final int LT_FRNT_DRIVE_ID = 1;
-    public static final int LT_BACK_DRIVE_ID = 3;
-    public static final int RT_BACK_DRIVE_ID = 22;
-    public static final int RT_FRNT_DRIVE_ID = 7; //SN1
+    // public static final int RT_FRNT_DRIVE_ID = 7; //SN1
+
+
     
     public static final int LT_FRNT_STEER_ID = 2;
     public static final int LT_BACK_STEER_ID = 4;
@@ -118,8 +126,8 @@ public final class CatzConstants {
     //--------------------------------------MTR CONFIGS------------------------------------
 
     public static final Pose2d initPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-    private static final double ROBOT_WIDTH = Units.inchesToMeters(29);
-    private static final double ROBOT_LENGTH = Units.inchesToMeters(29);
+    private static final double ROBOT_WIDTH = Units.inchesToMeters(23.5); //29 atlas
+    private static final double ROBOT_LENGTH = Units.inchesToMeters(24); //29 atlas
 
     public static final double ESTIMATION_COEFFICIENT = 0.025;
 
@@ -146,8 +154,8 @@ public final class CatzConstants {
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction
     public static final double SDS_L2_PLUS_GEAR_RATIO = 6.75 * (14/16);       //SDS mk4i L2 ratio reduction plud random numbers from eddy
 
-    
-    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = 0.095;// mUnits.inchesToMeters(4);
+                                                                //overtime
+    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(4);//0.095;// mUnits.inchesToMeters(4);
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;

@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
@@ -24,15 +25,17 @@ public class CatzSwerveModule {
 
     private PIDController m_PID;
 
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.0, 0.26);
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.0, 0.00); //kv = 0.26
                 
-    private final double kP = 0.34;
-    private final double kI = 0.00;
+    private final double kP = 0.6; //0.34
+    private final double kI = 0.01;
     private final double kD = 0.000;
 
     private double m_wheelOffset;
 
     private int m_index;
+
+    private final int DRIVE_MOTOR_ID;
 
     public CatzSwerveModule(int driveMotorID, int steerMotorID, int encoderDIOChannel, double offset, int index, double angleOffset) {
         this.m_index = index;
@@ -52,6 +55,7 @@ public class CatzSwerveModule {
         m_PID = new PIDController(kP, kI, kD);
 
         m_wheelOffset = offset;
+        this.DRIVE_MOTOR_ID = driveMotorID;
     }
 
     public void periodic() {
@@ -66,6 +70,11 @@ public class CatzSwerveModule {
 
         SmartDashboard.putNumber("absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
         SmartDashboard.putNumber("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
+
+        Logger.recordOutput("Module " + m_index + "/input voltage", Math.abs(inputs.driveAppliedVolts));
+        Logger.recordOutput("Module " + m_index + "/velocity", Math.abs(inputs.driveMtrVelocity));
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/drive velocity error", inputs.driveVelocityError);
+        Logger.recordOutput("Module " + m_index + "/steer voltage", inputs.steerAppliedVolts);
     }
 
     //----------------------------------------Setting pwr methods-------------------------------
@@ -82,6 +91,8 @@ public class CatzSwerveModule {
 
         for(int i = 0; i < 100; i++){
             sum += inputs.magEncoderValue;
+            Timer.delay(0.01);
+            
         }
 
         return sum/100.0;
@@ -137,14 +148,12 @@ public class CatzSwerveModule {
         setSteerPower(steerPIDpwr);
 
         //logging
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/angle error deg", Math.toDegrees(targetAngleRad-currentAngleRad));
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/target state", state);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/current state", getModuleState());
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/turn power", steerPIDpwr);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/currentmoduleangle rad", currentAngleRad);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/targetmoduleangle rad", targetAngleRad);
-
-
-
     }
 
     //optimze wheel angles before sending to setdesiredstate method for logging

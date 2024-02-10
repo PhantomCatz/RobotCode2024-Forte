@@ -55,7 +55,7 @@ public class Robot extends LoggedRobot {
     switch (CatzConstants.currentMode) {
       // Running on a real robot, log to a USB stick
       case REAL:
-        Logger.addDataReceiver(new WPILOGWriter("/media/sda1"));
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1")); //uncomment later this thing was cluttering the rio log
         Logger.addDataReceiver(new NT4Publisher());
        // new PowerDistribution(1, ModuleType.kRev);
         break;
@@ -118,7 +118,6 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    SubsystemCatzDrivetrain.getInstance().printAverageWheelMagEncValues();
   }
 
   @Override
@@ -130,6 +129,8 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
+        SubsystemCatzDrivetrain.getInstance().printAverageWheelMagEncValues();
+
   }
 
   @Override

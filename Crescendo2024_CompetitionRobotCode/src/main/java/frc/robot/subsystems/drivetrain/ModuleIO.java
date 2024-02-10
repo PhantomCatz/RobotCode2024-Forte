@@ -14,6 +14,7 @@ public interface ModuleIO {
     public double magEncoderValue = 0.0;
     public double driveAppliedVolts = 0.0;
     public double steerAppliedVolts = 0.0;
+    public double driveVelocityError = 0.0;
  }
 
  /** Updates the set of loggable inputs. */
