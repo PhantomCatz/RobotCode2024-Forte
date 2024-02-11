@@ -34,6 +34,10 @@ public final class CatzConstants {
     REPLAY
   }
 
+  public static enum AllianceColor {
+    Blue, Red
+  }
+
  public static final class OIConstants {
 
   public static final int XBOX_DRV_PORT = 0;

@@ -14,6 +14,8 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.CatzAutonomous;
+import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.TrajectoryConstants;
 
@@ -30,12 +32,15 @@ public class PPTrajectoryFollowingCmd extends Command {
     private final double TIMEOUT_RATIO = 5;
 
     /**
-     * The auto balance on charge station command constructor.
-     *
+     * 
      * @param drivetrain The coordinator between the gyro and the swerve modules.
      * @param trajectory          The trajectory to follow.
      */
     public PPTrajectoryFollowingCmd(PathPlannerPath newPath) {
+       if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+            newPath.flipPath();
+        }
+
         this.trajectory = new PathPlannerTrajectory(
                                 newPath, 
                                 DriveConstants.
@@ -80,6 +85,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         Rotation2d targetOrientation     = goal.targetHolonomicRotation;
         Pose2d currentPose               = m_driveTrain.getPose();
         Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
+        
         //convert PP trajectory into a wpilib trajectory type to be used with the internal WPILIB trajectory library
         Trajectory.State state = new Trajectory.State(currentTime, 
                                                       goal.velocityMps, 

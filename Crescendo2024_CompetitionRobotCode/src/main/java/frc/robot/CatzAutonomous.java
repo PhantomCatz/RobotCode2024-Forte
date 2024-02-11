@@ -21,14 +21,15 @@ import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class CatzAutonomous {
+    
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
 
-    private static LoggedDashboardChooser<DriverStation.Alliance> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
+    public static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private static LoggedDashboardChooser<Command> internalPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
     public CatzAutonomous() {
-        chosenAllianceColor.addDefaultOption("Blue Alliance", DriverStation.Alliance.Blue);
-        chosenAllianceColor.addOption       ("Red Alliance",  DriverStation.Alliance.Red);
+        chosenAllianceColor.addDefaultOption("Blue Alliance", CatzConstants.AllianceColor.Blue);
+        chosenAllianceColor.addOption       ("Red Alliance",  CatzConstants.AllianceColor.Red);
 
         internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
         internalPathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
@@ -44,7 +45,7 @@ public class CatzAutonomous {
 
     //configured dashboard
     public Command getCommand() {
-        return internalPathChooser.get(); //for internal path choosing TBD should we use pathplanners or a coded version?
+        return internalPathChooser.get(); 
     }
 
     //-------------------------------------------Auton Paths--------------------------------------------
