@@ -25,6 +25,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //turret variables
 
   private final double TURRET_POWER     = 0.7;
+  private final double TURRET_DECEL_PWR = 0.3;
  
 
   private static final double TURRET_kP = 0.01;
@@ -46,8 +47,12 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   private PIDController pid;
 
-  private double TURRET_POSITIVE_MAX_RANGE = 120.0;
-  private double TURRET_NEGATIVE_MAX_RANGE = -120.0;
+  private final double TURRET_POSITIVE_MAX_RANGE = 120.0;
+  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0;
+
+  private final double NEGATIVE_DECEL_THRESHOLD  =  -30.0;
+  private final double POS_DECEL_THRESHOLD       =   30.0;
+
   private double HOME_POSITION             = 0.0;
   private double manualTurretPwr;
 
@@ -120,24 +125,44 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public void rotateLeft(){
     currentTurretState = TurretState.FULL_MANUAL;
 
-    if (currentTurretDegree > (TURRET_NEGATIVE_MAX_RANGE)) {
+    if (currentTurretDegree > (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) {
       manualTurretPwr = -TURRET_POWER;
     }
+    else if (currentTurretDegree < (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD) && (currentTurretDegree > TURRET_NEGATIVE_MAX_RANGE)){
+      manualTurretPwr = -TURRET_DECEL_PWR;
+    }
+    else if (currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE)
+    {
+       io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_NEGATIVE_MAX_RANGE ));
+    }  
+   
     else {
       manualTurretPwr = 0.0;
-    }        
+    }      
+
+
+ 
   }
   
 
   public void rotateRight(){
     currentTurretState = TurretState.FULL_MANUAL;
 
-    if (currentTurretDegree < (TURRET_POSITIVE_MAX_RANGE)){
+    if (currentTurretDegree < (TURRET_POSITIVE_MAX_RANGE - POS_DECEL_THRESHOLD)){
       manualTurretPwr = TURRET_POWER;
     }
+    else if (currentTurretDegree > (TURRET_POSITIVE_MAX_RANGE - POS_DECEL_THRESHOLD) && (currentTurretDegree < TURRET_POSITIVE_MAX_RANGE)){
+      manualTurretPwr = TURRET_DECEL_PWR;
+    }
+    else if (currentTurretDegree > TURRET_POSITIVE_MAX_RANGE)
+    {
+       io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_POSITIVE_MAX_RANGE));
+    }  
     else {
       manualTurretPwr = 0.0;
     }
+
+
           
   }
 
