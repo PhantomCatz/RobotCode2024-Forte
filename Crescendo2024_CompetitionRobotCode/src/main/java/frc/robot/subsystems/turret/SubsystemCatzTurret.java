@@ -24,7 +24,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   //turret variables
 
-  private final double TURRET_POWER     = 0.7;
+  private final double TURRET_POWER     = 0.6;
   private final double TURRET_DECEL_PWR = 0.3;
  
 
@@ -50,8 +50,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private final double TURRET_POSITIVE_MAX_RANGE = 120.0;
   private final double TURRET_NEGATIVE_MAX_RANGE = -120.0;
 
-  private final double NEGATIVE_DECEL_THRESHOLD  =  -30.0;
-  private final double POS_DECEL_THRESHOLD       =   30.0;
+  private final double NEGATIVE_DECEL_THRESHOLD  =  -15.0;
+  private final double POS_DECEL_THRESHOLD       =   15.0;
 
   private double HOME_POSITION             = 0.0;
   private double manualTurretPwr;
@@ -126,17 +126,20 @@ public class SubsystemCatzTurret extends SubsystemBase {
     currentTurretState = TurretState.FULL_MANUAL;
 
     if (currentTurretDegree > (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) {
+      System.out.println("1");
       manualTurretPwr = -TURRET_POWER;
     }
-    else if (currentTurretDegree < (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD) && (currentTurretDegree > TURRET_NEGATIVE_MAX_RANGE)){
-      manualTurretPwr = -TURRET_DECEL_PWR;
+    else if ((currentTurretDegree < (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) && (currentTurretDegree >= TURRET_NEGATIVE_MAX_RANGE)&& (manualTurretPwr < 0)){
+      System.out.println("2");
+      io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_NEGATIVE_MAX_RANGE ));
     }
-    else if (currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE)
+    else if ((currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE))
     {
+      System.out.println("3");
        io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_NEGATIVE_MAX_RANGE ));
     }  
-   
     else {
+      System.out.println("4");
       manualTurretPwr = 0.0;
     }      
 
@@ -151,10 +154,10 @@ public class SubsystemCatzTurret extends SubsystemBase {
     if (currentTurretDegree < (TURRET_POSITIVE_MAX_RANGE - POS_DECEL_THRESHOLD)){
       manualTurretPwr = TURRET_POWER;
     }
-    else if (currentTurretDegree > (TURRET_POSITIVE_MAX_RANGE - POS_DECEL_THRESHOLD) && (currentTurretDegree < TURRET_POSITIVE_MAX_RANGE)){
-      manualTurretPwr = TURRET_DECEL_PWR;
+    else if ((currentTurretDegree > (TURRET_POSITIVE_MAX_RANGE - POS_DECEL_THRESHOLD)) && (currentTurretDegree < TURRET_POSITIVE_MAX_RANGE) && (manualTurretPwr > 0)){
+          io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_POSITIVE_MAX_RANGE));
     }
-    else if (currentTurretDegree > TURRET_POSITIVE_MAX_RANGE)
+    else if ((currentTurretDegree > TURRET_POSITIVE_MAX_RANGE))
     {
        io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_POSITIVE_MAX_RANGE));
     }  
