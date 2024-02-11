@@ -38,20 +38,22 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double ENC_TO_INTAKE_GEAR_RATIO = (60 / 20)* (32 / 16);
   private final double WRIST_CNTS_PER_DEGREE = (2048.0 * ENC_TO_INTAKE_GEAR_RATIO) / 360.0;
 
-  private static final double GROSS_kP = 0.004;
-  private static final double GROSS_kI = 0.000;
-  private static final double GROSS_kD = 0.0000;
+  private static final double GROSS_kP = 0.003; //0.003 //0.008
+  private static final double GROSS_kI = 0.000; //0.00 //0.0
+  private static final double GROSS_kD = 0.00025; //0.00025 0.0
 
-  private static final double FINE_kP = 0.02;
-  private static final double FINE_kI = 0.000;
-  private static final double FINE_kD = 0.00;
+  private static final double FINE_kP = 0.04; //0.003
+  private static final double FINE_kI = 0.000; 
+  private static final double FINE_kD = 0.000;
 
-  private final double PID_FINE_GROSS_THRESHOLD_DEG = 20.0;
+  private static final double HANDOFF_TO_STOW_KP = 0.008;
+
+  private final double PID_FINE_GROSS_THRESHOLD_DEG = 20;
   private final double ERROR_INTAKE_THRESHOLD_DEG = 5.0;
 
   private final double STOW_CUTOFF = 0.0; //TBD need to dial in
-  private final double CENTER_OF_MASS_OFFSET_DEG = 177.0;
-  private final double MAX_GRAVITY_FF = 0.11;
+  private final double CENTER_OF_MASS_OFFSET_DEG = 177.0;//177.0;
+  private final double MAX_GRAVITY_FF = 0.04;
 
   private final double MANUAL_HOLD_STEP_SIZE = 2.0;
 
@@ -70,6 +72,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double numConsectSamples;
   private boolean intakeInPosition;
   private int rollerRunningMode;
+  private double previousTargetAngle;
 
 
   private PIDController pid;
@@ -118,6 +121,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
               //collect current targetPosition in degrees
     double currentPositionDeg = calcWristAngle();
+    double positionError = currentPositionDeg - m_targetPositionDeg;
 
     if(DriverStation.isDisabled()) {
       io.setRollerPercentOutput(0.0);
@@ -143,7 +147,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
           currentIntakeState == IntakeState.SEMI_MANUAL) { 
 
             //check if at final position using counter
-        double positionError = currentPositionDeg - m_targetPositionDeg;
         if ((Math.abs(positionError) <= ERROR_INTAKE_THRESHOLD_DEG)) {
             numConsectSamples++;
             if (numConsectSamples >= 1) {
@@ -153,22 +156,22 @@ public class SubsystemCatzIntake extends SubsystemBase {
             numConsectSamples = 0; //resetcounter if intake hasn't leveled off
         }
 
-        //change pid values between aggressive and gentle depending on how close to target angle pivot is
-        if (Math.abs(positionError) >= PID_FINE_GROSS_THRESHOLD_DEG) {
-            pid.setP(GROSS_kP);
-            pid.setI(GROSS_kI);
-            pid.setD(GROSS_kD);
+        // //change pid values between aggressive and gentle depending on how close to target angle pivot is
+        // if (Math.abs(positionError) >= PID_FINE_GROSS_THRESHOLD_DEG) {
+        //     pid.setP(GROSS_kP);
+        //     pid.setI(GROSS_kI);
+        //     pid.setD(GROSS_kD);
 
-        } else if (Math.abs(positionError) < PID_FINE_GROSS_THRESHOLD_DEG) {
-            pid.setP(FINE_kP);
-            pid.setI(FINE_kI);
-            pid.setD(FINE_kD);
-        }
+        // } else if (Math.abs(positionError) < PID_FINE_GROSS_THRESHOLD_DEG) {
+        //     pid.setP(FINE_kP);
+        //     pid.setI(FINE_kI);
+        //     pid.setD(FINE_kD);
+        // }
 
         //calculate pwr based off given pid values
         pidPower = pid.calculate(currentPositionDeg, m_targetPositionDeg);
         ffPower = calculateGravityFF();
-        m_targetPower = pidPower; //+ ffPower;
+        m_targetPower = pidPower + ffPower;
 
         // // -------------------------------------------------------------
         // // checking if we did not get updated position value(Sampling Issue).
@@ -200,6 +203,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     } 
     Logger.recordOutput("intake/manual pwr", m_pivotManualPwr);
     Logger.recordOutput("intake/final pwr", m_targetPower);
+    Logger.recordOutput("intake/position error", positionError);
     Logger.recordOutput("intake/pidPower", pidPower);
     Logger.recordOutput("intake/ffPower", ffPower);
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
@@ -213,6 +217,50 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //auto update intake angle
   public void updateIntakeTargetPosition(double intakeTargetAngle) {
     this.m_targetPositionDeg = intakeTargetAngle;
+
+    //if logicals for determining pid gains
+    //logicals for amp
+    if(intakeTargetAngle == -140){
+        if(previousTargetAngle == -190) {
+          pid.setP(FINE_kP);
+          pid.setI(FINE_kI);
+          pid.setD(FINE_kD);
+        } else {
+          pid.setP(GROSS_kP);
+          pid.setI(GROSS_kI);
+          pid.setD(GROSS_kD);
+        }
+    //logcials for ground
+    }else if(intakeTargetAngle == -190) {
+        if(previousTargetAngle == -140) {
+          pid.setP(FINE_kP);
+          pid.setI(FINE_kI);
+          pid.setD(FINE_kD);
+        } else {
+          pid.setP(GROSS_kP);
+          pid.setI(GROSS_kI);
+          pid.setD(GROSS_kD);
+        }
+    //logicals for stow
+    } else if(intakeTargetAngle == 0) {
+      if(previousTargetAngle == -20) {
+          pid.setP(HANDOFF_TO_STOW_KP);
+          pid.setI(FINE_kI);
+          pid.setD(FINE_kD);
+      } else if(previousTargetAngle == -140 ||
+                 previousTargetAngle == -190) {
+          pid.setP(GROSS_kP);
+          pid.setI(GROSS_kI);
+          pid.setD(GROSS_kD);    
+      }
+    //logicals for the handoff position
+    } else if(intakeTargetAngle == -20) {
+          pid.setP(FINE_kP);
+          pid.setI(FINE_kI);
+          pid.setD(FINE_kD);
+    }
+
+    previousTargetAngle = m_targetPositionDeg;
     currentIntakeState = IntakeState.AUTO;
     System.out.println("in auto");
   }
@@ -250,8 +298,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   private double calculateGravityFF() {
-    double radians = Math.toRadians(calcWristAngle()-70);
-    double cosineScalar = Math.sin(radians);
+    double radians = Math.toRadians(calcWristAngle()-CENTER_OF_MASS_OFFSET_DEG);
+    double cosineScalar = Math.cos(radians);
 
     return MAX_GRAVITY_FF * cosineScalar;
   }
