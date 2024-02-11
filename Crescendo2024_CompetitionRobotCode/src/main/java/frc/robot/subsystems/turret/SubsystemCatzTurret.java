@@ -23,14 +23,11 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static SubsystemCatzTurret instance = new SubsystemCatzTurret();
 
   //turret variables
-  //constants
-  //private final double ENC_TO_INTAKE_GEAR_RATIO = (46.0 / 18.0)* (32.0 / 10.0);
-  //private final double WRIST_CNTS_PER_DEGREE = (2096.0 * ENC_TO_INTAKE_GEAR_RATIO) / 360.0;
 
-  private final double TURRET_POWER     = 0.6;
+  private final double TURRET_POWER     = 0.7;
  
 
-  private static final double TURRET_kP = 0.0;
+  private static final double TURRET_kP = 0.01;
   private static final double TURRET_kI = 0.0;
   private static final double TURRET_kD = 0.0;
 
@@ -40,21 +37,19 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double GEAR_REDUCTION  =  TURRET_GEARBOX_PINION *TURRET_GEARBOX_TURRET_GEAR;
   private static final double TURRET_REV_PER_DEG = GEAR_REDUCTION/360;
 
-  public static double turretEncoderPosition = 0.0;
+  public static double currentTurretDegree = 0.0;
 
 
   //variables
   private double m_turretTargetDegree;
   private double pidTurretPower;
 
-  private boolean left = false;
-  private boolean right = false;
-
   private PIDController pid;
 
-  private double TURRET_POSITIVE_MAX_RANGE = 120.0 -10;
-  private double TURRET_NEGATIVE_MAX_RANGE = -120.0 +10.0;
+  private double TURRET_POSITIVE_MAX_RANGE = 120.0;
+  private double TURRET_NEGATIVE_MAX_RANGE = -120.0;
   private double HOME_POSITION             = 0.0;
+  private double manualTurretPwr;
 
   public SubsystemCatzTurret() {
 
@@ -76,6 +71,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
                             TURRET_kI, 
                             TURRET_kD);
 
+  //  io.turretSetEncoderPos(HOME_POSITION);
   }
 
   private static TurretState currentTurretState;
@@ -97,9 +93,17 @@ public class SubsystemCatzTurret extends SubsystemBase {
     Logger.processInputs("intake/inputs", inputs);   
     Logger.recordOutput("Turret Encoder", inputs.turretEncValue);
 
-     turretEncoderPosition = inputs.turretEncValue / TURRET_REV_PER_DEG; //TBD make conversion
-    System.out.println(turretEncoderPosition);
-
+    currentTurretDegree = inputs.turretEncValue / TURRET_REV_PER_DEG; //TBD make conversion
+    System.out.println(currentTurretDegree);
+    System.out.println(currentTurretState);
+    
+    pidTurretPower = pid.calculate(currentTurretDegree, m_turretTargetDegree);
+    if (currentTurretState == TurretState.AUTO) {
+      io.turretSetPwr(pidTurretPower);
+    }
+    else {
+      io.turretSetPwr(manualTurretPwr);
+    }
 
   }
 
@@ -109,34 +113,35 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
 
   public void setTurretTargetDegree(double turretTargetDegree) {
+    currentTurretState = TurretState.AUTO;
     m_turretTargetDegree = turretTargetDegree;
-
   }
 
   public void rotateLeft(){
+    currentTurretState = TurretState.FULL_MANUAL;
 
-
-        if (turretEncoderPosition > TURRET_NEGATIVE_MAX_RANGE ){
-              io.turretSetPwr(-TURRET_POWER);
-            }
-            else {
-              io.turretSetPwr(0.0);   
-            }        
-      }
+    if (currentTurretDegree > (TURRET_NEGATIVE_MAX_RANGE)) {
+      manualTurretPwr = -TURRET_POWER;
+    }
+    else {
+      manualTurretPwr = 0.0;
+    }        
+  }
   
 
   public void rotateRight(){
+    currentTurretState = TurretState.FULL_MANUAL;
 
-        if (turretEncoderPosition < TURRET_POSITIVE_MAX_RANGE ){
-               io.turretSetPwr(TURRET_POWER);
-            }
-
-        else {
-          io.turretSetPwr(0.0);
-        }
-          
+    if (currentTurretDegree < (TURRET_POSITIVE_MAX_RANGE)){
+      manualTurretPwr = TURRET_POWER;
     }
-  
+    else {
+      manualTurretPwr = 0.0;
+    }
+          
+  }
+
+
 
   //-------------------------------------Manual methods--------------------------------
   public Command cmdTurretLT() {
@@ -152,7 +157,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return run(()-> io.turretSetPwr(0.0));
   }
 
-  public Command resetTurretPosition(){
+  public Command cmdResetTurretPosition(){
     return run(()-> io.turretSetEncoderPos(HOME_POSITION));
   }
 
