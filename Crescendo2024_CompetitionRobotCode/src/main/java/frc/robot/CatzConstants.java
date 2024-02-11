@@ -87,7 +87,7 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
 
-     public static final double LT_FRNT_OFFSET =  -0.2194285554857165; //-0.0013; //MC ID 2
+     public static final double LT_FRNT_OFFSET =  -0.7194285554857165; //-0.0013; //MC ID 2
      public static final double LT_BACK_OFFSET =  0.3238585205964611; //0.0498; //MC ID 4
      public static final double RT_FRNT_OFFSET =  -0.30105623252640606; //0.0222; //MC ID 8//overtime
      public static final double RT_BACK_OFFSET =  -0.0855185771379645;
@@ -155,7 +155,7 @@ public final class CatzConstants {
     public static final double SDS_L2_PLUS_GEAR_RATIO = 6.75 * (14/16);       //SDS mk4i L2 ratio reduction plud random numbers from eddy
 
                                                                 //overtime
-    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(4);//0.095;// mUnits.inchesToMeters(4);
+    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(3.3);//0.095;// mUnits.inchesToMeters(4);
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;

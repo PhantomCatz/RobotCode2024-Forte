@@ -31,15 +31,19 @@ public class CatzAutonomous {
         chosenAllianceColor.addOption       ("Red Alliance",  DriverStation.Alliance.Red);
 
         internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
+        internalPathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
+
+
         internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
         internalPathChooser.addOption("ScoringC13", scoringC13());
         internalPathChooser.addOption("Curve", curveAuto());
+
+        
         //internalPathChooser.addOption("Drive Straight", driveStraight());
     }
 
     //configured dashboard
     public Command getCommand() {
-
         return internalPathChooser.get(); //for internal path choosing TBD should we use pathplanners or a coded version?
     }
 
@@ -50,9 +54,22 @@ public class CatzAutonomous {
         );
     }
 
+    private Command speaker4PieceWing(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("S4PW1"),true),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW1")),
+            Commands.waitSeconds(0.5),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW2")),
+            Commands.waitSeconds(0.5),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW3"))
+        );
+    }
+    
+    //below are test paths
+
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn"),false),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
             // Commands.waitSeconds(1),
             // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
@@ -61,7 +78,7 @@ public class CatzAutonomous {
 
     private Command curveAuto(){
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("Curve")),
+            setAutonStartPose(PathPlannerPath.fromPathFile("Curve"),false),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Curve")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right Straight"))
         );
@@ -69,7 +86,6 @@ public class CatzAutonomous {
 
     private Command scoringC13() {
         return new SequentialCommandGroup(
-            Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(1.27, 7.38, Rotation2d.fromDegrees(0)))),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
             Commands.waitSeconds(4),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
@@ -84,10 +100,9 @@ public class CatzAutonomous {
         );
     }
     
-    private Command setAutonStartPose(PathPlannerPath startPath){
+    private Command setAutonStartPose(PathPlannerPath startPath, boolean isFlipped){
         return Commands.runOnce(()->{
-            // m_driveTrain.resetDriveEncs();
-            m_driveTrain.resetPosition(startPath.getStartingDifferentialPose());
+            m_driveTrain.resetPosition(startPath.getPreviewStartingHolonomicPose(), isFlipped);
         });
     }
 

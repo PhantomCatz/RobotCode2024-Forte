@@ -60,7 +60,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     public final CatzSwerveModule RT_BACK_MODULE;
 
     // boolean for determining whether to use vision estimates in pose estimation
-    private boolean isVisionEnabled = true;
+    private boolean isVisionEnabled = false;
+
+    private double GYRO_FLIP = 0;
 
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
@@ -248,9 +250,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     //----------------------------------------------Gyro methods----------------------------------------------
 
-    // reset gyro then flip 180 degrees
-    public Command flipGyro() {
-        return runOnce(() -> gyroIO.setAngleAdjustmentIO(getGyroAngle()+180));
+    public void flipGyro() {
+        gyroIO.setAngleAdjustmentIO(getGyroAngle()+180);
     }
 
     public Command resetGyro() {
@@ -279,19 +280,25 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Get the Rotation2d object based on the gyro angle
     public Rotation2d getRotation2d() {
-        return Rotation2d.fromDegrees(getGyroAngle());
+        return Rotation2d.fromDegrees(getGyroAngle() + GYRO_FLIP);
     }
 
     // Reset the position of the robot with a given pose
-    public void resetPosition(Pose2d pose) {
-        m_poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
+    public void resetPosition(Pose2d pose, boolean isFlipped) {
+        if(isFlipped) {
+            GYRO_FLIP = 180;
+        }
+
+        m_poseEstimator.resetPosition(pose.getRotation(),getModulePositions(),pose);
+    }
+
+    public void unflipGyro(){
+        GYRO_FLIP = 0;
     }
 
     // Get the current pose of the robot
     public Pose2d getPose() {
-        Pose2d currentPosition = m_poseEstimator.getEstimatedPosition();
-        // currentPosition = new Pose2d(currentPosition.getX(), currentPosition.getY(), getRotation2d());
-        return currentPosition;
+        return m_poseEstimator.getEstimatedPosition();
     }
 
 
@@ -304,11 +311,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         }
     }
 
-    // Reset gyro and position for autonomous mode
-    public void resetForAutonomous() {
-        // flipGyro().execute();
-        resetPosition(DriveConstants.initPose);
-    }
 
     // Get an array of swerve module states
     public SwerveModuleState[] getModuleStates() {

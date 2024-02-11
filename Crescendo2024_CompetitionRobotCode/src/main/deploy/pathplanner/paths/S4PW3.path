@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 2.45,
-        "y": 7.03
+        "y": 5.56
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0283806616115356,
-        "y": 6.534646792546081
+        "x": 1.665344728692309,
+        "y": 5.189611426326988
       },
       "isLocked": false,
       "linkedName": null
@@ -17,18 +17,24 @@
     {
       "anchor": {
         "x": 2.45,
-        "y": 5.574358195791997
+        "y": 4.11050362756931
       },
       "prevControl": {
-        "x": 2.286019065618729,
-        "y": 5.714888234341376
+        "x": 2.2274648828898216,
+        "y": 4.262744502664469
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.05,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -39,11 +45,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "3 gp auto",
-  "previewStartingState": null,
+  "folder": "Speaker 4 piece wing",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

@@ -4,14 +4,12 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,13 +22,12 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class PPTrajectoryFollowingCmd extends Command {
-    private PathPlannerTrajectory.State previousState;
     private final HolonomicDriveController hocontroller;
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
     private PathPlannerTrajectory trajectory;
     
     private final Timer timer = new Timer();
-    private final double TIMEOUT_RATIO = 25;
+    private final double TIMEOUT_RATIO = 5;
 
     /**
      * The auto balance on charge station command constructor.
@@ -60,7 +57,7 @@ public class PPTrajectoryFollowingCmd extends Command {
                                 DriveConstants.
                                     swerveDriveKinematics.
                                         toChassisSpeeds(m_driveTrain.getModuleStates()), 
-                                m_driveTrain.getRotation2d());
+                                m_driveTrain.getRotation2d());//the starting rot doesnt work
 
         hocontroller = DriveConstants.holonomicDriveController;
 
@@ -71,9 +68,7 @@ public class PPTrajectoryFollowingCmd extends Command {
     public void initialize() {
         // Reset and begin timer
         timer.reset();
-        timer.start();
-        // Get initial state of path
-        previousState = trajectory.getInitialState();
+        timer.start();        
     }
 
     @Override
