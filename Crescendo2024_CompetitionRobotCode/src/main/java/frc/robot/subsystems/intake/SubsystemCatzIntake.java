@@ -218,47 +218,47 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public void updateIntakeTargetPosition(double intakeTargetAngle) {
     this.m_targetPositionDeg = intakeTargetAngle;
 
-    //if logicals for determining pid gains
-    //logicals for amp
-    if(intakeTargetAngle == -140){
-        if(previousTargetAngle == -190) {
-          pid.setP(FINE_kP);
-          pid.setI(FINE_kI);
-          pid.setD(FINE_kD);
-        } else {
-          pid.setP(GROSS_kP);
-          pid.setI(GROSS_kI);
-          pid.setD(GROSS_kD);
-        }
-    //logcials for ground
-    }else if(intakeTargetAngle == -190) {
-        if(previousTargetAngle == -140) {
-          pid.setP(FINE_kP);
-          pid.setI(FINE_kI);
-          pid.setD(FINE_kD);
-        } else {
-          pid.setP(GROSS_kP);
-          pid.setI(GROSS_kI);
-          pid.setD(GROSS_kD);
-        }
-    //logicals for stow
-    } else if(intakeTargetAngle == 0) {
-      if(previousTargetAngle == -20) {
-          pid.setP(HANDOFF_TO_STOW_KP);
-          pid.setI(FINE_kI);
-          pid.setD(FINE_kD);
-      } else if(previousTargetAngle == -140 ||
-                 previousTargetAngle == -190) {
-          pid.setP(GROSS_kP);
-          pid.setI(GROSS_kI);
-          pid.setD(GROSS_kD);    
-      }
-    //logicals for the handoff position
-    } else if(intakeTargetAngle == -20) {
-          pid.setP(FINE_kP);
-          pid.setI(FINE_kI);
-          pid.setD(FINE_kD);
-    }
+    // //if logicals for determining pid gains
+    // //logicals for amp
+    // if(intakeTargetAngle == -140){
+    //     if(previousTargetAngle == -190) {
+    //       pid.setP(FINE_kP);
+    //       pid.setI(FINE_kI);
+    //       pid.setD(FINE_kD);
+    //     } else {
+    //       pid.setP(GROSS_kP);
+    //       pid.setI(GROSS_kI);
+    //       pid.setD(GROSS_kD);
+    //     }
+    // //logcials for ground
+    // }else if(intakeTargetAngle == -190) {
+    //     if(previousTargetAngle == -140) {
+    //       pid.setP(FINE_kP);
+    //       pid.setI(FINE_kI);
+    //       pid.setD(FINE_kD);
+    //     } else {
+    //       pid.setP(GROSS_kP);
+    //       pid.setI(GROSS_kI);
+    //       pid.setD(GROSS_kD);
+    //     }
+    // //logicals for stow
+    // } else if(intakeTargetAngle == 0) {
+    //   if(previousTargetAngle == -20) {
+    //       pid.setP(HANDOFF_TO_STOW_KP);
+    //       pid.setI(FINE_kI);
+    //       pid.setD(FINE_kD);
+    //   } else if(previousTargetAngle == -140 ||
+    //              previousTargetAngle == -190) {
+    //       pid.setP(GROSS_kP);
+    //       pid.setI(GROSS_kI);
+    //       pid.setD(GROSS_kD);    
+    //   }
+    // //logicals for the handoff position
+    // } else if(intakeTargetAngle == -20) {
+    //       pid.setP(FINE_kP);
+    //       pid.setI(FINE_kI);
+    //       pid.setD(FINE_kD);
+    // }
 
     previousTargetAngle = m_targetPositionDeg;
     currentIntakeState = IntakeState.AUTO;
