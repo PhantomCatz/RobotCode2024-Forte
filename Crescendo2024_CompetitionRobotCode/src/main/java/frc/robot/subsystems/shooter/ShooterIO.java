@@ -5,14 +5,16 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
     @AutoLog
     public class ShooterIOInputs {
-        public double shooterVelocityRpsLT;
-        public double shooterVelocityRpsRT;
+        public double shooterVelocityLT;
+        public double shooterVelocityRT;
         public double shooterPercentOutputLT;
         public double shooterPercentOutputRT;
         public double shooterMotorVoltageLT;
         public double shooterMotorVoltageRT;
         public double shooterTorqueCurrentLT;
         public double shooterTorqueCurrentRT;
+        public double shooterDutyCycleLT;
+        public double shooterDutyCycleRT;
 
         public double LoadMotorPercentOutput; 
         public double LoadMotorVelocity;
@@ -21,17 +23,35 @@ public interface ShooterIO {
 
         public double shooterVelocityErrorLT;
         public double shooterVelocityErrorRT;
+
+        public boolean BBShooterUnbroken;
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}
 
-    public default void setFlywheelVelocity(double velocityLT, double velocityRT) {}
+    public default void setShooterEnabled() {}
 
     public default void setShooterDisabled() {}
 
-    public default void shootLoadPercentOutput(double percentOutput) {}
+    //public default void setShooterEnabledCmd(boolean rdyToShoot) {}
 
-    public default void setLoadDisabled() {}
+    public default void loadReverse() {}
 
-    public default void setFeedPercentOuput(double percentOutput) {}
+    public default void loadDisabled() {}
+
+    public default void loadForward() {}
+
+    //public default void loadForwardCmd(boolean bbUnBroken) {}
+
+    public default void feedForward() {}
+
+    public default void feedDisabled() {}
+
+    public default void setTurretPosition(double targetEncPos) {}
+
+    public default double getTurretDeg() {
+        return 0;
+    }
+
+    public default void setTurretCurrentPosition(double currentEncPos) {}
 }

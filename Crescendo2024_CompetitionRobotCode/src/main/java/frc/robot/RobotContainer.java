@@ -16,6 +16,7 @@ import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.StateMachineCmds.MoveToNewPositionCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
@@ -40,12 +41,12 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //private SubsystemCatzIntake intake;
     private SubsystemCatzShooter shooter;
     //private SubsystemCatzClimb climb;
-    //private SubsystemCatzElevator arm;
+    private SubsystemCatzElevator elevator;
 
     private CatzAutonomous auton = new CatzAutonomous();
 
     //xbox controller
-    private CommandXboxController xboxDrv;
+    public static CommandXboxController xboxDrv;
     private CommandXboxController xboxAux;
  
        
@@ -60,6 +61,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //intake     = SubsystemCatzIntake.getInstance();
 
     shooter    = SubsystemCatzShooter.getInstance();
+    elevator = SubsystemCatzElevator.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
     
@@ -89,7 +91,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
     
-    xboxDrv.rightTrigger().onTrue(shooter.setLoadMotor())
+    xboxDrv.rightTrigger().onTrue(shooter.shootNote())
                           .onFalse(shooter.setFeedMotorDisabled());
     //shooter activation
     xboxDrv.x().onTrue(shooter.cmdShooterEnabled())

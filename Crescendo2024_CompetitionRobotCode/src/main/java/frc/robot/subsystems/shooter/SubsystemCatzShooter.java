@@ -9,8 +9,11 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
+import frc.robot.RobotContainer;
+import frc.robot.CatzConstants.ShooterConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.shooter.ShooterIOInputsAutoLogged;
@@ -22,17 +25,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
   private static SubsystemCatzShooter instance = new SubsystemCatzShooter();
-
-
-  //Flywheel and Feed constants and variables
-  LoggedTunableNumber shooterVelRpsLT = new LoggedTunableNumber("LTVelShooter", 75.0);
-  LoggedTunableNumber shooterVelRpsRT = new LoggedTunableNumber("RTVelShooter", 90.0);
-  LoggedTunableNumber feedMotorTumableNumber = new LoggedTunableNumber("FeedMotor", 0.6);
-
-
-  //Load constants and variables
-  LoggedTunableNumber loadMotorTunableNumber  = new LoggedTunableNumber("LoadMotor",  1.0);
-
   //Pivot constants and variables
   private CatzMechanismPosition m_targetPosition;
 
@@ -56,6 +48,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
 
+
   // Get the singleton instance of the ShooterSubsystem
   public static SubsystemCatzShooter getInstance() {
       return instance;
@@ -69,30 +62,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
     Logger.processInputs("Shooter/shooterinputs ", inputs);
 
     if(DriverStation.isDisabled()) {
-      io.setLoadDisabled();
+      io.loadDisabled();
       io.setShooterDisabled();
     } else {
-
-      //TBD generate flag code for when teh shooters reach target vels
-      //rumble?
-      //if(inputs.shooterVelocityRpsLT > 1 && inputs.shooterVelcot)
-
-
-      //TBD add in logic if the drivers want to turn off the shooter
-
-
-      //TBD add logic for the beambreak /
-
-
-      //TBD once we're done command shooters off
-
     }
-
-
-    //logging variables
-    SmartDashboard.putNumber("shooterRpsLT", inputs.shooterVelocityRpsLT);
-    SmartDashboard.putNumber("shooterRpsRT", inputs.shooterVelocityRpsRT);
-
   }
 
   //-------------------------------------------Flywheel and Feed methods------------------------------------------
@@ -106,26 +79,30 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public void shooterEnabled() {
-    io.setFlywheelVelocity(shooterVelRpsLT.get(), shooterVelRpsRT.get());
-    io.setFeedPercentOuput(feedMotorTumableNumber.get());
+    io.setShooterEnabled();
+    io.feedForward();
   }
 
   public void shooterDisabled() {
     io.setShooterDisabled();
-    io.setFeedPercentOuput(0.0);
+    io.feedDisabled();
   }
 
-  //--------------------------------------------------Load methods------------------------------------------
-  public Command setLoadMotor() {
-    return run(()->io.shootLoadPercentOutput(-loadMotorTunableNumber.get()));
-  }
-
-  public Command setLoadReverse() {
-      return run(()->io.shootLoadPercentOutput(loadMotorTunableNumber.get()));
+  public Command setFeedMotor() {
+    return run(()->io.feedForward());
   }
 
   public Command setFeedMotorDisabled() {
-    return run(()->io.setLoadDisabled());
+    return run(()->io.setShooterDisabled());
   }
 
+  //-------------------------------------------Load methods------------------------------------------
+  
+  public Command setLoadReverse() {
+      return run(()->io.loadReverse());
+  }
+
+  public Command shootNote() {
+    return run(()->io.loadForward());
+  }
 }
