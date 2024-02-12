@@ -32,7 +32,7 @@ public class IntakeIOReal implements IntakeIO {
     
             //create new config objects
     private TalonFXConfiguration pivotTalonConfigs = new TalonFXConfiguration();
-    private Slot0Configs pivotConfigs = new Slot0Configs();
+    private Slot0Configs pidConfigs = new Slot0Configs();
     private Slot1Configs rollerConfigs = new Slot1Configs();
 
     public IntakeIOReal() {
@@ -44,7 +44,7 @@ public class IntakeIOReal implements IntakeIO {
         rollerMtr = new TalonFX(IntakeConstants.ROLLER_MTR_ID);
             //reset to factory defaults
         rollerMtr.getConfigurator().apply(new TalonFXConfiguration());
-        pivotTalonConfigs.Slot0 = pivotConfigs;
+        pivotTalonConfigs.Slot0 = pidConfigs;
         pivotTalonConfigs.Slot1 = rollerConfigs;
             //current limit
         pivotTalonConfigs.CurrentLimits = new CurrentLimitsConfigs();
@@ -55,10 +55,10 @@ public class IntakeIOReal implements IntakeIO {
             //neutral mode
         pivotTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        pivotConfigs.kP = 0.11;
-        pivotConfigs.kI = 0.0;
-        pivotConfigs.kD = 0.0;
-        pivotConfigs.kV = 0.1189;
+        pidConfigs.kP = 0.11;
+        pidConfigs.kI = 0.0;
+        pidConfigs.kD = 0.0;
+        pidConfigs.kV = 0.1189;
 
         pivotMtr.setPosition(0);
         //SensorInitializationStra
