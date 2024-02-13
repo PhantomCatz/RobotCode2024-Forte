@@ -32,7 +32,6 @@ public class PPTrajectoryFollowingCmd extends Command {
     private final double TIMEOUT_RATIO = 5;
 
     /**
-     * 
      * @param drivetrain The coordinator between the gyro and the swerve modules.
      * @param trajectory          The trajectory to follow.
      */

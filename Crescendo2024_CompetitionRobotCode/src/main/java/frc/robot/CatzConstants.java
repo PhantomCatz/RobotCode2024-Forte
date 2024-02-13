@@ -90,7 +90,8 @@ public final class CatzConstants {
    * Width refers to the <i>y</i> direction (as described by wpilib)
    */
   public class FieldConstants {
-    public static double fieldLength = Units.inchesToMeters(651.223);
+    public static final double SPEAKER_COORD_MTRS_Y = Units.inchesToMeters(219.277);
+    public static double FIELD_LENGTH_MTRS = Units.inchesToMeters(651.223);
     public static double fieldWidth = Units.inchesToMeters(323.277);
     public static double wingX = Units.inchesToMeters(229.201);
     public static double podiumX = Units.inchesToMeters(126.75);
@@ -101,7 +102,7 @@ public final class CatzConstants {
 
     /** Staging locations for each note */
     public static final class StagingLocations {
-      public static double centerlineX = fieldLength / 2.0;
+      public static double centerlineX = FIELD_LENGTH_MTRS / 2.0;
 
       // need to update
       public static double centerlineFirstY = Units.inchesToMeters(29.638);
