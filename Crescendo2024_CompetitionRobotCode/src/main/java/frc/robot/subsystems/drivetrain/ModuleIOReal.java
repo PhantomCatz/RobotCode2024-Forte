@@ -62,6 +62,7 @@ public class ModuleIOReal implements ModuleIO {
         driveConfigs.kP = 2.4; //TBD 0.3 has a better graph but it jitters the auton. 0.1 doesnt jitter for auton but slow for telop //for atlas
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.00;
+        driveConfigs.kV = 0.1189; //TBD need tick eq for this
 
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){
