@@ -35,7 +35,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //intake pivot variables
   //constants
-  private final double ENC_TO_INTAKE_GEAR_RATIO = (60 / 20)* (32 / 16);
+  private final double ENC_TO_INTAKE_GEAR_RATIO = 18;//(60 / 20)* (32 / 16);
   private final double WRIST_CNTS_PER_DEGREE = (2048.0 * ENC_TO_INTAKE_GEAR_RATIO) / 360.0;
 
   private static final double GROSS_kP = 0.003; //0.003 //0.008
