@@ -31,4 +31,6 @@ public interface IntakeIO {
     public default void resetPivotEncPos(double defaultEncoderPosition) {}
 
     public default void setIntakePivotPercentOutput(double percentOutput) {}
+
+    public default void setIntakePivotEncOutput(double percentOutput) {}
 }

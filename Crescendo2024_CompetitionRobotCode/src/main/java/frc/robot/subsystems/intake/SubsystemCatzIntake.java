@@ -263,7 +263,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
     //       pid.setD(FINE_kD);
     // }
 
-    m_previousTargetAngle = m_targetPositionDeg;
+    //m_previousTargetAngle = m_targetPositionDeg;
+    io.setIntakePivotEncOutput((intakeTargetAngle*6)/360);
     currentIntakeState = IntakeState.AUTO;
     System.out.println("in auto");
   }
