@@ -104,6 +104,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
      xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
      xboxAux.a().onTrue(turret.cmdResetTurretPosition()).onFalse(turret.cmdTurretOff());
      xboxAux.x().onTrue(turret.cmdTurretDegree(0.0));
+     xboxAux.b().onTrue(turret.cmdAutoRotate()).onFalse(turret.cmdTurretOff());
+     
     // xboxAux.start().onTrue(turret.cmdTurretOff());
 
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());

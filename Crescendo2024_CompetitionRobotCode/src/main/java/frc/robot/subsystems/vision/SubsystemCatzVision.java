@@ -295,6 +295,10 @@ public class SubsystemCatzVision extends SubsystemBase {
         }   
     } 
 
+    public double getHorizontalAngle() {
+        return inputs.tx;
+    }
+
     /**
     * singleton implenentation of vision
     * Any new cameras should be declared here

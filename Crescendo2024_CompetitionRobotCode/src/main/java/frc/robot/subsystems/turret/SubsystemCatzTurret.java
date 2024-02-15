@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
 public class SubsystemCatzTurret extends SubsystemBase {
@@ -113,25 +114,30 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
 
   //------------------------------------Turret Methods----------------
-  public Command cmdTurretDegree(double turretDeg) {
-    return run(()->setTurretTargetDegree(turretDeg));
-  }
-
+  
   public void setTurretTargetDegree(double turretTargetDegree) {
     currentTurretState = TurretState.AUTO;
     m_turretTargetDegree = turretTargetDegree;
   }
-
+  
+  public void autoRotate() {
+    currentTurretState = TurretState.AUTO;
+    
+    m_turretTargetDegree = currentTurretDegree - SubsystemCatzVision.getInstance().getHorizontalAngle();
+    setTurretTargetDegree(m_turretTargetDegree); // beach blitz said multiply by 0.06
+  }
+  
+  
   public void rotateLeft(){
     currentTurretState = TurretState.FULL_MANUAL;
-
+    
     if (currentTurretDegree > (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) {
       System.out.println("1");
       manualTurretPwr = -TURRET_POWER;
     }
-    else if ((currentTurretDegree < (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) && (currentTurretDegree >= TURRET_NEGATIVE_MAX_RANGE)&& (manualTurretPwr < 0)){
+    else if ((currentTurretDegree < (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) && (currentTurretDegree >= TURRET_NEGATIVE_MAX_RANGE) && (manualTurretPwr < 0)){
       System.out.println("2");
-      io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_NEGATIVE_MAX_RANGE ));
+      manualTurretPwr = -TURRET_DECEL_PWR;
     }
     else if ((currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE))
     {
@@ -142,51 +148,59 @@ public class SubsystemCatzTurret extends SubsystemBase {
       System.out.println("4");
       manualTurretPwr = 0.0;
     }      
-
-
- 
+    
+    //    currentTurretDegree = SubsystemCatzVision.getInstance().getHorizontalAngle();
+    
+    
   }
   
-
+  
   public void rotateRight(){
     currentTurretState = TurretState.FULL_MANUAL;
-
+    
     if (currentTurretDegree < (TURRET_POSITIVE_MAX_RANGE - POS_DECEL_THRESHOLD)){
       manualTurretPwr = TURRET_POWER;
     }
     else if ((currentTurretDegree > (TURRET_POSITIVE_MAX_RANGE - POS_DECEL_THRESHOLD)) && (currentTurretDegree < TURRET_POSITIVE_MAX_RANGE) && (manualTurretPwr > 0)){
-          io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_POSITIVE_MAX_RANGE));
+      manualTurretPwr = TURRET_DECEL_PWR;
     }
     else if ((currentTurretDegree > TURRET_POSITIVE_MAX_RANGE))
     {
-       io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_POSITIVE_MAX_RANGE));
+      io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_POSITIVE_MAX_RANGE));
     }  
     else {
       manualTurretPwr = 0.0;
-    }
-
-
-          
+    }          
   }
 
+  
 
-
+  
+  
   //-------------------------------------Manual methods--------------------------------
   public Command cmdTurretLT() {
     return run(()-> rotateLeft());
   }
-
+  
   public Command cmdTurretRT() {
     return run(()-> rotateRight());
   }
-
+  
   public Command cmdTurretOff() {
     currentTurretState = TurretState.FULL_MANUAL;
     return run(()-> io.turretSetPwr(0.0));
   }
-
+  
   public Command cmdResetTurretPosition(){
     return run(()-> io.turretSetEncoderPos(HOME_POSITION));
   }
+  
+  public Command cmdTurretDegree(double turretDeg) {
+    return run(()->setTurretTargetDegree(turretDeg));
+  }
 
+  public Command cmdAutoRotate() {
+    return run(() ->autoRotate());
+  }
+  
 }
