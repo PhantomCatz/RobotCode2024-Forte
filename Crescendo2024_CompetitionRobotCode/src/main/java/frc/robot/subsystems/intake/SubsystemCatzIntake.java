@@ -302,7 +302,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   private double calculateGravityFF() {
-    double radians = Math.toRadians(calcWristAngle()-CENTER_OF_MASS_OFFSET_DEG);
+    double radians = Math.toRadians(calcWristAngle()+CENTER_OF_MASS_OFFSET_DEG);
     double cosineScalar = Math.cos(radians);
 
     return MAX_GRAVITY_FF * cosineScalar;
