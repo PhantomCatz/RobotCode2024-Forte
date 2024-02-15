@@ -39,7 +39,17 @@ public class CatzAutonomous {
         internalPathChooser.addOption("ScoringC13", scoringC13());
         internalPathChooser.addOption("Curve", curveAuto());
 
-        
+        /*PathPlannerPath path = PathPlannerPath.fromPathFile("Bulldozer");
+        for(int i=0; i<path.getAllPathPoints().size(); i++){
+            System.out.println(path.getAllPathPoints().get(i).position);
+        }
+        System.out.println("\n");
+        //path = path.flipPath();
+        path.flipPath();
+        for(int i=0; i<path.getAllPathPoints().size(); i++){
+            System.out.println(path.getAllPathPoints().get(i).position);
+        }*/
+
         //internalPathChooser.addOption("Drive Straight", driveStraight());
     }
 
@@ -71,9 +81,9 @@ public class CatzAutonomous {
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn"),false),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
-            // Commands.waitSeconds(1),
-            // new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            Commands.waitSeconds(1),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
         );
     }
 
@@ -103,7 +113,12 @@ public class CatzAutonomous {
     
     private Command setAutonStartPose(PathPlannerPath startPath, boolean isFlipped){
         return Commands.runOnce(()->{
-            m_driveTrain.resetPosition(startPath.getPreviewStartingHolonomicPose(), isFlipped);
+            PathPlannerPath path = startPath;
+            if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+                path = startPath.flipPath();
+            }
+
+            m_driveTrain.resetPosition(path.getPreviewStartingHolonomicPose(), isFlipped);
         });
     }
 

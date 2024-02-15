@@ -79,11 +79,11 @@ public class CatzSwerveModule {
 
     //----------------------------------------Setting pwr methods-------------------------------
     public void setSteerPower(double pwr) {
-            io.setSteerPwrIO(pwr);
+        io.setSteerPwrIO(pwr);
     }
 
     public void setDriveVelocity(double velocity) {
-            io.setDriveVelocityIO(velocity);
+        io.setDriveVelocityIO(velocity);
     }
 
     public double getAverageRawMagEnc(){
@@ -140,11 +140,20 @@ public class CatzSwerveModule {
         //ff drive control
         double driveRPSFF = m_driveFeedforward.calculate(driveRPS);
         //set drive velocity
-        setDriveVelocity(driveRPS + driveRPSFF);
+
+        if(SubsystemCatzDrivetrain.getInstance().isFlipped()){
+
+            setDriveVelocity(-1*(driveRPS + driveRPSFF));
+        }
+        else{
+            setDriveVelocity(driveRPS + driveRPSFF);
+
+        }
 
         //calculate steer pwr
         //negative steer power because of coordinate system
-        double steerPIDpwr = - m_PID.calculate(currentAngleRad, targetAngleRad); 
+        double steerPIDpwr = -m_PID.calculate(currentAngleRad, targetAngleRad); 
+
         setSteerPower(steerPIDpwr);
 
         //logging

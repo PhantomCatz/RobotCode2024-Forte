@@ -30,7 +30,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  * -sets up autonomous from CatzAtutonomouschooser
  */
  public class RobotContainer {
-    
     //subsystems
     private SubsystemCatzDrivetrain driveTrain; 
     private SubsystemCatzVision vision;

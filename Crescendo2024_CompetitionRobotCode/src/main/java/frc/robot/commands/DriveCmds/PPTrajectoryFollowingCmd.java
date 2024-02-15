@@ -30,30 +30,20 @@ public class PPTrajectoryFollowingCmd extends Command {
     
     private final Timer timer = new Timer();
     private final double TIMEOUT_RATIO = 5;
+    private PathPlannerPath path;
 
     /**
      * @param drivetrain The coordinator between the gyro and the swerve modules.
      * @param trajectory          The trajectory to follow.
      */
     public PPTrajectoryFollowingCmd(PathPlannerPath newPath) {
-       if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-            newPath.flipPath();
-        }
-
-        this.trajectory = new PathPlannerTrajectory(
-                                newPath, 
-                                DriveConstants.
-                                    swerveDriveKinematics.
-                                        toChassisSpeeds(m_driveTrain.getModuleStates()),
-                                m_driveTrain.getRotation2d());
-
+        path = newPath;
         hocontroller = DriveConstants.holonomicDriveController;
         addRequirements(m_driveTrain);
     }
 
     //Trajectories w/o path planner
     public PPTrajectoryFollowingCmd(List<Translation2d> bezierPoints, PathConstraints constraints, GoalEndState endRobotState) {
-
         PathPlannerPath newPath = new PathPlannerPath(bezierPoints, constraints, endRobotState);
 
         this.trajectory = new PathPlannerTrajectory(
@@ -72,7 +62,24 @@ public class PPTrajectoryFollowingCmd extends Command {
     public void initialize() {
         // Reset and begin timer
         timer.reset();
-        timer.start();        
+        timer.start();  
+        
+        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+            path = path.flipPath();
+            System.out.println("flip");
+        }
+        for(int i=0; i<path.getAllPathPoints().size(); i++){
+            System.out.println(path.getAllPathPoints().get(i).position);
+        }
+        System.out.println("\n");
+        Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
+        
+        this.trajectory = new PathPlannerTrajectory(
+                                path, 
+                                DriveConstants.
+                                    swerveDriveKinematics.
+                                        toChassisSpeeds(m_driveTrain.getModuleStates()),
+                                m_driveTrain.getRotation2d());
     }
 
     @Override

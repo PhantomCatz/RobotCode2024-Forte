@@ -3,12 +3,13 @@
   "robotLength": 0.6,
   "holonomicMode": true,
   "pathFolders": [
-    "Speaker 4 piece wing",
     "5 gp path",
     "6 Note Auton 5940",
+    "test",
     "Scoring C1-3",
     "Scoring C2-4",
-    "Scoring C5-3"
+    "Scoring C5-3",
+    "Speaker 4 piece wing"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.0,

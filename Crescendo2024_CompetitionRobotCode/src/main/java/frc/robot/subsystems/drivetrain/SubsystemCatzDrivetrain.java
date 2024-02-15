@@ -251,7 +251,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     //----------------------------------------------Gyro methods----------------------------------------------
 
     public void flipGyro() {
-        gyroIO.setAngleAdjustmentIO(getGyroAngle()+180);
+        gyroIO.setAngleAdjustmentIO(180);
     }
 
     public Command resetGyro() {
@@ -280,7 +280,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Get the Rotation2d object based on the gyro angle
     public Rotation2d getRotation2d() {
-        return Rotation2d.fromDegrees(getGyroAngle() + GYRO_FLIP);
+        return Rotation2d.fromDegrees(getGyroAngle());
     }
 
     // Reset the position of the robot with a given pose
@@ -288,8 +288,15 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         if(isFlipped) {
             GYRO_FLIP = 180;
         }
+        
+        m_poseEstimator.resetPosition(Rotation2d.fromDegrees(getGyroAngle()),getModulePositions(),pose);
+    }
 
-        m_poseEstimator.resetPosition(pose.getRotation(),getModulePositions(),pose);
+    public boolean isFlipped(){
+        if(GYRO_FLIP == 180){
+            return true;
+        }
+        return false;
     }
 
     public void unflipGyro(){
@@ -300,7 +307,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     public Pose2d getPose() {
         return m_poseEstimator.getEstimatedPosition();
     }
-
 
     //----------------------------------------------Enc resets-------------------------------------------------------
 

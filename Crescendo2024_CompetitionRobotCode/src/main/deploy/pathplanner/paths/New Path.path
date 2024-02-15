@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.45,
-        "y": 7.03
+        "x": 2.2977299021645106,
+        "y": 5.960815801802787
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9815373154284097,
-        "y": 6.45267093672561
+        "x": 3.421970210559535,
+        "y": 5.984237474894352
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.45,
-        "y": 5.562647359246215
+        "x": 3.866981999299233,
+        "y": 5.960815801802787
       },
       "prevControl": {
-        "x": 2.332891634542185,
-        "y": 5.67975572470403
+        "x": 3.0940667872776535,
+        "y": 5.972526638348569
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,21 +32,18 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Speaker 4 piece wing",
-  "previewStartingState": {
-    "rotation": 0.0,
-    "velocity": 0
-  },
+  "folder": "test",
+  "previewStartingState": null,
   "useDefaultConstraints": false
 }
