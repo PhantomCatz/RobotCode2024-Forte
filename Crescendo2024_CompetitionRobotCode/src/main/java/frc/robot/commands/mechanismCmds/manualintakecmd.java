@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 
-public class manualintakecmd extends Command {
+public class ManualIntakeCmd extends Command {
   SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   Supplier<Double> supplierLeftJoyX;
   /** Creates a new manualintakecmd. */
-  public manualintakecmd(Supplier<Double> supplierLeftJoyX) {
+  public ManualIntakeCmd(Supplier<Double> supplierLeftJoyX) {
     this.supplierLeftJoyX = supplierLeftJoyX;
     addRequirements(intake);
     // Use addRequirements() here to declare subsystem dependencies.

@@ -38,6 +38,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double ENC_TO_INTAKE_GEAR_RATIO = 18;//(60 / 20)* (32 / 16);
   private final double WRIST_CNTS_PER_DEGREE = (2048.0 * ENC_TO_INTAKE_GEAR_RATIO) / 360.0;
 
+  private final double INTAKE_ANGLE_TO_MTR_ROTATIONS = 6/360;
+
   private static final double GROSS_kP = 0.003; //0.003 //0.008
   private static final double GROSS_kI = 0.000; //0.00 //0.0
   private static final double GROSS_kD = 0.00025; //0.00025 0.0
@@ -53,9 +55,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   private final double STOW_CUTOFF = 0.0; //TBD need to dial in
   private final double CENTER_OF_MASS_OFFSET_DEG = 177.0;//177.0;
-  private final double MAX_GRAVITY_FF = 0.04;
+  private final double GRAVITY_FF_SCALING_COEFFICIENT = 0.04;
 
-  private final double MANUAL_HOLD_STEP_SIZE = 2.0;
+  private final double MANUAL_HOLD_STEP_COEFFICIENT = 2.0;
 
   private final double STOW_ENC_POS = 0.0;
   private final double ANGLE_AMP_SCORING = 0.0;
@@ -74,6 +76,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private boolean m_intakeInPosition;
   private int    m_rollerRunningMode;
   private double m_previousTargetAngle;
+  private double m_finalEncOutput;
+
 
 
   private PIDController pid;
@@ -158,32 +162,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
         } else {
             m_numConsectSamples = 0; //resetcounter if intake hasn't leveled off
         }
-
-        // //change pid values between aggressive and gentle depending on how close to target angle pivot is
-        // if (Math.abs(positionError) >= PID_FINE_GROSS_THRESHOLD_DEG) {
-        //     pid.setP(GROSS_kP);
-        //     pid.setI(GROSS_kI);
-        //     pid.setD(GROSS_kD);
-
-        // } else if (Math.abs(positionError) < PID_FINE_GROSS_THRESHOLD_DEG) {
-        //     pid.setP(FINE_kP);
-        //     pid.setI(FINE_kI);
-        //     pid.setD(FINE_kD);
-        // }
-
-        //calculate pwr based off given pid values
-        m_pidPower = pid.calculate(currentPositionDeg, m_targetPositionDeg);
+        
+        //calculate ff pwr and and sends to mtr through motion magic
         m_ffPower = calculateGravityFF();
-        m_targetPower = m_pidPower + m_ffPower;
-
-        // // -------------------------------------------------------------
-        // // checking if we did not get updated position value(Sampling Issue).
-        // // If no change in position, this give invalid target power(kD issue).
-        // // Therefore, go with prev targetPower Value.
-        // // -------------------------------------------------------------------
-        // if (m_prevCurrentPosition == currentPositionDeg) {
-        //     m_targetPower = prevTargetPwr;
-        // }
+        m_finalEncOutput = m_targetPositionDeg * INTAKE_ANGLE_TO_MTR_ROTATIONS;
 
         // ----------------------------------------------------------------------------------
         // If we are going to Stow Position & have passed the power cutoff angle, set
@@ -191,16 +173,17 @@ public class SubsystemCatzIntake extends SubsystemBase {
         // current angle
         // ----------------------------------------------------------------------------------
         if (m_targetPositionDeg == STOW_ENC_POS && currentPositionDeg > STOW_CUTOFF) {
-            m_targetPower = 0.0;
+            io.setIntakePivotPercentOutput(0.0);
 
+        } else {
+        //set final mtr pwr
+        io.setIntakePivotEncOutput(m_finalEncOutput, m_ffPower);
         }
-
-        //set pivot pwr
-        io.setIntakePivotPercentOutput(-m_targetPower);
-
+        
         m_prevCurrentPosition = currentPositionDeg;
         m_prevTargetPwr = m_targetPower;
-      } else {
+
+      } else { //we are current setting pwr through manual
         io.setIntakePivotPercentOutput(m_pivotManualPwr);
       }
     } 
@@ -221,50 +204,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public void updateIntakeTargetPosition(double intakeTargetAngle) {
     this.m_targetPositionDeg = intakeTargetAngle;
 
-    // //if logicals for determining pid gains
-    // //logicals for amp
-    // if(intakeTargetAngle == -140){
-    //     if(previousTargetAngle == -190) {
-    //       pid.setP(FINE_kP);
-    //       pid.setI(FINE_kI);
-    //       pid.setD(FINE_kD);
-    //     } else {
-    //       pid.setP(GROSS_kP);
-    //       pid.setI(GROSS_kI);
-    //       pid.setD(GROSS_kD);
-    //     }
-    // //logcials for ground
-    // }else if(intakeTargetAngle == -190) {
-    //     if(previousTargetAngle == -140) {
-    //       pid.setP(FINE_kP);
-    //       pid.setI(FINE_kI);
-    //       pid.setD(FINE_kD);
-    //     } else {
-    //       pid.setP(GROSS_kP);
-    //       pid.setI(GROSS_kI);
-    //       pid.setD(GROSS_kD);
-    //     }
-    // //logicals for stow
-    // } else if(intakeTargetAngle == 0) {
-    //   if(previousTargetAngle == -20) {
-    //       pid.setP(HANDOFF_TO_STOW_KP);
-    //       pid.setI(FINE_kI);
-    //       pid.setD(FINE_kD);
-    //   } else if(previousTargetAngle == -140 ||
-    //              previousTargetAngle == -190) {
-    //       pid.setP(GROSS_kP);
-    //       pid.setI(GROSS_kI);
-    //       pid.setD(GROSS_kD);    
-    //   }
-    // //logicals for the handoff position
-    // } else if(intakeTargetAngle == -20) {
-    //       pid.setP(FINE_kP);
-    //       pid.setI(FINE_kI);
-    //       pid.setD(FINE_kD);
-    // }
-
-    //m_previousTargetAngle = m_targetPositionDeg;
-    io.setIntakePivotEncOutput((intakeTargetAngle*6)/360);
     currentIntakeState = IntakeState.AUTO;
     System.out.println("in auto");
   }
@@ -276,11 +215,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //semi manual
   public void pivotSemiManual(double semiManualPwr) {
     if (semiManualPwr > 0) {
-      m_targetPositionDeg = Math.min((m_targetPositionDeg + semiManualPwr * MANUAL_HOLD_STEP_SIZE),
-              -30);
+      m_targetPositionDeg = Math.min((m_targetPositionDeg + semiManualPwr * MANUAL_HOLD_STEP_COEFFICIENT),
+              150); //stow position bound
     } else {
-      m_targetPositionDeg = Math.max((m_targetPositionDeg + semiManualPwr * MANUAL_HOLD_STEP_SIZE),
-              -180);
+      m_targetPositionDeg = Math.max((m_targetPositionDeg + semiManualPwr * MANUAL_HOLD_STEP_COEFFICIENT),
+              -60); //full deploy to ground bound
     }
 
     currentIntakeState = IntakeState.SEMI_MANUAL;
@@ -302,10 +241,17 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   private double calculateGravityFF() {
-    double radians = Math.toRadians(calcWristAngle()+CENTER_OF_MASS_OFFSET_DEG);
-    double cosineScalar = Math.cos(radians);
+    double pivotAngleRadians = Math.toRadians(calcWristAngle());//+CENTER_OF_MASS_OFFSET_DEG);
+    double appliedCosineValue = Math.cos(pivotAngleRadians);
+    
+    //is the intake is dipped below horizontal in which case we need more pwr...
+    //take the difference of the cosine value and 1 and add it to the applied cosine value
+    if(pivotAngleRadians < 0) {
+      double addedDiffernce = 1 - appliedCosineValue;
+      appliedCosineValue = 1 + addedDiffernce;
+    }
 
-    return MAX_GRAVITY_FF * cosineScalar;
+    return GRAVITY_FF_SCALING_COEFFICIENT * appliedCosineValue;
   }
 
   private double calcWristAngle() {

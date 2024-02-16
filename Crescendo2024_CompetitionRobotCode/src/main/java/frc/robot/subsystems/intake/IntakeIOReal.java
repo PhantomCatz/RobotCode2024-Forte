@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -61,8 +62,6 @@ public class IntakeIOReal implements IntakeIO {
         pidConfigs.kI = 0.0;
         pidConfigs.kD = 0.0;
         pidConfigs.kV = 0.1189;
-        pidConfigs.kG = 0.11;
-        pidConfigs.GravityType = GravityTypeValue.Arm_Cosine;
 
         pivotMtr.setPosition(140);
 
@@ -107,8 +106,8 @@ public class IntakeIOReal implements IntakeIO {
     }
 
     @Override
-    public void setIntakePivotEncOutput(double encOutput) {
-        pivotMtr.setControl(new MotionMagicVoltage(encOutput));
+    public void setIntakePivotEncOutput(double encOutput, double ffPercentOutput) {
+        pivotMtr.setControl(new MotionMagicDutyCycle(encOutput).withFeedForward(ffPercentOutput).withEnableFOC(true));
     }
 
 

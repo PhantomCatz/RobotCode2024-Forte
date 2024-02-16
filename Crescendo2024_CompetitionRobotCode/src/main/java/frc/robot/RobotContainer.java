@@ -17,7 +17,7 @@ import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
-import frc.robot.commands.mechanismCmds.manualintakecmd;
+import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
@@ -92,7 +92,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // Trigger intakePivotOverride = new Trigger(()-> xboxAux.getLeftY() > 0.1);
     // intakePivotOverride.onTrue(intake.cmdFullManual(xboxAux.getLeftY()))
     //                    .onFalse(intake.cmdFullManual(OIConstants.kOffPwr));
-    xboxAux.leftStick().onTrue(new manualintakecmd(()->xboxAux.getLeftY()));
+    xboxAux.leftStick().onTrue(new ManualIntakeCmd(()->xboxAux.getLeftY()));
 
     xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
     xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
