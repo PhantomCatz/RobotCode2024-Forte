@@ -29,7 +29,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private final double TURRET_DECEL_PWR = 0.3;
  
 
-  private static final double TURRET_kP = 0.01;
+  private static final double TURRET_kP = 0.02;
   private static final double TURRET_kI = 0.0;
   private static final double TURRET_kD = 0.0;
 
@@ -39,7 +39,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double GEAR_REDUCTION  =  TURRET_GEARBOX_PINION *TURRET_GEARBOX_TURRET_GEAR;
   private static final double TURRET_REV_PER_DEG = GEAR_REDUCTION/360;
 
-  public static double currentTurretDegree = 0.0;
+  public static double currentTurretDegree = 120.0; //0.0
 
 
   //variables
@@ -48,13 +48,15 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   private PIDController pid;
 
-  private final double TURRET_POSITIVE_MAX_RANGE = 120.0;
-  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0;
+  private final double TURRET_POSITIVE_MAX_RANGE = 240.0; //120
+  private final double TURRET_NEGATIVE_MAX_RANGE = 0.0; //-120
+
+
 
   private final double NEGATIVE_DECEL_THRESHOLD  =  -15.0;
   private final double POS_DECEL_THRESHOLD       =   15.0;
 
-  private double HOME_POSITION             = 0.0;
+  private double HOME_POSITION             = 120.0; //0.0
   private double manualTurretPwr;
 
   public SubsystemCatzTurret() {
@@ -98,7 +100,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("intake/inputs", inputs);   
     Logger.recordOutput("Turret Encoder", inputs.turretEncValue);
-
+    Logger.recordOutput("currentTurretDeg", currentTurretDegree);
+    Logger.recordOutput("Limelight tX", SubsystemCatzVision.getInstance().getHorizontalAngle());
+    Logger.recordOutput("m_TurretTargetDegree", m_turretTargetDegree);
     currentTurretDegree = inputs.turretEncValue / TURRET_REV_PER_DEG; //TBD make conversion
     System.out.println(currentTurretDegree);
     System.out.println(currentTurretState);
@@ -122,8 +126,10 @@ public class SubsystemCatzTurret extends SubsystemBase {
   
   public void autoRotate() {
     currentTurretState = TurretState.AUTO;
-    
-    m_turretTargetDegree = currentTurretDegree - SubsystemCatzVision.getInstance().getHorizontalAngle();
+
+    if((SubsystemCatzVision.getInstance().getHorizontalAngle()) < 5 && (SubsystemCatzVision.getInstance().getHorizontalAngle()) > -5) {
+      m_turretTargetDegree = currentTurretDegree;
+    } 
     setTurretTargetDegree(m_turretTargetDegree); // beach blitz said multiply by 0.06
   }
   
@@ -150,8 +156,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
     }      
     
     //    currentTurretDegree = SubsystemCatzVision.getInstance().getHorizontalAngle();
-    
-    
   }
   
   

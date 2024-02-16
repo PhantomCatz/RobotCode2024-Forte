@@ -296,7 +296,7 @@ public class SubsystemCatzVision extends SubsystemBase {
     } 
 
     public double getHorizontalAngle() {
-        return inputs.tx;
+        return Units.radiansToDegrees(inputs.tx);
     }
 
     /**
