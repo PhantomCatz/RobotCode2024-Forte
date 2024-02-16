@@ -257,7 +257,7 @@ public final class CatzConstants {
     public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(3.3);//0.095;// mUnits.inchesToMeters(4);
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
-    public static final boolean START_FLIPPED = false;
+    public static final boolean START_FLIPPED = true;
 
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;
     public static final double FEEDFOWARD_Kv_VELOCITY_ACCELERATION_METERS = 0.24;
@@ -268,7 +268,7 @@ public final class CatzConstants {
       new PIDController(2, 0, 0),
       new PIDController(2, 0, 0),
       autoTurnPIDController
-    );     
+    );
   }
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 

@@ -15,12 +15,14 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
 import frc.robot.Utils.LEDs.CatzRGB;
 import frc.robot.Utils.LEDs.ColorMethod;
@@ -112,7 +114,11 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+      SubsystemCatzDrivetrain.getInstance().flipGyro();
+    }
+  }
 
   @Override
   public void teleopInit() {

@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.GeometryUtils;
@@ -287,10 +288,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Reset the position of the robot with a given pose
     public void resetPosition(Pose2d pose) {
+        double angle = getGyroAngle();
         if(DriveConstants.START_FLIPPED){
             pose = new Pose2d(pose.getTranslation(), pose.getRotation().plus(Rotation2d.fromDegrees(180)));
         }
-        m_poseEstimator.resetPosition(Rotation2d.fromDegrees(getGyroAngle()),getModulePositions(),pose);
+        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+            angle += 180;
+        }
+        m_poseEstimator.resetPosition(Rotation2d.fromDegrees(angle),getModulePositions(),pose);
     }
  
     // Get the current pose of the robot

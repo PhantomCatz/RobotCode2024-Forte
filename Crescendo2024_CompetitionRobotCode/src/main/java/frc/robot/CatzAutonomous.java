@@ -82,7 +82,6 @@ public class CatzAutonomous {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
-            Commands.waitSeconds(1),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
         );
     }
@@ -119,6 +118,10 @@ public class CatzAutonomous {
             }
 
             m_driveTrain.resetPosition(path.getPreviewStartingHolonomicPose());
+
+            if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+                m_driveTrain.flipGyro();
+            }
         });
     }
 

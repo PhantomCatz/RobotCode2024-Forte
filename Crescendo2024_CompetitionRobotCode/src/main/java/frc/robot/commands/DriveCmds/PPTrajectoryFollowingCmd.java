@@ -105,6 +105,7 @@ public class PPTrajectoryFollowingCmd extends Command {
                                                       new Pose2d(goal.positionMeters, new Rotation2d()), 
                                                       0);
 
+        System.out.println(goal.getTargetHolonomicPose());
         Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
         //construct chassisspeeds
         ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
