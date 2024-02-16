@@ -7,7 +7,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 public interface ModuleIO {
  @AutoLog
- public static class ModuleIOInputs {
+ static class ModuleIOInputs {
     public double driveMtrVelocity = 0.0;
     public double driveMtrSensorPosition = 0.0;
     public double magEncoderValue = 0.0;

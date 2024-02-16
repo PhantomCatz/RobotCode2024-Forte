@@ -67,7 +67,7 @@ public class CatzAutonomous {
 
     private Command speaker4PieceWing(){
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("S4PW1"),true),
+            setAutonStartPose(PathPlannerPath.fromPathFile("S4PW1")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW1")),
             Commands.waitSeconds(0.5),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW2")),
@@ -80,7 +80,7 @@ public class CatzAutonomous {
 
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn"),false),
+            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
             Commands.waitSeconds(1),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
@@ -89,7 +89,7 @@ public class CatzAutonomous {
 
     private Command curveAuto(){
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("Curve"),false),
+            setAutonStartPose(PathPlannerPath.fromPathFile("Curve")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Curve")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right Straight"))
         );
@@ -111,14 +111,14 @@ public class CatzAutonomous {
         );
     }
     
-    private Command setAutonStartPose(PathPlannerPath startPath, boolean isFlipped){
+    private Command setAutonStartPose(PathPlannerPath startPath){
         return Commands.runOnce(()->{
             PathPlannerPath path = startPath;
             if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
                 path = startPath.flipPath();
             }
 
-            m_driveTrain.resetPosition(path.getPreviewStartingHolonomicPose(), isFlipped);
+            m_driveTrain.resetPosition(path.getPreviewStartingHolonomicPose());
         });
     }
 

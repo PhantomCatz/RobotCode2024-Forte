@@ -224,7 +224,7 @@ public final class CatzConstants {
 
     //--------------------------------------MTR CONFIGS------------------------------------
 
-    public static final Pose2d initPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+    public static final Rotation2d defaultRot = new Rotation2d(0.0);
     private static final double ROBOT_WIDTH = Units.inchesToMeters(23.5); //29 atlas
     private static final double ROBOT_LENGTH = Units.inchesToMeters(24); //29 atlas
 
@@ -256,6 +256,8 @@ public final class CatzConstants {
                                                                 //overtime
     public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(3.3);//0.095;// mUnits.inchesToMeters(4);
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
+
+    public static final boolean START_FLIPPED = false;
 
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;
     public static final double FEEDFOWARD_Kv_VELOCITY_ACCELERATION_METERS = 0.24;

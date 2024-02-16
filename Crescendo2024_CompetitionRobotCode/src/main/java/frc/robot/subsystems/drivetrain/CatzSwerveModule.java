@@ -25,7 +25,7 @@ public class CatzSwerveModule {
 
     private PIDController m_PID;
 
-    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.0, 0.00); //kv = 0.26
+    private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0.0, 0.0); //kv = 0.26
                 
     private final double kP = 0.6; //0.34
     private final double kI = 0.01;
@@ -141,14 +141,7 @@ public class CatzSwerveModule {
         double driveRPSFF = m_driveFeedforward.calculate(driveRPS);
         //set drive velocity
 
-        if(SubsystemCatzDrivetrain.getInstance().isFlipped()){
-
-            setDriveVelocity(-1*(driveRPS + driveRPSFF));
-        }
-        else{
-            setDriveVelocity(driveRPS + driveRPSFF);
-
-        }
+        setDriveVelocity(driveRPS + driveRPSFF);
 
         //calculate steer pwr
         //negative steer power because of coordinate system

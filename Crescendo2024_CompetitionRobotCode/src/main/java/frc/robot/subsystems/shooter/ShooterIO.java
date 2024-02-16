@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ShooterIO {
     @AutoLog
-     class ShooterIOInputs {
+    class ShooterIOInputs {
         public double dummyVariable;
         public double velocityBtmLT;
         public double velocityBtmRT;

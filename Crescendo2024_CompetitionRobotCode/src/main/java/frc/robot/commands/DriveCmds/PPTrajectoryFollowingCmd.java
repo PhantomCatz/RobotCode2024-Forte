@@ -93,11 +93,17 @@ public class PPTrajectoryFollowingCmd extends Command {
         Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         
         //convert PP trajectory into a wpilib trajectory type to be used with the internal WPILIB trajectory library
-        Trajectory.State state = new Trajectory.State(currentTime, 
-                                                      goal.velocityMps, 
-                                                      goal.accelerationMpsSq, 
+        // Trajectory.State state = new Trajectory.State(currentTime, 
+        //                                               goal.velocityMps, 
+        //                                               goal.accelerationMpsSq, 
+        //                                               new Pose2d(goal.positionMeters, new Rotation2d()), 
+        //                                               goal.curvatureRadPerMeter);
+
+         Trajectory.State state = new Trajectory.State(currentTime, 
+                                                      0,  //made the holonomic drive controller only rely on its current position, not its velocity because the target velocity is used as a ff
+                                                      0, 
                                                       new Pose2d(goal.positionMeters, new Rotation2d()), 
-                                                      goal.curvatureRadPerMeter);
+                                                      0);
 
         Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
         //construct chassisspeeds

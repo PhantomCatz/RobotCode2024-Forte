@@ -62,8 +62,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     // boolean for determining whether to use vision estimates in pose estimation
     private boolean isVisionEnabled = false;
 
-    private double GYRO_FLIP = 0;
-
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
         // Determine gyro input/output based on the robot mode
@@ -100,7 +98,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
-                DriveConstants.initPose.getRotation(), getModulePositions(), DriveConstants.initPose);
+                Rotation2d.fromDegrees(getGyroAngle()), getModulePositions(), new Pose2d());
         
         //Configure logging trajectories to advantage kit
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -114,7 +112,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             });
 
         gyroIO.resetNavXIO();
-
+        if(DriveConstants.START_FLIPPED){
+            flipGyro();
+        }
     }
 
     // Periodic update method for the drive train subsystem
@@ -251,11 +251,13 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     //----------------------------------------------Gyro methods----------------------------------------------
 
     public void flipGyro() {
-        gyroIO.setAngleAdjustmentIO(180);
+        gyroIO.setAngleAdjustmentIO(180+gyroIO.getAngleAdjustmentIO());
     }
 
     public Command resetGyro() {
-        return runOnce(() -> gyroIO.setAngleAdjustmentIO(-gyroInputs.gyroYaw));
+        return runOnce(() -> {
+            gyroIO.setAngleAdjustmentIO(-gyroInputs.gyroYaw);
+        });
     }
 
     // Get the gyro angle (negative due to the weird coordinate system)
@@ -284,25 +286,13 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     }
 
     // Reset the position of the robot with a given pose
-    public void resetPosition(Pose2d pose, boolean isFlipped) {
-        if(isFlipped) {
-            GYRO_FLIP = 180;
+    public void resetPosition(Pose2d pose) {
+        if(DriveConstants.START_FLIPPED){
+            pose = new Pose2d(pose.getTranslation(), pose.getRotation().plus(Rotation2d.fromDegrees(180)));
         }
-        
         m_poseEstimator.resetPosition(Rotation2d.fromDegrees(getGyroAngle()),getModulePositions(),pose);
     }
-
-    public boolean isFlipped(){
-        if(GYRO_FLIP == 180){
-            return true;
-        }
-        return false;
-    }
-
-    public void unflipGyro(){
-        GYRO_FLIP = 0;
-    }
-
+ 
     // Get the current pose of the robot
     public Pose2d getPose() {
         return m_poseEstimator.getEstimatedPosition();
