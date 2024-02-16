@@ -107,7 +107,7 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setIntakePivotEncOutput(double encOutput, double ffPercentOutput) {
-        pivotMtr.setControl(new MotionMagicDutyCycle(encOutput).withFeedForward(ffPercentOutput).withEnableFOC(true));
+        pivotMtr.setControl(new MotionMagicDutyCycle(encOutput, true, ffPercentOutput, 0, false, false, false));
     }
 
 
