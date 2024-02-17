@@ -71,8 +71,8 @@ public class ElevatorIOReal implements ElevatorIO {
     @Override
     public void setElevatorPosition(double newPositionElevator) {
         ElevatorMtr.setControl(new PositionVoltage(newPositionElevator)
-            .withLimitForwardMotion(m_forwardLimit.get())
-            .withLimitReverseMotion(m_reverseLimit.get())
+            .withLimitForwardMotion(false)
+            .withLimitReverseMotion(false)
         );
     }
 

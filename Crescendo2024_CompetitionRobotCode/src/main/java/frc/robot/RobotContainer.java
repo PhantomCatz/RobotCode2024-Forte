@@ -17,11 +17,11 @@ import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
+import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 /**
@@ -92,10 +92,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
     //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
-    // Trigger intakePivotOverride = new Trigger(()-> xboxAux.getLeftY() > 0.1);
-    // intakePivotOverride.onTrue(intake.cmdFullManual(xboxAux.getLeftY()))
-    //                    .onFalse(intake.cmdFullManual(OIConstants.kOffPwr));
+
     xboxAux.leftStick().onTrue(new ManualIntakeCmd(()->xboxAux.getLeftY()));
+    xboxAux.rightStick().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
+
 
     xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
     xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
@@ -103,19 +103,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
 
 
-
-    //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
-    //xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
-    // xboxDrv.start().onTrue(driveTrain.flipGyro());
-    //xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
-
-    // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
-    
-    xboxDrv.rightTrigger().onTrue(shooter.shootNote())
-                          .onFalse(shooter.setFeedMotorDisabled());
-    //shooter activation
-    //xboxDrv.x().onTrue(shooter.setShooterActive())
-    //          .onFalse(shooter.setShooterDisabled());
  
    }
 

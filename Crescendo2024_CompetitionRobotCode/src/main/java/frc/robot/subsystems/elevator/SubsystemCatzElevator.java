@@ -24,6 +24,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
   private CatzMechanismPosition m_newPosition;
 
+  private double m_elevatorPercentOutput;
+
   public SubsystemCatzElevator() {
             switch (CatzConstants.currentMode) {
             case REAL: io = 
@@ -52,6 +54,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
       targetEncPos = m_newPosition.getElevatorTargetEncPos();
       io.setElevatorPosition(targetEncPos);
       Logger.recordOutput("targetEncElevator", targetEncPos);
+    } else {
+      io.setElevatorPercentOutput(m_elevatorPercentOutput);
     }
 
     if(inputs.forwardSwitchTripped){
@@ -66,12 +70,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
     m_newPosition = targetPos;
   }
 
-  public Command manualElevatorFwd(){
-    return run(()->io.setElevatorPercentOutput(ElevatorConstants.MANUAL_PWR));
-  }
-
-  public Command manualElevatorRev(){
-    return run(()->io.setElevatorPercentOutput(- ElevatorConstants.MANUAL_PWR));
+  public void setElevatorPercentOutput(double percentOutput) {
+    this.m_elevatorPercentOutput = percentOutput;
   }
 
   // Get the singleton instance of the ClimbSubsystem

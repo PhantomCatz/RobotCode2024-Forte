@@ -7,26 +7,29 @@ package frc.robot.commands.mechanismCmds;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 
-public class ManualIntakeCmd extends Command {
-  SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
-  Supplier<Double> supplierLeftJoyX;
-  /** Creates a new manualintakecmd. */
-  public ManualIntakeCmd(Supplier<Double> supplierLeftJoyX) {
-    this.supplierLeftJoyX = supplierLeftJoyX;
-    addRequirements(intake);
+public class ManualElevatorCmd extends Command {
+  private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
+  Supplier<Double> supplierRightY;
+
+  /** Creates a new ManualElevatorCmd. */
+  public ManualElevatorCmd(Supplier<Double> supplierRightY) {
+    addRequirements(elevator);
+
+    this.supplierRightY = supplierRightY;
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.pivotFullManual(supplierLeftJoyX.get());
+    elevator.setElevatorPercentOutput(supplierRightY.get());
   }
 
   // Called once the command ends or is interrupted.

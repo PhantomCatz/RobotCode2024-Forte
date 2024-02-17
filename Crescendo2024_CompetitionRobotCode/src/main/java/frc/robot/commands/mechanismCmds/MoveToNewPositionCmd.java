@@ -8,13 +8,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 
 public class MoveToNewPositionCmd extends Command {
   
   SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
-  SubsystemCatzShooter shooter  = SubsystemCatzShooter.getInstance();
 
   private CatzMechanismPosition m_newPosition;
 
