@@ -23,21 +23,12 @@ public class VisionIOLimeLight implements VisionIO {
      * @param cameraOffset Location of the camera on the robot (from center, positive x towards the arm, positive y to the left, and positive angle is counterclockwise.
      */
     public VisionIOLimeLight(String name, Transform3d limelightOffset) {
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+        NetworkTableInstance.getDefault().getTable(name).getEntry("ledMode").setNumber(1);
         this.name = name;
         this.cameraOffset = limelightOffset;
         System.out.println(name);
         System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
         
-
-        //debug for ensuring the limelight is communicating properly with networktables
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
-            } catch (Exception e) {
-            }
-        }).start();
         
     }
 

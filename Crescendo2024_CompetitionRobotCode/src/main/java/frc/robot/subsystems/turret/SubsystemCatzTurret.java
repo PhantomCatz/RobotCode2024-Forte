@@ -22,29 +22,39 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //intake io block
   private final TurretIO io;
   private final TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
+
   //intake instance
   private static SubsystemCatzTurret instance = new SubsystemCatzTurret();
 
-  //turret variables
-
+  //turret constants
   private final double TURRET_POWER     = 0.6;
   private final double TURRET_DECEL_PWR = 0.3;
  
-
   private static final double TURRET_kP = 0.02;
   private static final double TURRET_kI = 0.0;
   private static final double TURRET_kD = 0.0;
+  
+  private static final double LIMELIGHT_kP = 0.013;
+  private static final double LIMELIGHT_kI = 0.0;
+  private static final double LIMELIGHT_kD = 0.0001;
+
+  private final double TURRET_POSITIVE_MAX_RANGE = 120.0; //120
+  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0; //-120
+
+  private final double NEGATIVE_DECEL_THRESHOLD  =  -15.0;
+  private final double POS_DECEL_THRESHOLD       =   15.0;
 
   private static final double TURRET_GEARBOX_PINION      = 9.0/1.0;
   private static final double TURRET_GEARBOX_TURRET_GEAR = 140.0/10.0;
  
-  private static final double GEAR_REDUCTION  =  TURRET_GEARBOX_PINION *TURRET_GEARBOX_TURRET_GEAR;
-  private static final double TURRET_REV_PER_DEG = GEAR_REDUCTION/360;
+  private static final double GEAR_REDUCTION     =  TURRET_GEARBOX_PINION * TURRET_GEARBOX_TURRET_GEAR;
+  private static final double TURRET_REV_PER_DEG = GEAR_REDUCTION / 360;
+  
+  private final double HOME_POSITION       = 0.0;
 
   public static double currentTurretDegree = 0.0; //0.0
 
-
-  //variables
+  //turret variables
   private double m_turretTargetDegree;
   private double apriltagTrackingPower;
   private double setPositionPower;
@@ -52,17 +62,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   private PIDController pid;
   private PIDController limelightPID;
-
-  private final double TURRET_POSITIVE_MAX_RANGE = 120.0; //120
-  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0; //-120
-
-
-
-  private final double NEGATIVE_DECEL_THRESHOLD  =  -15.0;
-  private final double POS_DECEL_THRESHOLD       =   15.0;
-
-  private double HOME_POSITION             = 0.0; //0.0
   private double manualTurretPwr;
+  
 
   public SubsystemCatzTurret() {
 
@@ -83,21 +84,24 @@ public class SubsystemCatzTurret extends SubsystemBase {
     pid = new PIDController(TURRET_kP, 
                             TURRET_kI, 
                             TURRET_kD);
-    limelightPID = new PIDController(0.013,0.0,0.0001);
-  }
 
+    limelightPID = new PIDController(LIMELIGHT_kP,
+                                     LIMELIGHT_kI,
+                                     LIMELIGHT_kD);
+  }
+  
+  // Get the singleton instance of the Turret Subsystem
+  public static SubsystemCatzTurret getInstance() {
+      return instance;
+  }
+  
   private static TurretState currentTurretState;
+
   public static enum TurretState {
     AUTO,
     TRACKING_APRILTAG,
     FULL_MANUAL
   }
-
-  // Get the singleton instance of the Turret Subsystem
-  public static SubsystemCatzTurret getInstance() {
-      return instance;
-  }
-
 
   @Override
   public void periodic() {
@@ -108,7 +112,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     //obtain calculation values
     apriltagTrackingPower = -limelightPID.calculate(offsetAprilTagX, 0);
     setPositionPower      = pid.calculate(currentTurretDegree, m_turretTargetDegree);
-    offsetAprilTagX =     SubsystemCatzVision.getInstance().getOffsetX();
+    offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
     
 
     if(DriverStation.isDisabled()) {
@@ -119,7 +123,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
       } else if (currentTurretState == TurretState.TRACKING_APRILTAG) {
         //only track the shooterlimelight to the speaker apriltag
-        if(SubsystemCatzVision.getInstance().getAprilTagID() == 7) {
+        if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {
           io.turretSetPwr(apriltagTrackingPower);
         }
       }
@@ -191,28 +195,28 @@ public class SubsystemCatzTurret extends SubsystemBase {
   
   //-------------------------------------Manual methods--------------------------------
   public Command cmdTurretLT() {
-    return run(()-> rotateLeft());
+    return run(() -> rotateLeft());
   }
   
   public Command cmdTurretRT() {
-    return run(()-> rotateRight());
+    return run(() -> rotateRight());
   }
   
   public Command cmdTurretOff() {
     currentTurretState = TurretState.FULL_MANUAL;
-    return run(()-> io.turretSetPwr(0.0));
+    return run(() -> io.turretSetPwr(0.0));
   }
   
   public Command cmdResetTurretPosition(){
-    return run(()-> io.turretSetEncoderPos(HOME_POSITION));
+    return run(() -> io.turretSetEncoderPos(HOME_POSITION));
   }
   
   public Command cmdTurretDegree(double turretDeg) {
-    return run(()->setTurretTargetDegree(turretDeg));
+    return run(() -> setTurretTargetDegree(turretDeg));
   }
 
   public Command cmdAutoRotate() {
-    return run(() ->autoRotate());
+    return run(() -> autoRotate());
   }
   
 }
