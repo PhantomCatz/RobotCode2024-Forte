@@ -303,6 +303,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         return m_poseEstimator.getEstimatedPosition();
     }
 
+    public Command zeroPoseEstimatorCmd() {
+        return runOnce(()->zeroPoseEstimator());
+    }
+
+    public void zeroPoseEstimator() {
+        m_poseEstimator.resetPosition(getRotation2d(), getModulePositions(), new Pose2d(0.0,0.0, Rotation2d.fromDegrees(0)));
+    }
+
     //----------------------------------------------Enc resets-------------------------------------------------------
 
     // Reset drive encoders for all swerve modules

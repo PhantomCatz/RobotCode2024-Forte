@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.StateMachineCmds.MoveToNewPositionCmd;
@@ -71,10 +72,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
     
-    //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
+    xboxDrv.a().onTrue(auton.autoFindPathSource());
     xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
     // xboxDrv.start().onTrue(driveTrain.flipGyro());
     xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
+
+    Trigger XY = xboxDrv.x().and(xboxDrv.y());
+    XY.onTrue(driveTrain.zeroPoseEstimatorCmd());
 
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
 

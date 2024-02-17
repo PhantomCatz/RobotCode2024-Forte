@@ -25,37 +25,25 @@ public class CatzAutonomous {
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
 
     public static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
-    private static LoggedDashboardChooser<Command> internalPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
+    private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
     public CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", CatzConstants.AllianceColor.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  CatzConstants.AllianceColor.Red);
 
-        internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
-        internalPathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
+        pathChooser.addOption("Bulldozer Auto", bulldozerAuto());
+        pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
 
 
-        internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
-        internalPathChooser.addOption("ScoringC13", scoringC13());
-        internalPathChooser.addOption("Curve", curveAuto());
+        pathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
+        pathChooser.addOption("ScoringC13", scoringC13());
+        pathChooser.addOption("Curve", curveAuto());
 
-        /*PathPlannerPath path = PathPlannerPath.fromPathFile("Bulldozer");
-        for(int i=0; i<path.getAllPathPoints().size(); i++){
-            System.out.println(path.getAllPathPoints().get(i).position);
-        }
-        System.out.println("\n");
-        //path = path.flipPath();
-        path.flipPath();
-        for(int i=0; i<path.getAllPathPoints().size(); i++){
-            System.out.println(path.getAllPathPoints().get(i).position);
-        }*/
-
-        //internalPathChooser.addOption("Drive Straight", driveStraight());
     }
 
     //configured dashboard
     public Command getCommand() {
-        return internalPathChooser.get(); 
+        return pathChooser.get(); 
     }
 
     //-------------------------------------------Auton Paths--------------------------------------------
@@ -75,9 +63,24 @@ public class CatzAutonomous {
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW3"))
         );
     }
+
+    private Command scoringC13() {
+    return new SequentialCommandGroup(
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
+        Commands.waitSeconds(4),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
+        Commands.waitSeconds(4),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3")),
+        Commands.waitSeconds(4),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
+        Commands.waitSeconds(4),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5")),
+        Commands.waitSeconds(4),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6"))
+        );
+    }
     
     //below are test paths
-
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
@@ -94,37 +97,6 @@ public class CatzAutonomous {
         );
     }
 
-    private Command scoringC13() {
-        return new SequentialCommandGroup(
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6"))
-        );
-    }
-    
-    private Command setAutonStartPose(PathPlannerPath startPath){
-        return Commands.runOnce(()->{
-            PathPlannerPath path = startPath;
-            if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-                path = startPath.flipPath();
-            }
-
-            m_driveTrain.resetPosition(path.getPreviewStartingHolonomicPose());
-
-            if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-                m_driveTrain.flipGyro();
-            }
-        });
-    }
-
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
 
     //Automatic pathfinding command
@@ -136,14 +108,30 @@ public class CatzAutonomous {
             Units.degreesToRadians(540), Units.degreesToRadians(720));
 
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-                new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
-                new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
-                new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90))
+                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
                     );
 
         //send path info to trajectory following command
         return new PPTrajectoryFollowingCmd(bezierPoints, 
                                             constraints, 
                                             new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+    //-------------------------------------------------MISC-------------------------------------------------------
+
+    private Command setAutonStartPose(PathPlannerPath startPath){
+    return Commands.runOnce(()->{
+        PathPlannerPath path = startPath;
+        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+            path = startPath.flipPath();
+        }
+
+        m_driveTrain.resetPosition(path.getPreviewStartingHolonomicPose());
+
+        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+            m_driveTrain.flipGyro();
+        }
+    });
     }
 }
