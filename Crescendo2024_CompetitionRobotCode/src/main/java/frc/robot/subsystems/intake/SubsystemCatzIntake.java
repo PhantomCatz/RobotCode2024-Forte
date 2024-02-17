@@ -54,7 +54,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double ERROR_INTAKE_THRESHOLD_DEG = 5.0;
 
   private final double STOW_CUTOFF = 0.0; //TBD need to dial in
-  private final double CENTER_OF_MASS_OFFSET_DEG = 177.0;//177.0;
+  private final double CENTER_OF_MASS_OFFSET_DEG = 177.0;
   private final double GRAVITY_FF_SCALING_COEFFICIENT = 0.04;
 
   private final double MANUAL_HOLD_STEP_COEFFICIENT = 2.0;
@@ -164,6 +164,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         }
         
         //calculate ff pwr and and sends to mtr through motion magic
+        //motion magic assumes a profile
         m_ffPower = calculateGravityFF();
         m_finalEncOutput = m_targetPositionDeg * INTAKE_ANGLE_TO_MTR_ROTATIONS;
 
@@ -177,7 +178,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
         } else {
         //set final mtr pwr
-        io.setIntakePivotEncOutput(m_finalEncOutput, m_ffPower);
+        io.setIntakePivotEncOutput(m_finalEncOutput, -m_ffPower);
         }
         
         m_prevCurrentPosition = currentPositionDeg;
@@ -244,13 +245,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
     double pivotAngleRadians = Math.toRadians(calcWristAngle());//+CENTER_OF_MASS_OFFSET_DEG);
     double appliedCosineValue = Math.cos(pivotAngleRadians);
     
-    //is the intake is dipped below horizontal in which case we need more pwr...
-    //take the difference of the cosine value and 1 and add it to the applied cosine value
-    if(pivotAngleRadians < 0) {
-      double addedDiffernce = 1 - appliedCosineValue;
-      appliedCosineValue = 1 + addedDiffernce;
-    }
-
     return GRAVITY_FF_SCALING_COEFFICIENT * appliedCosineValue;
   }
 
