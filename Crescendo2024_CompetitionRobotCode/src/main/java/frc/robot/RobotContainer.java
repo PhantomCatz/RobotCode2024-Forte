@@ -19,6 +19,7 @@ import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
@@ -43,12 +44,12 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     private SubsystemCatzIntake intake;
     //private SubsystemCatzShooter shooter;
     //private SubsystemCatzClimb climb;
-    //private SubsystemCatzElevator arm;
+    private SubsystemCatzElevator elevator;
 
     private CatzAutonomous auton = new CatzAutonomous();
 
     //xbox controller
-    private CommandXboxController xboxDrv;
+    public static CommandXboxController xboxDrv;
     private CommandXboxController xboxAux;
  
        
@@ -58,6 +59,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     */
    public RobotContainer() {
     //instantiate subsystems
+    elevator = SubsystemCatzElevator.getInstance();
     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
     //vision     = SubsystemCatzVision.getInstance();
     intake     = SubsystemCatzIntake.getInstance();
@@ -78,6 +80,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   
    
    private void configureBindings() {
+
     
     xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
     xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
@@ -107,7 +110,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
 
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
-
+    
+    xboxDrv.rightTrigger().onTrue(shooter.shootNote())
+                          .onFalse(shooter.setFeedMotorDisabled());
     //shooter activation
     //xboxDrv.x().onTrue(shooter.setShooterActive())
     //          .onFalse(shooter.setShooterDisabled());
@@ -116,7 +121,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
-      //intake.setDefaultCommand(Commands.runOnce(()->intake.fullManual(xboxAux.getLeftY())));
       driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
                                                       ()-> xboxDrv.getLeftY(),
                                                       ()-> xboxDrv.getRightX(),
