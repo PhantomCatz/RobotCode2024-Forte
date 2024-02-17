@@ -39,7 +39,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double GEAR_REDUCTION  =  TURRET_GEARBOX_PINION *TURRET_GEARBOX_TURRET_GEAR;
   private static final double TURRET_REV_PER_DEG = GEAR_REDUCTION/360;
 
-  public static double currentTurretDegree = 120.0; //0.0
+  public static double currentTurretDegree = 0.0; //0.0
 
 
   //variables
@@ -47,16 +47,17 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private double pidTurretPower;
 
   private PIDController pid;
+  private PIDController limelightPID;
 
-  private final double TURRET_POSITIVE_MAX_RANGE = 240.0; //120
-  private final double TURRET_NEGATIVE_MAX_RANGE = 0.0; //-120
+  private final double TURRET_POSITIVE_MAX_RANGE = 120.0; //120
+  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0; //-120
 
 
 
   private final double NEGATIVE_DECEL_THRESHOLD  =  -15.0;
   private final double POS_DECEL_THRESHOLD       =   15.0;
 
-  private double HOME_POSITION             = 120.0; //0.0
+  private double HOME_POSITION             = 0.0; //0.0
   private double manualTurretPwr;
 
   public SubsystemCatzTurret() {
@@ -78,6 +79,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     pid = new PIDController(TURRET_kP, 
                             TURRET_kI, 
                             TURRET_kD);
+    limelightPID = new PIDController(0.013,0.0,0.0001);
 
   //  io.turretSetEncoderPos(HOME_POSITION);
   }
@@ -98,22 +100,26 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public void periodic() {
     //io.turretSetEncoderPos(HOME_POSITION);
     io.updateInputs(inputs);
-    Logger.processInputs("intake/inputs", inputs);   
+    Logger.processInputs("turret/inputs", inputs);   
     Logger.recordOutput("Turret Encoder", inputs.turretEncValue);
+    Logger.recordOutput("curretnTurretState", currentTurretState);
     Logger.recordOutput("currentTurretDeg", currentTurretDegree);
     Logger.recordOutput("Limelight tX", SubsystemCatzVision.getInstance().getHorizontalAngle());
     Logger.recordOutput("m_TurretTargetDegree", m_turretTargetDegree);
     currentTurretDegree = inputs.turretEncValue / TURRET_REV_PER_DEG; //TBD make conversion
-    System.out.println(currentTurretDegree);
-    System.out.println(currentTurretState);
+
+    double offsetX = SubsystemCatzVision.getInstance().getOffsetX();
     
-    pidTurretPower = pid.calculate(currentTurretDegree, m_turretTargetDegree);
+    pidTurretPower = -limelightPID.calculate(offsetX, 0);
     if (currentTurretState == TurretState.AUTO) {
       io.turretSetPwr(pidTurretPower);
     }
     else {
       io.turretSetPwr(manualTurretPwr);
     }
+
+    Logger.recordOutput("turret/offsetXTurret", offsetX);
+    Logger.recordOutput("turret/PwrPID", pidTurretPower);
 
   }
 
@@ -124,34 +130,25 @@ public class SubsystemCatzTurret extends SubsystemBase {
     m_turretTargetDegree = turretTargetDegree;
   }
   
+  // *********** code for turning turret towards static target (Apriltag tX is static + an offset) ************* //
   public void autoRotate() {
     currentTurretState = TurretState.AUTO;
-
-    if((SubsystemCatzVision.getInstance().getHorizontalAngle()) < 5 && (SubsystemCatzVision.getInstance().getHorizontalAngle()) > -5) {
-      m_turretTargetDegree = currentTurretDegree;
-    } 
-    setTurretTargetDegree(m_turretTargetDegree); // beach blitz said multiply by 0.06
   }
-  
   
   public void rotateLeft(){
     currentTurretState = TurretState.FULL_MANUAL;
     
     if (currentTurretDegree > (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) {
-      System.out.println("1");
       manualTurretPwr = -TURRET_POWER;
     }
     else if ((currentTurretDegree < (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) && (currentTurretDegree >= TURRET_NEGATIVE_MAX_RANGE) && (manualTurretPwr < 0)){
-      System.out.println("2");
       manualTurretPwr = -TURRET_DECEL_PWR;
     }
     else if ((currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE))
     {
-      System.out.println("3");
        io.turretSetPwr(pid.calculate(currentTurretDegree, TURRET_NEGATIVE_MAX_RANGE ));
     }  
     else {
-      System.out.println("4");
       manualTurretPwr = 0.0;
     }      
     

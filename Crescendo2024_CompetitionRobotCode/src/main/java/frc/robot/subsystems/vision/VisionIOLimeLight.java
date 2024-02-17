@@ -45,7 +45,7 @@ public class VisionIOLimeLight implements VisionIO {
     public void updateInputs(VisionIOInputs inputs) {
             //load up raw apriltag values for distance calculations
         inputs.ty = NetworkTableInstance.getDefault().getTable(name).getEntry("ty").getDouble(0);
-        inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0);
+        inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("tx").getDouble(0);
         inputs.tv = NetworkTableInstance.getDefault().getTable(name).getEntry("tv").getDouble(0);
         inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0);
         inputs.primaryApriltagID = NetworkTableInstance.getDefault().getTable(name).getEntry("tid").getDouble(0);

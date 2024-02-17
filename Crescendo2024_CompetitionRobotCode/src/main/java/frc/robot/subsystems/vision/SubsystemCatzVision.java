@@ -189,6 +189,10 @@ public class SubsystemCatzVision extends SubsystemBase {
          return inputs.minDistance;
     }
 
+    public double getOffsetX() {
+        return inputs.tx;
+    }
+
     //----------------------------------Calculation methods---------------------------------------------
     
     public void limelightRangeFinder() {
@@ -296,7 +300,7 @@ public class SubsystemCatzVision extends SubsystemBase {
     } 
 
     public double getHorizontalAngle() {
-        return Units.radiansToDegrees(inputs.tx);
+        return Units.radiansToDegrees(inputs.tx) - 152;
     }
 
     /**

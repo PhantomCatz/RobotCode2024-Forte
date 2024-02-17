@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.commands.AutoAlignCmd;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -103,9 +104,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
      xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());
      xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
      xboxAux.a().onTrue(turret.cmdResetTurretPosition()).onFalse(turret.cmdTurretOff());
-     xboxAux.x().onTrue(turret.cmdTurretDegree(120.0));
+     xboxAux.x().onTrue(turret.cmdTurretDegree(0.0));
      xboxAux.b().onTrue(turret.cmdAutoRotate()).onFalse(turret.cmdTurretOff());
-     
+     xboxAux.y().onTrue(new AutoAlignCmd());
+
     // xboxAux.start().onTrue(turret.cmdTurretOff());
 
     //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
