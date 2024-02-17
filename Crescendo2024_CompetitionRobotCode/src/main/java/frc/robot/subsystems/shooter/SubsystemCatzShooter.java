@@ -7,16 +7,9 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
-import frc.robot.RobotContainer;
-import frc.robot.CatzConstants.ShooterConstants;
-import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.Utils.LoggedTunableNumber;
-import frc.robot.subsystems.shooter.ShooterIOInputsAutoLogged;
 
 
 public class SubsystemCatzShooter extends SubsystemBase {
@@ -26,7 +19,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   private static SubsystemCatzShooter instance = new SubsystemCatzShooter();
   //Pivot constants and variables
-  private CatzMechanismPosition m_targetPosition;
+  //private CatzMechanismPosition m_targetPosition;
 
 
   public SubsystemCatzShooter() {
@@ -58,51 +51,43 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+
     io.updateInputs(inputs);
-    Logger.processInputs("Shooter/shooterinputs ", inputs);
+    Logger.processInputs("Shooter/shooterinputs", inputs);
 
     if(DriverStation.isDisabled()) {
       io.loadDisabled();
       io.setShooterDisabled();
-    } else {
     }
   }
 
-  //-------------------------------------------Flywheel and Feed methods------------------------------------------
+  //-------------------------------------------Flywheel Commands------------------------------------------
 
   public Command cmdShooterEnabled() {
-    return run(()->shooterEnabled());
+    return run(()->io.setShooterEnabled());
   }
 
   public Command cmdShooterDisabled() {
-    return run(()->shooterDisabled());
-  }
-
-  public void shooterEnabled() {
-    io.setShooterEnabled();
-    io.feedForward();
-  }
-
-  public void shooterDisabled() {
-    io.setShooterDisabled();
-    io.feedDisabled();
-  }
-
-  public Command setFeedMotor() {
-    return run(()->io.feedForward());
-  }
-
-  public Command setFeedMotorDisabled() {
     return run(()->io.setShooterDisabled());
   }
 
-  //-------------------------------------------Load methods------------------------------------------
-  
-  public Command setLoadReverse() {
-      return run(()->io.loadReverse());
-  }
+  //-------------------------------------------Load Commands------------------------------------------
 
   public Command shootNote() {
     return run(()->io.loadForward());
   }
+  public Command loadBackward() {
+    return run(()->io.loadBackward());
+  }
+
+  //-------------------------------------------Servo Commands------------------------------------------
+  public Command setServoPowerExtend() {
+    return run(()->io.setServoPower(1));
+  }
+
+  public Command setServoPowerRetract() {
+    return run(()->io.setServoPower(0.0));
+  }
+
+
 }

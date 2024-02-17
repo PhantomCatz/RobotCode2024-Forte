@@ -1,17 +1,10 @@
 package frc.robot.subsystems.shooter;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -20,80 +13,89 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.MtrConfigConstants;
 import frc.robot.CatzConstants.OIConstants;
-import frc.robot.CatzConstants.ShooterConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 
 public class ShooterIOReal implements ShooterIO {
 
     //Shooter and Feed Motor 
-    //configured from front robot facing perspective
+    //Configured from front robot facing perspective
     private final TalonFX SHOOTER_MOTOR_RT;
     private final TalonFX SHOOTER_MOTOR_LT;
-    private final CANSparkMax FEED_MOTOR;
 
-    private final int SHOOTER_MOTOR_LT_CAN_ID = 0;
-    private final int SHOOTER_MOTOR_RT_CAN_ID = 10;
+    private final int SHOOTER_MOTOR_LT_CAN_ID = 21;
+    private final int SHOOTER_MOTOR_RT_CAN_ID = 20;
 
-    private final DigitalInput beamBreak = new DigitalInput(0);
+    private final CANSparkMax LOAD_MOTOR;
 
-    //tunable motor velocities
-    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 75); //was 75
-    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 90);
-    LoggedTunableNumber feedMotor = new LoggedTunableNumber("FeedMotor", 0.61); //was 0.61
+    private final int LOAD_MOTOR_CAN_ID = 3;
+
+    private final DigitalInput BACK_BEAM_BREAK  = new DigitalInput(0);
+    private final DigitalInput FRONT_BEAM_BREAK = new DigitalInput(3);
+
+    private Servo shooterLeftServo;
+    private Servo shooterRightServo;
+
+    private final int SERVO_LEFT_CAN_ID = 1;
+    private final int SERVO_RIGHT_CAN_ID = 2;
+
+
+    //Tunable motor velocities
+    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 90);
+    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 70);
+
+    //Load motor speeds 
     private final double LOAD_MOTOR_SHOOTING_SPEED = 1;
-    private final double LOAD_MOTOR_LOADING_SPEED = 0.15;
+    private final double LOAD_MOTOR_LOADING_SPEED = 0.4;
+    private final double LOAD_MOTOR_BACKWARD_SPEED = 0.10;
+
 
     TalonFX[] shooterArray = new TalonFX[2];
 
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
-        //create new Talong FX config objects
-    private TalonFXConfiguration      talonConfigs = new TalonFXConfiguration();
-    private Slot0Configs         pidConfigs = new Slot0Configs();
+    //Create new Talong FX config objects
+    private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
+    private Slot0Configs         pidConfigs   = new Slot0Configs();
 
-    //Load Motor
-    private final CANSparkMax LOAD_MOTOR;
     
     //Xbox controller to get what buttons were pressed
     public static CommandXboxController xboxDrv;
     
     public ShooterIOReal() {
-        //xbox controller setup
+        //Xbox controller setup
         xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT);
 
+        //Servo setup
+        shooterLeftServo = new Servo(SERVO_LEFT_CAN_ID);
+        shooterRightServo = new Servo(SERVO_RIGHT_CAN_ID);
+        
         //Falcon Shooter Motor setup
-        SHOOTER_MOTOR_LT = new TalonFX(SHOOTER_MOTOR_LT_CAN_ID); //TBD update this during testing in phoenix tunner
+        SHOOTER_MOTOR_LT = new TalonFX(SHOOTER_MOTOR_LT_CAN_ID);
         SHOOTER_MOTOR_RT = new TalonFX(SHOOTER_MOTOR_RT_CAN_ID);
 
+        
         //Neo Load motor config
-        LOAD_MOTOR = new CANSparkMax(3, MotorType.kBrushless);
+        LOAD_MOTOR = new CANSparkMax(LOAD_MOTOR_CAN_ID, MotorType.kBrushless);
         LOAD_MOTOR.restoreFactoryDefaults();
         LOAD_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
         LOAD_MOTOR.setIdleMode(IdleMode.kCoast);
         LOAD_MOTOR.enableVoltageCompensation(12.0); //TBD is this the default value?
-
-        //neo 550 Feed Motor config
-        FEED_MOTOR = new CANSparkMax(1, MotorType.kBrushless);
-        FEED_MOTOR.restoreFactoryDefaults();
-        FEED_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS); //TBD make seperate current limit for 550
-        FEED_MOTOR.setIdleMode(IdleMode.kCoast);
-        FEED_MOTOR.enableVoltageCompensation(12.0);//TBD is this the default value?
-
-            //create shooter mtr array for easier calls
+        
+        //Create shooter mtr array for easier calls
         shooterArray[0] = SHOOTER_MOTOR_RT;
         shooterArray[1] = SHOOTER_MOTOR_LT;
 
-            //reset to factory defaults
+        
+        //Reset to factory defaults
         SHOOTER_MOTOR_RT.getConfigurator().apply(new TalonFXConfiguration());
         SHOOTER_MOTOR_LT.getConfigurator().apply(new TalonFXConfiguration());
 
-        //current limit
+        
+        //Current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
         talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT; //Make seperate current limits
         talonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
@@ -102,6 +104,7 @@ public class ShooterIOReal implements ShooterIO {
 
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
+         
         //pid
         talonConfigs.Slot0 = pidConfigs;
         pidConfigs.kP = 0.11; //TBD
@@ -110,14 +113,14 @@ public class ShooterIOReal implements ShooterIO {
         pidConfigs.kV = 0.1189; //TBD 
 
 
-        //initialize motors and check if motors are initialized correctly
-        for(int i=0;i<2;i++){
+        //Initialize motors and check if motors are initialized correctly
+        for(int i=0;i<2;i++) {
             initializationStatus = shooterArray[i].getConfigurator().apply(talonConfigs);
              if(!initializationStatus.isOK())
                 System.out.println("Failed to Configure CAN ID for shooter "+ shooterArray.toString());
         }
-
     }
+
 
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
@@ -128,97 +131,77 @@ public class ShooterIOReal implements ShooterIO {
         inputs.shooterVelocityErrorRT = SHOOTER_MOTOR_RT.getClosedLoopError().getValue();
         inputs.shooterMotorVoltageLT  = SHOOTER_MOTOR_LT.getMotorVoltage().getValue();
         inputs.shooterMotorVoltageRT  = SHOOTER_MOTOR_RT.getMotorVoltage().getValue();
-        inputs.shooterPercentOutputLT = SHOOTER_MOTOR_LT.getDutyCycle().getValue();
-        inputs.shooterPercentOutputRT = SHOOTER_MOTOR_RT.getDutyCycle().getValue();
+        inputs.shooterDutyCycleLT = SHOOTER_MOTOR_LT.getDutyCycle().getValue();
+        inputs.shooterDutyCycleRT = SHOOTER_MOTOR_RT.getDutyCycle().getValue();
         inputs.shooterTorqueCurrentLT = SHOOTER_MOTOR_LT.getTorqueCurrent().getValue();
         inputs.shooterTorqueCurrentRT = SHOOTER_MOTOR_RT.getTorqueCurrent().getValue();
 
         inputs.LoadMotorPercentOutput = LOAD_MOTOR.get();
         inputs.LoadMotorVelocity      = (LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
-
-        inputs.FeedPercentOutput      = FEED_MOTOR.get();
-        inputs.FeedVelocity           = (FEED_MOTOR.getEncoder().getVelocity()/60); //to rps
-
-        inputs.BBShooterUnbroken = beamBreak.get();
     }
+
+  //-------------------------------------------Flywheel Methods------------------------------------------
 
     @Override
     public void setShooterEnabled() {
         double shooterVelocityLT = shooterVelLT.get();
         double shooterVelocityRT = shooterVelRT.get();
 
-        SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-shooterVelocityLT));
-        SHOOTER_MOTOR_RT.setControl(new VelocityVoltage(shooterVelocityRT));
-        /*Commands.waitSeconds(2);
-        SHOOTER_MOTOR_LT.setControl(new DutyCycleOut(0));
-        SHOOTER_MOTOR_RT.setControl(new DutyCycleOut(0));
-        feedDisabled();
-        loadDisabled();*/
-
+        SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-shooterVelocityLT).withEnableFOC(true));
+        SHOOTER_MOTOR_RT.setControl(new VelocityVoltage(shooterVelocityRT).withEnableFOC(true));
     }
-
     @Override
     public void setShooterDisabled() {
         SHOOTER_MOTOR_LT.setControl(new DutyCycleOut(0));
         SHOOTER_MOTOR_RT.setControl(new DutyCycleOut(0));
-        feedDisabled();
         loadDisabled();
     }
 
-    
+  //-------------------------------------------Load Methods------------------------------------------
+
     @Override
     public void loadForward() {
         if(xboxDrv.x().getAsBoolean() == true) {
             LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
         } else {
-            if (beamBreak.get() == true) {
+            if (BACK_BEAM_BREAK.get() == true) {
                 LOAD_MOTOR.set(-LOAD_MOTOR_LOADING_SPEED);
             } else {
                 LOAD_MOTOR.set(0);
             }
         }
     }
-
+    //Code that will be tested for double beambreaks
     @Override
-    public void loadReverse() {
-        LOAD_MOTOR.set(LOAD_MOTOR_LOADING_SPEED);
+    public void loadForward2() {
+        if(xboxDrv.x().getAsBoolean() == true) {
+            LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
+        } else {
+            if (BACK_BEAM_BREAK.get() == true) {
+                if (FRONT_BEAM_BREAK.get() == false) {
+                    LOAD_MOTOR.set(LOAD_MOTOR_BACKWARD_SPEED);
+                } else {
+                LOAD_MOTOR.set(-LOAD_MOTOR_LOADING_SPEED);
+                }
+            } else {
+                LOAD_MOTOR.set(0);
+            }
+        }
     }
-    
     @Override
     public void loadDisabled() {
         LOAD_MOTOR.set(0);
     }
-
     @Override
-    public void feedForward() {
-        FEED_MOTOR.set(-feedMotor.get());
-        //loadForward();
-    }
-    
-    @Override
-    public void feedDisabled() {
-        FEED_MOTOR.set(0);
+    public void loadBackward() {
+        LOAD_MOTOR.set(LOAD_MOTOR_BACKWARD_SPEED);
     }
 
-    /*@Override
-    public void loadForwardCmd(boolean bbUnBroken) {
-        if (bbUnBroken){
-            loadForward();
-        } else {
-            loadDisabled();
-        }
-    }*/
+  //--------------------------------------------Servo Methods----------------------------------------
 
-    /*@Override
-    public void setShooterEnabledCmd(boolean rdyToShoot) {
-        setShooterEnabled();
-        if (rdyToShoot){
-            feedForward();
-        } else {
-            feedDisabled();
-        }
-    }*/
-
-    @Override
-    public void setTurretPosition(double targetEncPos) {}
+  @Override
+  public void setServoPower(double power) {
+    shooterLeftServo.set(power);
+    shooterRightServo.set(power);
+  }
 }
