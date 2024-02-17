@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -13,8 +14,10 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
+import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.commands.StateMachineCmds.MoveToNewPositionCmd;
+import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
+import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -36,10 +39,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  public class RobotContainer {
     
     //subsystems
-    //private SubsystemCatzDrivetrain driveTrain; 
-    private SubsystemCatzVision vision;
-    //private SubsystemCatzIntake intake;
-    private SubsystemCatzShooter shooter;
+    private SubsystemCatzDrivetrain driveTrain; 
+    //private SubsystemCatzVision vision;
+    private SubsystemCatzIntake intake;
+    //private SubsystemCatzShooter shooter;
     //private SubsystemCatzClimb climb;
     private SubsystemCatzElevator elevator;
 
@@ -56,12 +59,12 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     */
    public RobotContainer() {
     //instantiate subsystems
-    //driveTrain = SubsystemCatzDrivetrain.getInstance(); 
-    //vision     = SubsystemCatzVision.getInstance();
-    //intake     = SubsystemCatzIntake.getInstance();
-
-    shooter    = SubsystemCatzShooter.getInstance();
     elevator = SubsystemCatzElevator.getInstance();
+    driveTrain = SubsystemCatzDrivetrain.getInstance(); 
+    //vision     = SubsystemCatzVision.getInstance();
+    intake     = SubsystemCatzIntake.getInstance();
+
+   // shooter    = SubsystemCatzShooter.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
     
@@ -74,38 +77,55 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
      configureBindings();
    }
  
+  
    
    private void configureBindings() {
-    //xboxAux.rightBumper().onTrue(intake.setRollerIn()).onFalse(intake.setRollerDisabled());
+
+    
+    xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
+    xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
+    //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
+    Trigger rollersOffBinding = xboxAux.leftBumper().and(xboxAux.rightBumper());
+    rollersOffBinding.onTrue(intake.cmdRollerOff());
+
+
     //xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
-    // xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+    //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
-    // Trigger intakePivotOverride = xboxAux.axisGreaterThan((int) (xboxAux.getLeftY()*100), 10);
-    // intakePivotOverride.onTrue(intake.intakePivotOverrideCommand(xboxAux.getLeftY()))
-    //                    .onFalse(intake.intakePivotOverrideCommand(0));
+    // Trigger intakePivotOverride = new Trigger(()-> xboxAux.getLeftY() > 0.1);
+    // intakePivotOverride.onTrue(intake.cmdFullManual(xboxAux.getLeftY()))
+    //                    .onFalse(intake.cmdFullManual(OIConstants.kOffPwr));
+    xboxAux.leftStick().onTrue(new ManualIntakeCmd(()->xboxAux.getLeftY()));
 
-    // //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
-    // xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
-    // // xboxDrv.start().onTrue(driveTrain.flipGyro());
-    // xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
+    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
+    xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+    xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
+    xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
+
+
+
+    //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
+    //xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
+    // xboxDrv.start().onTrue(driveTrain.flipGyro());
+    //xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
 
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
     
     xboxDrv.rightTrigger().onTrue(shooter.shootNote())
                           .onFalse(shooter.setFeedMotorDisabled());
     //shooter activation
-    xboxDrv.x().onTrue(shooter.cmdShooterEnabled())
-               .onFalse(shooter.cmdShooterDisabled());
+    //xboxDrv.x().onTrue(shooter.setShooterActive())
+    //          .onFalse(shooter.setShooterDisabled());
  
    }
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
-      // driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-      //                                                 ()-> xboxDrv.getLeftY(),
-      //                                                 ()-> xboxDrv.getRightX(),
-      //                                                 ()-> xboxDrv.getRightTriggerAxis(), 
-      //                                                 ()-> xboxDrv.b().getAsBoolean()));
+      driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+                                                      ()-> xboxDrv.getLeftY(),
+                                                      ()-> xboxDrv.getRightX(),
+                                                      ()-> xboxDrv.getRightTriggerAxis(), 
+                                                      ()-> xboxDrv.b().getAsBoolean()));
     
    }
 

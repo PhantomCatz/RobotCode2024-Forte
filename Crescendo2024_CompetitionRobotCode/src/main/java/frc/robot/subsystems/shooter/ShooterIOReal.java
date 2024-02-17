@@ -64,31 +64,29 @@ public class ShooterIOReal implements ShooterIO {
     public static CommandXboxController xboxDrv;
     
     public ShooterIOReal() {
-        //xbox controller setup
-        xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT);
+                //Drive Motor setup
+        
+        SHOOTER_MOTOR_BTM_RT = new TalonFX(0);
+        SHOOTER_MOTOR_TOP_RT = new TalonFX(7);
+        TURRET_MOTOR = new TalonFX(1); // dummy id value
 
-        //Falcon Shooter Motor setup
-        SHOOTER_MOTOR_LT = new TalonFX(SHOOTER_MOTOR_LT_CAN_ID); //TBD update this during testing in phoenix tunner
-        SHOOTER_MOTOR_RT = new TalonFX(SHOOTER_MOTOR_RT_CAN_ID);
+        FEEDER_MOTOR = new CANSparkMax(21, MotorType.kBrushless);
+        FEEDER_MOTOR.restoreFactoryDefaults();
+        FEEDER_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
+        FEEDER_MOTOR.setIdleMode(IdleMode.kBrake);
+        FEEDER_MOTOR.enableVoltageCompensation(12.0);
 
-        //Neo Load motor config
-        LOAD_MOTOR = new CANSparkMax(3, MotorType.kBrushless);
-        LOAD_MOTOR.restoreFactoryDefaults();
-        LOAD_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
-        LOAD_MOTOR.setIdleMode(IdleMode.kCoast);
-        LOAD_MOTOR.enableVoltageCompensation(12.0); //TBD is this the default value?
+        FEEDER_MOTOR2 = new CANSparkMax(1, MotorType.kBrushless);
+        FEEDER_MOTOR2.restoreFactoryDefaults();
+        FEEDER_MOTOR2.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
+        FEEDER_MOTOR2.setIdleMode(IdleMode.kBrake);
+        FEEDER_MOTOR2.enableVoltageCompensation(12.0);
 
-        //neo 550 Feed Motor config
-        FEED_MOTOR = new CANSparkMax(1, MotorType.kBrushless);
-        FEED_MOTOR.restoreFactoryDefaults();
-        FEED_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS); //TBD make seperate current limit for 550
-        FEED_MOTOR.setIdleMode(IdleMode.kCoast);
-        FEED_MOTOR.enableVoltageCompensation(12.0);//TBD is this the default value?
-
-            //create shooter mtr array for easier calls
-        shooterArray[0] = SHOOTER_MOTOR_RT;
-        shooterArray[1] = SHOOTER_MOTOR_LT;
-
+                //create shooter mtr array for easier calls
+        shooterArray[0] = SHOOTER_MOTOR_BTM_RT;
+        shooterArray[1] = SHOOTER_MOTOR_TOP_RT;
+        //shooterArray[2] = TURRET_MOTOR;
+      
             //reset to factory defaults
         SHOOTER_MOTOR_RT.getConfigurator().apply(new TalonFXConfiguration());
         SHOOTER_MOTOR_LT.getConfigurator().apply(new TalonFXConfiguration());
