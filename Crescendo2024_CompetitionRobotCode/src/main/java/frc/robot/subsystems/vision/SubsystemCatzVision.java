@@ -193,6 +193,10 @@ public class SubsystemCatzVision extends SubsystemBase {
         return inputs.tx;
     }
 
+    public double getAprilTagID() {
+        return inputs.primaryApriltagID;
+    }
+
     //----------------------------------Calculation methods---------------------------------------------
     
     public void limelightRangeFinder() {
@@ -299,9 +303,6 @@ public class SubsystemCatzVision extends SubsystemBase {
         }   
     } 
 
-    public double getHorizontalAngle() {
-        return Units.radiansToDegrees(inputs.tx) - 152;
-    }
 
     /**
     * singleton implenentation of vision
