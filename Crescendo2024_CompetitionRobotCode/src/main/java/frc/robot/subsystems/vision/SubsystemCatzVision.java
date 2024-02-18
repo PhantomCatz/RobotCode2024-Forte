@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.VisionConstants;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 
 
@@ -20,12 +21,17 @@ import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
     Assume the Limelight is the front of the robot
 */
 public class SubsystemCatzVision extends SubsystemBase {
-
+    // turret constants
     final double limelightPlacementHeight = Units.feetToMeters(1.0);
     final double sourceApriltagHeight = Units.feetToMeters(4.0);
     final double speakerApriltagHeight = Units.feetToMeters(4.33);
     final double trapApriltagHeight = Units.feetToMeters(3.969);
     final double ampApriltagHeight = 1.22;
+    
+    final double TURRET_LIMELIGHT_X_DISTANCE_FROM_CENTER = 0.0; //tbd value
+    final double TURRET_RADIUS = 0.0; //tbd value
+    final double TURRET_ANGLE_FROM_HOME = SubsystemCatzTurret.getInstance().getTurretAngle();
+    final double TURRET_LIMELIGHT_Y_DISTANCE_FROM_CENTER = 0.0; //tbd value
 
     static double aprilTagDistanceToWall;
     static double aprilTagDistanceToSource;
@@ -60,8 +66,6 @@ public class SubsystemCatzVision extends SubsystemBase {
         }
     }
 
-    //NOTE TO EVERYONE...DON'T GET RID OF UNCOMMETED CODE PLZ (LMAO)
-
     @Override
     public void periodic() {
         Logger.recordOutput("useSingleTag", useSingleTag); //set by driverstation
@@ -93,6 +97,8 @@ public class SubsystemCatzVision extends SubsystemBase {
                 System.out.println("vision processeed");
             }
         }
+
+        
 
         // //Logging
         // Logger.recordOutput("Vision/ResultCount", results.size());
@@ -178,6 +184,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         }
     }
 
+    
     //access method for determining whether to use multiple tags for pose estimation
     public void setUseSingleTag(boolean useSingleTag) {
         setUseSingleTag(useSingleTag, 0);
@@ -202,6 +209,14 @@ public class SubsystemCatzVision extends SubsystemBase {
 
     //----------------------------------Calculation methods---------------------------------------------
     
+    public double getTurretLimelightXOffset() {
+        return TURRET_LIMELIGHT_X_DISTANCE_FROM_CENTER + TURRET_RADIUS * (Math.cos(TURRET_ANGLE_FROM_HOME));
+    }
+
+    public double getTurretLimelightYOffset() {
+        return TURRET_LIMELIGHT_Y_DISTANCE_FROM_CENTER + TURRET_RADIUS * (-Math.sin(TURRET_ANGLE_FROM_HOME));
+    }
+
     public void limelightRangeFinder(int cameraNum) {
         if(inputs[cameraNum].primaryApriltagID == 1 || 
            inputs[cameraNum].primaryApriltagID == 2 || 
@@ -217,7 +232,7 @@ public class SubsystemCatzVision extends SubsystemBase {
 
             //horizontal distance to target
             horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
-            if(Math.abs(horizontalTargetOffset) > 5) // 5 what?? I don't know
+            if(Math.abs(horizontalTargetOffset) > 5) 
             {
                 System.out.println("Alligned with Target");
                 horizontallyAllignedWithAprilTag = true;
@@ -243,7 +258,7 @@ public class SubsystemCatzVision extends SubsystemBase {
             //horizontal distance to target
             horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
 
-            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) // 5 what?? I don't know
+            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
             {
                 System.out.println("Alligned with Target");
                 horizontallyAllignedWithAprilTag = true;
@@ -270,7 +285,7 @@ public class SubsystemCatzVision extends SubsystemBase {
             
             //horizontal distance to target
             horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);  
-            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) // 5 what?? I don't know
+            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
             {
                 System.out.println("Alligned with Target");
                 horizontallyAllignedWithAprilTag = true;
@@ -293,7 +308,7 @@ public class SubsystemCatzVision extends SubsystemBase {
 
             //horizontal distance to target
             horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
-            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) // 5 what?? I don't know
+            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
             {
                 System.out.println("Alligned with Target");
                 horizontallyAllignedWithAprilTag = true;

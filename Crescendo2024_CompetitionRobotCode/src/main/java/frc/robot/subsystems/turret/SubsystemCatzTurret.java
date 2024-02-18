@@ -189,7 +189,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     }          
   }
 
-  
+  public double getTurretAngle() {
+    return currentTurretDegree;
+  }
 
   
   
