@@ -42,7 +42,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         addRequirements(m_driveTrain);
     }
 
-    //Trajectories w/o path planner
+    //Auto Pathplanning trajectoreies
     public PPTrajectoryFollowingCmd(List<Translation2d> bezierPoints, PathConstraints constraints, GoalEndState endRobotState) {
         PathPlannerPath newPath = new PathPlannerPath(bezierPoints, constraints, endRobotState);
         path = newPath;
@@ -61,6 +61,7 @@ public class PPTrajectoryFollowingCmd extends Command {
             path = path.flipPath();
             System.out.println("flip");
         }
+
         for(int i=0; i<path.getAllPathPoints().size(); i++){
             System.out.println(path.getAllPathPoints().get(i).position);
         }

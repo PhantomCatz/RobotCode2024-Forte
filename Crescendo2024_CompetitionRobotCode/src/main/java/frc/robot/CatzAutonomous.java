@@ -27,6 +27,10 @@ public class CatzAutonomous {
     public static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
+    PathConstraints autoPathfindingConstraints = new PathConstraints(
+        3.0, 4.0, 
+        Units.degreesToRadians(540), Units.degreesToRadians(720));
+
     public CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", CatzConstants.AllianceColor.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  CatzConstants.AllianceColor.Red);
@@ -98,14 +102,32 @@ public class CatzAutonomous {
     }
 
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
-
-    //Automatic pathfinding command
     public Command autoFindPathSource() {
-        //Create a new pathplanner path on the fly
-                // Create the constraints to use while pathfinding
-            PathConstraints constraints = new PathConstraints(
-            3.0, 4.0, 
-            Units.degreesToRadians(540), Units.degreesToRadians(720));
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
+                    );
+
+        //send path info to trajectory following command
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            autoPathfindingConstraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+    public Command autoFindPathAmp() {
+
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(1.0, 2.0, Rotation2d.fromDegrees(0)),
+                new Pose2d(1.0, 2.3, Rotation2d.fromDegrees(0))
+                    );
+
+        //send path info to trajectory following command
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            autoPathfindingConstraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+    public Command autoFindPathSpeakerAW() {
 
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
                 new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
@@ -114,9 +136,47 @@ public class CatzAutonomous {
 
         //send path info to trajectory following command
         return new PPTrajectoryFollowingCmd(bezierPoints, 
-                                            constraints, 
+                                            autoPathfindingConstraints, 
                                             new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
     }
+
+    public Command autoFindPathSpeakerUT() {
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
+                    );
+
+        //send path info to trajectory following command
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            autoPathfindingConstraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+    //Automatic pathfinding command
+    public Command autoFindPathSpeakerCS() {
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
+                    );
+
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            autoPathfindingConstraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+    //Automatic pathfinding command
+    public Command autoFindPathSpeakerLOT() {
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
+                    );
+
+        //send path info to trajectory following command
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            autoPathfindingConstraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
 
     //-------------------------------------------------MISC-------------------------------------------------------
 

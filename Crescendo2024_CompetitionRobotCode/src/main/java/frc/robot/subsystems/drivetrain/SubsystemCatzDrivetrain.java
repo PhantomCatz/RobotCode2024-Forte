@@ -118,6 +118,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         }
     }
 
+    // Get the singleton instance of the CatzDriveTrainSubsystem
+    public static SubsystemCatzDrivetrain getInstance() {
+        return instance;
+    }
+
     // Periodic update method for the drive train subsystem
     @Override
     public void periodic() {
@@ -154,16 +159,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Update SmartDashboard with the gyro angle
         SmartDashboard.putNumber("gyroAngle", getGyroAngle());
-    }
-
-    // Access method for updating drivetrain instructions
-    public void driveRobotWith254CorrectedDynamics(ChassisSpeeds chassisSpeeds) {
-        // Apply second-order kinematics to prevent swerve skew
-        chassisSpeeds = correctForDynamics(chassisSpeeds);
-
-        // Convert chassis speeds to individual module states and set module states
-        SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-        setModuleStates(moduleStates);
     }
 
     public void driveRobotWithDescritizeDynamics(ChassisSpeeds chassisSpeeds) {
@@ -206,23 +201,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         Logger.recordOutput("Drive/optimized module states", optimizedDesiredStates);
     }
 
-    /**
-     * Correction for swerve second-order dynamics issue. Borrowed from 254:
-     * https://github.com/Team254/FRC-2022-Public/blob/main/src/main/java/com/team254/frc2022/subsystems/Drive.java#L325
-     * Discussion:
-     * https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964
-     */
-    private static ChassisSpeeds correctForDynamics(ChassisSpeeds originalSpeeds) {
-        final double LOOP_TIME_S = 0.02;
-        Pose2d futureRobotPose = new Pose2d(originalSpeeds.vxMetersPerSecond * LOOP_TIME_S,
-                originalSpeeds.vyMetersPerSecond * LOOP_TIME_S,
-                Rotation2d.fromRadians(originalSpeeds.omegaRadiansPerSecond * LOOP_TIME_S));
-        Twist2d twistForPose = GeometryUtils.log(futureRobotPose);
-        ChassisSpeeds updatedSpeeds = new ChassisSpeeds(twistForPose.dx / LOOP_TIME_S, twistForPose.dy / LOOP_TIME_S,
-                twistForPose.dtheta / LOOP_TIME_S);
-        return updatedSpeeds;
-    }
-
     //--------------------------------------------------DriveTrain MISC methods-------------------------------------------------
 
     // Set brake mode for all swerve modules
@@ -252,7 +230,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     //----------------------------------------------Gyro methods----------------------------------------------
 
     public void flipGyro() {
-        gyroIO.setAngleAdjustmentIO(180+gyroIO.getAngleAdjustmentIO());
+        gyroIO.setAngleAdjustmentIO(180 + gyroIO.getAngleAdjustmentIO());
     }
 
     public Command resetGyro() {
@@ -304,11 +282,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     }
 
     public Command zeroPoseEstimatorCmd() {
-        return runOnce(()->zeroPoseEstimator());
-    }
-
-    public void zeroPoseEstimator() {
-        m_poseEstimator.resetPosition(getRotation2d(), getModulePositions(), new Pose2d(0.0,0.0, Rotation2d.fromDegrees(0)));
+        return runOnce(()->resetPosition(new Pose2d(0.0,0.0, Rotation2d.fromDegrees(0))));
     }
 
     //----------------------------------------------Enc resets-------------------------------------------------------
@@ -354,8 +328,4 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         isVisionEnabled = enable;
     }
 
-    // Get the singleton instance of the CatzDriveTrainSubsystem
-    public static SubsystemCatzDrivetrain getInstance() {
-        return instance;
-    }
 }
