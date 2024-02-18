@@ -78,7 +78,6 @@ public class VisionIOLimeLight implements VisionIO {
         // set if the Limelight has a target to loggable boolean
         if (inputs.tv == 1) {
             inputs.hasTarget = true;
-            //System.out.println("Vision?");
         } 
         else {
             inputs.hasTarget = false;

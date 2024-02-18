@@ -98,30 +98,6 @@ public class SubsystemCatzVision extends SubsystemBase {
             }
         }
 
-        
-
-        // //Logging
-        // Logger.recordOutput("Vision/ResultCount", results.size());
-
-        //for every limlight camera process vision with according logic
-            // update and process new inputs[cameraNum] for camera
-            // camera.updateInputs(inputs[cameraNum]);
-            // Logger.processInputs("Vision/" + camera.getName() + "/Inputs", inputs[cameraNum]);
-                    
-            // //checks for when to process vision
-            // if (inputs[cameraNum].hasTarget && 
-            //     inputs[cameraNum].isNewVisionPose && 
-            //     !DriverStation.isAutonomous() && 
-            //     inputs[cameraNum].maxDistance < VisionConstants.LOWEST_DISTANCE) {
-            //     if (useSingleTag) {
-            //         if (inputs[cameraNum].singleIDUsed == acceptableTagID) {
-            //             processVision();
-            //         }
-            //     } 
-            //     else {
-            //         processVision();
-            //     }
-            // }
         limelightRangeFinder(1);
         
 
@@ -134,19 +110,6 @@ public class SubsystemCatzVision extends SubsystemBase {
         Logger.recordOutput("Distance to Apriltag", distanceToAprilTag);
         Logger.recordOutput("Distance to Wall", aprilTagDistanceToWall);
     }
-
-    // public void processVision(int cameraNum) {
-    //     // create a new pose based off the new inputs[cameraNum]
-    //     Pose2d currentPose = new Pose2d(inputs[cameraNum][cameraNum].x, 
-    //                                     inputs[cameraNum][cameraNum].y, 
-    //                                     new Rotation2d(inputs[cameraNum][cameraNum].rotation));
-
-    //     //log data
-    //     Logger.recordOutput(cameras[cameraNum].getName() + " pose", currentPose);
-
-    //     // add the new pose to a list
-    //     results.add(new PoseAndTimestamp(currentPose, inputs[cameraNum][cameraNum].timestamp));
-    // }
 
     static int camNum;
     public void processVision(int cameraNum) {
