@@ -31,16 +31,16 @@ public class ShooterIOReal implements ShooterIO {
 
     private final CANSparkMax LOAD_MOTOR;
 
-    private final int LOAD_MOTOR_CAN_ID = 3;
+    private final int LOAD_MOTOR_CAN_ID = 5;
 
-    private final DigitalInput BACK_BEAM_BREAK  = new DigitalInput(0);
-    private final DigitalInput FRONT_BEAM_BREAK = new DigitalInput(3);
+    private final DigitalInput BACK_BEAM_BREAK  = new DigitalInput(8);
+    private final DigitalInput FRONT_BEAM_BREAK = new DigitalInput(9);
 
     private Servo shooterLeftServo;
     private Servo shooterRightServo;
 
-    private final int SERVO_LEFT_CAN_ID = 1;
-    private final int SERVO_RIGHT_CAN_ID = 2;
+    private final int SERVO_LEFT_PWM_ID = 1;
+    private final int SERVO_RIGHT_PWM_ID = 2;
 
 
     //Tunable motor velocities
@@ -70,8 +70,8 @@ public class ShooterIOReal implements ShooterIO {
         xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT);
 
         //Servo setup
-        shooterLeftServo = new Servo(SERVO_LEFT_CAN_ID);
-        shooterRightServo = new Servo(SERVO_RIGHT_CAN_ID);
+        shooterLeftServo = new Servo(SERVO_LEFT_PWM_ID);
+        shooterRightServo = new Servo(SERVO_RIGHT_PWM_ID);
         
         //Falcon Shooter Motor setup
         SHOOTER_MOTOR_LT = new TalonFX(SHOOTER_MOTOR_LT_CAN_ID);
@@ -136,6 +136,9 @@ public class ShooterIOReal implements ShooterIO {
         inputs.shooterTorqueCurrentLT = SHOOTER_MOTOR_LT.getTorqueCurrent().getValue();
         inputs.shooterTorqueCurrentRT = SHOOTER_MOTOR_RT.getTorqueCurrent().getValue();
 
+        inputs.shooterBackBeamBreakBroken =  !BACK_BEAM_BREAK.get();
+        inputs.shooterFrontBeamBreakBroken = !FRONT_BEAM_BREAK.get();
+
         inputs.LoadMotorPercentOutput = LOAD_MOTOR.get();
         inputs.LoadMotorVelocity      = (LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
     }
@@ -173,20 +176,8 @@ public class ShooterIOReal implements ShooterIO {
     }
     //Code that will be tested for double beambreaks
     @Override
-    public void loadForward2() {
-        if(xboxDrv.x().getAsBoolean() == true) {
+    public void loadForwardWithBeamBreak() {
             LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
-        } else {
-            if (BACK_BEAM_BREAK.get() == true) {
-                if (FRONT_BEAM_BREAK.get() == false) {
-                    LOAD_MOTOR.set(LOAD_MOTOR_BACKWARD_SPEED);
-                } else {
-                LOAD_MOTOR.set(-LOAD_MOTOR_LOADING_SPEED);
-                }
-            } else {
-                LOAD_MOTOR.set(0);
-            }
-        }
     }
     @Override
     public void loadDisabled() {
