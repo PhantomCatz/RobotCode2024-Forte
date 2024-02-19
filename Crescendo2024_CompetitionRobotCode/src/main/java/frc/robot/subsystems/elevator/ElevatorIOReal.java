@@ -27,13 +27,15 @@ public class ElevatorIOReal implements ElevatorIO {
     private DigitalInput m_forwardLimit = new DigitalInput(0);
     private DigitalInput m_reverseLimit = new DigitalInput(1);
 
-    private final TalonFX ElevatorMtr;
+    private final TalonFX ElevatorMtrRT;
+    private final TalonFX ElevatorMtrLT;
 
     public ElevatorIOReal() {
-        //Drive Motor setup
-        ElevatorMtr = new TalonFX(0);
+        //Elevator Motor setup
+        ElevatorMtrRT = new TalonFX(0);
+        ElevatorMtrLT = new TalonFX(0);
             //reset to factory defaults
-        ElevatorMtr.getConfigurator().apply(new TalonFXConfiguration());
+        ElevatorMtrRT.getConfigurator().apply(new TalonFXConfiguration());
         talonConfigs.Slot0 = elevatorConfigs;
             //current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
@@ -51,7 +53,8 @@ public class ElevatorIOReal implements ElevatorIO {
 
         //check if drive motor is initialized correctly
 
-        initializationStatus = ElevatorMtr.getConfigurator().apply(talonConfigs);
+        initializationStatus = ElevatorMtrRT.getConfigurator().apply(talonConfigs);
+        initializationStatus = ElevatorMtrLT.getConfigurator().apply(talonConfigs);
         if(!initializationStatus.isOK())
             System.out.println("Failed to Configure CAN ID" + 0);
             
@@ -59,10 +62,10 @@ public class ElevatorIOReal implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.elevatorVoltage = ElevatorMtr.getMotorVoltage().getValue();
-        inputs.elevatorDutyCycle = ElevatorMtr.getDutyCycle().getValue();
-        inputs.elevatorTorqueCurrent = ElevatorMtr.getTorqueCurrent().getValue();
-        inputs.elevatorVelocity = ElevatorMtr.getVelocity().getValue();
+        inputs.elevatorVoltage = ElevatorMtrRT.getMotorVoltage().getValue();
+        inputs.elevatorDutyCycle = ElevatorMtrRT.getDutyCycle().getValue();
+        inputs.elevatorTorqueCurrent = ElevatorMtrRT.getTorqueCurrent().getValue();
+        inputs.elevatorVelocity = ElevatorMtrRT.getVelocity().getValue();
 
         inputs.forwardSwitchTripped = m_forwardLimit.get();
         inputs.reverseSwitchTripped = m_reverseLimit.get();
@@ -70,7 +73,7 @@ public class ElevatorIOReal implements ElevatorIO {
     
     @Override
     public void setElevatorPosition(double newPositionElevator) {
-        ElevatorMtr.setControl(new PositionVoltage(newPositionElevator)
+        ElevatorMtrRT.setControl(new PositionVoltage(newPositionElevator)
             .withLimitForwardMotion(false)
             .withLimitReverseMotion(false)
         );
@@ -78,11 +81,11 @@ public class ElevatorIOReal implements ElevatorIO {
 
     @Override
     public void setElevatorPercentOutput(double speed) {
-        ElevatorMtr.set(speed);
+        ElevatorMtrRT.set(speed);
     }
 
     @Override
     public void setSelectedSensorPosition(double setNewReadPosition) {
-        ElevatorMtr.setPosition(setNewReadPosition);
+        ElevatorMtrRT.setPosition(setNewReadPosition);
     }
 }
