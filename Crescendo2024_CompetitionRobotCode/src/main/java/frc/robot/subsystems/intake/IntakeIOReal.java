@@ -25,8 +25,8 @@ public class IntakeIOReal implements IntakeIO {
 
     LoggedTunableNumber rollerMotorTunableNumber = new LoggedTunableNumber("IntakeRoller", 0.6);
     
-    private final DigitalInput beamBreakBack = new DigitalInput(4);
-    private final DigitalInput beamBreakFront = new DigitalInput(5);
+    private final DigitalInput IntakeBeamBreak = new DigitalInput(4);
+    //private final DigitalInput beamBreakFront = new DigitalInput(5);
 
     private final TalonFX pivotMtr;
     private final TalonFX rollerMtr;
@@ -85,8 +85,8 @@ public class IntakeIOReal implements IntakeIO {
         inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
         inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
         //true if beambreak is broken \/ \/
-        inputs.BeamBrkBackBroken = !beamBreakBack.get(); //TBD add method for controling inputs
-        inputs.BeamBrkFrontBroken = !beamBreakFront.get();
+        inputs.IntakeBeamBrkBroken = !IntakeBeamBreak.get(); //TBD add method for controling inputs
+        //inputs.BeamBrkFrontBroken = !beamBreakFront.get();
         inputs.closedLoopPivotMtr = pivotMtr.getClosedLoopError().getValue();
     }
 

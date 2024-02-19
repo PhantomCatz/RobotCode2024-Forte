@@ -28,7 +28,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //intake rollers Constants
   private final double ROLLERS_MTR_PWR_IN  =  0.6;
-  private final double ROLLERS_MTR_PWR_OUT = -1.0;
+  private final double ROLLERS_MTR_PWR_OUT = -0.6;
 
   //intake roller variables
 
@@ -139,8 +139,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
         if(m_rollerRunningMode == 2) {
             io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT); 
         } else if(m_rollerRunningMode == 1) {
-              if(inputs.BeamBrkBackBroken) {
+              if(inputs.IntakeBeamBrkBroken) {
                 io.setRollerPercentOutput(0.0);
+                m_rollerRunningMode = 0;
               } else {
                 io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN);
               }

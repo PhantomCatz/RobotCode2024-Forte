@@ -93,14 +93,14 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
 
-    xboxAux.leftStick().onTrue(new ManualIntakeCmd(()->xboxAux.getLeftY()));
-    xboxAux.rightStick().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
+    //xboxAux.leftStick().onTrue(new manualIntakeCmd(()->xboxAux.getLeftY()));
+    //xboxAux.rightStick().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
 
 
-    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
-    xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
-    xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
-    xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
+    //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
+    //xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+    //xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
+    //xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
 
 
  
