@@ -11,8 +11,8 @@ public interface IntakeIO {
         public double rollerVoltage;
         public double rollerPercentOutput;
         public double rollerVelocity;
-        public boolean BBFrontBroken;
-        public boolean BBBackBroken;
+        public boolean BeamBrkFrontBroken;
+        public boolean BeamBrkBackBroken;
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}
@@ -23,9 +23,7 @@ public interface IntakeIO {
 
     public default void rollerEnable(boolean enable) {}
 
-    public default void setIntakePosition(double targetencoderPostion) {}
-
-    public default void setRollerPercentOutput(double speed) {}
+    public default void setRollerPercentOutputIO(double speed) {}
 
     public default void setRollerVelocity(double velocity) {}
 

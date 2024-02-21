@@ -20,15 +20,13 @@ import frc.robot.Utils.LoggedTunableNumber;
 
 public class IntakeIOReal implements IntakeIO {
 
-    private final DigitalInput beamBreakBack = new DigitalInput(1);
-    private final DigitalInput beamBreakFront = new DigitalInput(2);
+    LoggedTunableNumber rollerMotorTunableNumber = new LoggedTunableNumber("IntakeRoller", 0.6);
+    
+    private final DigitalInput beamBreakBack = new DigitalInput(4);
+    private final DigitalInput beamBreakFront = new DigitalInput(5);
 
     private final TalonFX pivotMtr;
     private final TalonFX rollerMtr;
-    //TBD Might need logic gate for intake methods incase of logic conflict in Robot Container
-    Boolean intakeActive = false;
-
-    LoggedTunableNumber rollerMotor = new LoggedTunableNumber("IntakeRoller", 50);
 
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
     
@@ -39,14 +37,12 @@ public class IntakeIOReal implements IntakeIO {
 
     public IntakeIOReal() {
                 //Wrist Motor setup
-        pivotMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID); //TBD need mtr id
+       pivotMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID);
             //reset to factory defaults
-        pivotMtr.getConfigurator().apply(new TalonFXConfiguration());
+       pivotMtr.getConfigurator().apply(new TalonFXConfiguration());
                 //Wrist Motor setup
-        rollerMtr = new TalonFX(IntakeConstants.ROLLER_MTR_ID); //TBD need mtr id
+        rollerMtr = new TalonFX(IntakeConstants.ROLLER_MTR_ID);
             //reset to factory defaults
-        rollerMtr.getConfigurator().apply(new TalonFXConfiguration());
-        pivotTalonConfigs.Slot0 = pivotConfigs;
         rollerMtr.getConfigurator().apply(new TalonFXConfiguration());
         pivotTalonConfigs.Slot0 = pivotConfigs;
         pivotTalonConfigs.Slot1 = rollerConfigs;
@@ -64,36 +60,29 @@ public class IntakeIOReal implements IntakeIO {
         pivotConfigs.kD = 0.001;
 
         //check if wrist motor is initialized correctly
-        initializationStatus = pivotMtr.getConfigurator().apply(pivotTalonConfigs);
-        if(!initializationStatus.isOK())
-            System.out.println("Failed to Configure CAN ID" + IntakeConstants.PIVOT_MTR_ID);
-
+          //  initializationStatus = pivotMtr.getConfigurator().apply(pivotTalonConfigs);
+            if(!initializationStatus.isOK())
+                System.out.println("Failed to Configure CAN ID" + IntakeConstants.PIVOT_MTR_ID);
         //check if roller motor is initialized correctly
-        initializationStatus = rollerMtr.getConfigurator().apply(pivotConfigs);
+        for(int i=0;i<1;i++) {
         initializationStatus = rollerMtr.getConfigurator().apply(pivotTalonConfigs);
-        initializationStatus = rollerMtr.getConfigurator().apply(pivotTalonConfigs.Slot1);
         if(!initializationStatus.isOK())
             System.out.println("Failed to Configure CAN ID" + IntakeConstants.ROLLER_MTR_ID);
-    
+        }
 
 
     }
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        inputs.rollerVoltage = rollerMtr.getMotorVoltage().getValue();
-        inputs.pivotMtrEncPos = pivotMtr.getPosition().getValue();
-        inputs.rollerVoltage = rollerMtr.getTorqueCurrent().getValue();
-        inputs.pivotMtrPercentOutput = pivotMtr.getDutyCycle().getValue();
-        inputs.rollerPercentOutput = rollerMtr.getDutyCycle().getValue();
-        inputs.rollerVelocity = rollerMtr.getVelocity().getValue();
-        // false is broken true is connected \/ \/
-        inputs.BBBackBroken = beamBreakBack.get();
-        inputs.BBFrontBroken = beamBreakFront.get();
-    }
-
-    @Override
-    public void exampleAccessMethod(double test) {
-  
+        inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();
+        inputs.pivotMtrEncPos =         pivotMtr.getPosition().getValue();
+        inputs.rollerVoltage =          rollerMtr.getTorqueCurrent().getValue();
+        inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
+        inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
+        inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
+        //true if beambreak is broken \/ \/
+        inputs.BeamBrkBackBroken = !beamBreakBack.get(); //TBD add method for controling inputs
+        inputs.BeamBrkFrontBroken = !beamBreakFront.get();
     }
 
     @Override
@@ -101,50 +90,21 @@ public class IntakeIOReal implements IntakeIO {
         pivotMtr.setControl(new PositionVoltage(targetEncPos));
     }
 
-
-    @Override
-    public void rollerIn() {
-        rollerMtr.set(rollerMotor.get());
-        //intakeActive = true;
-    }
-
-    public void rollerOut() {
-        rollerMtr.set(-rollerMotor.get());
-        //intakeActive = true;
-    }
-// TBD might need logic gate
-    @Override
-    public void rollerDisable() {
-        //if (intakeActive == false) {
-        rollerMtr.set(0);
-        //} else {
-        //intakeActive = false;
-        //}
-    }
-
-    @Override
-    public void setIntakePosition(double targetEncPos) {
-        pivotMtr.setControl(new PositionVoltage(targetEncPos));
-    }
-
     @Override
     public void resetPivotEncPos(double defaultEncPos) {
-        pivotMtr.setPosition(defaultEncPos);
+       pivotMtr.setPosition(defaultEncPos);
     }
 
     @Override
-    public void setRollerPercentOutput(double speed) {
+    public void setRollerPercentOutputIO(double speed) {
         rollerMtr.set(speed);
     }
 
     @Override
-    public void setRollerVelocity(double velocity) {
-        rollerMtr.setControl(new VelocityVoltage(velocity));
+    public void setIntakePivotPercentOutput(double percentOutput) {
+       pivotMtr.set(percentOutput);
     }
 
-    @Override
-    public void setIntakePivotPercentOutput(double percentOutput) {
-        pivotMtr.setControl(new DutyCycleOut(percentOutput));
-    }
+
 }
 

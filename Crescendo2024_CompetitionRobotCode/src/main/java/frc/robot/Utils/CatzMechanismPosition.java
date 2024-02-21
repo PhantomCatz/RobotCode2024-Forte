@@ -23,7 +23,7 @@ public class CatzMechanismPosition {
         return m_elevatorTargetEncPos;
     }
 
-    public double getIntakePivotTargetEncPos() {
+    public double getIntakePivotTargetEnc() {
         return m_intakePivotTargetAngle;
     }
 

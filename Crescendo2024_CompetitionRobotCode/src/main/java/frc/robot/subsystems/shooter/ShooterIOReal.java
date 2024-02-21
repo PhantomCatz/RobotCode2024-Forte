@@ -73,7 +73,7 @@ public class ShooterIOReal implements ShooterIO {
         //Servo setup
         shooterLeftServo = new Servo(SERVO_LEFT_PWM_ID);
         shooterRightServo = new Servo(SERVO_RIGHT_PWM_ID);
-        
+
         //Falcon Shooter Motor setup
         SHOOTER_MOTOR_LT = new TalonFX(SHOOTER_MOTOR_LT_CAN_ID);
         SHOOTER_MOTOR_RT = new TalonFX(SHOOTER_MOTOR_RT_CAN_ID);
