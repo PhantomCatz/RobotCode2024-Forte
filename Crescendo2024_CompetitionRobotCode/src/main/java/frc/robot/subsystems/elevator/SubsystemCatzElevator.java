@@ -7,8 +7,11 @@ package frc.robot.subsystems.elevator;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.CatzMechanismConstants;
+import frc.robot.CatzConstants.ElevatorConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.ElevatorIOInputsAutoLogged;
 
@@ -22,7 +25,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private CatzMechanismPosition m_newPosition;
 
   public SubsystemCatzElevator() {
-
             switch (CatzConstants.currentMode) {
             case REAL: io = 
                     new ElevatorIOReal();
@@ -51,15 +53,29 @@ public class SubsystemCatzElevator extends SubsystemBase {
       io.setElevatorPosition(targetEncPos);
       Logger.recordOutput("targetEncElevator", targetEncPos);
     }
+
+    if(inputs.forwardSwitchTripped){
+      io.setSelectedSensorPosition(ElevatorConstants.FWD_SWITCH_POS);
+    }
+    if(inputs.reverseSwitchTripped){
+      io.setSelectedSensorPosition(ElevatorConstants.REV_SWITCH_POS);
+    }
   }
 
-  public void setNewPos(CatzMechanismPosition newPosition) {
-    this.m_newPosition = newPosition;
+  public void setNewPos(CatzMechanismPosition targetPos) {
+    m_newPosition = targetPos;
+  }
+
+  public Command manualElevatorFwd(){
+    return run(()->io.setElevatorPercentOutput(ElevatorConstants.MANUAL_PWR));
+  }
+
+  public Command manualElevatorRev(){
+    return run(()->io.setElevatorPercentOutput(- ElevatorConstants.MANUAL_PWR));
   }
 
   // Get the singleton instance of the ClimbSubsystem
   public static SubsystemCatzElevator getInstance() {
       return instance;
   }
-
 }

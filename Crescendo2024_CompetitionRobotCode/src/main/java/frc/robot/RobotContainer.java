@@ -19,6 +19,7 @@ import frc.robot.commands.AutoAlignCmd;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
@@ -39,18 +40,18 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  public class RobotContainer {
     
     //subsystems
-    private SubsystemCatzDrivetrain driveTrain; 
-    //private SubsystemCatzVision vision;
-    private SubsystemCatzIntake intake;
-    //private SubsystemCatzShooter shooter;
+    //private SubsystemCatzDrivetrain driveTrain; 
+    private SubsystemCatzVision vision;
+    //private SubsystemCatzIntake intake;
+    private SubsystemCatzShooter shooter;
     //private SubsystemCatzClimb climb;
-    //private SubsystemCatzElevator arm;
+    private SubsystemCatzElevator elevator;
     private SubsystemCatzTurret turret;
 
     private CatzAutonomous auton = new CatzAutonomous();
 
     //xbox controller
-    private CommandXboxController xboxDrv;
+    public static CommandXboxController xboxDrv;
     private CommandXboxController xboxAux;
  
        
@@ -60,14 +61,16 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     */
    public RobotContainer() {
     //instantiate subsystems
-    driveTrain = SubsystemCatzDrivetrain.getInstance(); 
-    //vision     = SubsystemCatzVision.getInstance();
-    intake     = SubsystemCatzIntake.getInstance();
-    turret     = SubsystemCatzTurret.getInstance();
 
-   // shooter    = SubsystemCatzShooter.getInstance();
+    //driveTrain = SubsystemCatzDrivetrain.getInstance(); 
+    //vision     = SubsystemCatzVision.getInstance();
+    //intake     = SubsystemCatzIntake.getInstance();
+
+    shooter    = SubsystemCatzShooter.getInstance();
+    elevator = SubsystemCatzElevator.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
+     turret = SubsytemCatzTurret.getInstance();
     
      xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
      xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
@@ -120,6 +123,27 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //shooter activation
     //xboxDrv.x().onTrue(shooter.setShooterActive())
     //          .onFalse(shooter.setShooterDisabled());
+    //xboxAux.rightBumper().onTrue(intake.setRollerIn()).onFalse(intake.setRollerDisabled());
+    //xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
+    // xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+
+    // Trigger intakePivotOverride = xboxAux.axisGreaterThan((int) (xboxAux.getLeftY()*100), 10);
+    // intakePivotOverride.onTrue(intake.intakePivotOverrideCommand(xboxAux.getLeftY()))
+    //                    .onFalse(intake.intakePivotOverrideCommand(0));
+
+    // //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
+    // xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
+    // // xboxDrv.start().onTrue(driveTrain.flipGyro());
+    // xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
+
+    // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
+    
+    xboxDrv.rightTrigger().onTrue(shooter.loadFowardCmd());    //shooter activation
+    xboxDrv.x().onTrue(shooter.cmdShooterEnabled())
+               .onFalse(shooter.cmdShooterDisabled());
+    xboxDrv.y().onTrue(shooter.loadDisabled());
+    xboxDrv.leftTrigger().onTrue(shooter.loadBackward());
+    xboxDrv.leftBumper().onTrue(shooter.setServoPowerExtend());
  
    }
 

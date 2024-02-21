@@ -158,6 +158,11 @@ public final class CatzConstants {
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
   public static final class ElevatorConstants {
     public static int ELEVATOR_MTR_ID = 50;
+
+    public static double REV_SWITCH_POS = 0.0; //dummy
+    public static double FWD_SWITCH_POS = 5.0; //dummy
+
+    public static double MANUAL_PWR = 0.5; //dummy
   }
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
@@ -170,5 +175,6 @@ public final class CatzConstants {
   public static final class ShooterConstants {
     public static int SHOOTER_MTR_ID = 53;
     public static int TURRET_MTR_ID = 54;
+    public static int ACCEPTABLE_VEL_ERROR = 20;
   }
 }

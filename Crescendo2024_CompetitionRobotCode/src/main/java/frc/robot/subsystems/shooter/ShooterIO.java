@@ -5,39 +5,41 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShooterIO {
     @AutoLog
     public class ShooterIOInputs {
-        public double dummyVariable;
-        public double velocityBtmRT;
-        public double velocityTopRT;
-        public double shooterTopPercentOutput;
-        public double shooterBtmPercentOutput;
-        public double shooterTopSupplyCurrent;
-        public double shooterBtmSupplyCurrent;
-        public double shooterTopStatorCurrent;
-        public double shooterBtmStatorCurrent;
-        public double shooterTopTorqueCurrent;
-        public double shooterBtmTorqueCurrent;
-        public double feederMotorPercentOutput; 
-        public double feederMotorVelocity;
-        public double feederMotor2PercentOutput;
-        public double feederMotor2Velocity;
-        public double turretDeg;
+        public double shooterVelocityLT;
+        public double shooterVelocityRT;
+        public double shooterMotorVoltageLT;
+        public double shooterMotorVoltageRT;
+        public double shooterTorqueCurrentLT;
+        public double shooterTorqueCurrentRT;
+        public double shooterDutyCycleLT;
+        public double shooterDutyCycleRT;
+        public double shooterVelocityErrorLT;
+        public double shooterVelocityErrorRT;
+
+        public boolean isShooterFrontBeamBreakBroken;
+        public boolean shooterBackBeamBreakBroken;
+
+        public double LoadMotorPercentOutput; 
+        public double LoadMotorVelocity;
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}
 
-    public default void shootWithVelocity() {}
+    public default void setShooterEnabled() {}
 
     public default void setShooterDisabled() {}
 
-    public default void shootFeederReverse() {}
+    public default void loadBackward() {}
 
-    public default void setFeederDisabled() {}
+    public default void fineAdjustBck() {}
 
-    public default void setTurretPosition(double targetEncPos) {}
+    public default void loadDisabled() {}
 
-    public default double getTurretDeg() {
-        return 0;
-    }
+    public default void loadNote() {}
 
-    public default void setTurretCurrentPosition(double currentEncPos) {}
+    public default void loadForward() {}
+    
+    public default void fineAdjustFwd() {}
+
+    public default void setServoPower(double power) {}
 }
