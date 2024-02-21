@@ -51,8 +51,7 @@ public class ElevatorIOReal implements ElevatorIO {
         elevatorConfigs.kD = 0.05;
             //ramping
 
-        //check if drive motor is initialized correctly
-
+        //check if elevator motor is initialized correctly
         initializationStatus = ElevatorMtrRT.getConfigurator().apply(talonConfigs);
         initializationStatus = ElevatorMtrLT.getConfigurator().apply(talonConfigs);
         if(!initializationStatus.isOK())
@@ -74,8 +73,8 @@ public class ElevatorIOReal implements ElevatorIO {
     @Override
     public void setElevatorPosition(double newPositionElevator) {
         ElevatorMtrRT.setControl(new PositionVoltage(newPositionElevator)
-            .withLimitForwardMotion(false)
-            .withLimitReverseMotion(false)
+            .withLimitForwardMotion(true)
+            .withLimitReverseMotion(true)
         );
     }
 

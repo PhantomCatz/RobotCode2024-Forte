@@ -74,7 +74,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
     this.m_elevatorPercentOutput = percentOutput;
   }
 
-  // Get the singleton instance of the ClimbSubsystem
+  // Get the singleton instance of the elevator Subsystem
   public static SubsystemCatzElevator getInstance() {
       return instance;
   }

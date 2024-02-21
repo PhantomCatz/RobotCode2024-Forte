@@ -22,8 +22,6 @@ import frc.robot.CatzConstants.MtrConfigConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 
 public class IntakeIOReal implements IntakeIO {
-
-    LoggedTunableNumber rollerMotorTunableNumber = new LoggedTunableNumber("IntakeRoller", 0.6);
     
     private final DigitalInput IntakeBeamBreak = new DigitalInput(4);
     //private final DigitalInput beamBreakFront = new DigitalInput(5);
@@ -40,9 +38,9 @@ public class IntakeIOReal implements IntakeIO {
 
     public IntakeIOReal() {
                 //Wrist Motor setup
-       pivotMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID);
+        pivotMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID);
             //reset to factory defaults
-       pivotMtr.getConfigurator().apply(new TalonFXConfiguration());
+        pivotMtr.getConfigurator().apply(new TalonFXConfiguration());
                 //Wrist Motor setup
         rollerMtr = new TalonFX(IntakeConstants.ROLLER_MTR_ID);
             //reset to factory defaults
@@ -107,7 +105,13 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setIntakePivotEncOutput(double encOutput, double ffPercentOutput) {
-        pivotMtr.setControl(new MotionMagicDutyCycle(encOutput, true, ffPercentOutput, 0, false, false, false));
+        pivotMtr.setControl(new MotionMagicDutyCycle(encOutput, 
+                                                     true, 
+                                                     ffPercentOutput, 
+                                                     0, 
+                                                     false, 
+                                                     false, 
+                                                     false));
     }
 
 

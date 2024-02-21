@@ -30,6 +30,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double ROLLERS_MTR_PWR_IN  =  0.6;
   private final double ROLLERS_MTR_PWR_OUT = -0.6;
 
+  private static final int ROLLERS_STATE_OFF = 0;
+  private static final int ROLLERS_STATE_IN  = 1;
+  private static final int ROLLERS_STATE_OUT = 2;
+
   //intake roller variables
 
 
@@ -124,7 +128,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("intake/inputs", inputs);   
 
-              //collect current targetPosition in degrees
+      //collect current targetPosition in degrees
     double currentPositionDeg = calcWristAngle();
     double positionError = currentPositionDeg - m_targetPositionDeg;
 
@@ -136,12 +140,12 @@ public class SubsystemCatzIntake extends SubsystemBase {
     } else { 
       //robot enabled
 
-        if(m_rollerRunningMode == 2) {
+        if(m_rollerRunningMode == ROLLERS_STATE_OUT) {
             io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT); 
-        } else if(m_rollerRunningMode == 1) {
+        } else if(m_rollerRunningMode == ROLLERS_STATE_IN) {
               if(inputs.IntakeBeamBrkBroken) {
                 io.setRollerPercentOutput(0.0);
-                m_rollerRunningMode = 0;
+                m_rollerRunningMode = ROLLERS_STATE_OFF;
               } else {
                 io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN);
               }
@@ -179,7 +183,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
         } else {
         //set final mtr pwr
-        io.setIntakePivotEncOutput(m_finalEncOutput, -m_ffPower);
+        io.setIntakePivotEncOutput(m_finalEncOutput, m_ffPower);
         }
         
         m_prevCurrentPosition = currentPositionDeg;
