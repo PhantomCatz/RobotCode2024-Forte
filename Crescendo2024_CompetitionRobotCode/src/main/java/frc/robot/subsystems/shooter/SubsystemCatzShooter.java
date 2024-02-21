@@ -7,6 +7,7 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
@@ -22,13 +23,19 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static int currentLoaderMode;
   //private CatzMechanismPosition m_targetPosition;
 
-  private static final int SHOOTER_OFF = 0;
+  private static final int LOAD_OFF = 0;
   private static final int LOAD_IN = 1;
   private static final int LOAD_OUT = 2;
-  private static final int LOAD_OUT_WITH_BEAMBREAK_CHECK = 3;
-  private static final int LOAD_IN_WITH_BRAMBREAK_CHECK = 4;
+  private static final int FINE_TUNE = 3;
+  private static final int LOAD_IN_DONE = 4;
+  private static final int WAIT_FOR_NOTE_TO_SETTLE = 5;
 
+  private static final boolean BEAM_IS_BROKEN  = true;
+  private static final boolean BEAM_IS_NOT_BROKEN = false;
 
+  private boolean desiredBeamBreakState;
+
+  private int iterationCounter;
 
   public SubsystemCatzShooter() {
 
@@ -62,43 +69,54 @@ public class SubsystemCatzShooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
 
-    //if we are shooting in...perform the state maneuver
-    if(currentLoaderMode == LOAD_IN) { 
-        //if both beam breaks broken go into s
-        if(inputs.shooterBackBeamBreakBroken && inputs.shooterFrontBeamBreakBroken) {
-          currentLoaderMode = LOAD_OUT_WITH_BEAMBREAK_CHECK; //go to reverse with beambreak check state
-        } else if(inputs.shooterBackBeamBreakBroken) { 
-          currentLoaderMode = LOAD_IN_WITH_BRAMBREAK_CHECK;
-        }
-    }
+      switch(currentLoaderMode) { 
+        case LOAD_IN:
+          io.loadNote();
+          currentLoaderMode = LOAD_IN_DONE;
+        break;
 
+        case LOAD_IN_DONE:
+          if(inputs.shooterBackBeamBreakBroken == BEAM_IS_BROKEN) { 
+            io.loadDisabled();
+            currentLoaderMode = WAIT_FOR_NOTE_TO_SETTLE;
+            iterationCounter = 0;
+          }
+        break;
 
-    if(DriverStation.isDisabled()) {
-      io.loadDisabled();
-      io.setShooterDisabled();
-    } else {
-      if(currentLoaderMode == LOAD_IN) {
-        io.loadForward();
-      } else if(currentLoaderMode == LOAD_OUT) {
-        io.loadBackward();  
-      } else if(currentLoaderMode == LOAD_OUT_WITH_BEAMBREAK_CHECK) {
-        if(!inputs.shooterFrontBeamBreakBroken) {
-          io.loadDisabled();
-          currentLoaderMode = 0; 
-        } else {
+        case WAIT_FOR_NOTE_TO_SETTLE:
+          iterationCounter++;
+          if(iterationCounter > 6) {
+              if(inputs.isShooterFrontBeamBreakBroken == BEAM_IS_BROKEN) { //set off flag that determines adjust direction
+                desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
+                io.fineAdjustBck();
+              } else {
+                desiredBeamBreakState = BEAM_IS_BROKEN;
+                io.fineAdjustFwd();
+              }
+                currentLoaderMode = FINE_TUNE;
+          }
+            
+        break;
+
+        case LOAD_OUT: 
           io.loadBackward();
-        }
-      } else if(currentLoaderMode == LOAD_IN_WITH_BRAMBREAK_CHECK) {
-        if(inputs.shooterFrontBeamBreakBroken) {
+        break;
+
+        case FINE_TUNE:
+
+          if(inputs.isShooterFrontBeamBreakBroken == desiredBeamBreakState) { //if front is still conncected adjust foward until it breaks
+            io.loadDisabled();
+            currentLoaderMode = LOAD_OFF;
+          }
+
+        break;
+
+        case LOAD_OFF:
           io.loadDisabled();
-          currentLoaderMode = 0;
-        } else {
-          io.loadForward();
-        }
-      } else {
-        io.loadDisabled();
-      }
+
+        break;
     }
+    Logger.recordOutput("current load state", currentLoaderMode);
   }
 
   //-------------------------------------------Flywheel Commands------------------------------------------
@@ -113,8 +131,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   //-------------------------------------------Load Commands------------------------------------------
 
-  public Command loadFoward() {
-    return run(()->currentLoaderMode = 1);
+  public Command loadFowardCmd() {
+    return runOnce(()->currentLoaderMode = 1);
   }
 
   public Command loadDisabled() {

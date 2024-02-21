@@ -16,7 +16,7 @@ public interface ShooterIO {
         public double shooterVelocityErrorLT;
         public double shooterVelocityErrorRT;
 
-        public boolean shooterFrontBeamBreakBroken;
+        public boolean isShooterFrontBeamBreakBroken;
         public boolean shooterBackBeamBreakBroken;
 
         public double LoadMotorPercentOutput; 
@@ -31,11 +31,15 @@ public interface ShooterIO {
 
     public default void loadBackward() {}
 
+    public default void fineAdjustBck() {}
+
     public default void loadDisabled() {}
+
+    public default void loadNote() {}
 
     public default void loadForward() {}
     
-    public default void loadForwardWithBeamBreak() {}
+    public default void fineAdjustFwd() {}
 
     public default void setServoPower(double power) {}
 }

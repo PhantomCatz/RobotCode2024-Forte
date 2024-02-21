@@ -50,7 +50,8 @@ public class ShooterIOReal implements ShooterIO {
     //Load motor speeds 
     private final double LOAD_MOTOR_SHOOTING_SPEED = 1;
     private final double LOAD_MOTOR_LOADING_SPEED = 0.4;
-    private final double LOAD_MOTOR_BACKWARD_SPEED = 0.10;
+    private final double LOAD_MOTOR_BACKWARD_SPEED = 0.07;
+    private final double LOAD_MOTOR_FWD_ADJUST_SPEED = 0.07;
 
 
     TalonFX[] shooterArray = new TalonFX[2];
@@ -137,7 +138,7 @@ public class ShooterIOReal implements ShooterIO {
         inputs.shooterTorqueCurrentRT = SHOOTER_MOTOR_RT.getTorqueCurrent().getValue();
 
         inputs.shooterBackBeamBreakBroken =  !BACK_BEAM_BREAK.get();
-        inputs.shooterFrontBeamBreakBroken = !FRONT_BEAM_BREAK.get();
+        inputs.isShooterFrontBeamBreakBroken = !FRONT_BEAM_BREAK.get();
 
         inputs.LoadMotorPercentOutput = LOAD_MOTOR.get();
         inputs.LoadMotorVelocity      = (LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
@@ -164,21 +165,24 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void loadForward() {
-        if(xboxDrv.x().getAsBoolean() == true) {
-            LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
-        } else {
-            if (BACK_BEAM_BREAK.get() == true) {
-                LOAD_MOTOR.set(-LOAD_MOTOR_LOADING_SPEED);
-            } else {
-                LOAD_MOTOR.set(0);
-            }
-        }
+        LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
     }
     //Code that will be tested for double beambreaks
     @Override
-    public void loadForwardWithBeamBreak() {
-            LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
+    public void fineAdjustFwd() {
+            LOAD_MOTOR.set(-LOAD_MOTOR_FWD_ADJUST_SPEED);
     }
+
+    @Override
+    public void fineAdjustBck() {
+        LOAD_MOTOR.set(LOAD_MOTOR_BACKWARD_SPEED);
+    }
+
+    @Override
+    public void loadNote() {
+            LOAD_MOTOR.set(-LOAD_MOTOR_LOADING_SPEED);
+    }
+
     @Override
     public void loadDisabled() {
         LOAD_MOTOR.set(0);
