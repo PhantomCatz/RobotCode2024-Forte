@@ -19,13 +19,15 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 
 public class ModuleIOReal implements ModuleIO {
-
+    //Motor instantiation
     private final CANSparkMax STEER_MOTOR;
     private final TalonFX DRIVE_MOTOR;
 
+    //Mag enc instatiation
     private DutyCycleEncoder magEnc;
     private DigitalInput MagEncPWMInput;
 
+    //status code initialization
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
             //create new config objects
@@ -101,11 +103,6 @@ public class ModuleIOReal implements ModuleIO {
     @Override
     public void setSteerPwrIO(double SteerPwr) {
         STEER_MOTOR.set(SteerPwr);
-    }
-
-    @Override
-    public void setSteerVoltageIO(double steerVoltage) {
-        STEER_MOTOR.setVoltage(steerVoltage);
     }
 
     @Override

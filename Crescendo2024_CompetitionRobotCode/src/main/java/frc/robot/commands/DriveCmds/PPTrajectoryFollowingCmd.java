@@ -57,17 +57,20 @@ public class PPTrajectoryFollowingCmd extends Command {
         timer.reset();
         timer.start();  
         
+        //flip auton path to mirrored red side if we choose red alliance
         if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
             path = path.flipPath();
             System.out.println("flip");
         }
 
+        //path debug
         for(int i=0; i<path.getAllPathPoints().size(); i++){
             System.out.println(path.getAllPathPoints().get(i).position);
         }
         System.out.println("\n");
         Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
+        //create pathplanner trajectory
         this.trajectory = new PathPlannerTrajectory(
                                 path, 
                                 DriveConstants.
@@ -86,14 +89,19 @@ public class PPTrajectoryFollowingCmd extends Command {
         Pose2d currentPose               = m_driveTrain.getPose();
         Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         
-        //convert PP trajectory into a wpilib trajectory type to be used with the internal WPILIB trajectory library
+        /* 
+        * Convert PP trajectory into a wpilib trajectory type 
+        * Only takes in the current robot position 
+        * Does not take acceleration to be used with the internal WPILIB trajectory library
+        */
         Trajectory.State state = new Trajectory.State(currentTime, 
                                                       0,  //made the holonomic drive controller only rely on its current position, not its velocity because the target velocity is used as a ff
                                                       0, 
                                                       new Pose2d(goal.positionMeters, new Rotation2d()), 
                                                       0);
 
-        System.out.println(goal.getTargetHolonomicPose());
+        //debug
+        //System.out.println(goal.getTargetHolonomicPose());
         Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
         //construct chassisspeeds
         ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
