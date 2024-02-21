@@ -81,13 +81,12 @@ public class VisionIOLimeLight implements VisionIO {
                         Math.toRadians(data[3]),   //apriltag roll component
                         Math.toRadians(data[4]),   //apriltag pitch componenet
                         Math.toRadians(data[5])));  //apriltag yaw component
-                                        //.transformBy(cameraOffset); //apply the camera offset TBD this is breaking the limelight
+                                       // .transformBy(cameraOffset); //apply the camera offset TBD this is breaking the limelight
 
 
         // set if the Limelight has a target to loggable boolean
         if (inputs.tv == 1) {
             inputs.hasTarget = true;
-            //System.out.println("Vision?");
         } 
         else {
             inputs.hasTarget = false;
