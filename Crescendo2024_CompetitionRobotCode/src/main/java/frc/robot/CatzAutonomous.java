@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -22,26 +21,33 @@ import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class CatzAutonomous {
+    
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
 
-    private static LoggedDashboardChooser<DriverStation.Alliance> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
-    private static LoggedDashboardChooser<Command> internalPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
+    public static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
+    private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
+
+    PathConstraints autoPathfindingConstraints = new PathConstraints(
+        3.0, 4.0, 
+        Units.degreesToRadians(540), Units.degreesToRadians(720));
 
     public CatzAutonomous() {
-        chosenAllianceColor.addDefaultOption("Blue Alliance", DriverStation.Alliance.Blue);
-        chosenAllianceColor.addOption       ("Red Alliance",  DriverStation.Alliance.Red);
+        chosenAllianceColor.addDefaultOption("Blue Alliance", CatzConstants.AllianceColor.Blue);
+        chosenAllianceColor.addOption       ("Red Alliance",  CatzConstants.AllianceColor.Red);
 
-        internalPathChooser.addOption("Bulldozer Auto", bulldozerAuto());
-        internalPathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
-        internalPathChooser.addOption("ScoringC13", scoringC13());
-        //internalPathChooser.addOption("Drive Straight", driveStraight());
+        pathChooser.addOption("Bulldozer Auto", bulldozerAuto());
+        pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
+
+
+        pathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
+        pathChooser.addOption("ScoringC13", scoringC13());
+        pathChooser.addOption("Curve", curveAuto());
+
     }
 
     //configured dashboard
     public Command getCommand() {
-        m_driveTrain.resetForAutonomous();
-
-        return internalPathChooser.get(); //for internal path choosing TBD should we use pathplanners or a coded version?
+        return pathChooser.get(); 
     }
 
     //-------------------------------------------Auton Paths--------------------------------------------
@@ -51,51 +57,141 @@ public class CatzAutonomous {
         );
     }
 
-    private Command driveTranslateAuto() {
+    private Command speaker4PieceWing(){
         return new SequentialCommandGroup(
-            Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(2,2,Rotation2d.fromDegrees(0)))),//TBD let's make reset position not hard coded
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
-            Commands.waitSeconds(1),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
+            setAutonStartPose(PathPlannerPath.fromPathFile("S4PW1")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW1")),
+            Commands.waitSeconds(0.5),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW2")),
+            Commands.waitSeconds(0.5),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW3"))
         );
     }
 
     private Command scoringC13() {
+    return new SequentialCommandGroup(
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
+        Commands.waitSeconds(4),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
+        Commands.waitSeconds(4),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3")),
+        Commands.waitSeconds(4),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
+        Commands.waitSeconds(4),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5")),
+        Commands.waitSeconds(4),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6"))
+        );
+    }
+    
+    //below are test paths
+    private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
-            Commands.runOnce(()->m_driveTrain.resetPosition(new Pose2d(1.27, 7.38, Rotation2d.fromDegrees(0)))),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5")),
-            Commands.waitSeconds(4),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6"))
+            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
+        );
+    }
+
+    private Command curveAuto(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("Curve")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Curve")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right Straight"))
         );
     }
 
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
-
-    //Automatic pathfinding command
     public Command autoFindPathSource() {
-        //Create a new pathplanner path on the fly
-                // Create the constraints to use while pathfinding
-            PathConstraints constraints = new PathConstraints(
-            3.0, 4.0, 
-            Units.degreesToRadians(540), Units.degreesToRadians(720));
-
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-                new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
-                new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
-                new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90))
+                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
                     );
 
         //send path info to trajectory following command
         return new PPTrajectoryFollowingCmd(bezierPoints, 
-                                            constraints, 
+                                            autoPathfindingConstraints, 
                                             new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+    public Command autoFindPathAmp() {
+
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(1.0, 2.0, Rotation2d.fromDegrees(0)),
+                new Pose2d(1.0, 2.3, Rotation2d.fromDegrees(0))
+                    );
+
+        //send path info to trajectory following command
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            autoPathfindingConstraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+    public Command autoFindPathSpeakerAW() {
+
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
+                    );
+
+        //send path info to trajectory following command
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            autoPathfindingConstraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+    public Command autoFindPathSpeakerUT() {
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
+                    );
+
+        //send path info to trajectory following command
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            autoPathfindingConstraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+    //Automatic pathfinding command
+    public Command autoFindPathSpeakerCS() {
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
+                    );
+
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            autoPathfindingConstraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+    //Automatic pathfinding command
+    public Command autoFindPathSpeakerLOT() {
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
+                    );
+
+        //send path info to trajectory following command
+        return new PPTrajectoryFollowingCmd(bezierPoints, 
+                                            autoPathfindingConstraints, 
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+    }
+
+
+    //-------------------------------------------------MISC-------------------------------------------------------
+
+    private Command setAutonStartPose(PathPlannerPath startPath){
+    return Commands.runOnce(()->{
+        PathPlannerPath path = startPath;
+        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+            path = startPath.flipPath();
+        }
+
+        m_driveTrain.resetPosition(path.getPreviewStartingHolonomicPose());
+
+        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+            m_driveTrain.flipGyro();
+        }
+    });
     }
 }

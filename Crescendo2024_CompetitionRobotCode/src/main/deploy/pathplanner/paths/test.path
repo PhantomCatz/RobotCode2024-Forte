@@ -4,24 +4,40 @@
     {
       "anchor": {
         "x": 2.0,
-        "y": 2.0
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
         "x": 3.0,
-        "y": 2.0
+        "y": 6.5
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.0,
-        "y": 2.0
+        "x": 1.8271428850550027,
+        "y": 2.2003282468103404
       },
       "prevControl": {
-        "x": 4.0,
-        "y": 2.0
+        "x": 0.8271428850550027,
+        "y": 3.200328246810342
+      },
+      "nextControl": {
+        "x": 2.8271428850550038,
+        "y": 1.2003282468103404
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.0,
+        "y": 1.0
+      },
+      "prevControl": {
+        "x": 6.75,
+        "y": 2.5
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +48,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Print",
-      "waypointRelativePos": 0.5,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
       "command": {
         "type": "parallel",
         "data": {
@@ -43,14 +59,14 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 0.0,
+    "velocity": 0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,

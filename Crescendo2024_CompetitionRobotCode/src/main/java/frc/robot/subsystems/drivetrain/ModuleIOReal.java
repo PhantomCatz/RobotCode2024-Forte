@@ -19,13 +19,15 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 
 public class ModuleIOReal implements ModuleIO {
-
+    //Motor instantiation
     private final CANSparkMax STEER_MOTOR;
     private final TalonFX DRIVE_MOTOR;
 
+    //Mag enc instatiation
     private DutyCycleEncoder magEnc;
     private DigitalInput MagEncPWMInput;
 
+    //status code initialization
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
             //create new config objects
@@ -59,9 +61,10 @@ public class ModuleIOReal implements ModuleIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 2.4; //TBD 0.3 has a better graph but it jitters the auton. 0.1 doesnt jitter for auton but slow for telop //for atlas
+        driveConfigs.kP = 2.4;
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.00;
+        driveConfigs.kV = 0.1189; //TBD need tick eq for this
 
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){
@@ -69,13 +72,17 @@ public class ModuleIOReal implements ModuleIO {
             if(!initializationStatus.isOK())
                 System.out.println("Failed to Configure CAN ID" + driveMotorIDIO);
         }
+
     }
 
     @Override
     public void updateInputs(ModuleIOInputs inputs) {
-        inputs.driveMtrVelocity =       DRIVE_MOTOR.getRotorVelocity().getValue();
+        inputs.driveMtrVelocity       = DRIVE_MOTOR.getRotorVelocity().getValue();
         inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
-        inputs.magEncoderValue = magEnc.get();
+        inputs.driveAppliedVolts      = DRIVE_MOTOR.getMotorVoltage().getValueAsDouble();
+        inputs.magEncoderValue        = magEnc.get();
+        inputs.driveVelocityError     = DRIVE_MOTOR.getClosedLoopError().getValueAsDouble();
+        inputs.steerAppliedVolts      = STEER_MOTOR.getAppliedOutput();
     }
 
     @Override
@@ -96,11 +103,6 @@ public class ModuleIOReal implements ModuleIO {
     @Override
     public void setSteerPwrIO(double SteerPwr) {
         STEER_MOTOR.set(SteerPwr);
-    }
-
-    @Override
-    public void setSteerVoltageIO(double steerVoltage) {
-        STEER_MOTOR.setVoltage(steerVoltage);
     }
 
     @Override

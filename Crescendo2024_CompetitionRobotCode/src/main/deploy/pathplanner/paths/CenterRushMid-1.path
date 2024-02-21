@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.0,
-        "y": 2.0
+        "x": 1.6199370860280196,
+        "y": 6.354311170160802
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8012958736331153,
-        "y": 2.025974722420201
+        "x": 2.9026396514331507,
+        "y": 6.314843398917567
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.054355384031737,
-        "y": 0.40987927910235306
+        "x": 5.191770383540769,
+        "y": 6.354311170160802
       },
       "prevControl": {
-        "x": 4.1396115609804305,
-        "y": 0.40987927910235306
+        "x": 4.066938903108577,
+        "y": 6.265508684863524
+      },
+      "nextControl": {
+        "x": 6.812349819876013,
+        "y": 6.482251651976742
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.250522654891466,
+        "y": 6.660186397295872
+      },
+      "prevControl": {
+        "x": 6.9678200894863345,
+        "y": 6.551650026376976
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,11 +55,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
-    "rotateFast": true
+    "rotation": 0,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "CenterRushMid",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

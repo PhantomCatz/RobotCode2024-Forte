@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 2,
+      "y": 2
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -8,19 +14,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "S4PW1"
+            "pathName": "1WingBulldozeAbove-1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "S4PW2"
+            "pathName": "1WingBulldozeAbove-2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "S4PW3"
+            "pathName": "1WingBulldozeAbove-3"
           }
         }
       ]

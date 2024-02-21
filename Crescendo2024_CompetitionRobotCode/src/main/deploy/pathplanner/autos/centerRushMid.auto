@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 1.5311346007307416,
+      "y": 6.245774799241906
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -8,19 +14,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "S4PW1"
+            "pathName": "CenterRushMid-1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "S4PW2"
+            "pathName": " CenterRushMid-2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "S4PW3"
+            "pathName": " CenterRushMid-3"
           }
         }
       ]
