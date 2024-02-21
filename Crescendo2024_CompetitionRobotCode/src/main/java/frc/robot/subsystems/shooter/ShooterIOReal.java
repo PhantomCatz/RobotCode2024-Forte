@@ -147,7 +147,7 @@ public class ShooterIOReal implements ShooterIO {
   //-------------------------------------------Flywheel Methods------------------------------------------
 
     @Override
-    public void setShooterEnabled() {
+    public void setFlywheelEnabled() {
         double shooterVelocityLT = shooterVelLT.get();
         double shooterVelocityRT = shooterVelRT.get();
 
@@ -155,7 +155,7 @@ public class ShooterIOReal implements ShooterIO {
         SHOOTER_MOTOR_RT.setControl(new VelocityVoltage(shooterVelocityRT).withEnableFOC(true));
     }
     @Override
-    public void setShooterDisabled() {
+    public void setFlywheelDisabled() {
         SHOOTER_MOTOR_LT.setControl(new DutyCycleOut(0));
         SHOOTER_MOTOR_RT.setControl(new DutyCycleOut(0));
         loadDisabled();
@@ -180,7 +180,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void loadNote() {
-            LOAD_MOTOR.set(-LOAD_MOTOR_LOADING_SPEED);
+        LOAD_MOTOR.set(-LOAD_MOTOR_LOADING_SPEED);
     }
 
     @Override
@@ -195,7 +195,7 @@ public class ShooterIOReal implements ShooterIO {
   //--------------------------------------------Servo Methods----------------------------------------
 
   @Override
-  public void setServoPower(double power) {
+  public void setServoPosition(double power) {
     shooterLeftServo.set(power);
     shooterRightServo.set(power);
   }

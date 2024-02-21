@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.shooter;
 
+import java.sql.Driver;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,26 +17,18 @@ import frc.robot.CatzConstants;
 
 public class SubsystemCatzShooter extends SubsystemBase {
   
+  //shooter io delcaration block
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
+  //shooter instatntation
   private static SubsystemCatzShooter instance = new SubsystemCatzShooter();
+
   //shooter constants and variables
-  private static int currentLoaderMode;
-  //private CatzMechanismPosition m_targetPosition;
-
-  private static final int LOAD_OFF = 0;
-  private static final int LOAD_IN = 1;
-  private static final int LOAD_OUT = 2;
-  private static final int FINE_TUNE = 3;
-  private static final int LOAD_IN_DONE = 4;
-  private static final int WAIT_FOR_NOTE_TO_SETTLE = 5;
-
   private static final boolean BEAM_IS_BROKEN  = true;
   private static final boolean BEAM_IS_NOT_BROKEN = false;
 
-  private boolean desiredBeamBreakState;
-
+  private boolean desiredFrontBeamBreakState;
   private int iterationCounter;
 
   public SubsystemCatzShooter() {
@@ -55,6 +49,28 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
   }
 
+  private static ServoState currentServoState;
+  private static enum ServoState {
+    AUTO,
+    FULL_EXTEND,
+    FULL_RETRACT
+  }
+
+  private static FlywheelEnable currentFlywheelEnableMode;
+  private static enum FlywheelEnable {
+    ON,
+    OFF
+  }
+
+  private static LoaderState currentLoaderState = LoaderState.LOAD_OFF;
+  private static enum LoaderState {
+    LOAD_OFF,
+    LOAD_IN,
+    LOAD_OUT,
+    FINE_TUNE_CHECK,
+    LOAD_IN_DONE,
+    WAIT_FOR_NOTE_TO_SETTLE
+  }
 
 
   // Get the singleton instance of the ShooterSubsystem
@@ -62,93 +78,118 @@ public class SubsystemCatzShooter extends SubsystemBase {
       return instance;
   }
 
-
-
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
 
-      switch(currentLoaderMode) { 
-        case LOAD_IN:
-          io.loadNote();
-          currentLoaderMode = LOAD_IN_DONE;
-        break;
+    if(DriverStation.isDisabled()) {
+      io.setFlywheelDisabled();
+      io.loadDisabled();
+      currentLoaderState = LoaderState.LOAD_OFF;
+    } else {
 
-        case LOAD_IN_DONE:
-          if(inputs.shooterBackBeamBreakBroken == BEAM_IS_BROKEN) { 
-            io.loadDisabled();
-            currentLoaderMode = WAIT_FOR_NOTE_TO_SETTLE;
-            iterationCounter = 0;
-          }
-        break;
+        //shooter flywheel logic
+        if(currentFlywheelEnableMode == FlywheelEnable.ON) {
+          io.setFlywheelEnabled();
+        } else {
+          io.setFlywheelDisabled();
+        }
 
-        case WAIT_FOR_NOTE_TO_SETTLE:
-          iterationCounter++;
-          if(iterationCounter > 6) {
-              if(inputs.isShooterFrontBeamBreakBroken == BEAM_IS_BROKEN) { //set off flag that determines adjust direction
-                desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
-                io.fineAdjustBck();
-              } else {
-                desiredBeamBreakState = BEAM_IS_BROKEN;
-                io.fineAdjustFwd();
+        //servo logic states
+        switch(currentServoState) {
+          case AUTO:
+          break;
+
+          case FULL_EXTEND:
+            io.setServoPosition(1.0);
+          break;
+
+          case FULL_RETRACT:
+            io.setServoPosition(0.0);
+          break;
+        }
+        
+        
+        //load logic
+        switch(currentLoaderState) { 
+          case LOAD_IN: //fire of the method call to make the load mtr run
+            io.loadNote();
+            currentLoaderState = LoaderState.LOAD_IN_DONE;
+          break;
+
+          case LOAD_IN_DONE: //disable and set off state to determine which direction to run load mtr
+            if(inputs.shooterBackBeamBreakBroken == BEAM_IS_BROKEN) { 
+              io.loadDisabled();
+              currentLoaderState = LoaderState.WAIT_FOR_NOTE_TO_SETTLE;
+              iterationCounter = 0;
+            }
+          break;
+
+          case WAIT_FOR_NOTE_TO_SETTLE: //run timer and after determien which direction to run load mtr
+            iterationCounter++;
+            if(iterationCounter > 6) {
+                if(inputs.isShooterFrontBeamBreakBroken == BEAM_IS_BROKEN) { //set off flag that determines adjust direction
+                  desiredFrontBeamBreakState = BEAM_IS_NOT_BROKEN;
+                  io.fineAdjustBck();
+                } else {
+                  desiredFrontBeamBreakState = BEAM_IS_BROKEN;
+                  io.fineAdjustFwd();
+                }
+                  currentLoaderState = LoaderState.FINE_TUNE_CHECK;
               }
-                currentLoaderMode = FINE_TUNE;
-          }
-            
-        break;
+          break;
 
-        case LOAD_OUT: 
-          io.loadBackward();
-        break;
+          case LOAD_OUT: //run the note out
+            io.loadBackward();
+          break;
 
-        case FINE_TUNE:
+          case FINE_TUNE_CHECK: //shooter checks to see if the beambreak is in desired state to turn off
+            if(inputs.isShooterFrontBeamBreakBroken == desiredFrontBeamBreakState) { 
+              io.loadDisabled();
+              currentLoaderState = LoaderState.LOAD_OFF;
+            }
+          break;
 
-          if(inputs.isShooterFrontBeamBreakBroken == desiredBeamBreakState) { //if front is still conncected adjust foward until it breaks
+          case LOAD_OFF: //run load mtr off
             io.loadDisabled();
-            currentLoaderMode = LOAD_OFF;
-          }
+          break;
+      }
 
-        break;
-
-        case LOAD_OFF:
-          io.loadDisabled();
-
-        break;
     }
-    Logger.recordOutput("current load state", currentLoaderMode);
+    Logger.recordOutput("current load state", currentLoaderState.toString());
   }
 
   //-------------------------------------------Flywheel Commands------------------------------------------
 
   public Command cmdShooterEnabled() {
-    return run(()->io.setShooterEnabled());
+    return run(()->currentFlywheelEnableMode = FlywheelEnable.ON);
   }
 
   public Command cmdShooterDisabled() {
-    return run(()->io.setShooterDisabled());
+    return run(()->currentFlywheelEnableMode = FlywheelEnable.OFF);
   }
 
   //-------------------------------------------Load Commands------------------------------------------
 
   public Command loadFowardCmd() {
-    return runOnce(()->currentLoaderMode = 1);
+    return run(()->currentLoaderState = LoaderState.LOAD_IN);
   }
 
   public Command loadDisabled() {
-    return run(()->currentLoaderMode = 0);
+    return run(()->currentLoaderState = LoaderState.LOAD_OFF);
   }
   public Command loadBackward() {
-    return run(()->currentLoaderMode = 2);
+    return run(()->currentLoaderState = LoaderState.LOAD_OUT);
   }
 
   //-------------------------------------------Servo Commands------------------------------------------
   public Command setServoPowerExtend() {
-    return run(()->io.setServoPower(1));
+    return run(()-> currentServoState = ServoState.FULL_EXTEND);
   }
 
   public Command setServoPowerRetract() {
-    return run(()->io.setServoPower(0.0));
+    return run(()->currentServoState = ServoState.FULL_RETRACT);
   }
 
 

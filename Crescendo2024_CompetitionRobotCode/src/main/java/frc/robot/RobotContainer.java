@@ -70,7 +70,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     elevator = SubsystemCatzElevator.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
-     turret = SubsytemCatzTurret.getInstance();
+     turret = SubsystemCatzTurret.getInstance();
     
      xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
      xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
@@ -83,67 +83,19 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   
    
    private void configureBindings() {
-    
-    // xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
-    // xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
-    // //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
-    // Trigger rollersOffBinding = xboxAux.leftBumper().and(xboxAux.rightBumper());
-    // rollersOffBinding.onTrue(intake.cmdRollerOff());
-
-
-    //xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
-    //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
-
-    // Trigger intakePivotOverride = new Trigger(()-> xboxAux.getLeftY() > OIConstants.kDeadband);
-    // intakePivotOverride.onTrue(intake.cmdFullManual(xboxAux.getLeftY()))
-    //                    .onFalse(intake.cmdFullManual(OIConstants.kOffPwr));
-
-
-    // xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
-    // xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
-    // xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
-
 
      xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());
      xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
      xboxAux.a().onTrue(turret.cmdResetTurretPosition()).onFalse(turret.cmdTurretOff());
      xboxAux.x().onTrue(turret.cmdTurretDegree(0.0));
      xboxAux.b().onTrue(turret.cmdAutoRotate()).onFalse(turret.cmdTurretOff());
-     xboxAux.y().onTrue(new AutoAlignCmd());
 
-    // xboxAux.start().onTrue(turret.cmdTurretOff());
-
-    //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
-    //xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
-    // xboxDrv.start().onTrue(driveTrain.flipGyro());
-    //xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
-
-    // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
-
-    //shooter activation
-    //xboxDrv.x().onTrue(shooter.setShooterActive())
-    //          .onFalse(shooter.setShooterDisabled());
-    //xboxAux.rightBumper().onTrue(intake.setRollerIn()).onFalse(intake.setRollerDisabled());
-    //xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
-    // xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
-
-    // Trigger intakePivotOverride = xboxAux.axisGreaterThan((int) (xboxAux.getLeftY()*100), 10);
-    // intakePivotOverride.onTrue(intake.intakePivotOverrideCommand(xboxAux.getLeftY()))
-    //                    .onFalse(intake.intakePivotOverrideCommand(0));
-
-    // //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
-    // xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
-    // // xboxDrv.start().onTrue(driveTrain.flipGyro());
-    // xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
-
-    // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
-    
-    xboxDrv.rightTrigger().onTrue(shooter.loadFowardCmd());    //shooter activation
-    xboxDrv.x().onTrue(shooter.cmdShooterEnabled())
-               .onFalse(shooter.cmdShooterDisabled());
-    xboxDrv.y().onTrue(shooter.loadDisabled());
-    xboxDrv.leftTrigger().onTrue(shooter.loadBackward());
-    xboxDrv.leftBumper().onTrue(shooter.setServoPowerExtend());
+      xboxDrv.rightTrigger().onTrue(shooter.loadFowardCmd());    //shooter activation
+      xboxDrv.x().onTrue(shooter.cmdShooterEnabled())
+                .onFalse(shooter.cmdShooterDisabled());
+      xboxDrv.y().onTrue(shooter.loadDisabled());
+      xboxDrv.leftTrigger().onTrue(shooter.loadBackward());
+      xboxDrv.leftBumper().onTrue(shooter.setServoPowerExtend());
  
    }
 

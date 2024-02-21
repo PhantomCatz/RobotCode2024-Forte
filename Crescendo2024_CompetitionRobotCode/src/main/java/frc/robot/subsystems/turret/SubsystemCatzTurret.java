@@ -67,7 +67,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private double setPositionPower;
   private double offsetAprilTagX;
 
-  private PIDController setPositionPID;
+  private PIDController m_setPositionPID;
   private PIDController m_trackingApriltagPID;
   private double manualTurretPwr;
   private boolean m_trackTarget = false;
@@ -90,9 +90,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
       break;
     }
 
-    setPositionPID = new PIDController(TURRET_kP, 
-                            TURRET_kI, 
-                            TURRET_kD);
+    m_setPositionPID = new PIDController(TURRET_kP, 
+                                         TURRET_kI, 
+                                         TURRET_kD);
 
     m_trackingApriltagPID = new PIDController(LIMELIGHT_kP,
                                      LIMELIGHT_kI,
@@ -120,7 +120,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     
     //obtain calculation values
     apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0);
-    setPositionPower      = setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
+    setPositionPower      = m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
     offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
     
 
@@ -171,7 +171,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     }
     else if ((currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE))
     {
-       io.turretSetPwr(setPositionPID.calculate(currentTurretDegree, TURRET_NEGATIVE_MAX_RANGE ));
+       io.turretSetPwr(m_setPositionPID.calculate(currentTurretDegree, TURRET_NEGATIVE_MAX_RANGE ));
     }  
     else {
       manualTurretPwr = 0.0;
@@ -190,7 +190,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     }
     else if ((currentTurretDegree > TURRET_POSITIVE_MAX_RANGE))
     {
-      io.turretSetPwr(setPositionPID.calculate(currentTurretDegree, TURRET_POSITIVE_MAX_RANGE));
+      io.turretSetPwr(m_setPositionPID.calculate(currentTurretDegree, TURRET_POSITIVE_MAX_RANGE));
     }  
     else {
       manualTurretPwr = 0.0;

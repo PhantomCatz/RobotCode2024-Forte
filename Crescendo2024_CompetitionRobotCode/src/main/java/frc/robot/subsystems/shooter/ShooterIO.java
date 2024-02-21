@@ -25,9 +25,9 @@ public interface ShooterIO {
 
     public default void updateInputs(ShooterIOInputs inputs) {}
 
-    public default void setShooterEnabled() {}
+    public default void setFlywheelEnabled() {}
 
-    public default void setShooterDisabled() {}
+    public default void setFlywheelDisabled() {}
 
     public default void loadBackward() {}
 
@@ -41,5 +41,5 @@ public interface ShooterIO {
     
     public default void fineAdjustFwd() {}
 
-    public default void setServoPower(double power) {}
+    public default void setServoPosition(double power) {}
 }
