@@ -77,8 +77,7 @@ public class SubsystemCatzVision extends SubsystemBase {
             // update and process new inputs[cameraNum] for camera
             cameras[i].updateInputs(inputs[i]);
             Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);
-            
-        
+                    
             //checks for when to process vision
             if (inputs[i].hasTarget && 
                 inputs[i].isNewVisionPose && 
@@ -144,7 +143,11 @@ public class SubsystemCatzVision extends SubsystemBase {
         }
     }
 
+    
     //access method for determining whether to use multiple tags for pose estimation
+    public void setUseSingleTag(boolean useSingleTag) {
+        setUseSingleTag(useSingleTag, 0);
+    }
 
     public void setUseSingleTag(boolean useSingleTag, int acceptableTagID) {
         this.useSingleTag = useSingleTag;
@@ -173,21 +176,21 @@ public class SubsystemCatzVision extends SubsystemBase {
         return TURRET_LIMELIGHT_Y_DISTANCE_FROM_CENTER + TURRET_RADIUS * (-Math.sin(TURRET_ANGLE_FROM_HOME));
     }
 
-    public void limelightRangeFinder(int cameraIdx) {
-        if(inputs[cameraIdx].primaryApriltagID == 1 || 
-           inputs[cameraIdx].primaryApriltagID == 2 || 
-           inputs[cameraIdx].primaryApriltagID == 9 || 
-           inputs[cameraIdx].primaryApriltagID == 10) 
+    public void limelightRangeFinder(int cameraNum) {
+        if(inputs[cameraNum].primaryApriltagID == 1 || 
+           inputs[cameraNum].primaryApriltagID == 2 || 
+           inputs[cameraNum].primaryApriltagID == 9 || 
+           inputs[cameraNum].primaryApriltagID == 10) 
         {
             //Source
             primaryAprilTag = "Source";
 
             //vertical distance to target
-            distanceToAprilTag = (sourceApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraIdx].ty);
-            aprilTagDistanceToWall = (sourceApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraIdx].ty);
+            distanceToAprilTag = (sourceApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (sourceApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraNum].ty);
 
             //horizontal distance to target
-            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraIdx].tx);
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
             if(Math.abs(horizontalTargetOffset) > 5) 
             {
                 System.out.println("Alligned with Target");
@@ -199,20 +202,20 @@ public class SubsystemCatzVision extends SubsystemBase {
                 NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
             }
         } 
-        else if (inputs[cameraIdx].primaryApriltagID == 3 || 
-                 inputs[cameraIdx].primaryApriltagID == 4 || 
-                 inputs[cameraIdx].primaryApriltagID == 7 || 
-                 inputs[cameraIdx].primaryApriltagID == 8)  
+        else if (inputs[cameraNum].primaryApriltagID == 3 || 
+                 inputs[cameraNum].primaryApriltagID == 4 || 
+                 inputs[cameraNum].primaryApriltagID == 7 || 
+                 inputs[cameraNum].primaryApriltagID == 8)  
         {
             //Speaker
             primaryAprilTag = "Speaker";
 
             //vertical distance to target
-            distanceToAprilTag = (speakerApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraIdx].ty);
-            aprilTagDistanceToWall = (speakerApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraIdx].ty);
+            distanceToAprilTag = (speakerApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (speakerApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraNum].ty);
         
             //horizontal distance to target
-            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraIdx].tx);
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
 
             if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
             {
@@ -225,22 +228,22 @@ public class SubsystemCatzVision extends SubsystemBase {
                 NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
             }
         } 
-        else if (inputs[cameraIdx].primaryApriltagID == 11 || 
-                 inputs[cameraIdx].primaryApriltagID == 12 || 
-                 inputs[cameraIdx].primaryApriltagID == 13 || 
-                 inputs[cameraIdx].primaryApriltagID == 14 || 
-                 inputs[cameraIdx].primaryApriltagID == 15 || 
-                 inputs[cameraIdx].primaryApriltagID == 16) 
+        else if (inputs[cameraNum].primaryApriltagID == 11 || 
+                 inputs[cameraNum].primaryApriltagID == 12 || 
+                 inputs[cameraNum].primaryApriltagID == 13 || 
+                 inputs[cameraNum].primaryApriltagID == 14 || 
+                 inputs[cameraNum].primaryApriltagID == 15 || 
+                 inputs[cameraNum].primaryApriltagID == 16) 
         {
             //Trap
             primaryAprilTag = "Trap";
 
             //vertical distance to target
-            distanceToAprilTag = (trapApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraIdx].ty);
-            aprilTagDistanceToWall = (trapApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraIdx].ty);
+            distanceToAprilTag = (trapApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (trapApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraNum].ty);
             
             //horizontal distance to target
-            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraIdx].tx);  
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);  
             if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
             {
                 System.out.println("Alligned with Target");
@@ -252,18 +255,18 @@ public class SubsystemCatzVision extends SubsystemBase {
                 NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
             }       
         } 
-        else if (inputs[cameraIdx].primaryApriltagID == 5 || 
-                 inputs[cameraIdx].primaryApriltagID == 6) 
+        else if (inputs[cameraNum].primaryApriltagID == 5 || 
+                 inputs[cameraNum].primaryApriltagID == 6) 
         {
             //Amp
             primaryAprilTag = "Amp";
 
             //vertical distance to target
-            distanceToAprilTag = (ampApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraIdx].ty);
-            aprilTagDistanceToWall = (ampApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraIdx].ty);
+            distanceToAprilTag = (ampApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (ampApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraNum].ty);
 
             //horizontal distance to target
-            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraIdx].tx);
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
             if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
             {
                 System.out.println("Alligned with Target");
