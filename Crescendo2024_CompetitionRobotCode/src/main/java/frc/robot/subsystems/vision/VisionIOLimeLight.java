@@ -23,21 +23,12 @@ public class VisionIOLimeLight implements VisionIO {
      * @param cameraOffset Location of the camera on the robot (from center, positive x towards the arm, positive y to the left, and positive angle is counterclockwise.
      */
     public VisionIOLimeLight(String name, Transform3d limelightOffset) {
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+        NetworkTableInstance.getDefault().getTable(name).getEntry("ledMode").setNumber(1);
         this.name = name;
         this.cameraOffset = limelightOffset;
         System.out.println(name);
         System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
         
-
-        //debug for ensuring the limelight is communicating properly with networktables
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
-            } catch (Exception e) {
-            }
-        }).start();
         
     }
 
@@ -45,7 +36,7 @@ public class VisionIOLimeLight implements VisionIO {
     public void updateInputs(VisionIOInputs inputs) {
             //load up raw apriltag values for distance calculations
         inputs.ty = NetworkTableInstance.getDefault().getTable(name).getEntry("ty").getDouble(0);
-        inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0);
+        inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("tx").getDouble(0);
         inputs.tv = NetworkTableInstance.getDefault().getTable(name).getEntry("tv").getDouble(0);
         inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0);
         inputs.primaryApriltagID = NetworkTableInstance.getDefault().getTable(name).getEntry("tid").getDouble(0);
@@ -87,7 +78,6 @@ public class VisionIOLimeLight implements VisionIO {
         // set if the Limelight has a target to loggable boolean
         if (inputs.tv == 1) {
             inputs.hasTarget = true;
-            //System.out.println("Vision?");
         } 
         else {
             inputs.hasTarget = false;
