@@ -119,7 +119,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
           break;
 
           case LOAD_IN_DONE: //disable and set off state to determine which direction to run load mtr
-            if(inputs.shooterBackBeamBreakBroken == BEAM_IS_BROKEN) { 
+            if(inputs.isShooterBackBeamBreakBroken == BEAM_IS_BROKEN) { 
               io.loadDisabled();
               currentLoaderState = LoaderState.WAIT_FOR_NOTE_TO_SETTLE;
               iterationCounter = 0;

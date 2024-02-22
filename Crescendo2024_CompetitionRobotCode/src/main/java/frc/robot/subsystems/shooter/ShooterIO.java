@@ -17,7 +17,7 @@ public interface ShooterIO {
         public double shooterVelocityErrorRT;
 
         public boolean isShooterFrontBeamBreakBroken;
-        public boolean shooterBackBeamBreakBroken;
+        public boolean isShooterBackBeamBreakBroken;
 
         public double LoadMotorPercentOutput; 
         public double LoadMotorVelocity;

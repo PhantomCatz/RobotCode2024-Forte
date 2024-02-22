@@ -137,7 +137,7 @@ public class ShooterIOReal implements ShooterIO {
         inputs.shooterTorqueCurrentLT = SHOOTER_MOTOR_LT.getTorqueCurrent().getValue();
         inputs.shooterTorqueCurrentRT = SHOOTER_MOTOR_RT.getTorqueCurrent().getValue();
 
-        inputs.shooterBackBeamBreakBroken =  !BACK_BEAM_BREAK.get();
+        inputs.isShooterBackBeamBreakBroken =  !BACK_BEAM_BREAK.get();
         inputs.isShooterFrontBeamBreakBroken = !FRONT_BEAM_BREAK.get();
 
         inputs.LoadMotorPercentOutput = LOAD_MOTOR.get();
