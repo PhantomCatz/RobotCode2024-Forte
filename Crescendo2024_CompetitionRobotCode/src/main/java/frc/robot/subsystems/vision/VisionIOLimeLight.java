@@ -63,7 +63,6 @@ public class VisionIOLimeLight implements VisionIO {
         
         //creating new pose3d object based of pose from network tables
         double[] data = botposeEntry.getDoubleArray(new double[7]);
-        long updateTime = botposeEntry.getLastChange();
         Pose3d pose = new Pose3d(
                 data[0], //x translational component
                 data[1], //y translational component
@@ -96,9 +95,9 @@ public class VisionIOLimeLight implements VisionIO {
             Pose2d pose2d = pose.toPose2d();
 
             //data used for pose estimator
-            inputs.x = pose2d.getX();
-            inputs.y = pose2d.getY();
-            inputs.rotation = pose2d.getRotation().getRadians();
+            inputs.x = pose2d.getX() + cameraOffset.getX();
+            inputs.y = pose2d.getY() + cameraOffset.getY();
+            inputs.rotation = pose2d.getRotation().getRadians() + cameraOffset.getRotation().getAngle();
         } 
         else {
             inputs.isNewVisionPose = false;

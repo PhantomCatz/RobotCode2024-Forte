@@ -143,12 +143,6 @@ public class SubsystemCatzVision extends SubsystemBase {
         }
     }
 
-    
-    //access method for determining whether to use multiple tags for pose estimation
-    public void setUseSingleTag(boolean useSingleTag) {
-        setUseSingleTag(useSingleTag, 0);
-    }
-
     public void setUseSingleTag(boolean useSingleTag, int acceptableTagID) {
         this.useSingleTag = useSingleTag;
         this.acceptableTagID = acceptableTagID;
