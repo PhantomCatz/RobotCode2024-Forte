@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 public interface VisionIO {
     
     @AutoLog
-    class VisionIOInputs {
+    public class VisionIOInputs {
         public double x; //new x pose estimator coordinate value based off limelight
         public double y; //new y pose estimator coordinate value based off limelight
         public double rotation; //new rotation pose estimator coordinate value based off limelight
@@ -43,4 +43,7 @@ public interface VisionIO {
     }
 
     public default void setReferencePose(Pose2d pose) {}
+
+    public default void getHorizontalAngle() {}
+    
 }
