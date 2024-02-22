@@ -49,11 +49,11 @@ public final class CatzConstants {
   }
 
   public static final class CatzMechanismConstants {
-    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 150, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 130,0,0);
+    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 168, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 168,0,0);
     //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, 80, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, -60, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, -7, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, -24, 0, 0);
     //public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
@@ -155,7 +155,8 @@ public final class CatzConstants {
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
   public static final class ElevatorConstants {
-    public static int ELEVATOR_MTR_ID = 50;
+    public static int ELEVATOR_LT_MTR_ID = 51;
+    public static int ELEVATOR_RT_MTR_ID = 50;
 
     public static double REV_SWITCH_POS = 0.0; //dummy
     public static double FWD_SWITCH_POS = 5.0; //dummy
@@ -165,7 +166,7 @@ public final class CatzConstants {
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
   public static final class IntakeConstants {
-    public static int PIVOT_MTR_ID = 11;
+    public static int PIVOT_MTR_ID = 12;
     public static int ROLLER_MTR_ID = 10;
   }
 

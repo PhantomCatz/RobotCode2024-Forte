@@ -15,11 +15,9 @@ import frc.robot.CatzConstants.ElevatorConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.ElevatorIOInputsAutoLogged;
 
-
 public class SubsystemCatzElevator extends SubsystemBase {
-  
   private final ElevatorIO io;
-  private static SubsystemCatzElevator instance;
+  private static SubsystemCatzElevator instance = new SubsystemCatzElevator();
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   private CatzMechanismPosition m_newPosition;

@@ -26,6 +26,8 @@ public class IntakeIOReal implements IntakeIO {
     private final DigitalInput IntakeBeamBreak = new DigitalInput(4);
     //private final DigitalInput beamBreakFront = new DigitalInput(5);
 
+    private final double PIVOT_MTR_ENC_REV_OFFSET = 8.16;
+
     private final TalonFX pivotMtr;
     private final TalonFX rollerMtr;
 
@@ -56,12 +58,12 @@ public class IntakeIOReal implements IntakeIO {
             //neutral mode
         pivotTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        pidConfigs.kP = 0.11;
+        pidConfigs.kP = 5.0;
         pidConfigs.kI = 0.0;
         pidConfigs.kD = 0.0;
-        pidConfigs.kV = 0.1189;
+        //pidConfigs.kV = 0.1189;
 
-        pivotMtr.setPosition(140);
+        pivotMtr.setPosition(PIVOT_MTR_ENC_REV_OFFSET);
 
         //check if wrist motor is initialized correctly
         initializationStatus = pivotMtr.getConfigurator().apply(pivotTalonConfigs);

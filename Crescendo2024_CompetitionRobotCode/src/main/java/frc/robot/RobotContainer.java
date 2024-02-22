@@ -18,7 +18,7 @@ import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
-import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
+import frc.robot.commands.mechanismCmds.ManualIntakecmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -85,7 +85,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
     xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
     //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
-    Trigger rollersOffBinding = xboxAux.leftBumper().and(xboxAux.rightBumper());
+    Trigger rollersOffBinding = xboxAux.leftBumper().and (xboxAux.rightBumper());
     rollersOffBinding.onTrue(intake.cmdRollerOff());
 
 
@@ -93,14 +93,14 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
 
-    //xboxAux.leftStick().onTrue(new manualIntakeCmd(()->xboxAux.getLeftY()));
-    //xboxAux.rightStick().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
+    //xboxAux.leftStick().onTrue(new ManualIntakecmd(()->xboxAux.getLeftY()/10));
+    xboxAux.rightStick().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
 
 
-    //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
-    //xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
-    //xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
-    //xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
+    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
+    xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+    xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
+    xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
 
 
  

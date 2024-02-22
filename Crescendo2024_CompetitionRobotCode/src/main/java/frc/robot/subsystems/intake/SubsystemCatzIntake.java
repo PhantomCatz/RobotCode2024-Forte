@@ -39,10 +39,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //intake pivot variables
   //constants
-  private final double ENC_TO_INTAKE_GEAR_RATIO = 18;//(60 / 20)* (32 / 16);
+  private final double ENC_TO_INTAKE_GEAR_RATIO = 1.73 * 2.0 * 1.0 * 5.0;//(60 / 20)* (32 / 16);
   private final double WRIST_CNTS_PER_DEGREE = (2048.0 * ENC_TO_INTAKE_GEAR_RATIO) / 360.0;
 
-  private final double INTAKE_ANGLE_TO_MTR_ROTATIONS = 6/360;
+  private final double INTAKE_ANGLE_TO_MTR_ROTATIONS = ENC_TO_INTAKE_GEAR_RATIO/360;
 
   private static final double GROSS_kP = 0.003; //0.003 //0.008
   private static final double GROSS_kI = 0.000; //0.00 //0.0
@@ -57,9 +57,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double PID_FINE_GROSS_THRESHOLD_DEG = 20;
   private final double ERROR_INTAKE_THRESHOLD_DEG = 5.0;
 
-  private final double STOW_CUTOFF = 0.0; //TBD need to dial in
-  private final double CENTER_OF_MASS_OFFSET_DEG = 177.0;
-  private final double GRAVITY_FF_SCALING_COEFFICIENT = 0.04;
+  private final double STOW_CUTOFF = 150; //TBD need to dial in
+  private final double GRAVITY_FF_SCALING_COEFFICIENT = 0.0235;
 
   private final double MANUAL_HOLD_STEP_COEFFICIENT = 2.0;
 
@@ -155,17 +154,17 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
       //Intake Pivot Logic
       if ((currentIntakeState == IntakeState.AUTO || 
-           currentIntakeState == IntakeState.SEMI_MANUAL) && 
-           m_targetPositionDeg == NULL_INTAKE_POSITION) { 
-
-            //check if at final position using counter
+        currentIntakeState == IntakeState.SEMI_MANUAL) && 
+        m_targetPositionDeg != NULL_INTAKE_POSITION) { 
+          
+        //check if at final position using counter
         if ((Math.abs(positionError) <= ERROR_INTAKE_THRESHOLD_DEG)) {
-            m_numConsectSamples++;
-            if (m_numConsectSamples >= 1) {
-                m_intakeInPosition = true;
-            }
+          m_numConsectSamples++;
+          if (m_numConsectSamples >= 1) {
+              m_intakeInPosition = true;
+          }
         } else {
-            m_numConsectSamples = 0; //resetcounter if intake hasn't leveled off
+          m_numConsectSamples = 0; //resetcounter if intake hasn't leveled off
         }
         
         //calculate ff pwr and and sends to mtr through motion magic
@@ -179,8 +178,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         // current angle
         // ----------------------------------------------------------------------------------
         if (m_targetPositionDeg == STOW_ENC_POS && currentPositionDeg > STOW_CUTOFF) {
-            io.setIntakePivotPercentOutput(0.0);
-
+          io.setIntakePivotPercentOutput(0.0);
         } else {
         //set final mtr pwr
         io.setIntakePivotEncOutput(m_finalEncOutput, m_ffPower);
@@ -211,7 +209,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
     this.m_targetPositionDeg = intakeTargetAngle;
 
     currentIntakeState = IntakeState.AUTO;
-    System.out.println("in auto");
   }
 
   public Command cmdSemiManual(double semiManualPwr) {
@@ -254,7 +251,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   private double calcWristAngle() {
-    double wristAngle = (((inputs.pivotMtrEncRev *360)/6));
+    double wristAngle = inputs.pivotMtrEncRev*360/ENC_TO_INTAKE_GEAR_RATIO;
     return wristAngle;
   }
 
