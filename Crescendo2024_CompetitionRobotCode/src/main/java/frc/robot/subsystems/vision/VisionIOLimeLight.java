@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.CatzAutonomous;
+import frc.robot.CatzConstants;
 
 public class VisionIOLimeLight implements VisionIO {
     
@@ -35,15 +37,15 @@ public class VisionIOLimeLight implements VisionIO {
     @Override
     public void updateInputs(VisionIOInputs inputs) {
             //load up raw apriltag values for distance calculations
-        inputs.ty = NetworkTableInstance.getDefault().getTable(name).getEntry("ty").getDouble(0);
-        inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("tx").getDouble(0);
-        inputs.tv = NetworkTableInstance.getDefault().getTable(name).getEntry("tv").getDouble(0);
-        inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0);
+        inputs.ty = NetworkTableInstance.getDefault().getTable(name).getEntry("ty").getDouble(0); //vertical offset from crosshair to target in degrees
+        inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("tx").getDouble(0); //horizontal offset from crosshair to target
+        inputs.tv = NetworkTableInstance.getDefault().getTable(name).getEntry("tv").getDouble(0); //whether the limelight has any vaild targets
+        inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0); //target area of the limelight from 0%-100%...how much does the apirltage take up on the frame
         inputs.primaryApriltagID = NetworkTableInstance.getDefault().getTable(name).getEntry("tid").getDouble(0);
 
 
-        boolean isAllianceBlue = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue);
-        boolean isAllianceRed  = (DriverStation.getAlliance().get() == DriverStation.Alliance.Red);
+        boolean isAllianceBlue = (CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue);
+        boolean isAllianceRed  = (CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red); 
 
         // collects pose information based off network tables and orients itself depending on alliance side
         NetworkTableEntry botposeEntry;
@@ -54,7 +56,7 @@ public class VisionIOLimeLight implements VisionIO {
             botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpired");
         } 
         else {
-            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose");
+            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose"); //TBD test how different alliance and forms of botpose affect vision pose
         }
 
         //logging
@@ -70,8 +72,8 @@ public class VisionIOLimeLight implements VisionIO {
                 new Rotation3d(
                         Math.toRadians(data[3]),   //apriltag roll component
                         Math.toRadians(data[4]),   //apriltag pitch componenet
-                        Math.toRadians(data[5])));  //apriltag yaw component
-                                        //.transformBy(cameraOffset); //apply the camera offset TBD this is breaking the limelight
+                        Math.toRadians(data[5])))  //apriltag yaw component
+                                        .transformBy(cameraOffset); //apply the camera offset           TBD this is breaking the limelight
 
 
         // set if the Limelight has a target to loggable boolean
@@ -82,7 +84,7 @@ public class VisionIOLimeLight implements VisionIO {
             inputs.hasTarget = false;
         }
 
-        // calculates total latency using 7th table item in array
+        // calculates total latency using 7th table item in array //TBD be more explicit about what latency value gives
         double latency = data[6] / 1000;
 
         //shoves in new pose2d from pose3d object estimate depending on if new apriltag detected

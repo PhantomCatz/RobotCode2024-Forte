@@ -68,14 +68,7 @@ public final class CatzConstants {
   }
 
   public static final class VisionConstants {
-    public static final double SPEAKER_HOOD_HEIGHT = 83.0;
     public static final double LOWEST_DISTANCE = Units.feetToMeters(10.0);
-    public static final double LIMELIGHT_PLACEMENT_HEIGHT = 19; //19.7
-    public static final double sourceApriltagHeight = 11.5;
-    public static final double SPEAKER_APRILTAG_HEIGHT = 56.5;
-    public static final double trapApriltagHeight = 0.0;
-    public static final double ampApriltagHeight = 1.22;
-    public static final double HOOD_TO_APRILTAG = SPEAKER_HOOD_HEIGHT - SPEAKER_APRILTAG_HEIGHT;
     public static final Transform3d LIMELIGHT_OFFSET = new Transform3d(-Units.inchesToMeters(8), -Units.inchesToMeters(11.5), Units.inchesToMeters(19), new Rotation3d(0.0,0.0,180.0)); //tbd need to understand how these classese work transform3d vs translation3d
     public static final Transform3d LIMELIGHT_TURRET_OFFSET = new Transform3d(0.0, 0.0, 0.0, null); //tbd need to understand how these classese work transform3d vs translation3d
   }

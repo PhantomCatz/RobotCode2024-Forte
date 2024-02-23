@@ -20,16 +20,29 @@ import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
     Assume the Limelight is the front of the robot
 */
 public class SubsystemCatzVision extends SubsystemBase {
-    // turret constants
-    final double limelightPlacementHeight = Units.feetToMeters(1.0);
-    final double sourceApriltagHeight = Units.feetToMeters(4.0);
-    final double speakerApriltagHeight = Units.feetToMeters(4.33);
-    final double trapApriltagHeight = Units.feetToMeters(3.969);
-    final double ampApriltagHeight = 1.22;
+
+    private static SubsystemCatzVision instance = null;
+
+    //io block
+    private final VisionIO[] cameras;
+    private final VisionIOInputsAutoLogged[] inputs;
+
+    private final List<SubsystemCatzVision.PoseAndTimestamp> results = new ArrayList<>(); //in a list to account for multiple cameras
+
+
+    //Apriltag height values converted from inches
+    final double LIMELIGHT_PLACEMENT_HEIGHT = Units.feetToMeters(1.0); //TBD not one foot off the ground
+
+    final double SOURCE_APRILTAG_HEIGHT = Units.feetToMeters(4.01);
+    final double SPEAKER_APRILTAG_HEIGHT = Units.feetToMeters(4.33071);
+    final double STAGE_APRILTAG_HEIGHT = Units.feetToMeters(3.9583);
+    final double AMP_APRILTAG_HEIGHT = Units.feetToMeters(4.01);
+    final double SPEAKER_HOOD_HEIGHT = 83.0;
     
+    //turret calculation values
     final double TURRET_LIMELIGHT_X_DISTANCE_FROM_CENTER = 0.0; //tbd value
     final double TURRET_RADIUS = 0.0; //tbd value
-    final double TURRET_ANGLE_FROM_HOME = -999.0;//SubsystemCatzTurret.getInstance().getTurretAngle();
+    final double TURRET_ANGLE_FROM_HOME = -999.0;//SubsystemCatzTurret.getInstance().getTurretAngle(); //
     final double TURRET_LIMELIGHT_Y_DISTANCE_FROM_CENTER = 0.0; //tbd value
 
     static double aprilTagDistanceToWall;
@@ -41,16 +54,7 @@ public class SubsystemCatzVision extends SubsystemBase {
     static String primaryAprilTag;
     static boolean horizontallyAllignedWithAprilTag;
 
-    String name;
-
     static double horizontalTargetOffset;
-
-    private static SubsystemCatzVision instance = null;
-
-    private final VisionIO[] cameras;
-    private final VisionIOInputsAutoLogged[] inputs;
-
-    private final List<SubsystemCatzVision.PoseAndTimestamp> results = new ArrayList<>(); //in a list to account for multiple cameras
 
     private int acceptableTagID;
     private boolean useSingleTag = false;
@@ -63,6 +67,21 @@ public class SubsystemCatzVision extends SubsystemBase {
         for(int i = 0; i < cameras.length; i++) {
             inputs[i] = new VisionIOInputsAutoLogged();
         }
+
+    }
+
+    /**
+    * singleton implenentation of vision
+    * Any new cameras should be declared here
+    */
+    public static SubsystemCatzVision getInstance() {
+        if(instance == null) {
+            instance = new SubsystemCatzVision(new VisionIO[] {
+                new VisionIOLimeLight("limelight-turret", VisionConstants.LIMELIGHT_TURRET_OFFSET),
+                new VisionIOLimeLight("limelight", VisionConstants.LIMELIGHT_OFFSET)
+            });
+        }
+        return instance;
     }
 
     @Override
@@ -143,14 +162,14 @@ public class SubsystemCatzVision extends SubsystemBase {
         }
     }
 
+    //------------------------------------------------------------------------
+    // Util
+    //------------------------------------------------------------------------
     public void setUseSingleTag(boolean useSingleTag, int acceptableTagID) {
         this.useSingleTag = useSingleTag;
         this.acceptableTagID = acceptableTagID;
     }
 
-    public double getMinDistance(int cameraNum) {
-         return inputs[cameraNum].minDistance;
-    }
 
     public double getOffsetX(int cameraNum) {
         return inputs[cameraNum].tx;
@@ -158,6 +177,10 @@ public class SubsystemCatzVision extends SubsystemBase {
 
     public double getAprilTagID(int cameraNum) {
         return inputs[cameraNum].primaryApriltagID;
+    }
+
+    public int getCameraNum() {
+        return camNum;
     }
 
     //----------------------------------Calculation methods---------------------------------------------
@@ -180,8 +203,8 @@ public class SubsystemCatzVision extends SubsystemBase {
             primaryAprilTag = "Source";
 
             //vertical distance to target
-            distanceToAprilTag = (sourceApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraNum].ty);
-            aprilTagDistanceToWall = (sourceApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraNum].ty);
+            distanceToAprilTag = (SOURCE_APRILTAG_HEIGHT - LIMELIGHT_PLACEMENT_HEIGHT) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (SOURCE_APRILTAG_HEIGHT - LIMELIGHT_PLACEMENT_HEIGHT) / Math.tan(inputs[cameraNum].ty);
 
             //horizontal distance to target
             horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
@@ -205,8 +228,8 @@ public class SubsystemCatzVision extends SubsystemBase {
             primaryAprilTag = "Speaker";
 
             //vertical distance to target
-            distanceToAprilTag = (speakerApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraNum].ty);
-            aprilTagDistanceToWall = (speakerApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraNum].ty);
+            distanceToAprilTag = (SPEAKER_APRILTAG_HEIGHT - LIMELIGHT_PLACEMENT_HEIGHT) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (SPEAKER_APRILTAG_HEIGHT - LIMELIGHT_PLACEMENT_HEIGHT) / Math.tan(inputs[cameraNum].ty);
         
             //horizontal distance to target
             horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
@@ -233,8 +256,8 @@ public class SubsystemCatzVision extends SubsystemBase {
             primaryAprilTag = "Trap";
 
             //vertical distance to target
-            distanceToAprilTag = (trapApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraNum].ty);
-            aprilTagDistanceToWall = (trapApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraNum].ty);
+            distanceToAprilTag = (STAGE_APRILTAG_HEIGHT - LIMELIGHT_PLACEMENT_HEIGHT) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (STAGE_APRILTAG_HEIGHT - LIMELIGHT_PLACEMENT_HEIGHT) / Math.tan(inputs[cameraNum].ty);
             
             //horizontal distance to target
             horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);  
@@ -256,8 +279,8 @@ public class SubsystemCatzVision extends SubsystemBase {
             primaryAprilTag = "Amp";
 
             //vertical distance to target
-            distanceToAprilTag = (ampApriltagHeight - limelightPlacementHeight) / Math.sin(inputs[cameraNum].ty);
-            aprilTagDistanceToWall = (ampApriltagHeight - limelightPlacementHeight) / Math.tan(inputs[cameraNum].ty);
+            distanceToAprilTag = (AMP_APRILTAG_HEIGHT - LIMELIGHT_PLACEMENT_HEIGHT) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (AMP_APRILTAG_HEIGHT - LIMELIGHT_PLACEMENT_HEIGHT) / Math.tan(inputs[cameraNum].ty);
 
             //horizontal distance to target
             horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
@@ -274,23 +297,5 @@ public class SubsystemCatzVision extends SubsystemBase {
         }   
     } 
 
-    public int getCameraNum() {
-        return camNum;
-    }
-
-
-    /**
-    * singleton implenentation of vision
-    * Any new cameras should be declared here
-    */
-    public static SubsystemCatzVision getInstance() {
-        if(instance == null) {
-            instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight-turret", VisionConstants.LIMELIGHT_TURRET_OFFSET),
-                new VisionIOLimeLight("limelight", VisionConstants.LIMELIGHT_OFFSET)
-            });
-        }
-        return instance;
-    }
 
 }

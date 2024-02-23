@@ -142,9 +142,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                         vision.getVisionOdometry().get(i).getPose(),
                         vision.getVisionOdometry().get(i).getTimestamp(),
                         VecBuilder.fill(
-                                vision.getMinDistance(i) * DriveConstants.ESTIMATION_COEFFICIENT,
-                                vision.getMinDistance(i) * DriveConstants.ESTIMATION_COEFFICIENT,
-                                5.0));
+                                1,
+                                1,
+                                5.0)); //TBD test if increaseing or decrease affects vision estimates updates
             }
         }
 
