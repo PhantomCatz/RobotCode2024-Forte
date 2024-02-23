@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -26,7 +27,7 @@ public class IntakeIOReal implements IntakeIO {
     private final DigitalInput IntakeBeamBreak = new DigitalInput(4);
     //private final DigitalInput beamBreakFront = new DigitalInput(5);
 
-    private final double PIVOT_MTR_ENC_REV_OFFSET = 8.16;
+    private final double PIVOT_MTR_POS_OFFSET_IN_REV = 8.16;
 
     private final TalonFX pivotMtr;
     private final TalonFX rollerMtr;
@@ -62,8 +63,8 @@ public class IntakeIOReal implements IntakeIO {
         pidConfigs.kI = 0.0;
         pidConfigs.kD = 0.0;
         //pidConfigs.kV = 0.1189;
-
-        pivotMtr.setPosition(PIVOT_MTR_ENC_REV_OFFSET);
+  
+        pivotMtr.setPosition(SubsystemCatzIntake.INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV);
 
         //check if wrist motor is initialized correctly
         initializationStatus = pivotMtr.getConfigurator().apply(pivotTalonConfigs);
@@ -79,7 +80,7 @@ public class IntakeIOReal implements IntakeIO {
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();
-        inputs.pivotMtrEncRev =         pivotMtr.getPosition().getValue();
+        inputs.pivotMtrRev =            pivotMtr.getPosition().getValue();
         inputs.rollerVoltage =          rollerMtr.getTorqueCurrent().getValue();
         inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
         inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
@@ -106,8 +107,13 @@ public class IntakeIOReal implements IntakeIO {
     }
 
     @Override
+    public void setIntakePivotVoltage(double volts) {
+        pivotMtr.setControl(new VoltageOut(volts));
+    }
+
+    @Override
     public void setIntakePivotEncOutput(double encOutput, double ffPercentOutput) {
-        pivotMtr.setControl(new MotionMagicDutyCycle(encOutput, 
+        pivotMtr.setControl(new MotionMagicVoltage(encOutput, 
                                                      true, 
                                                      ffPercentOutput, 
                                                      0, 

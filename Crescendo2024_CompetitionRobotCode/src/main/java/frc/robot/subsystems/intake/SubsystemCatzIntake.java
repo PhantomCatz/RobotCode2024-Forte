@@ -7,6 +7,7 @@ package frc.robot.subsystems.intake;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 
 public class SubsystemCatzIntake extends SubsystemBase {
@@ -26,7 +28,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private static SubsystemCatzIntake instance = new SubsystemCatzIntake();
 
 
-  //intake rollers Constants
+ /************************************************************************************************************************
+  * 
+  * rollers
+  *
+  ************************************************************************************************************************/
   private final double ROLLERS_MTR_PWR_IN  =  0.6;
   private final double ROLLERS_MTR_PWR_OUT = -0.6;
 
@@ -36,23 +42,41 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //intake roller variables
 
-
+   /************************************************************************************************************************
+  * 
+  * pivot
+  *
+  ************************************************************************************************************************/
   //intake pivot variables
   //constants
-  private final double ENC_TO_INTAKE_GEAR_RATIO = 1.73 * 2.0 * 1.0 * 5.0;//(60 / 20)* (32 / 16);
-  private final double WRIST_CNTS_PER_DEGREE = (2048.0 * ENC_TO_INTAKE_GEAR_RATIO) / 360.0;
+  private static final double INTAKE_PIVOT_DRIVEN_GEAR      = 52.0;
+  private static final double INTAKE_PIVOT_DRIVING_GEAR     = 30.0;
 
-  private final double INTAKE_ANGLE_TO_MTR_ROTATIONS = ENC_TO_INTAKE_GEAR_RATIO/360;
+  private static final double INTAKE_PIVOT_DRIVEN_SPROCKET  = 32.0;
+  private static final double INTAKE_PIVOT_DRIVING_SPROCKET = 16.0;
 
-  private static final double GROSS_kP = 0.003; //0.003 //0.008
-  private static final double GROSS_kI = 0.000; //0.00 //0.0
-  private static final double GROSS_kD = 0.00025; //0.00025 0.0
+  private static final double MAX_PLANETARY_RATIO           = 5.0;
 
-  private static final double FINE_kP = 0.04; //0.003
-  private static final double FINE_kI = 0.000; 
-  private static final double FINE_kD = 0.000;
+  private static final double INTAKE_PIVOT_GEAR_RATIO = (INTAKE_PIVOT_DRIVEN_GEAR     / INTAKE_PIVOT_DRIVING_GEAR) * 
+                                                        (INTAKE_PIVOT_DRIVEN_SPROCKET / INTAKE_PIVOT_DRIVING_SPROCKET) * 
+                                                        (MAX_PLANETARY_RATIO); 
 
-  private static final double HANDOFF_TO_STOW_KP = 0.008;
+  private static final double INTAKE_PIVOT_MTR_REV_PER_DEG = INTAKE_PIVOT_GEAR_RATIO / 360.0;
+
+  private static final double INTAKE_PIVOT_MTR_POS_OFFSET_IN_DEG = 164.09;
+
+  public static final double INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV = INTAKE_PIVOT_MTR_POS_OFFSET_IN_DEG * INTAKE_PIVOT_MTR_REV_PER_DEG;
+
+  public final double PIVOT_FF_kS = 0.0;
+  public final double PIVOT_FF_kG = 0.437;
+  public final double PIVOT_FF_kV = 0.0;
+
+  private PIDController pivotPID;
+  private ArmFeedforward pivotFeedFoward;
+
+  private static final double PIVOT_PID_kP = 0.002;
+  private static final double PIVOT_PID_kI = 0.000; 
+  private static final double PIVOT_PID_kD = 0.000; 
 
   private final double PID_FINE_GROSS_THRESHOLD_DEG = 20;
   private final double ERROR_INTAKE_THRESHOLD_DEG = 5.0;
@@ -70,8 +94,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //intake variables
   private double m_pivotManualPwr;
   private double m_targetPower;
-  private double m_pidPower;
-  private double m_ffPower;
+  private double m_pidVolts;
+  private double m_ffVolts;
   private double m_prevTargetPwr;
   private double m_prevCurrentPosition;
   private double m_targetPositionDeg;
@@ -81,9 +105,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double m_previousTargetAngle;
   private double m_finalEncOutput;
 
-
-
-  private PIDController pid;
+  LoggedTunableNumber kgtunning = new LoggedTunableNumber("kgtunningVolts",0.0);
 
 
   public SubsystemCatzIntake() {
@@ -103,10 +125,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
       break;
     }
 
-    pid = new PIDController(GROSS_kP, 
-                            GROSS_kI, 
-                            GROSS_kD);
+    pivotPID = new PIDController(PIVOT_PID_kP, 
+                            PIVOT_PID_kI, 
+                            PIVOT_PID_kD);
 
+    pivotFeedFoward = new ArmFeedforward(PIVOT_FF_kS,
+                                         PIVOT_FF_kG,
+                                         PIVOT_FF_kV);
   }
 
   // Get the singleton instance of the intake Subsystem
@@ -128,7 +153,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     Logger.processInputs("intake/inputs", inputs);   
 
       //collect current targetPosition in degrees
-    double currentPositionDeg = calcWristAngle();
+    double currentPositionDeg = calcWristAngleDeg();
     double positionError = currentPositionDeg - m_targetPositionDeg;
 
     if(DriverStation.isDisabled()) {
@@ -152,11 +177,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
           io.setRollerPercentOutput(0.0);
         }
 
-      //Intake Pivot Logic
+      // ----------------------------------------------------------------------------------
+      // IntakePivot
+      // ----------------------------------------------------------------------------------
       if ((currentIntakeState == IntakeState.AUTO || 
         currentIntakeState == IntakeState.SEMI_MANUAL) && 
         m_targetPositionDeg != NULL_INTAKE_POSITION) { 
-          
+          System.out.println("in pid mode");
         //check if at final position using counter
         if ((Math.abs(positionError) <= ERROR_INTAKE_THRESHOLD_DEG)) {
           m_numConsectSamples++;
@@ -169,37 +196,42 @@ public class SubsystemCatzIntake extends SubsystemBase {
         
         //calculate ff pwr and and sends to mtr through motion magic
         //motion magic assumes a profile
-        m_ffPower = calculateGravityFF();
-        m_finalEncOutput = m_targetPositionDeg * INTAKE_ANGLE_TO_MTR_ROTATIONS;
+        m_ffVolts = pivotFeedFoward.calculate(Math.toRadians(currentPositionDeg),0);
+        m_pidVolts = -pivotPID.calculate(m_targetPositionDeg, currentPositionDeg);
+        double finalVolts = m_pidVolts + m_ffVolts;
 
-        // ----------------------------------------------------------------------------------
-        // If we are going to Stow Position & have passed the power cutoff angle, set
-        // power to 0, otherwise calculate new motor power based on position error and
-        // current angle
-        // ----------------------------------------------------------------------------------
-        if (m_targetPositionDeg == STOW_ENC_POS && currentPositionDeg > STOW_CUTOFF) {
-          io.setIntakePivotPercentOutput(0.0);
-        } else {
-        //set final mtr pwr
-        io.setIntakePivotEncOutput(m_finalEncOutput, m_ffPower);
-        }
+       // m_finalEncOutput = m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG;
+
+        // // ----------------------------------------------------------------------------------
+        // // If we are going to Stow Position & have passed the power cutoff angle, set
+        // // power to 0, otherwise calculate new motor power based on position error and
+        // // current angle
+        // // ----------------------------------------------------------------------------------
+        // if (m_targetPositionDeg == STOW_ENC_POS && currentPositionDeg > STOW_CUTOFF) {
+        //   io.setIntakePivotPercentOutput(0.0);
+        // } else {
+        // //set final mtr pwr
+        // }
+        io.setIntakePivotVoltage(finalVolts);
         
         m_prevCurrentPosition = currentPositionDeg;
         m_prevTargetPwr = m_targetPower;
 
       } else { //we are current setting pwr through manual
-        io.setIntakePivotPercentOutput(m_pivotManualPwr);
+        io.setIntakePivotVoltage(kgtunning.get());
       }
     } 
+    Logger.recordOutput("intake/ff volts", m_ffVolts);
+    Logger.recordOutput("intake/pid volts", m_pidVolts);
     Logger.recordOutput("intake/manual pwr", m_pivotManualPwr);
     Logger.recordOutput("intake/final pwr", m_targetPower);
     Logger.recordOutput("intake/position error", positionError);
-    Logger.recordOutput("intake/pidPower", m_pidPower);
-    Logger.recordOutput("intake/ffPower", m_ffPower);
+    Logger.recordOutput("intake/pidPower", m_pidVolts);
+    Logger.recordOutput("intake/ffPower", m_ffVolts);
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
     Logger.recordOutput("intake/currentAngle", currentPositionDeg);
     Logger.recordOutput("intake/roller target",m_rollerRunningMode);
-    Logger.recordOutput("intake/intake angle", calcWristAngle());
+    Logger.recordOutput("intake/intake angle", calcWristAngleDeg());
 
   }
 
@@ -244,14 +276,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   private double calculateGravityFF() {
-    double pivotAngleRadians = Math.toRadians(calcWristAngle());//+CENTER_OF_MASS_OFFSET_DEG);
+    double pivotAngleRadians = Math.toRadians(calcWristAngleDeg());//+CENTER_OF_MASS_OFFSET_DEG);
     double appliedCosineValue = Math.cos(pivotAngleRadians);
-    
     return GRAVITY_FF_SCALING_COEFFICIENT * appliedCosineValue;
   }
 
-  private double calcWristAngle() {
-    double wristAngle = inputs.pivotMtrEncRev*360/ENC_TO_INTAKE_GEAR_RATIO;
+  private double calcWristAngleDeg() {
+    double wristAngle = inputs.pivotMtrRev/INTAKE_PIVOT_MTR_REV_PER_DEG;
     return wristAngle;
   }
 

@@ -6,7 +6,7 @@ public interface IntakeIO {
 
     @AutoLog
     public class IntakeIOInputs {
-        public double pivotMtrEncRev;
+        public double pivotMtrRev;
         public double pivotMtrPercentOutput;
         public double rollerVoltage;
         public double rollerPercentOutput;
@@ -29,6 +29,8 @@ public interface IntakeIO {
     public default void rollerDisable() {}
 
     public default void resetPivotEncPos(double defaultEncoderPosition) {}
+
+    public default void setIntakePivotVoltage(double volts) {}
 
     public default void setIntakePivotPercentOutput(double percentOutput) {}
 
