@@ -17,10 +17,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class CatzAutonomous {
+
+    private static CatzAutonomous Instance;
     
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
 
@@ -30,6 +33,7 @@ public class CatzAutonomous {
     PathConstraints autoPathfindingConstraints = new PathConstraints(
         3.0, 4.0, 
         Units.degreesToRadians(540), Units.degreesToRadians(720));
+    private AllianceColor allianceColor;
 
     public CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", CatzConstants.AllianceColor.Blue);
@@ -188,10 +192,22 @@ public class CatzAutonomous {
         }
 
         m_driveTrain.resetPosition(path.getPreviewStartingHolonomicPose());
+        allianceColor = chosenAllianceColor.get();
 
-        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+        if(allianceColor == CatzConstants.AllianceColor.Red) {
             m_driveTrain.flipGyro();
         }
     });
+    }
+
+    public AllianceColor getAllianceColor(){
+        return allianceColor;
+    }
+
+    public static CatzAutonomous getInstance(){
+        if(Instance == null){
+            Instance = new CatzAutonomous();
+        }
+        return Instance;
     }
 }

@@ -23,21 +23,12 @@ public class VisionIOLimeLight implements VisionIO {
      * @param cameraOffset Location of the camera on the robot (from center, positive x towards the arm, positive y to the left, and positive angle is counterclockwise.
      */
     public VisionIOLimeLight(String name, Transform3d limelightOffset) {
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+        NetworkTableInstance.getDefault().getTable(name).getEntry("ledMode").setNumber(1);
         this.name = name;
         this.cameraOffset = limelightOffset;
         System.out.println(name);
         System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
         
-
-        //debug for ensuring the limelight is communicating properly with networktables
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
-            } catch (Exception e) {
-            }
-        }).start();
         
     }
 
@@ -45,7 +36,7 @@ public class VisionIOLimeLight implements VisionIO {
     public void updateInputs(VisionIOInputs inputs) {
             //load up raw apriltag values for distance calculations
         inputs.ty = NetworkTableInstance.getDefault().getTable(name).getEntry("ty").getDouble(0);
-        inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0);
+        inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("tx").getDouble(0);
         inputs.tv = NetworkTableInstance.getDefault().getTable(name).getEntry("tv").getDouble(0);
         inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0);
         inputs.primaryApriltagID = NetworkTableInstance.getDefault().getTable(name).getEntry("tid").getDouble(0);
@@ -72,7 +63,6 @@ public class VisionIOLimeLight implements VisionIO {
         
         //creating new pose3d object based of pose from network tables
         double[] data = botposeEntry.getDoubleArray(new double[7]);
-        long updateTime = botposeEntry.getLastChange();
         Pose3d pose = new Pose3d(
                 data[0], //x translational component
                 data[1], //y translational component
@@ -87,7 +77,6 @@ public class VisionIOLimeLight implements VisionIO {
         // set if the Limelight has a target to loggable boolean
         if (inputs.tv == 1) {
             inputs.hasTarget = true;
-            //System.out.println("Vision?");
         } 
         else {
             inputs.hasTarget = false;
@@ -106,9 +95,9 @@ public class VisionIOLimeLight implements VisionIO {
             Pose2d pose2d = pose.toPose2d();
 
             //data used for pose estimator
-            inputs.x = pose2d.getX();
-            inputs.y = pose2d.getY();
-            inputs.rotation = pose2d.getRotation().getRadians();
+            inputs.x = pose2d.getX() + cameraOffset.getX();
+            inputs.y = pose2d.getY() + cameraOffset.getY();
+            inputs.rotation = pose2d.getRotation().getRadians() + cameraOffset.getRotation().getAngle();
         } 
         else {
             inputs.isNewVisionPose = false;
