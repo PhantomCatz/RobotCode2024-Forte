@@ -50,7 +50,7 @@ public final class CatzConstants {
 
   public static final class CatzMechanismConstants {
     public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 168, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 168,0,0);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 150,0,0);
     //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
     public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, -7, 0, 0);
     public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, -24, 0, 0);

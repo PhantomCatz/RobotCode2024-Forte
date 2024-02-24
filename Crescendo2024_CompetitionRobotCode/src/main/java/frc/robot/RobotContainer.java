@@ -93,7 +93,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
 
 
-    //xboxAux.leftStick().onTrue(new ManualIntakecmd(()->xboxAux.getLeftY()/10));
+    xboxAux.leftStick().onTrue(new ManualIntakecmd(()->xboxAux.getLeftY()));
     xboxAux.rightStick().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
 
 

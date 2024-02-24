@@ -12,10 +12,10 @@ import frc.robot.subsystems.intake.SubsystemCatzIntake;
 
 public class ManualIntakecmd extends Command {
   SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
-  Supplier<Double> supplierLeftJoyX;
+  Supplier<Double> supplierLeftJoyY;
   /** Creates a new manualintakecmd. */
-  public ManualIntakecmd(Supplier<Double> supplierLeftJoyX) {
-    this.supplierLeftJoyX = supplierLeftJoyX;
+  public ManualIntakecmd(Supplier<Double> supplierLeftJoyY) {
+    this.supplierLeftJoyY = supplierLeftJoyY;
     addRequirements(intake);
   }
 
@@ -26,7 +26,16 @@ public class ManualIntakecmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.pivotFullManual(supplierLeftJoyX.get());
+    if(supplierLeftJoyY.get() > 0.1) {
+      System.out.println("going to 10");
+      intake.updateIntakeTargetPosition(10);
+    } else if (supplierLeftJoyY.get() < -0.1) {
+      intake.updateIntakeTargetPosition(-10);
+      System.out.println("going to -10");
+
+    } else {
+      intake.updateIntakeTargetPosition(0);
+    }
   }
 
   // Called once the command ends or is interrupted.

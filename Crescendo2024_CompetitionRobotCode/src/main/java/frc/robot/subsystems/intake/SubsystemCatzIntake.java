@@ -69,12 +69,12 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   public final double PIVOT_FF_kS = 0.0;
   public final double PIVOT_FF_kG = 0.437;
-  public final double PIVOT_FF_kV = 0.0;
+  public final double PIVOT_FF_kV = 0.7;
 
   private PIDController pivotPID;
   private ArmFeedforward pivotFeedFoward;
 
-  private static final double PIVOT_PID_kP = 0.002;
+  private static final double PIVOT_PID_kP = 0.02;
   private static final double PIVOT_PID_kI = 0.000; 
   private static final double PIVOT_PID_kD = 0.000; 
 
@@ -106,6 +106,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double m_finalEncOutput;
 
   LoggedTunableNumber kgtunning = new LoggedTunableNumber("kgtunningVolts",0.0);
+  LoggedTunableNumber kftunning = new LoggedTunableNumber("kFtunningVolts",0.0);
+
 
 
   public SubsystemCatzIntake() {
@@ -155,7 +157,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
       //collect current targetPosition in degrees
     double currentPositionDeg = calcWristAngleDeg();
     double positionError = currentPositionDeg - m_targetPositionDeg;
-
     if(DriverStation.isDisabled()) {
       io.setRollerPercentOutput(0.0);
       m_rollerRunningMode = 0;
@@ -183,7 +184,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
       if ((currentIntakeState == IntakeState.AUTO || 
         currentIntakeState == IntakeState.SEMI_MANUAL) && 
         m_targetPositionDeg != NULL_INTAKE_POSITION) { 
-          System.out.println("in pid mode");
         //check if at final position using counter
         if ((Math.abs(positionError) <= ERROR_INTAKE_THRESHOLD_DEG)) {
           m_numConsectSamples++;
@@ -197,6 +197,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         //calculate ff pwr and and sends to mtr through motion magic
         //motion magic assumes a profile
         m_ffVolts = pivotFeedFoward.calculate(Math.toRadians(currentPositionDeg),0);
+        //m_ffVolts = m_ffVolts + (kftunning.get()*0.349); //for testing kv
         m_pidVolts = -pivotPID.calculate(m_targetPositionDeg, currentPositionDeg);
         double finalVolts = m_pidVolts + m_ffVolts;
 
@@ -273,12 +274,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
     currentIntakeState = IntakeState.FULL_MANUAL;
     System.out.println("in pivot manual");
 
-  }
-
-  private double calculateGravityFF() {
-    double pivotAngleRadians = Math.toRadians(calcWristAngleDeg());//+CENTER_OF_MASS_OFFSET_DEG);
-    double appliedCosineValue = Math.cos(pivotAngleRadians);
-    return GRAVITY_FF_SCALING_COEFFICIENT * appliedCosineValue;
   }
 
   private double calcWristAngleDeg() {

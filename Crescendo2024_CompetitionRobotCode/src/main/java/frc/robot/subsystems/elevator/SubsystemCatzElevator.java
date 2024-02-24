@@ -16,10 +16,14 @@ import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.ElevatorIOInputsAutoLogged;
 
 public class SubsystemCatzElevator extends SubsystemBase {
-  private final ElevatorIO io;
+  //instance instantiation
   private static SubsystemCatzElevator instance = new SubsystemCatzElevator();
+
+  //io block
+  private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
+  //elevator constants
   private CatzMechanismPosition m_newPosition;
 
   private double m_elevatorPercentOutput;
@@ -37,7 +41,11 @@ public class SubsystemCatzElevator extends SubsystemBase {
         }
   }
 
-  //Run every 20 ms
+  // Get the singleton instance of the elevator Subsystem
+  public static SubsystemCatzElevator getInstance() {
+      return instance;
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -69,11 +77,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
   }
 
   public void setElevatorPercentOutput(double percentOutput) {
-    this.m_elevatorPercentOutput = percentOutput;
-  }
-
-  // Get the singleton instance of the elevator Subsystem
-  public static SubsystemCatzElevator getInstance() {
-      return instance;
+    this.m_elevatorPercentOutput = percentOutput/10;
   }
 }
