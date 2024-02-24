@@ -69,8 +69,8 @@ public final class CatzConstants {
 
   public static final class VisionConstants {
     public static final double LOWEST_DISTANCE = Units.feetToMeters(10.0);
-    public static final Transform3d LIMELIGHT_OFFSET = new Transform3d(-Units.inchesToMeters(8), -Units.inchesToMeters(11.5), Units.inchesToMeters(19), new Rotation3d(0.0,0.0,180.0)); //tbd need to understand how these classese work transform3d vs translation3d
-    public static final Transform3d LIMELIGHT_TURRET_OFFSET = new Transform3d(0.0, 0.0, 0.0, null); //tbd need to understand how these classese work transform3d vs translation3d
+    public static final Transform3d LIMELIGHT_OFFSET   = new Transform3d(0.0, 0.0, 50.2, new Rotation3d(0.0,0.0,180.0)); //tbd need to understand how these classese work transform3d vs translation3d
+    public static final Transform3d LIMELIGHT_OFFSET_2 = new Transform3d(0.0, 0.0, 0.0, null); //tbd need to understand how these classese work transform3d vs translation3d
   }
 
   public static final class TrajectoryConstants {

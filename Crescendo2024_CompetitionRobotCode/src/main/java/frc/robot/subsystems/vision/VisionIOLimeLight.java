@@ -49,15 +49,15 @@ public class VisionIOLimeLight implements VisionIO {
 
         // collects pose information based off network tables and orients itself depending on alliance side
         NetworkTableEntry botposeEntry;
-        if (isAllianceBlue) {
-            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue");
-        } 
-        else if (isAllianceRed) {
-            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpired");
-        } 
-        else {
+        // if (isAllianceBlue) {
+        //     botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue");
+        // } 
+        // else if (isAllianceRed) {
+        //     botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpired");
+        // } 
+        // else {
             botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose"); //TBD test how different alliance and forms of botpose affect vision pose
-        }
+        //}
 
         //logging
         Logger.recordOutput("Vision/AllianceColorBlue", isAllianceBlue);
@@ -72,8 +72,8 @@ public class VisionIOLimeLight implements VisionIO {
                 new Rotation3d(
                         Math.toRadians(data[3]),   //apriltag roll component
                         Math.toRadians(data[4]),   //apriltag pitch componenet
-                        Math.toRadians(data[5])))  //apriltag yaw component
-                                        .transformBy(cameraOffset); //apply the camera offset           TBD this is breaking the limelight
+                        Math.toRadians(data[5])));  //apriltag yaw component
+                                     //.transformBy(cameraOffset); //apply the camera offset           TBD this is breaking the limelight
 
 
         // set if the Limelight has a target to loggable boolean

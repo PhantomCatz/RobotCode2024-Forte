@@ -134,7 +134,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Update pose estimator with module encoder values + gyro
         m_poseEstimator.update(getRotation2d(), getModulePositions());
 
-        if(isVisionEnabled) {
+//        if(true) {
             // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop
             for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
                 //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less
@@ -144,12 +144,13 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                         VecBuilder.fill(
                                 1,
                                 1,
-                                5.0)); //TBD test if increaseing or decrease affects vision estimates updates
+                                5)); //TBD test if increaseing or decrease affects vision estimates updates
             }
-        }
+  //      }
 
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 
+        //Logger.recordOutput("Obometry/LimelightPose", vision.getVisionOdometry().get(0).getPose()); 
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
         // Logger.recordOutput("Obometry/pose", getPose());
 
