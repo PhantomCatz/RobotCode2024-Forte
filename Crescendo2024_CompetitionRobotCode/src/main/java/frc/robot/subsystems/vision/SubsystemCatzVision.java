@@ -78,9 +78,7 @@ public class SubsystemCatzVision extends SubsystemBase {
             // update and process new inputs[cameraNum] for camera
             cameras[i].updateInputs(inputs[i]);
             Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);
-            
-        System.out.println("inputs processed");
-        
+                    
             //checks for when to process vision
             if (inputs[i].hasTarget && 
                 inputs[i].isNewVisionPose && 

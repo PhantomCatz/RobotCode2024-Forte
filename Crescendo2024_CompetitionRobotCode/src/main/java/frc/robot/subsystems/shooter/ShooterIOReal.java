@@ -165,21 +165,25 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void loadForward() {
+        LOAD_MOTOR.setIdleMode(IdleMode.kCoast);
         LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
     }
     //Code that will be tested for double beambreaks
     @Override
     public void fineAdjustFwd() {
-            LOAD_MOTOR.set(-LOAD_MOTOR_FWD_ADJUST_SPEED);
+        LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
+        LOAD_MOTOR.set(-LOAD_MOTOR_FWD_ADJUST_SPEED);
     }
 
     @Override
     public void fineAdjustBck() {
+        LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.set(LOAD_MOTOR_BACKWARD_SPEED);
     }
 
     @Override
     public void loadNote() {
+        LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.set(-LOAD_MOTOR_LOADING_SPEED);
     }
 
@@ -189,6 +193,7 @@ public class ShooterIOReal implements ShooterIO {
     }
     @Override
     public void loadBackward() {
+        LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.set(LOAD_MOTOR_BACKWARD_SPEED);
     }
 
