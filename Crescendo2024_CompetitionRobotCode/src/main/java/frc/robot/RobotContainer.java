@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -13,9 +14,14 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
+import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.commands.StateMachineCmds.MoveToNewPositionCmd;
+import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
+import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
+import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 /**
@@ -28,24 +34,27 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  public class RobotContainer {
     //subsystems
     private SubsystemCatzDrivetrain driveTrain; 
-    private SubsystemCatzVision vision;
+    //private SubsystemCatzVision vision;
+    private SubsystemCatzIntake intake;
     //private SubsystemCatzShooter shooter;
     //private SubsystemCatzClimb climb;
-    //private SubsystemCatzElevator arm;
+    private SubsystemCatzElevator elevator;
 
     private CatzAutonomous auton = new CatzAutonomous();
 
     //xbox controller
-    private CommandXboxController xboxDrv;
+    public static CommandXboxController xboxDrv;
     private CommandXboxController xboxAux;
  
        
    public RobotContainer() {
     //instantiate subsystems
+    elevator = SubsystemCatzElevator.getInstance();
     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
-    vision     = SubsystemCatzVision.getInstance();
+    //vision     = SubsystemCatzVision.getInstance();
+    intake     = SubsystemCatzIntake.getInstance();
 
-    //shooter    = SubsystemCatzShooter.getInstance();
+   // shooter    = SubsystemCatzShooter.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
     
@@ -58,15 +67,31 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
      configureBindings();
    }
  
-   //bind mapping
-   private void configureBindings() {
-
-    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
-    
-    xboxDrv.a().onTrue(auton.autoFindPathSource());
-    xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
-    xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
  
+   private void configureBindings() {    
+     
+      xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
+      xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
+     
+      //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
+      Trigger rollersOffBinding = xboxAux.leftBumper().and (xboxAux.rightBumper());
+      rollersOffBinding.onTrue(intake.cmdRollerOff());
+      Trigger manualTrigger = new Trigger(()-> Math.abs(xboxAux.getLeftY()) > 0.1);
+      manualTrigger.onTrue(new ManualIntakeCmd(()->xboxAux.getLeftY()));
+
+      xboxAux.rightStick().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
+
+      xboxAux.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
+      xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
+      xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+      xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE));
+      xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
+
+      xboxDrv.a().onTrue(auton.autoFindPathSource());
+      xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
+      xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
+ 
+
    }
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active

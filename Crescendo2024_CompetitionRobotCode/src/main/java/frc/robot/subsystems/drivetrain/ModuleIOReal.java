@@ -9,7 +9,6 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.CatzConstants.MtrConfigConstants;
@@ -61,7 +60,9 @@ public class ModuleIOReal implements ModuleIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
+
         driveConfigs.kP = 2.4;
+
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.00;
         driveConfigs.kV = 0.1189; //TBD need tick eq for this
@@ -77,6 +78,7 @@ public class ModuleIOReal implements ModuleIO {
 
     @Override
     public void updateInputs(ModuleIOInputs inputs) {
+
         inputs.driveMtrVelocity       = DRIVE_MOTOR.getRotorVelocity().getValue();
         inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
         inputs.driveAppliedVolts      = DRIVE_MOTOR.getMotorVoltage().getValueAsDouble();

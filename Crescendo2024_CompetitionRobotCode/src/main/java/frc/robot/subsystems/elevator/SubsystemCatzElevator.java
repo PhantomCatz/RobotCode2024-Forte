@@ -7,59 +7,106 @@ package frc.robot.subsystems.elevator;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.CatzMechanismConstants;
+import frc.robot.CatzConstants.ElevatorConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.ElevatorIOInputsAutoLogged;
-
+import frc.robot.subsystems.intake.IntakeIOReal;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
 
 public class SubsystemCatzElevator extends SubsystemBase {
-  
+  //instance instantiation
+  private static SubsystemCatzElevator instance = new SubsystemCatzElevator();
+
+  //io block
   private final ElevatorIO io;
-  private static SubsystemCatzElevator instance;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-  private CatzMechanismPosition m_newPosition;
+  //elevator constants
+  private static final double ElEVATOR_REV_TO_INCHES = 0.0;
+  private static final double ELEVATOR_GEAR_RATIO    = 0.0;
 
-  public SubsystemCatzElevator() {
+  private static final double ELEVATOR_NULL_POSITION = -999.0;
 
-            switch (CatzConstants.currentMode) {
-            case REAL: io = 
-                    new ElevatorIOReal();
-                break;
-            case SIM : io = null;
-                break;
-            default : io = 
-                    new ElevatorIOReal() {};
-                break;
-        }
+  private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
+
+  //elevator variables
+  private double m_newPositionRev;
+  private double m_elevatorPercentOutput;
+
+  private static ElevatorState currentElevatorState;
+  private static enum ElevatorState {
+    AUTO,
+    FULL_MANUAL,
+    SEMI_MANUAL
   }
 
-  //Run every 20 ms
+  public SubsystemCatzElevator() {
+    switch (CatzConstants.currentMode) {
+      case REAL: io = new ElevatorIOReal();
+                 System.out.println("Elevator Configured for Real");
+      break;
+
+      case REPLAY: io = new ElevatorIOReal() {};
+                   System.out.println("Elevator Configured for Replayed simulation");
+      break;
+
+      case SIM:
+      default: io = null;
+               System.out.println("Elevator Unconfigured");
+      break;
+    }
+  }
+
+  // Get the singleton instance of the elevator Subsystem
+  public static SubsystemCatzElevator getInstance() {
+      return instance;
+  }
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator/inputs", inputs);
-
-    double targetEncPos;
-
-    if(DriverStation.isDisabled()) {
+    if(DriverStation.isDisabled() && 
+       SubsystemCatzIntake.getInstance().getWristAngle() > 60) {
       io.setElevatorPercentOutput(0);
     }
-    else if(m_newPosition != null) {
-      targetEncPos = m_newPosition.getElevatorTargetEncPos();
-      io.setElevatorPosition(targetEncPos);
-      Logger.recordOutput("targetEncElevator", targetEncPos);
+    else {
+      if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
+          currentElevatorState == ElevatorState.AUTO  &&
+          currentElevatorState == ElevatorState.SEMI_MANUAL) {
+        io.setElevatorPosition(m_newPositionRev);
+          }
+      else {
+        io.setElevatorPercentOutput(m_elevatorPercentOutput);
+      }
     }
+
   }
 
-  public void setNewPos(CatzMechanismPosition newPosition) {
-    this.m_newPosition = newPosition;
+  public void updateElevatorTargetRev(double targetPos) {
+    currentElevatorState = ElevatorState.AUTO;
+    m_newPositionRev = targetPos;
   }
 
-  // Get the singleton instance of the ClimbSubsystem
-  public static SubsystemCatzElevator getInstance() {
-      return instance;
+  public void setElevatorSemiManualPwr(double output) {
+    currentElevatorState = ElevatorState.SEMI_MANUAL;
+    m_newPositionRev = inputs.elevatorPosRev * (output * ELEVATOR_MANUAL_STEP_SIZE);
+  }
+
+  public void setElevatorPercentOutput(double percentOutput) {
+    currentElevatorState = ElevatorState.FULL_MANUAL;
+    this.m_elevatorPercentOutput = percentOutput/10;
+  }
+  // ----------------------------------------------------------------------------------
+  // Elevator getters
+  // ----------------------------------------------------------------------------------
+
+  public double getElevatorRevPos() {
+    return inputs.elevatorPosRev;
   }
 
 }

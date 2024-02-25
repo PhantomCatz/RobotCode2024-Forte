@@ -115,6 +115,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             });
 
         gyroIO.resetNavXIO();
+
         if(DriveConstants.START_FLIPPED){
             flipGyro();
         }
@@ -290,7 +291,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             module.resetDriveEncs();
         }
     }
-
 
     // Get an array of swerve module states
     public SwerveModuleState[] getModuleStates() {

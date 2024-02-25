@@ -30,6 +30,7 @@ public class CatzSwerveModule {
     //steering pid constants
     private final double kP = 0.6; 
     private final double kI = 0.01;
+
     private final double kD = 0.000;
 
     //global swerve module constants

@@ -38,6 +38,7 @@ public class PPTrajectoryFollowingCmd extends Command {
      */
     public PPTrajectoryFollowingCmd(PathPlannerPath newPath) {
         path = newPath;
+
         hocontroller = DriveConstants.holonomicDriveController;
         addRequirements(m_driveTrain);
     }
@@ -45,7 +46,9 @@ public class PPTrajectoryFollowingCmd extends Command {
     //Auto Pathplanning trajectoreies
     public PPTrajectoryFollowingCmd(List<Translation2d> bezierPoints, PathConstraints constraints, GoalEndState endRobotState) {
         PathPlannerPath newPath = new PathPlannerPath(bezierPoints, constraints, endRobotState);
+
         path = newPath;
+
         hocontroller = DriveConstants.holonomicDriveController;
 
         addRequirements(m_driveTrain);
@@ -80,6 +83,8 @@ public class PPTrajectoryFollowingCmd extends Command {
                                 m_driveTrain.getRotation2d());
     }
 
+    //private double prevSpeed = previousState.velocityMps;
+
     @Override
     public void execute() {
         double currentTime = this.timer.get();
@@ -88,6 +93,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
         Rotation2d targetOrientation     = goal.targetHolonomicRotation;
         Pose2d currentPose               = m_driveTrain.getPose();
+
         Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         
         /* 

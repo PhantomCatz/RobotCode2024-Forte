@@ -74,6 +74,7 @@ public class CatzAutonomous {
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW2")),
             Commands.waitSeconds(0.5),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW3"))
+
         );
     }
 
