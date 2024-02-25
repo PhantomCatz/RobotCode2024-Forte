@@ -55,14 +55,6 @@ public class VisionIOLimeLight implements VisionIO {
 
         // collects pose information based off network tables and orients itself depending on alliance side
         NetworkTableEntry botposeEntry;
-        // if (isAllianceBlue) {
-        //     botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue");
-        // } 
-        // else if (isAllianceRed) {
-        //     botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpired");
-        // } 
-        // else {
-        //}
 
         if(isAllianceBlue){
             botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"); //TBD test how different alliance and forms of botpose affect vision pose

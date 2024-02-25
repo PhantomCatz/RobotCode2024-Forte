@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.FieldConstants;
+import frc.robot.Utils.CatzMathUtils;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class AutoAimAndFireCmd extends Command {
@@ -72,6 +73,15 @@ public class AutoAimAndFireCmd extends Command {
                   Math.atan2(FieldConstants.SPEAKER_COORD_MTRS_Y - drivetrain.getPose().getY(), 
                              -drivetrain.getPose().getX())));
     }
+    double driveRotaitonOffset = (drivetrain.getPose().getRotation().getDegrees());
+    double globalTargetAimAngle =  Math.toDegrees(
+                                    Math.atan2(FieldConstants.SPEAKER_COORD_MTRS_Y - drivetrain.getPose().getY(),
+                                              FieldConstants.FIELD_LENGTH_MTRS    - drivetrain.getPose().getX()));
+
+    double targetTurretAngle = globalTargetAimAngle - 
+                                      Math.signum(driveRotaitonOffset) * Math.toDegrees(
+                                                                                CatzMathUtils.toUnitCircAngle(
+                                                                                                Math.toRadians(driveRotaitonOffset)));
   }
 
   @Override
