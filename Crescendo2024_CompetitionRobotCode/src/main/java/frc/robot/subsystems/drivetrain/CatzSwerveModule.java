@@ -57,6 +57,8 @@ public class CatzSwerveModule {
         m_PID = new PIDController(kP, kI, kD);
 
         m_wheelOffset = offset;
+        resetDriveEncs();
+
     }
 
     public void periodic() {

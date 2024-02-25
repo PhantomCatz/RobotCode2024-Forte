@@ -17,10 +17,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class CatzAutonomous {
+
+    private static CatzAutonomous Instance;
     
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
 
@@ -30,6 +33,7 @@ public class CatzAutonomous {
     PathConstraints autoPathfindingConstraints = new PathConstraints(
         3.0, 4.0, 
         Units.degreesToRadians(540), Units.degreesToRadians(720));
+    private AllianceColor allianceColor;
 
     public CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", CatzConstants.AllianceColor.Blue);
@@ -53,7 +57,12 @@ public class CatzAutonomous {
     //-------------------------------------------Auton Paths--------------------------------------------
     private Command bulldozerAuto() {
         return new SequentialCommandGroup(
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Bulldozer"))
+            setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
+            Commands.waitSeconds(0.5),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-2")),
+            Commands.waitSeconds(0.5),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-3"))
         );
     }
 
@@ -104,8 +113,8 @@ public class CatzAutonomous {
     //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
     public Command autoFindPathSource() {
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
-                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
+                new Pose2d(2.7, 7.5, Rotation2d.fromDegrees(0)),
+                new Pose2d(2.5, 7.8, Rotation2d.fromDegrees(0))
                     );
 
         //send path info to trajectory following command
@@ -117,14 +126,14 @@ public class CatzAutonomous {
     public Command autoFindPathAmp() {
 
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-                new Pose2d(1.0, 2.0, Rotation2d.fromDegrees(0)),
-                new Pose2d(1.0, 2.3, Rotation2d.fromDegrees(0))
+                new Pose2d(1.85, 7.5, Rotation2d.fromDegrees(90)),
+                new Pose2d(1.85, 7.8, Rotation2d.fromDegrees(90))
                     );
 
         //send path info to trajectory following command
         return new PPTrajectoryFollowingCmd(bezierPoints, 
                                             autoPathfindingConstraints, 
-                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(90)));
     }
 
     public Command autoFindPathSpeakerAW() {
@@ -167,14 +176,14 @@ public class CatzAutonomous {
     //Automatic pathfinding command
     public Command autoFindPathSpeakerLOT() {
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
-                new Pose2d(2.7, 2.8, Rotation2d.fromDegrees(0)),
-                new Pose2d(2.5, 2.3, Rotation2d.fromDegrees(0))
+                new Pose2d(2.0, 2.0, Rotation2d.fromDegrees(180)),
+                new Pose2d(1.50, 0.69, Rotation2d.fromDegrees(235))
                     );
 
         //send path info to trajectory following command
         return new PPTrajectoryFollowingCmd(bezierPoints, 
                                             autoPathfindingConstraints, 
-                                            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)));
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(235)));
     }
 
 
@@ -188,10 +197,22 @@ public class CatzAutonomous {
         }
 
         m_driveTrain.resetPosition(path.getPreviewStartingHolonomicPose());
+        allianceColor = chosenAllianceColor.get();
 
-        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+        if(allianceColor == CatzConstants.AllianceColor.Red) {
             m_driveTrain.flipGyro();
         }
     });
+    }
+
+    public AllianceColor getAllianceColor(){
+        return allianceColor;
+    }
+
+    public static CatzAutonomous getInstance(){
+        if(Instance == null){
+            Instance = new CatzAutonomous();
+        }
+        return Instance;
     }
 }

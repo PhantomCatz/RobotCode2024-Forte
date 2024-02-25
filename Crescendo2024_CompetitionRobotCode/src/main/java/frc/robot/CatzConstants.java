@@ -70,13 +70,8 @@ public final class CatzConstants {
   public static final class VisionConstants {
     public static final double SPEAKER_HOOD_HEIGHT = 83.0;
     public static final double LOWEST_DISTANCE = Units.feetToMeters(10.0);
-    public static final double LIMELIGHT_PLACEMENT_HEIGHT = 26; //19.7
-    public static final double sourceApriltagHeight = 11.5;
-    public static final double SPEAKER_APRILTAG_HEIGHT = 56.5;
-    public static final double trapApriltagHeight = 0.0;
-    public static final double ampApriltagHeight = 1.22;
-    public static final double HOOD_TO_APRILTAG = SPEAKER_HOOD_HEIGHT - SPEAKER_APRILTAG_HEIGHT;
-    public static final Transform3d LIMELIGHT_OFFSET = new Transform3d(0.0, 0.0, 0.0, null); //tbd need to understand how these classese work transform3d vs translation3d
+    public static final Transform3d LIMELIGHT_OFFSET   = new Transform3d(0.0, 0.0, 0.0, new Rotation3d(0.0,0.0,180.0)); //tbd need to understand how these classese work transform3d vs translation3d
+    public static final Transform3d LIMELIGHT_OFFSET_2 = new Transform3d(0.0, 0.0, 0.0, null); //tbd need to understand how these classese work transform3d vs translation3d
   }
 
   public static final class TrajectoryConstants {
@@ -263,7 +258,7 @@ public final class CatzConstants {
     public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(3.3);//0.095;// mUnits.inchesToMeters(4);
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
-    public static final boolean START_FLIPPED = true;
+    public static final boolean START_FLIPPED = false;
 
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;
     public static final double FEEDFOWARD_Kv_VELOCITY_ACCELERATION_METERS = 0.24;

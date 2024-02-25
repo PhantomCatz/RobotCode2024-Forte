@@ -20,13 +20,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
@@ -61,7 +57,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     public final CatzSwerveModule RT_BACK_MODULE;
 
     // boolean for determining whether to use vision estimates in pose estimation
-    private boolean isVisionEnabled = false;
+    private boolean isVisionEnabled = true;
 
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
@@ -99,7 +95,13 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
-                Rotation2d.fromDegrees(getGyroAngle()), getModulePositions(), new Pose2d());
+                Rotation2d.fromDegrees(getGyroAngle()), 
+                getModulePositions(), 
+                new Pose2d(), 
+                VecBuilder.fill(0.1, 0.1, 10),  //odometry standard devs
+                VecBuilder.fill(5, 5, 500)); //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
+
+
         
         //Configure logging trajectories to advantage kit
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -116,6 +118,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         if(DriveConstants.START_FLIPPED){
             flipGyro();
         }
+
+        resetPosition(new Pose2d(1.26,5.53,new Rotation2d()));
+
     }
 
     // Get the singleton instance of the CatzDriveTrainSubsystem
@@ -138,18 +143,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Update pose estimator with module encoder values + gyro
         m_poseEstimator.update(getRotation2d(), getModulePositions());
 
-        if(isVisionEnabled) {
-            // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop
-            for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
-                //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less
-                m_poseEstimator.addVisionMeasurement(
-                        vision.getVisionOdometry().get(i).getPose(),
-                        vision.getVisionOdometry().get(i).getTimestamp(),
-                        VecBuilder.fill(
-                                vision.getMinDistance() * DriveConstants.ESTIMATION_COEFFICIENT,
-                                vision.getMinDistance() * DriveConstants.ESTIMATION_COEFFICIENT,
-                                5.0));
-            }
+        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop
+        for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
+            m_poseEstimator.addVisionMeasurement(
+                    vision.getVisionOdometry().get(i).getPose(),
+                    vision.getVisionOdometry().get(i).getTimestamp());
         }
 
         //logging
