@@ -66,16 +66,16 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   public static final double INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV = INTAKE_PIVOT_MTR_POS_OFFSET_IN_DEG * INTAKE_PIVOT_MTR_REV_PER_DEG;
 
-  public final double PIVOT_FF_kS = 0.2;
+  public final double PIVOT_FF_kS = 0.00;
   public final double PIVOT_FF_kG = 0.437;
-  public final double PIVOT_FF_kV = 0.03;
+  public final double PIVOT_FF_kV = 0.002;
   public final double PIVOT_FF_kA = 0.0;
 
 
   private PIDController pivotPID;
   private ArmFeedforward pivotFeedFoward;
 
-  private static final double PIVOT_PID_kP = 0.034;//0.034;
+  private static final double PIVOT_PID_kP = 0.025;//0.034;
   private static final double PIVOT_PID_kI = 0.000; 
   private static final double PIVOT_PID_kD = 0.000; 
 
@@ -91,6 +91,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double ANGLE_AMP_SCORING = 0.0;
   private final double ANGLE_GROUND_INTAKE = 0.0; //TBD need to dial in on wednesday
   private final double NULL_INTAKE_POSITION = -999.0;
+
+  private final double GRAVITY_KG_OFFSET = 30.0;
 
   //intake variables
   private double m_pivotManualPwr;
@@ -202,7 +204,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         }
         
         
-        m_ffVolts = calculatePivotFeedFoward(Math.toRadians(currentPositionDeg), pivotVelRadPerSec, 0);
+        m_ffVolts = calculatePivotFeedFoward(Math.toRadians(currentPositionDeg - GRAVITY_KG_OFFSET), pivotVelRadPerSec, 0);
         m_pidVolts = -pivotPID.calculate(m_targetPositionDeg, currentPositionDeg);
         double finalVolts = m_pidVolts + m_ffVolts;
 
