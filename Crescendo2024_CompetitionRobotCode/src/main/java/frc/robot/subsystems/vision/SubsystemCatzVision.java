@@ -74,8 +74,8 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight", VisionConstants.LIMELIGHT_OFFSET),
-                new VisionIOLimeLight("limelight-turret", VisionConstants.LIMELIGHT_OFFSET_2)
+                new VisionIOLimeLight("limelight", VisionConstants.LIMELIGHT_OFFSET)
+                // new VisionIOLimeLight("limelight-turret", VisionConstants.LIMELIGHT_OFFSET_2)
             });
         }
         return instance;
@@ -99,6 +99,7 @@ public class SubsystemCatzVision extends SubsystemBase {
                 inputs[i].isNewVisionPose && 
                 !DriverStation.isAutonomous() && 
                 inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
+                useSingleTag = false;
                 if (useSingleTag) {
                     if (inputs[i].singleIDUsed == acceptableTagID) {
                         processVision(i);
@@ -118,7 +119,7 @@ public class SubsystemCatzVision extends SubsystemBase {
 
         //log data
         Logger.recordOutput("AprilTagID", primaryAprilTag);
-        Logger.recordOutput("Vertical Degrees to Apriltag", inputs[1].ty);
+        Logger.recordOutput("Vertical Degrees to Apriltag", inputs[0].ty);
         Logger.recordOutput("Distance to Apriltag", distanceToAprilTag);
         Logger.recordOutput("Distance to Wall", aprilTagDistanceToWall);
     }

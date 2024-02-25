@@ -56,6 +56,8 @@ public class CatzSwerveModule {
 
         m_wheelOffset = offset;
         this.DRIVE_MOTOR_ID = driveMotorID;
+
+        resetDriveEncs();
     }
 
     public void periodic() {

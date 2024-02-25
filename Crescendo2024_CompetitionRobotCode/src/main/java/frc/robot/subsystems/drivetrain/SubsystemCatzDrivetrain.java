@@ -96,6 +96,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 Rotation2d.fromDegrees(getGyroAngle()), getModulePositions(), new Pose2d());
+
         
         //Configure logging trajectories to advantage kit
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -112,6 +113,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         if(DriveConstants.START_FLIPPED){
             flipGyro();
         }
+
+        resetPosition(new Pose2d(1.26,5.53,new Rotation2d()));
+
     }
 
     // Get the singleton instance of the CatzDriveTrainSubsystem
@@ -134,19 +138,24 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Update pose estimator with module encoder values + gyro
         m_poseEstimator.update(getRotation2d(), getModulePositions());
 
-//        if(true) {
-            // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop
-            for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
-                //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less
-                m_poseEstimator.addVisionMeasurement(
-                        vision.getVisionOdometry().get(i).getPose(),
-                        vision.getVisionOdometry().get(i).getTimestamp(),
-                        VecBuilder.fill(
-                                1,
-                                1,
-                                5)); //TBD test if increaseing or decrease affects vision estimates updates
-            }
-  //      }
+
+        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop
+        // for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
+        //     //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less
+        //     m_poseEstimator.setVisionMeasurementStdDevs(
+        //         VecBuilder.fill(1,
+        //                         1,
+        //                         5)
+        //     );               
+        //     m_poseEstimator.addVisionMeasurement(
+        //             vision.getVisionOdometry().get(i).getPose(),
+        //             vision.getVisionOdometry().get(i).getTimestamp());
+        //             // VecBuilder.fill(
+        //             //         1,
+        //             //         1,
+        //             //         5)); //TBD test if increaseing or decrease affects vision estimates updates
+
+        // }
 
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 

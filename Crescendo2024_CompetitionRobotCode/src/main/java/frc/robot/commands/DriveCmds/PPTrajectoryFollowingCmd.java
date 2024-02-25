@@ -57,6 +57,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         timer.reset();
         timer.start();  
         
+        //flippiong path
         if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
             path = path.flipPath();
             System.out.println("flip");

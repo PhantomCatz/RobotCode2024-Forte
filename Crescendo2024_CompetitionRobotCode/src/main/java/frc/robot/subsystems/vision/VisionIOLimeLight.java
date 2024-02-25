@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -31,7 +32,8 @@ public class VisionIOLimeLight implements VisionIO {
         System.out.println(name);
         System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
         
-        
+        Logger.recordOutput("Obometry/VisionPose", new Pose2d());
+
     }
 
     @Override
@@ -43,9 +45,13 @@ public class VisionIOLimeLight implements VisionIO {
         inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0); //target area of the limelight from 0%-100%...how much does the apirltage take up on the frame
         inputs.primaryApriltagID = NetworkTableInstance.getDefault().getTable(name).getEntry("tid").getDouble(0);
 
+        boolean isAllianceBlue = false;
+        boolean isAllianceRed = false;
 
-        boolean isAllianceBlue = (CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue);
-        boolean isAllianceRed  = (CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red); 
+        if(CatzAutonomous.chosenAllianceColor.get() != null){
+            isAllianceBlue = (CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue); 
+            isAllianceRed = (CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red); 
+        }
 
         // collects pose information based off network tables and orients itself depending on alliance side
         NetworkTableEntry botposeEntry;
@@ -56,8 +62,15 @@ public class VisionIOLimeLight implements VisionIO {
         //     botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpired");
         // } 
         // else {
-            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose"); //TBD test how different alliance and forms of botpose affect vision pose
         //}
+
+        if(isAllianceBlue){
+            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"); //TBD test how different alliance and forms of botpose affect vision pose
+        }else if(isAllianceRed){
+            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpired"); //TBD test how different alliance and forms of botpose affect vision pose
+        }else{
+            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose"); //TBD test how different alliance and forms of botpose affect vision pose
+        }
 
         //logging
         Logger.recordOutput("Vision/AllianceColorBlue", isAllianceBlue);
@@ -97,9 +110,11 @@ public class VisionIOLimeLight implements VisionIO {
             Pose2d pose2d = pose.toPose2d();
 
             //data used for pose estimator
-            inputs.x = pose2d.getX() + cameraOffset.getX();
-            inputs.y = pose2d.getY() + cameraOffset.getY();
-            inputs.rotation = pose2d.getRotation().getRadians() + cameraOffset.getRotation().getAngle();
+            inputs.x = pose2d.getX();// + cameraOffset.getX();
+            inputs.y = pose2d.getY();// + cameraOffset.getY();
+            inputs.rotation = pose2d.getRotation().getRadians();// + cameraOffset.getRotation().getAngle();
+
+            Logger.recordOutput("Obometry/VisionPose", new Pose2d(inputs.x,inputs.y,Rotation2d.fromRadians(inputs.rotation)));
         } 
         else {
             inputs.isNewVisionPose = false;

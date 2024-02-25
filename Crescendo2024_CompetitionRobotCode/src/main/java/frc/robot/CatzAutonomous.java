@@ -57,7 +57,12 @@ public class CatzAutonomous {
     //-------------------------------------------Auton Paths--------------------------------------------
     private Command bulldozerAuto() {
         return new SequentialCommandGroup(
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Bulldozer"))
+            setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
+            Commands.waitSeconds(0.5),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-2")),
+            Commands.waitSeconds(0.5),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-3"))
         );
     }
 
