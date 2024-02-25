@@ -54,4 +54,5 @@ public interface ShooterIO {
     public default void setServoAngle(double angle) {}
     
     public default void setServoSpeed(double speed) {}
+
 }

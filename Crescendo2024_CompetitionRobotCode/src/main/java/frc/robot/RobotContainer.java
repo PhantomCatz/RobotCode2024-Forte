@@ -15,11 +15,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.commands.StateMachineCmds.MoveToNewPositionCmd;
+import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
+import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
+import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 /**
@@ -28,14 +29,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  * @author Kynam Lenghiem
  * 
  * This class is how the command scheduler(robot.java replacment) is configured
- * Configures:
- * -xbox controller triggers
- * -default commands
- * -instanciated mechanisms using singleton implementation
- * -sets up autonomous from CatzAtutonomouschooser
  */
  public class RobotContainer {
-    
     //subsystems
     //private SubsystemCatzDrivetrain driveTrain; 
     private SubsystemCatzVision vision;
@@ -51,13 +46,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     private CommandXboxController xboxAux;
  
        
-   /** The container for the robot. Contains subsystems, OI devices, and commands. 
-    *    -since multiple classes are referencing these mechansims, 
-    *     mechanisms are instantiated inside mechanism class(singleton)
-    */
    public RobotContainer() {
     //instantiate subsystems
-    //driveTrain = SubsystemCatzDrivetrain.getInstance(); 
+    elevator = SubsystemCatzElevator.getInstance();
+    driveTrain = SubsystemCatzDrivetrain.getInstance(); 
     //vision     = SubsystemCatzVision.getInstance();
     //intake     = SubsystemCatzIntake.getInstance();
 
@@ -76,50 +68,52 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    }
  
    
-   private void configureBindings() {
-    //xboxAux.rightBumper().onTrue(intake.setRollerIn()).onFalse(intake.setRollerDisabled());
-    //xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
-    // xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+   private void configureBindings() { 
+  
+  
+      xboxDrv.rightTrigger().onTrue(shooter.cmdShoot());    //shooter activation
+      xboxDrv.x().onTrue(shooter.cmdShooterEnabled());
+                 //.onFalse(shooter.cmdShooterDisabled());
+      xboxDrv.y().onTrue(shooter.loadDisabled());
+      xboxDrv.leftTrigger().onTrue(shooter.loadBackward());
+      xboxDrv.leftBumper().onTrue(shooter.setPosition(0.25));
 
-    // Trigger intakePivotOverride = xboxAux.axisGreaterThan((int) (xboxAux.getLeftY()*100), 10);
-    // intakePivotOverride.onTrue(intake.intakePivotOverrideCommand(xboxAux.getLeftY()))
-    //                    .onFalse(intake.intakePivotOverrideCommand(0));
+      xboxDrv.rightBumper().onTrue(shooter.cmdLoad());   
 
-    // //xboxDrv.a().onTrue(auton.flyTrajectoryOne());
-    // xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
-    // // xboxDrv.start().onTrue(driveTrain.flipGyro());
-    // xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
+      xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
+      xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
+     
+      //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
+      Trigger rollersOffBinding = xboxAux.leftBumper().and (xboxAux.rightBumper());
+      rollersOffBinding.onTrue(intake.cmdRollerOff());
+      Trigger manualTrigger = new Trigger(()-> Math.abs(xboxAux.getLeftY()) > 0.1);
+      manualTrigger.onTrue(new ManualIntakeCmd(()->xboxAux.getLeftY()));
 
-    // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
-    
-    xboxDrv.rightTrigger().onTrue(shooter.cmdShoot());    //shooter activation
-    xboxDrv.x().onTrue(shooter.cmdShooterEnabled());
-               //.onFalse(shooter.cmdShooterDisabled());
-    xboxDrv.y().onTrue(shooter.loadDisabled());
-    xboxDrv.leftTrigger().onTrue(shooter.loadBackward());
-    xboxDrv.leftBumper().onTrue(shooter.setPosition(0.25));
-    //xboxDrv.rightStick().onTrue(shooter.setPosition(xboxDrv.getRightY()));
+      xboxAux.rightStick().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
 
-    xboxDrv.rightBumper().onTrue(shooter.cmdLoad());
+      xboxAux.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
+      xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
+      xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+      xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE));
+      xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
 
-  }
+      xboxDrv.a().onTrue(auton.autoFindPathSource());
+      xboxDrv.back().onTrue(driveTrain.toggleVisionEnableCommand());
+      xboxDrv.start().onTrue(driveTrain.resetGyro()); //classic gyro 0'ing 
+ 
+
+   }
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
-      // driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-      //                                                 ()-> xboxDrv.getLeftY(),
-      //                                                 ()-> xboxDrv.getRightX(),
-      //                                                 ()-> xboxDrv.getRightTriggerAxis(), 
-      //                                                 ()-> xboxDrv.b().getAsBoolean()));
-    
+      driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(), //tranlate X
+                                                      ()-> xboxDrv.getLeftY(), //translate Y
+                                                      ()-> xboxDrv.getRightX(), //rotation thetha
+                                                      ()-> xboxDrv.b().getAsBoolean())); //determine if chassis is field oriented or no
    }
 
-   /**
-    * Use this to pass the autonomous command to the main {@link Robot} class.
-    *
-    * @return the command to run in autonomous
-    */
-    public Command getAutonomousCommand() {
-      return auton.getCommand();
-    }
+   //autonomous collection
+  public Command getAutonomousCommand() {
+    return auton.getCommand();
+  }
 }

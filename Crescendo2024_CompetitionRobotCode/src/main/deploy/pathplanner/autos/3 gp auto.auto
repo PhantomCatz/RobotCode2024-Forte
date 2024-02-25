@@ -8,19 +8,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3GPAuto1"
+            "pathName": "S4PW1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3GPAuto2"
+            "pathName": "S4PW2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "3GPAuto3"
+            "pathName": "S4PW3"
           }
         }
       ]

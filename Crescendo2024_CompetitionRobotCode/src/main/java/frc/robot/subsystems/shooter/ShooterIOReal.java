@@ -11,10 +11,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import frc.robot.CatzConstants.MtrConfigConstants;
+import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 
 public class ShooterIOReal implements ShooterIO {
@@ -79,9 +79,6 @@ public class ShooterIOReal implements ShooterIO {
     //Create new Talong FX config objects
     private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
     private Slot0Configs         pidConfigs   = new Slot0Configs();
-
-    
-
     
     public ShooterIOReal() {
         //Servo setup
@@ -114,6 +111,7 @@ public class ShooterIOReal implements ShooterIO {
         shooterArray[1] = SHOOTER_MOTOR_LT;
 
         
+
         //Reset to factory defaults
         SHOOTER_MOTOR_RT.getConfigurator().apply(new TalonFXConfiguration());
         SHOOTER_MOTOR_LT.getConfigurator().apply(new TalonFXConfiguration());
@@ -135,7 +133,6 @@ public class ShooterIOReal implements ShooterIO {
         pidConfigs.kI = 0.0;
         pidConfigs.kD = 0.0;
         pidConfigs.kV = 0.1189; //TBD 
-
 
         //Initialize motors and check if motors are initialized correctly
         for(int i=0;i<2;i++) {

@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.NetworkTableEntry;
 
 public interface VisionIO {
     
@@ -33,6 +34,7 @@ public interface VisionIO {
         public double tx; //horizontal offset from crosshair to target
         public double tv; //whether the limelight has any vaild targets
         public double ta; //target area of the limelight from 0%-100%...how much does the apirltage take up on the frame
+
 
     }
 
