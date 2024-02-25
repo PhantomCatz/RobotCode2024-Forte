@@ -49,12 +49,12 @@ public final class CatzConstants {
   }
 
   public static final class CatzMechanismConstants {
-    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 168, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 150,0,0);
+    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 160, 0, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 160,0,0, 1);
     //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, -7, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, -24, 0, 0);
-    //public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(0, -7, 0, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, -30, 0, 0, 0 );
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition(-8, 48,0,0, 0);
     //public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
     //public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition();

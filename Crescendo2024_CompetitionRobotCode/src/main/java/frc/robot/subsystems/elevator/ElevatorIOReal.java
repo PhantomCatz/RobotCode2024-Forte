@@ -26,8 +26,8 @@ public class ElevatorIOReal implements ElevatorIO {
     private Slot0Configs elevatorConfigs = new Slot0Configs();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
-    private DigitalInput m_forwardLimit = new DigitalInput(0);
-    private DigitalInput m_reverseLimit = new DigitalInput(1);
+    private DigitalInput m_forwardLimit = new DigitalInput(10);
+    private DigitalInput m_reverseLimit = new DigitalInput(11);//TBD not set
 
     private final TalonFX ElevatorMtrRT;
     private final TalonFX ElevatorMtrLT;
@@ -49,10 +49,13 @@ public class ElevatorIOReal implements ElevatorIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        elevatorConfigs.kP = 2.5; //TBD 
+        elevatorConfigs.kP = 2.4; //TBD 
         elevatorConfigs.kI = 0.0;
         elevatorConfigs.kD = 0.05;
-            //ramping
+
+        ElevatorMtrLT.setPosition(0);
+        ElevatorMtrRT.setPosition(0);
+
 
         //check if elevator motor is initialized correctly
         ElevatorMtrLT.setControl(new Follower(ElevatorMtrRT.getDeviceID(), true));

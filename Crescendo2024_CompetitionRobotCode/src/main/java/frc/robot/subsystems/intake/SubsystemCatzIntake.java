@@ -34,7 +34,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   *
   ************************************************************************************************************************/
   private final double ROLLERS_MTR_PWR_IN  =  0.6;
-  private final double ROLLERS_MTR_PWR_OUT = -0.6;
+  private final double ROLLERS_MTR_PWR_OUT = -0.4;
 
   private static final int ROLLERS_STATE_OFF = 0;
   private static final int ROLLERS_STATE_IN  = 1;
@@ -67,14 +67,16 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   public static final double INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV = INTAKE_PIVOT_MTR_POS_OFFSET_IN_DEG * INTAKE_PIVOT_MTR_REV_PER_DEG;
 
-  public final double PIVOT_FF_kS = 0.0;
+  public final double PIVOT_FF_kS = 0.008;
   public final double PIVOT_FF_kG = 0.437;
-  public final double PIVOT_FF_kV = 0.7;
+  public final double PIVOT_FF_kV = 0.03;
+  public final double PIVOT_FF_kA = 0.0;
+
 
   private PIDController pivotPID;
   private ArmFeedforward pivotFeedFoward;
 
-  private static final double PIVOT_PID_kP = 0.02;
+  private static final double PIVOT_PID_kP = 0.034;//0.034;
   private static final double PIVOT_PID_kI = 0.000; 
   private static final double PIVOT_PID_kD = 0.000; 
 
@@ -82,7 +84,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double ERROR_INTAKE_THRESHOLD_DEG = 5.0;
 
   private final double STOW_CUTOFF = 150; //TBD need to dial in
-  private final double GRAVITY_FF_SCALING_COEFFICIENT = 0.0235;
+  private final double GROUND_CUTTOFF = 200;
 
   private final double MANUAL_HOLD_STEP_COEFFICIENT = 2.0;
 
@@ -102,7 +104,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double m_numConsectSamples;
   private boolean m_intakeInPosition;
   private int    m_rollerRunningMode;
-  private double m_previousTargetAngle;
+  private double m_previousCurrentAngle;
   private double m_finalEncOutput;
 
   LoggedTunableNumber kgtunning = new LoggedTunableNumber("kgtunningVolts",0.0);
@@ -157,6 +159,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
       //collect current targetPosition in degrees
     double currentPositionDeg = calcWristAngleDeg();
     double positionError = currentPositionDeg - m_targetPositionDeg;
+    double pivotVelRadPerSec = Math.toRadians(currentPositionDeg - m_previousCurrentAngle)/0.02;
     if(DriverStation.isDisabled()) {
       io.setRollerPercentOutput(0.0);
       m_rollerRunningMode = 0;
@@ -195,13 +198,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
         }
         
         //calculate ff pwr and and sends to mtr through motion magic
-        //motion magic assumes a profile
-        m_ffVolts = pivotFeedFoward.calculate(Math.toRadians(currentPositionDeg),0);
-        //m_ffVolts = m_ffVolts + (kftunning.get()*0.349); //for testing kv
+        
+        m_ffVolts = calculatePivotFeedFoward(Math.toRadians(currentPositionDeg), pivotVelRadPerSec, 0);
         m_pidVolts = -pivotPID.calculate(m_targetPositionDeg, currentPositionDeg);
         double finalVolts = m_pidVolts + m_ffVolts;
-
-       // m_finalEncOutput = m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG;
 
         // // ----------------------------------------------------------------------------------
         // // If we are going to Stow Position & have passed the power cutoff angle, set
@@ -222,13 +222,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
         io.setIntakePivotVoltage(kgtunning.get());
       }
     } 
+    m_previousCurrentAngle = currentPositionDeg;
     Logger.recordOutput("intake/ff volts", m_ffVolts);
     Logger.recordOutput("intake/pid volts", m_pidVolts);
-    Logger.recordOutput("intake/manual pwr", m_pivotManualPwr);
+    Logger.recordOutput("intake/pivotvel", pivotVelRadPerSec);
     Logger.recordOutput("intake/final pwr", m_targetPower);
     Logger.recordOutput("intake/position error", positionError);
     Logger.recordOutput("intake/pidPower", m_pidVolts);
-    Logger.recordOutput("intake/ffPower", m_ffVolts);
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
     Logger.recordOutput("intake/currentAngle", currentPositionDeg);
     Logger.recordOutput("intake/roller target",m_rollerRunningMode);
@@ -276,6 +276,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   }
 
+  private double calculatePivotFeedFoward(double positionRadians, double velocityRadPerSec, double accelRadPerSecSquared) {
+      double finalFF = PIVOT_FF_kS * Math.signum(velocityRadPerSec)
+                     + PIVOT_FF_kG * Math.cos(positionRadians)
+                     + PIVOT_FF_kV * velocityRadPerSec
+                     + PIVOT_FF_kA * accelRadPerSecSquared;
+    return finalFF;
+  };
+
   private double calcWristAngleDeg() {
     double wristAngle = inputs.pivotMtrRev/INTAKE_PIVOT_MTR_REV_PER_DEG;
     return wristAngle;
@@ -283,15 +291,19 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //-------------------------------------Roller methods--------------------------------
   public Command cmdRollerIn() {
-    return runOnce(()-> m_rollerRunningMode = 1);
+    return runOnce(()-> setRollerState(1));
   }
 
   public Command cmdRollerOut() {
-    return runOnce(()-> m_rollerRunningMode = 2);
+    return runOnce(()-> setRollerState(2));
   }
 
   public Command cmdRollerOff() {
-    return runOnce(()->  m_rollerRunningMode = 0);
+    return runOnce(()->  setRollerState(0));
+  }
+
+  public void setRollerState(int rollerRunningMode) {
+    m_rollerRunningMode = rollerRunningMode;
   }
 
 }

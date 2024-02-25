@@ -98,17 +98,16 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
     xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
-    xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
-    xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
+    xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
+    xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE));
     xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
 
-
- 
    }
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
-      driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+      driveTrain
+      .setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
                                                       ()-> xboxDrv.getLeftY(),
                                                       ()-> xboxDrv.getRightX(),
                                                       ()-> xboxDrv.getRightTriggerAxis(), 

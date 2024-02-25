@@ -36,6 +36,7 @@ public class IntakeIOReal implements IntakeIO {
     
             //create new config objects
     private TalonFXConfiguration pivotTalonConfigs = new TalonFXConfiguration();
+    private TalonFXConfiguration rollerTalonConfigs = new TalonFXConfiguration();
     private Slot0Configs pidConfigs = new Slot0Configs();
     private Slot1Configs rollerConfigs = new Slot1Configs();
 
@@ -63,7 +64,9 @@ public class IntakeIOReal implements IntakeIO {
         pidConfigs.kI = 0.0;
         pidConfigs.kD = 0.0;
         //pidConfigs.kV = 0.1189;
-  
+        rollerTalonConfigs = pivotTalonConfigs;
+        rollerTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
         pivotMtr.setPosition(SubsystemCatzIntake.INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV);
 
         //check if wrist motor is initialized correctly
@@ -72,7 +75,7 @@ public class IntakeIOReal implements IntakeIO {
                 System.out.println("Failed to Configure CAN ID" + IntakeConstants.PIVOT_MTR_ID);
         //check if roller motor is initialized correctly
         for(int i=0;i<1;i++) {
-        initializationStatus = rollerMtr.getConfigurator().apply(pivotTalonConfigs);
+        initializationStatus = rollerMtr.getConfigurator().apply(rollerTalonConfigs);
         if(!initializationStatus.isOK())
             System.out.println("Failed to Configure CAN ID" + IntakeConstants.ROLLER_MTR_ID);
         }

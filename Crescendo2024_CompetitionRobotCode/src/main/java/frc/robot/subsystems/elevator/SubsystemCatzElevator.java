@@ -24,9 +24,16 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   //elevator constants
-  private CatzMechanismPosition m_newPosition;
+  private double m_newPositionRev;
 
   private double m_elevatorPercentOutput;
+
+  private static ElevatorState currentElevatorState;
+  private static enum ElevatorState {
+    AUTO,
+    FULL_MANUAL,
+    SEMI_MANUAL
+  }
 
   public SubsystemCatzElevator() {
             switch (CatzConstants.currentMode) {
@@ -50,33 +57,32 @@ public class SubsystemCatzElevator extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator/inputs", inputs);
-
-    double targetEncPos;
-
     if(DriverStation.isDisabled()) {
       io.setElevatorPercentOutput(0);
     }
-    else if(m_newPosition != null) {
-      targetEncPos = m_newPosition.getElevatorTargetEncPos();
-      io.setElevatorPosition(targetEncPos);
-      Logger.recordOutput("targetEncElevator", targetEncPos);
+    else if((m_newPositionRev != -999) && currentElevatorState == ElevatorState.AUTO) {
+      io.setElevatorPosition(m_newPositionRev);
+      System.out.println("in auto");
     } else {
       io.setElevatorPercentOutput(m_elevatorPercentOutput);
     }
-
+/* 
     if(inputs.forwardSwitchTripped){
       io.setSelectedSensorPosition(ElevatorConstants.FWD_SWITCH_POS);
     }
     if(inputs.reverseSwitchTripped){
       io.setSelectedSensorPosition(ElevatorConstants.REV_SWITCH_POS);
     }
+    */
   }
 
-  public void setNewPos(CatzMechanismPosition targetPos) {
-    m_newPosition = targetPos;
+  public void updateElevatorTargetRev(double targetPos) {
+    currentElevatorState = ElevatorState.AUTO;
+    m_newPositionRev = targetPos;
   }
 
   public void setElevatorPercentOutput(double percentOutput) {
+    currentElevatorState = ElevatorState.FULL_MANUAL;
     this.m_elevatorPercentOutput = percentOutput/10;
   }
 }
