@@ -84,7 +84,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
       }
     }
-
   }
 
   public void updateElevatorTargetRev(double targetPos) {

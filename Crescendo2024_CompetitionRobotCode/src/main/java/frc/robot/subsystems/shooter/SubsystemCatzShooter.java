@@ -6,14 +6,16 @@ package frc.robot.subsystems.shooter;
 
 import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.CatzConstants;
+import frc.robot.Robot;
+import frc.robot.CatzConstants.OIConstants;
+import frc.robot.Utils.LoggedTunableNumber;
+import frc.robot.RobotContainer;
+
 
 
 public class SubsystemCatzShooter extends SubsystemBase {
@@ -22,16 +24,20 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
   private static SubsystemCatzShooter instance = new SubsystemCatzShooter();
+  
   //shooter constants and variables
   private static int currentLoaderMode;
-  //private CatzMechanismPosition m_targetPosition;
       
-  private Servo shooterLeftServo;
-  private Servo shooterRightServo;
-
-  private final int SERVO_LEFT_PWM_ID  = 19; //TBD change
-  private final int SERVO_RIGHT_PWM_ID = 18;
+  /*-----------------------------------------------------------------------------------------
+   * Linear Servo Values
+   *-----------------------------------------------------------------------------------------*/
+  LoggedTunableNumber servoPos = new LoggedTunableNumber("ServoPos", 0);
     
+  /*-----------------------------------------------------------------------------------------
+   *
+   * States and Variables for Periodic
+   *  
+   *-----------------------------------------------------------------------------------------*/
   private static final int LOAD_IN = 1;
   private static final int FINE_TUNE = 2;
   private static final int LOAD_IN_DONE = 3;
@@ -49,19 +55,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   private boolean desiredBeamBreakState;
 
-  //Xbox controller to get what buttons were pressed
-  public CommandXboxController xboxDrv;
-
   private int iterationCounter;
 
   public SubsystemCatzShooter() {
-
-    xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT);
-  
+    //Shooter delay calculation
     SHOOTER_DELAY_IN_SECONDS = Math.round( (SHOOTER_DELAY_IN_SECONDS / 0.02) + 1);
-
-    shooterLeftServo = new Servo(SERVO_LEFT_PWM_ID);
-    shooterRightServo = new Servo(SERVO_RIGHT_PWM_ID);
 
     switch (CatzConstants.currentMode) {
       case REAL: io = new ShooterIOReal();
@@ -78,9 +76,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
       break;
     }
   }
-
-
-
+  
   // Get the singleton instance of the ShooterSubsystem
   public static SubsystemCatzShooter getInstance() {
       return instance;
@@ -92,7 +88,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
-    
+
+    double servoPosition = servoPos.get();
+    System.out.println(servoPosition);
+    io.setServoPosition(servoPosition);
+
       switch(currentLoaderMode) { 
         case LOAD_IN:
           io.loadNote();
@@ -109,7 +109,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
         case WAIT_FOR_NOTE_TO_SETTLE:
           iterationCounter++;
-          if(iterationCounter > 5) {
+          if(iterationCounter > 0) {
               if(inputs.shooterAdjustBeamBreakState == BEAM_IS_BROKEN) { //set off flag that determines adjust direction
                 desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
                 io.fineAdjustBck();
@@ -117,7 +117,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
                 desiredBeamBreakState = BEAM_IS_BROKEN;
                 io.fineAdjustFwd();
               }
-                currentLoaderMode = FINE_TUNE;
+              currentLoaderMode = FINE_TUNE;
           }
         break;
 
@@ -132,20 +132,23 @@ public class SubsystemCatzShooter extends SubsystemBase {
           io.setShooterEnabled();
           currentLoaderMode = WAIT_FOR_MOTORS_TO_REV_UP;
         break;
-
+        
         case WAIT_FOR_MOTORS_TO_REV_UP:
-          if(inputs.shooterVelocityLT >= inputs.velocityThresholdLT &&
-             inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
+        //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
+          if(-inputs.shooterVelocityLT >= inputs.velocityThresholdLT &&
+              inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
               iterationCounter = 0;
-              currentLoaderMode = SHOOTING;
-              desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
+
+              //RobotContainer.xboxDrv.setRumble()
           }
         break;
 
         case SHOOTING:
           io.feedShooter();
           iterationCounter++;
+          //System.out.println("Iteration Counter " + iterationCounter);
           if(iterationCounter >= SHOOTER_DELAY_IN_SECONDS) {
+              io.setShooterDisabled();
               currentLoaderMode = LOAD_OFF;
           }
         break;
@@ -164,38 +167,36 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------Flywheel Commands------------------------------------------
 
   public Command cmdShooterEnabled() {
-    return run(()->io.setShooterEnabled());
+    return runOnce(()->currentLoaderMode = START_SHOOTER_FLYWHEEL);
   }
 
   public Command cmdShooterDisabled() {
-    return run(()->io.setShooterDisabled());
+    return runOnce(()->io.setShooterDisabled());
   }
 
   //-------------------------------------------Load Commands------------------------------------------
 
-  public Command loadFowardCmd() {
-    return runOnce(()->currentLoaderMode = 1);
+  public Command cmdShoot() {
+      return runOnce(()->currentLoaderMode = SHOOTING);
+  }
+
+  public Command cmdLoad(){
+    return runOnce(()->currentLoaderMode = LOAD_IN);
   }
   
   public Command loadBackward() {
-    return run(()->currentLoaderMode = 9);
+    return runOnce(()->currentLoaderMode = 9);
   }
   
   public Command loadDisabled() {
-    return run(()->currentLoaderMode = 8);
-  }
+    return runOnce(()->currentLoaderMode = 8);
 
-  public void updateLoadState(int newLoadState) {
-    currentLoaderMode = newLoadState;
   }
 
   //-------------------------------------------Servo Commands------------------------------------------
-  public Command setServoPowerExtend() {
-    return run(()->io.setServoPosition(1));
-  }
 
-  public Command setServoPowerRetract() {
-    return run(()->io.setServoPosition(0.0));
+  public Command setPosition(double position) {
+    System.out.println("aa");
+    return run(()->io.setServoPosition(position));
   }
-
 }

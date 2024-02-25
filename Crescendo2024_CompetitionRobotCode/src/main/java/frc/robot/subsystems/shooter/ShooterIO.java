@@ -47,5 +47,12 @@ public interface ShooterIO {
     
     public default void fineAdjustFwd() {}
 
-    public default void setServoPosition(double power) {}
+    public default void setServoPosition(double position) {}
+
+    public default void setServoRetract() {}
+    
+    public default void setServoAngle(double angle) {}
+    
+    public default void setServoSpeed(double speed) {}
+
 }

@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
+import frc.robot.Utils.FieldRelativeAccel;
+import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.Utils.GeometryUtils;
 import frc.robot.Utils.LocalADStarAK;
 import frc.robot.subsystems.vision.SubsystemCatzVision;;
@@ -58,6 +60,10 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // boolean for determining whether to use vision estimates in pose estimation
     private boolean isVisionEnabled = true;
+
+    private FieldRelativeSpeed m_fieldRelVel = new FieldRelativeSpeed();
+    private FieldRelativeSpeed m_lastFieldRelVel = new FieldRelativeSpeed();
+    private FieldRelativeAccel m_fieldRelAccel = new FieldRelativeAccel();
 
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
@@ -149,6 +155,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             m_poseEstimator.addVisionMeasurement(
                     vision.getVisionOdometry().get(i).getPose(),
                     vision.getVisionOdometry().get(i).getTimestamp());
+
         }
 
         //logging
@@ -158,6 +165,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Update SmartDashboard with the gyro angle
         SmartDashboard.putNumber("gyroAngle", getGyroAngle());
+        m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
+        m_fieldRelAccel = new FieldRelativeAccel(m_fieldRelVel, m_lastFieldRelVel, 0.02);
+        m_lastFieldRelVel = m_fieldRelVel;
     }
 
     public void driveRobotWithDescritizeDynamics(ChassisSpeeds chassisSpeeds) {
@@ -225,6 +235,13 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         }, this);
     }
 
+    public FieldRelativeSpeed getFieldRelativeSpeed() {
+        return m_fieldRelVel;
+      }
+    
+      public FieldRelativeAccel getFieldRelativeAccel() {
+        return m_fieldRelAccel;
+      }
     //----------------------------------------------Gyro methods----------------------------------------------
 
     public void flipGyro() {

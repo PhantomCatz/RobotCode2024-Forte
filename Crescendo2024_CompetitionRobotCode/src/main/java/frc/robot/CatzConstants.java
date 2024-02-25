@@ -249,6 +249,7 @@ public final class CatzConstants {
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
   public static final class ElevatorConstants {
+
     public static final double ELEVATOR_STOW_POSITION = 0.0;
     public static final double ELEVATOR_FULL_EXTEND   = -16.0;
     public static final double ElEVATOR_SCORE_AMP     = -8;
@@ -276,6 +277,7 @@ public final class CatzConstants {
     public static int SHOOTER_MTR_ID = 53;
     public static int TURRET_MTR_ID = 54;
     public static int ACCEPTABLE_VEL_ERROR = 20;
+
   }
   public static final class CatzMechanismConstants {
     public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 160, 0, 0);

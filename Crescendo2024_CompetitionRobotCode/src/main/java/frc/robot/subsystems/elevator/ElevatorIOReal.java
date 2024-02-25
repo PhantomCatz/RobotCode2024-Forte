@@ -59,7 +59,6 @@ public class ElevatorIOReal implements ElevatorIO {
         ElevatorMtrLT.setPosition(0);
         ElevatorMtrRT.setPosition(0);
 
-
         //check if elevator motor is initialized correctly
         ElevatorMtrLT.setControl(new Follower(ElevatorMtrRT.getDeviceID(), true));
         initializationStatus = ElevatorMtrRT.getConfigurator().apply(talonConfigs);
@@ -85,7 +84,6 @@ public class ElevatorIOReal implements ElevatorIO {
     @Override
     public void setElevatorPosition(double newPositionElevator) {
         ElevatorMtrRT.setControl(new MotionMagicDutyCycle(newPositionElevator)
-
         );
     }
 
@@ -98,4 +96,5 @@ public class ElevatorIOReal implements ElevatorIO {
     public void setSelectedSensorPosition(double setNewReadPosition) {
         ElevatorMtrRT.setPosition(setNewReadPosition);
     }
+
 }

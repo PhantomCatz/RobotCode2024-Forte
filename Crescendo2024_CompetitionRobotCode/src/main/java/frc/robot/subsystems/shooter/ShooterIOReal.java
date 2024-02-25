@@ -13,49 +13,64 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.CatzConstants.MtrConfigConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 
 public class ShooterIOReal implements ShooterIO {
 
-    //Shooter and Feed Motor 
-    //Configured from front robot facing perspective
+/*-----------------------------------------------------------------------------------------
+ * 
+ * Shooter Motors
+ * Configured from front robot facing perspective
+ * 
+ *-----------------------------------------------------------------------------------------*/
     private final TalonFX SHOOTER_MOTOR_RT;
     private final TalonFX SHOOTER_MOTOR_LT;
 
     private final int SHOOTER_MOTOR_LT_CAN_ID = 21;
     private final int SHOOTER_MOTOR_RT_CAN_ID = 20;
 
+/*-----------------------------------------------------------------------------------------
+ *
+ * Load Motors
+ * 
+ *---------------------------------------------------------------------------------------*/
     private final CANSparkMax LOAD_MOTOR;
-
     private final int LOAD_MOTOR_CAN_ID = 23;
 
-    private final DigitalInput LOAD_BEAM_BREAK   = new DigitalInput(1); 
-    private final DigitalInput ADJUST_BEAM_BREAK = new DigitalInput(0);
+    //Load motor speeds 
+    private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
+    private final double LOAD_MOTOR_LOADING_SPEED    = 0.5; //was 0.4
+    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.07;
+    private final double LOAD_MOTOR_FWD_ADJUST_SPEED = 0.07;
 
-    private Servo shooterLeftServo;
-    private Servo shooterRightServo;
+/*---------------------------------------------------------------------------------------
+ * Beam Breaks
+ *-------------------------------------------------------------------------------------*/
+    private final DigitalInput ADJUST_BEAM_BREAK   = new DigitalInput(0); //Swapped ids temporarily
+    private final DigitalInput LOAD_BEAM_BREAK = new DigitalInput(1);
 
-    private final int SERVO_LEFT_PWM_ID  = 1;
-    private final int SERVO_RIGHT_PWM_ID = 2;
+/*---------------------------------------------------------------------------------------
+ * Linear Servos
+ *-------------------------------------------------------------------------------------*/    
+    private Servo shooterServoLT;
+    private Servo shooterServoRT;
 
-    private final double FLYWHEEL_THRESHOLD_OFFSET = 3;
+    private final int SERVO_LEFT_PWM_ID  = 0;
+    private final int SERVO_RIGHT_PWM_ID = 1;
+
+    private final int SERVO_PW_US_MAX_POSITION          = 2000;
+    private final int SERVO_PW_US_MAX_DEADBAND_POSITION = 1800;
+    private final int SERVO_PW_US_CENTER_POSITION       = 1500;
+    private final int SERVO_PW_US_MIN_DEADBAND_POSITION = 1200;
+    private final int SERVO_PW_US_MIN_POSITION          = 1000;
+
+    private final double FLYWHEEL_THRESHOLD_OFFSET = 4;
 
     //Tunable motor velocities
     LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 85); // was 90
     LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 65); // was 70
-
-    LoggedTunableNumber servoLTPos = new LoggedTunableNumber("LTPosServo", 0);
-    LoggedTunableNumber servoRTPos = new LoggedTunableNumber("RTPosServo", 0);
-
-    //Load motor speeds 
-    private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
-    private final double LOAD_MOTOR_LOADING_SPEED    = 0.4; //was 0.4
-    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.07;
-    private final double LOAD_MOTOR_FWD_ADJUST_SPEED = 0.07;
-
 
     TalonFX[] shooterArray = new TalonFX[2];
 
@@ -64,15 +79,21 @@ public class ShooterIOReal implements ShooterIO {
     //Create new Talong FX config objects
     private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
     private Slot0Configs         pidConfigs   = new Slot0Configs();
-
-    
-
     
     public ShooterIOReal() {
         //Servo setup
-        shooterLeftServo = new Servo(SERVO_LEFT_PWM_ID);
-        shooterRightServo = new Servo(SERVO_RIGHT_PWM_ID);
-        
+        shooterServoLT = new Servo(SERVO_LEFT_PWM_ID);
+        shooterServoRT = new Servo(SERVO_RIGHT_PWM_ID);
+
+        shooterServoLT.setBoundsMicroseconds(SERVO_PW_US_MAX_POSITION,    SERVO_PW_US_MAX_DEADBAND_POSITION, 
+                                             SERVO_PW_US_CENTER_POSITION, SERVO_PW_US_MIN_DEADBAND_POSITION, 
+                                             SERVO_PW_US_MIN_POSITION);
+
+
+        shooterServoRT.setBoundsMicroseconds(SERVO_PW_US_MAX_POSITION,    SERVO_PW_US_MAX_DEADBAND_POSITION, 
+                                             SERVO_PW_US_CENTER_POSITION, SERVO_PW_US_MIN_DEADBAND_POSITION, 
+                                             SERVO_PW_US_MIN_POSITION);
+
         //Falcon Shooter Motor setup
         SHOOTER_MOTOR_LT = new TalonFX(SHOOTER_MOTOR_LT_CAN_ID);
         SHOOTER_MOTOR_RT = new TalonFX(SHOOTER_MOTOR_RT_CAN_ID);
@@ -82,7 +103,7 @@ public class ShooterIOReal implements ShooterIO {
         LOAD_MOTOR = new CANSparkMax(LOAD_MOTOR_CAN_ID, MotorType.kBrushless);
         LOAD_MOTOR.restoreFactoryDefaults();
         LOAD_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
-        LOAD_MOTOR.setIdleMode(IdleMode.kCoast);
+        LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.enableVoltageCompensation(12.0); //TBD is this the default value?
         
         //Create shooter mtr array for easier calls
@@ -90,6 +111,7 @@ public class ShooterIOReal implements ShooterIO {
         shooterArray[1] = SHOOTER_MOTOR_LT;
 
         
+
         //Reset to factory defaults
         SHOOTER_MOTOR_RT.getConfigurator().apply(new TalonFXConfiguration());
         SHOOTER_MOTOR_LT.getConfigurator().apply(new TalonFXConfiguration());
@@ -111,7 +133,6 @@ public class ShooterIOReal implements ShooterIO {
         pidConfigs.kI = 0.0;
         pidConfigs.kD = 0.0;
         pidConfigs.kV = 0.1189; //TBD 
-
 
         //Initialize motors and check if motors are initialized correctly
         for(int i=0;i<2;i++) {
@@ -145,8 +166,8 @@ public class ShooterIOReal implements ShooterIO {
         inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
         inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
 
-        inputs.servoLeft  = shooterLeftServo.get();
-        inputs.servoRight = shooterRightServo.get();
+        inputs.servoLeft  = shooterServoLT.get();
+        inputs.servoRight = shooterServoRT.get();
 
     }
 
@@ -171,51 +192,57 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void feedShooter() {
-        LOAD_MOTOR.setIdleMode(IdleMode.kCoast);
         LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
     }
     //Code that will be tested for double beambreaks
     @Override
     public void fineAdjustFwd() {
-        LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.set(-LOAD_MOTOR_FWD_ADJUST_SPEED);
     }
 
     @Override
     public void fineAdjustBck() {
-        LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.set(LOAD_MOTOR_BACKWARD_SPEED);
     }
 
     @Override
     public void loadNote() {
-        LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.set(-LOAD_MOTOR_LOADING_SPEED);
     }
 
     @Override
     public void loadDisabled() {
-        LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.set(0);
     }
     @Override
     public void loadBackward() {
-        LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.set(LOAD_MOTOR_BACKWARD_SPEED);
     }
 
   //--------------------------------------------Servo Methods----------------------------------------
 
   @Override
-  public void setServoPosition(double power) {
-    shooterLeftServo.set(power);
-    shooterRightServo.set(power);
+  public void setServoPosition(double position) {
+    System.out.println("P " +position);
+    shooterServoLT.set(position);
+    shooterServoRT.set(position);
   }
-
+  
+  @Override
+  public void setServoRetract() {
+      shooterServoLT.set(0);
+      shooterServoRT.set(0);
+  }   
+  
+  @Override
   public void setServoAngle(double angle) {
-    shooterLeftServo.setAngle(angle);
+    shooterServoLT.setAngle(angle);
+    shooterServoRT.setAngle(angle);
   } 
+
+  @Override
   public void setServoSpeed(double speed) {
-    shooterRightServo.setSpeed(-1);
+    shooterServoRT.setSpeed(speed);
+    shooterServoLT.setSpeed(speed);
   }
 }

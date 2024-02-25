@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.XboxController;
 */
 public class SubsystemCatzVision extends SubsystemBase {
 
-
     private static SubsystemCatzVision instance = null;
 
     //io block
@@ -64,7 +63,7 @@ public class SubsystemCatzVision extends SubsystemBase {
     static double aprilTagDistance;
 
     static double horizontalTargetOffset;
-
+  
     private int acceptableTagID;
     private boolean useSingleTag = false;
 
@@ -104,6 +103,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         for (int i = 0; i < inputs.length; i++) {
             // update and process new inputs[cameraNum] for camera
             cameras[i].updateInputs(inputs[i]);
+
             Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);               
 
             //checks for when to process vision
@@ -111,6 +111,7 @@ public class SubsystemCatzVision extends SubsystemBase {
                 inputs[i].isNewVisionPose && 
                 !DriverStation.isAutonomous() && 
                 inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
+
                 useSingleTag = false;
               
                 if (useSingleTag) {
@@ -133,7 +134,6 @@ public class SubsystemCatzVision extends SubsystemBase {
 
         //log data
         Logger.recordOutput("AprilTagID", primaryAprilTag);
-
         Logger.recordOutput("Vertical Degrees to Apriltag", inputs[0].ty);
         Logger.recordOutput("Distance to Apriltag", distanceToAprilTag);
         Logger.recordOutput("Distance to Wall", aprilTagDistanceToWall);
@@ -194,7 +194,6 @@ public class SubsystemCatzVision extends SubsystemBase {
         this.acceptableTagID = acceptableTagID;
     }
 
-
     public double getOffsetX(int cameraNum) {
         return inputs[cameraNum].tx;
     }
@@ -208,7 +207,6 @@ public class SubsystemCatzVision extends SubsystemBase {
     }
 
   
-
     //----------------------------------Calculation methods-------------------------------------------
 
     // public void limelightRangeFinder(int cameraNum) {

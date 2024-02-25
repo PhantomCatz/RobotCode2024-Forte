@@ -22,7 +22,6 @@ import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class CatzAutonomous {
-
     private static CatzAutonomous Instance;
     
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
@@ -52,6 +51,7 @@ public class CatzAutonomous {
     //configured dashboard
     public Command getCommand() {
         return pathChooser.get(); 
+
     }
 
     //-------------------------------------------Auton Paths--------------------------------------------
@@ -64,6 +64,7 @@ public class CatzAutonomous {
             Commands.waitSeconds(0.5),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-3"))
         );
+
     }
 
     private Command speaker4PieceWing(){
@@ -74,7 +75,6 @@ public class CatzAutonomous {
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW2")),
             Commands.waitSeconds(0.5),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW3"))
-
         );
     }
 

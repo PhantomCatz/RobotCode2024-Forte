@@ -4,7 +4,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
-import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
@@ -33,10 +32,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  */
  public class RobotContainer {
     //subsystems
-    private SubsystemCatzDrivetrain driveTrain; 
-    //private SubsystemCatzVision vision;
-    private SubsystemCatzIntake intake;
-    //private SubsystemCatzShooter shooter;
+    //private SubsystemCatzDrivetrain driveTrain; 
+    private SubsystemCatzVision vision;
+    //private SubsystemCatzIntake intake;
+    private SubsystemCatzShooter shooter;
     //private SubsystemCatzClimb climb;
     private SubsystemCatzElevator elevator;
 
@@ -52,9 +51,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     elevator = SubsystemCatzElevator.getInstance();
     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
     //vision     = SubsystemCatzVision.getInstance();
-    intake     = SubsystemCatzIntake.getInstance();
+    //intake     = SubsystemCatzIntake.getInstance();
 
-   // shooter    = SubsystemCatzShooter.getInstance();
+    shooter    = SubsystemCatzShooter.getInstance();
+    elevator = SubsystemCatzElevator.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
     
@@ -67,9 +67,19 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
      configureBindings();
    }
  
- 
-   private void configureBindings() {    
-     
+   
+   private void configureBindings() { 
+  
+  
+      xboxDrv.rightTrigger().onTrue(shooter.cmdShoot());    //shooter activation
+      xboxDrv.x().onTrue(shooter.cmdShooterEnabled());
+                 //.onFalse(shooter.cmdShooterDisabled());
+      xboxDrv.y().onTrue(shooter.loadDisabled());
+      xboxDrv.leftTrigger().onTrue(shooter.loadBackward());
+      xboxDrv.leftBumper().onTrue(shooter.setPosition(0.25));
+
+      xboxDrv.rightBumper().onTrue(shooter.cmdLoad());   
+
       xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
       xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
      
@@ -99,7 +109,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
       driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(), //tranlate X
                                                       ()-> xboxDrv.getLeftY(), //translate Y
                                                       ()-> xboxDrv.getRightX(), //rotation thetha
-                                                      ()-> xboxDrv.b().getAsBoolean())); //determine if chassis is field oriented or not
+                                                      ()-> xboxDrv.b().getAsBoolean())); //determine if chassis is field oriented or no
    }
 
    //autonomous collection

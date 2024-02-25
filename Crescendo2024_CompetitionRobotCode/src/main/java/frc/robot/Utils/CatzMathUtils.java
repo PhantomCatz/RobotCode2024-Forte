@@ -85,10 +85,11 @@ public class CatzMathUtils {
     {
         return DriveConstants.MAX_ANGSPEED_RAD_PER_SEC * rotAxis;
     }
-    }
+  }
 
     public static double toUnitCircAngle(double angleRadians) {
         double rotations = angleRadians / (2 * Math.PI);
         return (angleRadians - Math.round(rotations - 0.500) * Math.PI * 2.0);
       }
+
 }
