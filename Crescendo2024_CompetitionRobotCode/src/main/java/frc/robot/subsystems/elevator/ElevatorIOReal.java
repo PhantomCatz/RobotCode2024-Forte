@@ -79,6 +79,7 @@ public class ElevatorIOReal implements ElevatorIO {
 
         inputs.forwardSwitchTripped = m_forwardLimit.get();
         inputs.reverseSwitchTripped = m_reverseLimit.get();
+
     }
     
     @Override

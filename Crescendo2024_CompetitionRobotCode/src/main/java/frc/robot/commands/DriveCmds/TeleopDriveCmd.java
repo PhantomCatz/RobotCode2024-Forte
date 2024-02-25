@@ -10,40 +10,38 @@ import frc.robot.CatzConstants.OIConstants;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class TeleopDriveCmd extends Command {
-
+  //subystem declaration collection
   private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
-  Supplier<Double> supplierLeftJoyX;
-  Supplier<Double> supplierLeftJoyY;
-  Supplier<Double> supplierRightJoyX;
-  Supplier<Double> supplierPwrMode;
-  Supplier<Boolean> isFieldOrientedDisabled;
 
-  /** Creates a new TeleopDriveCmd. */
+  //
+  private Supplier<Double> m_supplierLeftJoyX;
+  private Supplier<Double> m_supplierLeftJoyY;
+  private Supplier<Double> m_supplierRightJoyX;
+  private Supplier<Boolean> m_isFieldOrientedDisabled;
+
   public TeleopDriveCmd(Supplier<Double> supplierLeftJoyX,
                         Supplier<Double> supplierLeftJoyY,
                         Supplier<Double> supplierRightJoyX,
-                        Supplier<Double> supplierPwrMode,
                         Supplier<Boolean> supplierFieldOriented) {
-    this.supplierLeftJoyX = supplierLeftJoyX;
-    this.supplierLeftJoyY = supplierLeftJoyY;
-    this.supplierRightJoyX = supplierRightJoyX;
-    this.supplierPwrMode = supplierPwrMode;
-    this.isFieldOrientedDisabled = supplierFieldOriented;
+    this.m_supplierLeftJoyX        = supplierLeftJoyX;
+    this.m_supplierLeftJoyY        = supplierLeftJoyY;
+    this.m_supplierRightJoyX       = supplierRightJoyX;
+    this.m_isFieldOrientedDisabled = supplierFieldOriented;
 
     addRequirements(m_driveTrain);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
-    double xSpeed = -supplierLeftJoyY.get();
-    double ySpeed = -supplierLeftJoyX.get(); //-for atlas
-    double turningSpeed = -supplierRightJoyX.get();
+
+    double xSpeed = -m_supplierLeftJoyY.get();
+    double ySpeed = -m_supplierLeftJoyX.get(); 
+    double turningSpeed = -m_supplierRightJoyX.get();
+
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
@@ -52,7 +50,7 @@ public class TeleopDriveCmd extends Command {
 
     //Construct desired chassis speeds
     ChassisSpeeds chassisSpeeds;
-    if (isFieldOrientedDisabled.get()) {
+    if (m_isFieldOrientedDisabled.get()) {
         // Relative to robot
         chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
     } else {

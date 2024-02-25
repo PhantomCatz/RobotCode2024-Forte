@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.CatzConstants;
-import frc.robot.CatzConstants.OIConstants;
 
 
 public class SubsystemCatzShooter extends SubsystemBase {

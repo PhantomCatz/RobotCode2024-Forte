@@ -20,6 +20,7 @@ import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 
+
 public class SubsystemCatzIntake extends SubsystemBase {
   //intake io block
   private final IntakeIO io;
@@ -261,7 +262,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
     currentIntakeState = IntakeState.SEMI_MANUAL;
     System.out.println("in semi manual");
-
   }
 
   //full manual

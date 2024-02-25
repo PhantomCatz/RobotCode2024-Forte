@@ -34,6 +34,7 @@ public class IntakeIOReal implements IntakeIO {
 
             //create new config objects
     private TalonFXConfiguration pivotTalonConfigs = new TalonFXConfiguration();
+
     private TalonFXConfiguration rollerTalonConfigs = new TalonFXConfiguration();
     private Slot0Configs pidConfigs = new Slot0Configs();
     private Slot1Configs rollerConfigs = new Slot1Configs();
@@ -47,6 +48,7 @@ public class IntakeIOReal implements IntakeIO {
         rollerMtr = new TalonFX(IntakeConstants.ROLLER_MTR_ID);
             //reset to factory defaults
         rollerMtr.getConfigurator().apply(new TalonFXConfiguration());
+
         pivotTalonConfigs.Slot0 = pidConfigs;
         pivotTalonConfigs.Slot1 = rollerConfigs;
             //current limit

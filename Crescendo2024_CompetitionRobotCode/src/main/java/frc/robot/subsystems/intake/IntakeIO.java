@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.AutoLog;
 public interface IntakeIO {
 
     @AutoLog
+
     public class IntakeIOInputs {
         public double pivotMtrRev;
         public double pivotMtrPercentOutput;
