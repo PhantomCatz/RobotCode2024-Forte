@@ -57,8 +57,6 @@ public class CatzSwerveModule {
         m_PID = new PIDController(kP, kI, kD);
 
         m_wheelOffset = offset;
-        this.DRIVE_MOTOR_ID = driveMotorID;
-
         resetDriveEncs();
 
     }
