@@ -12,7 +12,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.subsystems.vision.SubsystemCatzVision;
 /***
  * CatzConstants
  * @version 1.0
@@ -46,7 +45,6 @@ public final class CatzConstants {
   public static final int kDriverFieldOrientedButtonIdx = 1;
 
   public static final double kDeadband = 0.1;
-  public static final double kOffPwr = 0.1;
   }
 
   public static final class CatzMechanismConstants {
@@ -65,8 +63,7 @@ public final class CatzConstants {
   public static final class VisionConstants {
     public static final double LOWEST_DISTANCE = Units.feetToMeters(10.0);
     
-    public static final Transform3d LIMELIGHT_TURRET_OFFSET = new Transform3d(0.0, 0.0, 0.0, new Rotation3d()); //tbd need to understand how these classese work transform3d vs translation3d
-    public static final Transform3d LIMELIGHT_OFFSET = new Transform3d(0.0, 0.0, 0.0, new Rotation3d());
+    public static final Transform3d LIMELIGHT_OFFSET = new Transform3d(0.0, 0.0, 0.0, new Rotation3d()); //tbd need to understand how these classese work transform3d vs translation3d
   }
 
   public static final class TrajectoryConstants {
@@ -167,8 +164,8 @@ public final class CatzConstants {
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
   public static final class IntakeConstants {
-    public static int PIVOT_MTR_ID = 12;
-    public static int ROLLER_MTR_ID = 11;
+    public static int PIVOT_MTR_ID = 11;
+    public static int ROLLER_MTR_ID = 12;
   }
 
   //any type of Shooter Mtr Config Constnats/Logic Constants should go here 

@@ -7,6 +7,8 @@ public interface ShooterIO {
     public class ShooterIOInputs {
         public double shooterVelocityLT;
         public double shooterVelocityRT;
+        public double velocityThresholdLT;
+        public double velocityThresholdRT;
         public double shooterMotorVoltageLT;
         public double shooterMotorVoltageRT;
         public double shooterTorqueCurrentLT;
@@ -16,18 +18,22 @@ public interface ShooterIO {
         public double shooterVelocityErrorLT;
         public double shooterVelocityErrorRT;
 
-        public boolean isShooterFrontBeamBreakBroken;
-        public boolean isShooterBackBeamBreakBroken;
+        public boolean shooterAdjustBeamBreakState;
+        public boolean shooterLoadBeamBreakState;
 
-        public double LoadMotorPercentOutput; 
-        public double LoadMotorVelocity;
+        public double loadMotorPercentOutput; 
+        public double loadMotorVelocity;
+        public double loadMotorOutputCurrent;
+
+        public double servoLeft;
+        public double servoRight;
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}
 
-    public default void setFlywheelEnabled() {}
+    public default void setShooterEnabled() {}
 
-    public default void setFlywheelDisabled() {}
+    public default void setShooterDisabled() {}
 
     public default void loadBackward() {}
 
@@ -37,9 +43,15 @@ public interface ShooterIO {
 
     public default void loadNote() {}
 
-    public default void loadForward() {}
+    public default void feedShooter() {}
     
     public default void fineAdjustFwd() {}
 
-    public default void setServoPosition(double power) {}
+    public default void setServoPosition(double position) {}
+
+    public default void setServoRetract() {}
+    
+    public default void setServoAngle(double angle) {}
+    
+    public default void setServoSpeed(double speed) {}
 }
