@@ -95,7 +95,12 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
-                Rotation2d.fromDegrees(getGyroAngle()), getModulePositions(), new Pose2d());
+                Rotation2d.fromDegrees(getGyroAngle()), 
+                getModulePositions(), 
+                new Pose2d(), 
+                VecBuilder.fill(0.1, 0.1, 10),  //odometry standard devs
+                VecBuilder.fill(5, 5, 500)); //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
+
 
         
         //Configure logging trajectories to advantage kit
@@ -138,28 +143,15 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Update pose estimator with module encoder values + gyro
         m_poseEstimator.update(getRotation2d(), getModulePositions());
 
-
         // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop
-        // for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
-        //     //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less
-        //     m_poseEstimator.setVisionMeasurementStdDevs(
-        //         VecBuilder.fill(1,
-        //                         1,
-        //                         5)
-        //     );               
-        //     m_poseEstimator.addVisionMeasurement(
-        //             vision.getVisionOdometry().get(i).getPose(),
-        //             vision.getVisionOdometry().get(i).getTimestamp());
-        //             // VecBuilder.fill(
-        //             //         1,
-        //             //         1,
-        //             //         5)); //TBD test if increaseing or decrease affects vision estimates updates
-
-        // }
+        for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
+            m_poseEstimator.addVisionMeasurement(
+                    vision.getVisionOdometry().get(i).getPose(),
+                    vision.getVisionOdometry().get(i).getTimestamp());
+        }
 
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 
-        //Logger.recordOutput("Obometry/LimelightPose", vision.getVisionOdometry().get(0).getPose()); 
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
         // Logger.recordOutput("Obometry/pose", getPose());
 
