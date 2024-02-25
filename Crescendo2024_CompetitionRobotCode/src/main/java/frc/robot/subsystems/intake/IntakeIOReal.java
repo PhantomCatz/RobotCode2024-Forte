@@ -25,15 +25,13 @@ import frc.robot.Utils.LoggedTunableNumber;
 public class IntakeIOReal implements IntakeIO {
     
     private final DigitalInput IntakeBeamBreak = new DigitalInput(4);
-    //private final DigitalInput beamBreakFront = new DigitalInput(5);
-
-    private final double PIVOT_MTR_POS_OFFSET_IN_REV = 8.16;
 
     private final TalonFX pivotMtr;
     private final TalonFX rollerMtr;
 
-    private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
-    
+    private StatusCode pivotInitializationStatus = StatusCode.StatusCodeNotInitialized;
+    private StatusCode rollerInitializationStatus = StatusCode.StatusCodeNotInitialized;
+
             //create new config objects
     private TalonFXConfiguration pivotTalonConfigs = new TalonFXConfiguration();
     private TalonFXConfiguration rollerTalonConfigs = new TalonFXConfiguration();
@@ -63,20 +61,20 @@ public class IntakeIOReal implements IntakeIO {
         pidConfigs.kP = 5.0;
         pidConfigs.kI = 0.0;
         pidConfigs.kD = 0.0;
-        //pidConfigs.kV = 0.1189;
+
         rollerTalonConfigs = pivotTalonConfigs;
         rollerTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
         pivotMtr.setPosition(SubsystemCatzIntake.INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV);
 
         //check if wrist motor is initialized correctly
-        initializationStatus = pivotMtr.getConfigurator().apply(pivotTalonConfigs);
-            if(!initializationStatus.isOK())
+        pivotInitializationStatus = pivotMtr.getConfigurator().apply(pivotTalonConfigs);
+            if(!pivotInitializationStatus.isOK())
                 System.out.println("Failed to Configure CAN ID" + IntakeConstants.PIVOT_MTR_ID);
         //check if roller motor is initialized correctly
         for(int i=0;i<1;i++) {
-        initializationStatus = rollerMtr.getConfigurator().apply(rollerTalonConfigs);
-        if(!initializationStatus.isOK())
+        rollerInitializationStatus = rollerMtr.getConfigurator().apply(rollerTalonConfigs);
+        if(!rollerInitializationStatus.isOK())
             System.out.println("Failed to Configure CAN ID" + IntakeConstants.ROLLER_MTR_ID);
         }
     }

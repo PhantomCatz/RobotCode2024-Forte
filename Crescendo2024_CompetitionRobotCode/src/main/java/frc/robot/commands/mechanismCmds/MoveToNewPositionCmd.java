@@ -13,14 +13,16 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 
 public class MoveToNewPositionCmd extends Command {
   
-  SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
-  SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
-  SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
+  //subsystem declaration
+  private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
+  private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
+  private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
 
 
   private CatzMechanismPosition m_newPosition;
 
-  private int interationCounter = 0;
+  //logic variables
+  private int iterationCounter = 0;
 
   public MoveToNewPositionCmd(CatzMechanismPosition newPosition) {
     m_newPosition = newPosition;
@@ -36,8 +38,8 @@ public class MoveToNewPositionCmd extends Command {
 
   @Override
   public void execute() {
-      interationCounter++;
-    if(m_newPosition == CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF && interationCounter == 150) {
+      iterationCounter++;
+    if(m_newPosition == CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF && iterationCounter == 150) {
       intake.setRollerState(2);
       shooter.updateLoadState(1);
     }

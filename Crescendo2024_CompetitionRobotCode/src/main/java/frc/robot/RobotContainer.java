@@ -18,7 +18,7 @@ import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
-import frc.robot.commands.mechanismCmds.ManualIntakecmd;
+import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -79,21 +79,16 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  
   
    
-   private void configureBindings() {
-
-    
+   private void configureBindings() {    
     xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
     xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
     //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
     Trigger rollersOffBinding = xboxAux.leftBumper().and (xboxAux.rightBumper());
     rollersOffBinding.onTrue(intake.cmdRollerOff());
 
-
-    //xboxAux.leftBumper().onTrue(intake.setRollerOut()).onFalse(intake.setRollerDisabled());
-    //xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
-
-
-    xboxAux.leftStick().onTrue(new ManualIntakecmd(()->xboxAux.getLeftY()));
+    Trigger manualTrigger = new Trigger(()-> Math.abs(xboxAux.getLeftY()) > 0.1);
+    manualTrigger.onTrue(new ManualIntakeCmd(()->xboxAux.getLeftY()));
+    
     xboxAux.rightStick().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
 
 

@@ -10,14 +10,12 @@ public class CatzMechanismPosition {
     public double m_elevatorTargetEncPos;
     public double m_intakePivotTargetAngle;
     public double m_shooterTargetHorizontalAngle;
-    public double m_shooterTargetRPSPos;
     public double m_rollerState;
 
-    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetAngle, double shooterTargetHorizontalAngle, double shooterTargetRPSPos, int rollerState) {
+    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetAngle, double shooterTargetHorizontalAngle, int rollerState) {
         this.m_elevatorTargetEncPos = elevatorTargetEncPos;
         this.m_intakePivotTargetAngle = intakePivotTargetAngle;
         this.m_shooterTargetHorizontalAngle = shooterTargetHorizontalAngle;
-        this.m_shooterTargetRPSPos = shooterTargetRPSPos;
         this.m_rollerState = rollerState;
     }
 
@@ -27,10 +25,6 @@ public class CatzMechanismPosition {
 
     public double getIntakePivotTargetAngle() {
         return m_intakePivotTargetAngle;
-    }
-
-    public double getShooterTargetRPSPos() {
-        return m_shooterTargetRPSPos;
     }
 
     public double getshooterTargetHorizontalAngle() {

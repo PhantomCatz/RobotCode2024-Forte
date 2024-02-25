@@ -6,6 +6,8 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -17,6 +19,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
+import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.ElevatorConstants;
 import frc.robot.CatzConstants.MtrConfigConstants;
 
@@ -49,7 +52,7 @@ public class ElevatorIOReal implements ElevatorIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        elevatorConfigs.kP = 2.4; //TBD 
+        elevatorConfigs.kP = 0.9; //TBD 
         elevatorConfigs.kI = 0.0;
         elevatorConfigs.kD = 0.05;
 
@@ -62,7 +65,7 @@ public class ElevatorIOReal implements ElevatorIO {
         initializationStatus = ElevatorMtrRT.getConfigurator().apply(talonConfigs);
         initializationStatus = ElevatorMtrLT.getConfigurator().apply(talonConfigs);
         if(!initializationStatus.isOK())
-            System.out.println("Failed to Configure CAN ID" + 0);
+            System.out.println("Failed to Configure CAN ID" + CatzConstants.ElevatorConstants.ELEVATOR_RT_MTR_ID);
             
     }
 
@@ -80,9 +83,8 @@ public class ElevatorIOReal implements ElevatorIO {
     
     @Override
     public void setElevatorPosition(double newPositionElevator) {
-        ElevatorMtrRT.setControl(new PositionVoltage(newPositionElevator)
-            //.withLimitForwardMotion(m_forwardLimit.get())
-            //.withLimitReverseMotion(m_reverseLimit.get())
+        ElevatorMtrRT.setControl(new MotionMagicDutyCycle(newPositionElevator)
+
         );
     }
 

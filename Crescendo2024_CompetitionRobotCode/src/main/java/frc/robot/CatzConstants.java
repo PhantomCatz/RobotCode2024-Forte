@@ -48,19 +48,6 @@ public final class CatzConstants {
   public static final double kOffPwr = 0.1;
   }
 
-  public static final class CatzMechanismConstants {
-    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 160, 0, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 160,0,0, 1);
-    //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(0, -7, 0, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, -30, 0, 0, 0 );
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition(-8, 48,0,0, 0);
-    //public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
-    //public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
-    //public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition();
-
-  }
-
   public static final class VisionConstants {
     public static final double LOWEST_DISTANCE = Units.feetToMeters(10.0);
     
@@ -155,6 +142,10 @@ public final class CatzConstants {
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
   public static final class ElevatorConstants {
+    public static final double ELEVATOR_STOW_POSITION = 0.0;
+    public static final double ELEVATOR_FULL_EXTEND   = -16.0;
+    public static final double ElEVATOR_SCORE_AMP     = -8;
+
     public static int ELEVATOR_LT_MTR_ID = 51;
     public static int ELEVATOR_RT_MTR_ID = 50;
 
@@ -166,6 +157,9 @@ public final class CatzConstants {
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
   public static final class IntakeConstants {
+    public static final double INTAKE_GROUND_PICKUP = -30;
+    public static final double INTAKE_SCORE_AMP     = 48;
+    public static final double INTAKE_STOW          = 0.0;
     public static int PIVOT_MTR_ID = 12;
     public static int ROLLER_MTR_ID = 10;
   }
@@ -175,5 +169,17 @@ public final class CatzConstants {
     public static int SHOOTER_MTR_ID = 53;
     public static int TURRET_MTR_ID = 54;
     public static int ACCEPTABLE_VEL_ERROR = 20;
+  }
+  public static final class CatzMechanismConstants {
+    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 160, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 160,0, 1);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition(0,0,0,0);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(0, -7, 0,  0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, -30, 0, 0 );
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition(-8, 48,0, 0);
+    public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition(0,0,0,0);
+    public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition(0,0,0,0);
+    public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition(0,0,0,0);
+
   }
 }
