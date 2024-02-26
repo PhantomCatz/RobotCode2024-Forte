@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ElevatorIO {
     @AutoLog
-    public class ElevatorIOInputs {
+    public class ElevatorIOInputs{
         public double elevatorVoltage;
         public double elevatorVelocity;
         public double elevatorDutyCycle;
