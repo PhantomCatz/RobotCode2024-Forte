@@ -142,9 +142,9 @@ public final class CatzConstants {
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
   public static final class ElevatorConstants {
-    public static final double ELEVATOR_STOW_POSITION = 0.0;
-    public static final double ELEVATOR_FULL_EXTEND   = -16.0;
-    public static final double ElEVATOR_SCORE_AMP     = -8;
+    public static final double ELEVATOR_POS_STOW_POSITION = 0.0;
+    public static final double ELEVATOR_POS_FULL_EXTEND   = -16.0;
+    public static final double ElEVATOR_POS_SCORE_AMP     = -8;
 
     public static int ELEVATOR_LT_MTR_ID = 51;
     public static int ELEVATOR_RT_MTR_ID = 50;
@@ -176,10 +176,21 @@ public final class CatzConstants {
     public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition(0,0,0,0);
     public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(0, 0, 0,  0);
     public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, IntakeConstants.INTAKE_GROUND_PICKUP, 0, 0 );
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition(-8, 48,0, 0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition(ElevatorConstants.ElEVATOR_POS_SCORE_AMP, 48,0, 0);
     public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition(0,0,0,0);
     public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition(0,0,0,0);
     public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition(0,0,0,0);
-
+    public static final CatzMechanismPosition AUTO_ALIGN_WITH_SPEAKER = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, 
+                                                                                                  IntakeConstants.INTAKE_STOW, 0, 0);
   }
+
+    public static ManipulatorMode currentManipulatorMode = ManipulatorMode.ALL;
+    public static enum ManipulatorMode {
+      SPEAKER,
+      AMP,
+      CLIMB,
+      HOARD,
+      ALL
+    }
+  
 }

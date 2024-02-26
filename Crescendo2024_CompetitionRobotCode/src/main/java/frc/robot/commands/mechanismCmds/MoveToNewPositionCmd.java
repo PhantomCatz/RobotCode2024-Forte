@@ -6,6 +6,8 @@ package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.CatzMechanismConstants;
+import frc.robot.CatzConstants.ManipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -20,18 +22,19 @@ public class MoveToNewPositionCmd extends Command {
 
 
   private CatzMechanismPosition m_newPosition;
+  private ManipulatorMode       m_manipulatorMode;
 
   //logic variables
   private int iterationCounter = 0;
 
-  public MoveToNewPositionCmd(CatzMechanismPosition newPosition) {
+  public MoveToNewPositionCmd(CatzMechanismPosition newPosition, ManipulatorMode newManipulatorMode) {
+    m_manipulatorMode = newManipulatorMode;
     m_newPosition = newPosition;
-    addRequirements(intake);
+    addRequirements(intake, elevator);
   }
 
   @Override
   public void initialize() {
-    System.out.println("new mechanism set cmd");
     intake.updateIntakeTargetPosition(m_newPosition.getIntakePivotTargetAngle());
     elevator.updateElevatorTargetRev(m_newPosition.getElevatorTargetRev());
   }
@@ -39,9 +42,13 @@ public class MoveToNewPositionCmd extends Command {
   @Override
   public void execute() {
       iterationCounter++;
-    if(m_newPosition == CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF && iterationCounter == 150) {
+    if(m_newPosition == CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF && iterationCounter == 100) {
       intake.setRollerState(2);
       shooter.updateLoadState(1);
+    }
+
+    if(m_newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF && iterationCounter == 200) {
+      intake.setRollerState(0);
     }
   }
 
