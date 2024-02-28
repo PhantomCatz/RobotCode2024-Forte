@@ -156,7 +156,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static enum IntakeState {
     AUTO,
     SEMI_MANUAL,
-    FULL_MANUAL
+    FULL_MANUAL,
+    WAITING
   }
 
   @Override
@@ -193,7 +194,12 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // ----------------------------------------------------------------------------------
       // IntakePivot
       // ----------------------------------------------------------------------------------
-      if ((currentIntakeState == IntakeState.AUTO || 
+      if(currentIntakeState == IntakeState.WAITING){
+        if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < 10) {
+          currentIntakeState = IntakeState.AUTO;
+        }
+
+      } else if ((currentIntakeState == IntakeState.AUTO || 
            currentIntakeState == IntakeState.SEMI_MANUAL) && 
            m_targetPositionDeg != NULL_INTAKE_POSITION) { 
 
@@ -231,7 +237,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
         // }
         io.setIntakePivotVoltage(m_finalVolts);
         
-
       } else { //we are current setting pwr through manual
         io.setIntakePivotVoltage(kgtunning.get());
       }
@@ -251,8 +256,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //-------------------------------------Pivot methods--------------------------------
   //auto update intake angle
-  public void updateIntakeTargetPosition(double intakeTargetAngle) {
-    this.m_targetPositionDeg = intakeTargetAngle;
+  public void updateIntakeTargetPosition(CatzMechanismPosition targetPosition) {
+
+    this.m_targetPositionDeg = targetPosition.getIntakePivotTargetAngle();
 
     currentIntakeState = IntakeState.AUTO;
   }

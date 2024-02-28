@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.ManipulatorMode;
+import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -24,6 +25,13 @@ public class MoveToNewPositionCmd extends Command {
   private CatzMechanismPosition m_newPosition;
   private ManipulatorMode       m_manipulatorMode;
 
+  private WaitState currentWaitState;
+  private enum WaitState {
+    WAIT_FOR_INTAKE,
+    WAIT_FOR_ELEVATOR,
+    NOT_WAITING
+  }
+
   //logic variables
   private static int iterationCounter = 0;
 
@@ -36,13 +44,20 @@ public class MoveToNewPositionCmd extends Command {
   @Override
   public void initialize() {
     iterationCounter = 0;
-    intake.updateIntakeTargetPosition(m_newPosition.getIntakePivotTargetAngle());
-    elevator.updateElevatorTargetRev(m_newPosition.getElevatorTargetRev());
+
+
+    intake.updateIntakeTargetPosition(m_newPosition);
+    elevator.updateElevatorTargetRev(m_newPosition);
+
   }
 
   
   @Override
   public void execute() {
+
+
+
+
       iterationCounter++;
     if(m_newPosition == CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF && iterationCounter == 100) {
       intake.setRollerState(2);

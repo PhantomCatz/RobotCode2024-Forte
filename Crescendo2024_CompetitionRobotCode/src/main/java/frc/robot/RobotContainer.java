@@ -84,6 +84,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   
    
    private void configureBindings() {    
+    
     xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
     xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
     //trigger object to store both buttons. If both buttons aren't pressed, stop rollers

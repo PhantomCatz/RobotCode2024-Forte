@@ -7,6 +7,7 @@ package frc.robot.subsystems.elevator;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,14 +37,18 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
 
   //elevator variables
-  private double m_newPositionRev;
-  private double m_elevatorPercentOutput;
-  private double finalffVolts;
-  private double elevatorVelocityMTRRPS;
-  private double currentRotations;
-  private double previousRotations;
+  private double m_newPositionRev = 0.0;
+  private double m_elevatorPercentOutput = 0.0;
+  private double finalffVolts = 0.0;
+  private double finalPIDVolts = 0.0;
+  private double finalVoltage = 0.0;
+  private double elevatorVelocityMTRRPS = 0.0;
+  private double currentRotations = 0.0;
+  private double previousRotations = 0.0;
 
   private ElevatorFeedforward elevatorFeedforward;
+  private PIDController elevatorPID;
+  private CatzMechanismPosition m_targetPosition;
 
   LoggedTunableNumber kgElevatorTunning = new LoggedTunableNumber("kgElevatorTunning", 0.0);
 
@@ -51,6 +56,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private static enum ElevatorState {
     AUTO,
     FULL_MANUAL,
+    WAITING,
     SEMI_MANUAL
   }
 
@@ -70,7 +76,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
       break;
     }
 
-    elevatorFeedforward = new ElevatorFeedforward(0.0, 0.0, 0.0);
+    elevatorFeedforward = new ElevatorFeedforward(0.0, 0.220, 0.0);
+    elevatorPID         = new PIDController(0.6, 0.0, 0.0);
   }
 
   // Get the singleton instance of the elevator Subsystem
@@ -90,13 +97,20 @@ public class SubsystemCatzElevator extends SubsystemBase {
     }
     else {
 
-      if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
-          (currentElevatorState == ElevatorState.AUTO  ||
-          currentElevatorState == ElevatorState.SEMI_MANUAL)) {
-            io.setElevatorPosition(m_newPositionRev);
-        //io.setElevatorVoltage(kgElevatorTunning.get());
-          }
-      else {
+      if(currentElevatorState == ElevatorState.WAITING) {
+          if(SubsystemCatzIntake.getInstance().getWristAngle() < 60) {
+            currentElevatorState = ElevatorState.AUTO;
+          } 
+      } else if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
+                (currentElevatorState == ElevatorState.AUTO  ||
+                currentElevatorState == ElevatorState.SEMI_MANUAL)) {
+            
+            finalffVolts = elevatorFeedforward.calculate(0.0);
+            finalPIDVolts = elevatorPID.calculate(inputs.elevatorPosRev, m_newPositionRev);
+            finalVoltage = finalPIDVolts + finalffVolts;
+            io.setElevatorVoltage(finalVoltage);
+
+      } else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
 
       }
@@ -106,9 +120,17 @@ public class SubsystemCatzElevator extends SubsystemBase {
     Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
   }
 
-  public void updateElevatorTargetRev(double targetPos) {
-    currentElevatorState = ElevatorState.AUTO;
-    m_newPositionRev = targetPos;
+  public void updateElevatorTargetRev(CatzMechanismPosition targetPosition) {
+    m_targetPosition = targetPosition;
+    //set new target position for elevator
+      m_newPositionRev = targetPosition.getElevatorTargetRev();
+
+    //checks the package for if the intake is trying to get into a position that may collide with the elevator
+    if(targetPosition.getIntakePivotTargetAngle() > 60) {
+      currentElevatorState = ElevatorState.WAITING;
+    } else {
+      currentElevatorState = ElevatorState.AUTO;
+    }
   }
 
   public void setElevatorSemiManualPwr(double output) {

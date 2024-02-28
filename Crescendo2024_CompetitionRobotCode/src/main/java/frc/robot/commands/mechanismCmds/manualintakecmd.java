@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 
 public class ManualIntakeCmd extends Command {
@@ -23,16 +24,7 @@ public class ManualIntakeCmd extends Command {
 
   @Override
   public void execute() {
-    if(supplierLeftJoyY.get() > 0.1) {
-      System.out.println("going to 10");
-      intake.updateIntakeTargetPosition(10);
-    } else if (supplierLeftJoyY.get() < -0.1) {
-      intake.updateIntakeTargetPosition(-10);
-      System.out.println("going to -10");
 
-    } else {
-      intake.updateIntakeTargetPosition(0);
-    }
   }
 
   @Override

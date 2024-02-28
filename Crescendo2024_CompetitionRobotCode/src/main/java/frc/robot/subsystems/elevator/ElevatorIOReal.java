@@ -55,7 +55,7 @@ public class ElevatorIOReal implements ElevatorIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        elevatorConfigs.kP = 0.9; //TBD 
+        elevatorConfigs.kP = 0.0; //TBD 
         elevatorConfigs.kI = 0.0;
         elevatorConfigs.kD = 0.00;
         elevatorConfigs.kS = 0.00;
