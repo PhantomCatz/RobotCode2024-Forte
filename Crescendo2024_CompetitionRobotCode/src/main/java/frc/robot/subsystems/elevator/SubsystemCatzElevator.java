@@ -6,6 +6,7 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,6 +14,7 @@ import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.ElevatorConstants;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.ElevatorIOInputsAutoLogged;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -36,6 +38,14 @@ public class SubsystemCatzElevator extends SubsystemBase {
   //elevator variables
   private double m_newPositionRev;
   private double m_elevatorPercentOutput;
+  private double finalffVolts;
+  private double elevatorVelocityMTRRPS;
+  private double currentRotations;
+  private double previousRotations;
+
+  private ElevatorFeedforward elevatorFeedforward;
+
+  LoggedTunableNumber kgElevatorTunning = new LoggedTunableNumber("kgElevatorTunning", 0.0);
 
   private static ElevatorState currentElevatorState;
   private static enum ElevatorState {
@@ -59,6 +69,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
                System.out.println("Elevator Unconfigured");
       break;
     }
+
+    elevatorFeedforward = new ElevatorFeedforward(0.0, 0.0, 0.0);
   }
 
   // Get the singleton instance of the elevator Subsystem
@@ -70,21 +82,28 @@ public class SubsystemCatzElevator extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator/inputs", inputs);
-    if(DriverStation.isDisabled() && 
-       SubsystemCatzIntake.getInstance().getWristAngle() > 60) {
+
+    elevatorVelocityMTRRPS = (currentRotations - previousRotations)/0.02;
+
+    if(DriverStation.isDisabled()) {
       io.setElevatorPercentOutput(0);
     }
     else {
+
       if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
-          currentElevatorState == ElevatorState.AUTO  &&
-          currentElevatorState == ElevatorState.SEMI_MANUAL) {
-        io.setElevatorPosition(m_newPositionRev);
+          (currentElevatorState == ElevatorState.AUTO  ||
+          currentElevatorState == ElevatorState.SEMI_MANUAL)) {
+            io.setElevatorPosition(m_newPositionRev);
+        //io.setElevatorVoltage(kgElevatorTunning.get());
           }
       else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
+
       }
     }
 
+    Logger.recordOutput("elevator/targetRev", m_newPositionRev);
+    Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
   }
 
   public void updateElevatorTargetRev(double targetPos) {

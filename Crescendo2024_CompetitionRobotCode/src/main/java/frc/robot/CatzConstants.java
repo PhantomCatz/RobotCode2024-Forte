@@ -144,10 +144,10 @@ public final class CatzConstants {
   public static final class ElevatorConstants {
     public static final double ELEVATOR_POS_STOW_POSITION = 0.0;
     public static final double ELEVATOR_POS_FULL_EXTEND   = -16.0;
-    public static final double ElEVATOR_POS_SCORE_AMP     = -8;
+    public static final double ElEVATOR_POS_SCORE_AMP     = 8;
 
-    public static int ELEVATOR_LT_MTR_ID = 51;
-    public static int ELEVATOR_RT_MTR_ID = 50;
+    public static int ELEVATOR_LT_MTR_ID = 50; //TBD ids are swapped for testing change back to 51
+    public static int ELEVATOR_RT_MTR_ID = 51;
 
     public static double REV_SWITCH_POS = 0.0; //dummy
     public static double FWD_SWITCH_POS = 5.0; //dummy
@@ -157,7 +157,7 @@ public final class CatzConstants {
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
   public static final class IntakeConstants {
-    public static final double INTAKE_GROUND_PICKUP = -25.5;
+    public static final double INTAKE_GROUND_PICKUP = -30.0;
     public static final double INTAKE_SCORE_AMP     = 48;
     public static final double INTAKE_STOW          = 0.0;
     public static int PIVOT_MTR_ID = 12;
@@ -172,7 +172,7 @@ public final class CatzConstants {
   }
   public static final class CatzMechanismConstants {
     public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 160, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 160,0, 1);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 155,0, 1);
     public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition(0,0,0,0);
     public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(0, 0, 0,  0);
     public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, IntakeConstants.INTAKE_GROUND_PICKUP, 0, 0 );

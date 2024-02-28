@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -10,7 +11,9 @@ import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -29,8 +32,8 @@ public class ElevatorIOReal implements ElevatorIO {
     private Slot0Configs elevatorConfigs = new Slot0Configs();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
-    private DigitalInput m_forwardLimit = new DigitalInput(10);
-    private DigitalInput m_reverseLimit = new DigitalInput(11);//TBD not set
+    private DigitalInput m_forwardLimit = new DigitalInput(11); 
+    private DigitalInput m_reverseLimit = new DigitalInput(10);//TBD not set
 
     private final TalonFX ElevatorMtrRT;
     private final TalonFX ElevatorMtrLT;
@@ -54,7 +57,11 @@ public class ElevatorIOReal implements ElevatorIO {
             //pid
         elevatorConfigs.kP = 0.9; //TBD 
         elevatorConfigs.kI = 0.0;
-        elevatorConfigs.kD = 0.05;
+        elevatorConfigs.kD = 0.00;
+        elevatorConfigs.kS = 0.00;
+        elevatorConfigs.kG = 0.0;
+
+        elevatorConfigs.GravityType = GravityTypeValue.Elevator_Static;
 
         ElevatorMtrLT.setPosition(0);
         ElevatorMtrRT.setPosition(0);
@@ -76,6 +83,7 @@ public class ElevatorIOReal implements ElevatorIO {
         inputs.elevatorTorqueCurrent = ElevatorMtrRT.getTorqueCurrent().getValue();
         inputs.elevatorVelocity = ElevatorMtrRT.getVelocity().getValue();
         inputs.elevatorPosRev = ElevatorMtrRT.getPosition().getValue();
+        inputs.elevatorPositionError = ElevatorMtrRT.getClosedLoopError().getValue();
 
         inputs.forwardSwitchTripped = m_forwardLimit.get();
         inputs.reverseSwitchTripped = m_reverseLimit.get();
@@ -83,9 +91,14 @@ public class ElevatorIOReal implements ElevatorIO {
     
     @Override
     public void setElevatorPosition(double newPositionElevator) {
-        ElevatorMtrRT.setControl(new MotionMagicDutyCycle(newPositionElevator)
+        ElevatorMtrRT.setControl(new PositionVoltage(newPositionElevator)
 
         );
+    }
+
+    @Override
+    public void setElevatorVoltage(double volts) {
+        ElevatorMtrRT.setControl(new VoltageOut(volts));
     }
 
     @Override

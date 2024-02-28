@@ -29,55 +29,56 @@ public class IntakeIOReal implements IntakeIO {
     private final TalonFX pivotMtr;
     private final TalonFX rollerMtr;
 
-    private StatusCode pivotInitializationStatus = StatusCode.StatusCodeNotInitialized;
+    private StatusCode pivotInitializationStatus  = StatusCode.StatusCodeNotInitialized;
     private StatusCode rollerInitializationStatus = StatusCode.StatusCodeNotInitialized;
 
             //create new config objects
-    private TalonFXConfiguration pivotTalonConfigs = new TalonFXConfiguration();
-    private TalonFXConfiguration rollerTalonConfigs = new TalonFXConfiguration();
-    private Slot0Configs pidConfigs = new Slot0Configs();
-    private Slot1Configs rollerConfigs = new Slot1Configs();
+    private TalonFXConfiguration talonConfigsPivot  = new TalonFXConfiguration();
+    private TalonFXConfiguration talonConfigsRoller = new TalonFXConfiguration();
+
 
     public IntakeIOReal() {
-                //Wrist Motor setup
+        /************************************************************************************************************************
+        * pivot
+        ************************************************************************************************************************/
         pivotMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID);
-            //reset to factory defaults
-        pivotMtr.getConfigurator().apply(new TalonFXConfiguration());
-                //Wrist Motor setup
-        rollerMtr = new TalonFX(IntakeConstants.ROLLER_MTR_ID);
-            //reset to factory defaults
-        rollerMtr.getConfigurator().apply(new TalonFXConfiguration());
-        pivotTalonConfigs.Slot0 = pidConfigs;
-        pivotTalonConfigs.Slot1 = rollerConfigs;
+        pivotMtr.getConfigurator().apply(new TalonFXConfiguration()); //reset to factory defaults
+
             //current limit
-        pivotTalonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        pivotTalonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT;
-        pivotTalonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
-        pivotTalonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
-        pivotTalonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
-            //neutral mode
-        pivotTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        talonConfigsPivot.CurrentLimits = new CurrentLimitsConfigs();
+        talonConfigsPivot.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT; //TBD make these are apart of the the real class
+        talonConfigsPivot.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;  //TBD change to kraken
+        talonConfigsPivot.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
+        talonConfigsPivot.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
 
-        pidConfigs.kP = 5.0;
-        pidConfigs.kI = 0.0;
-        pidConfigs.kD = 0.0;
-
-        rollerTalonConfigs = pivotTalonConfigs;
-        rollerTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-
-        pivotMtr.setPosition(SubsystemCatzIntake.INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV);
+        talonConfigsPivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        
+        pivotMtr.setPosition(0.0);//SubsystemCatzIntake.INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV);
 
         //check if wrist motor is initialized correctly
-        pivotInitializationStatus = pivotMtr.getConfigurator().apply(pivotTalonConfigs);
-            if(!pivotInitializationStatus.isOK())
-                System.out.println("Failed to Configure CAN ID" + IntakeConstants.PIVOT_MTR_ID);
+        pivotInitializationStatus = pivotMtr.getConfigurator().apply(talonConfigsPivot);
+        if(!pivotInitializationStatus.isOK()) {
+            System.out.println("Failed to Configure Pivot Mtr Controller CAN ID" + IntakeConstants.PIVOT_MTR_ID);
+        }
+
+        /************************************************************************************************************************
+        * roller
+        ************************************************************************************************************************/
+        rollerMtr = new TalonFX(IntakeConstants.ROLLER_MTR_ID);
+        rollerMtr.getConfigurator().apply(new TalonFXConfiguration());  //reset to factory defaults
+
+        talonConfigsRoller = talonConfigsPivot;
+        talonConfigsRoller.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+
         //check if roller motor is initialized correctly
-        for(int i=0;i<1;i++) {
-        rollerInitializationStatus = rollerMtr.getConfigurator().apply(rollerTalonConfigs);
-        if(!rollerInitializationStatus.isOK())
-            System.out.println("Failed to Configure CAN ID" + IntakeConstants.ROLLER_MTR_ID);
+        rollerInitializationStatus = rollerMtr.getConfigurator().apply(talonConfigsRoller);
+        if(!rollerInitializationStatus.isOK()) {
+            System.out.println("Failed to Configure Roller Mtr Controller CAN ID" + IntakeConstants.ROLLER_MTR_ID);
         }
     }
+
+
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();

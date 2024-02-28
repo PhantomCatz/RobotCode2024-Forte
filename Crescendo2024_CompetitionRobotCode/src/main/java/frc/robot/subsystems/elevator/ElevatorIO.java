@@ -10,6 +10,7 @@ public interface ElevatorIO {
         public double elevatorDutyCycle;
         public double elevatorTorqueCurrent;
         public double elevatorPosRev;
+        public double elevatorPositionError;
         public boolean forwardSwitchTripped;
         public boolean reverseSwitchTripped;
     }
@@ -21,4 +22,7 @@ public interface ElevatorIO {
     public default void setElevatorPercentOutput(double speed) {}
 
     public default void setSelectedSensorPosition(double pos) {}
+
+    public default void setElevatorVoltage(double volts) {}
+
 }

@@ -25,7 +25,7 @@ public class MoveToNewPositionCmd extends Command {
   private ManipulatorMode       m_manipulatorMode;
 
   //logic variables
-  private int iterationCounter = 0;
+  private static int iterationCounter = 0;
 
   public MoveToNewPositionCmd(CatzMechanismPosition newPosition, ManipulatorMode newManipulatorMode) {
     m_manipulatorMode = newManipulatorMode;
@@ -35,10 +35,12 @@ public class MoveToNewPositionCmd extends Command {
 
   @Override
   public void initialize() {
+    iterationCounter = 0;
     intake.updateIntakeTargetPosition(m_newPosition.getIntakePivotTargetAngle());
     elevator.updateElevatorTargetRev(m_newPosition.getElevatorTargetRev());
   }
 
+  
   @Override
   public void execute() {
       iterationCounter++;
