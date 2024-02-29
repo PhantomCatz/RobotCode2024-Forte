@@ -32,6 +32,11 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private static final double ELEVATOR_NULL_POSITION = -999.0;
 
   private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
+  private static final double ERROR_ELEVATOR_THRESHOLD_REV = 0.1; // TODO dummy value
+
+  private final int NUM_CONSEC_THRESHOLD = 5;
+  private double m_numConsectSamples = 0;
+  private boolean m_elevatorInPosition = false;
 
   //elevator variables
   private double m_newPositionRev;
@@ -78,7 +83,17 @@ public class SubsystemCatzElevator extends SubsystemBase {
       if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
           currentElevatorState == ElevatorState.AUTO  &&
           currentElevatorState == ElevatorState.SEMI_MANUAL) {
-        io.setElevatorPosition(m_newPositionRev);
+
+            if (io.getElevatorError() <= ERROR_ELEVATOR_THRESHOLD_REV){
+              m_numConsectSamples++;
+            } else {
+              m_numConsectSamples = 0;
+            }
+            if(m_numConsectSamples >= NUM_CONSEC_THRESHOLD){
+              m_elevatorInPosition = true;
+            }
+
+            io.setElevatorPosition(m_newPositionRev);
           }
       else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
@@ -86,7 +101,12 @@ public class SubsystemCatzElevator extends SubsystemBase {
     }
   }
 
+  public boolean inPosition(){
+    return m_elevatorInPosition;
+  }
+
   public void updateElevatorTargetRev(double targetPos) {
+    m_elevatorInPosition = false;
     currentElevatorState = ElevatorState.AUTO;
     m_newPositionRev = targetPos;
   }

@@ -83,8 +83,7 @@ public class ElevatorIOReal implements ElevatorIO {
     
     @Override
     public void setElevatorPosition(double newPositionElevator) {
-        ElevatorMtrRT.setControl(new MotionMagicDutyCycle(newPositionElevator)
-        );
+        ElevatorMtrRT.setControl(new MotionMagicDutyCycle(newPositionElevator));
     }
 
     @Override
@@ -97,4 +96,7 @@ public class ElevatorIOReal implements ElevatorIO {
         ElevatorMtrRT.setPosition(setNewReadPosition);
     }
 
+    public double getElevatorError(){
+        return ElevatorMtrRT.getClosedLoopError().getValue();
+    }
 }

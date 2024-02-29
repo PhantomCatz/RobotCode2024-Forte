@@ -164,6 +164,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
     Logger.recordOutput("current load state", currentLoaderMode);
   }
 
+  public boolean isLoaded(){
+    return inputs.shooterLoadBeamBreakState == BEAM_IS_BROKEN;
+  }
+
   //-------------------------------------------Flywheel Commands------------------------------------------
 
   public Command cmdShooterEnabled() {

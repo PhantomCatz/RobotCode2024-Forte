@@ -7,9 +7,6 @@ package frc.robot.commands.mechanismCmds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.CatzConstants.ManipulatorMode;
-import frc.robot.Robot.manipulatorMode;
-import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
@@ -21,16 +18,8 @@ public class MoveToNewPositionCmd extends Command {
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
 
-
-  private CatzMechanismPosition m_newPosition;
-  private ManipulatorMode       m_manipulatorMode;
-
-  private WaitState currentWaitState;
-  private enum WaitState {
-    WAIT_FOR_INTAKE,
-    WAIT_FOR_ELEVATOR,
-    NOT_WAITING
-  }
+  //logic variables
+  private Timer timer = new Timer();
 
   public MoveToNewPositionCmd(CatzMechanismPosition newPosition, ManipulatorMode newManipulatorMode) {
     m_manipulatorMode = newManipulatorMode;
@@ -40,19 +29,20 @@ public class MoveToNewPositionCmd extends Command {
 
   @Override
   public void initialize() {
-    intake.updateTargetPosition(m_newPosition);
-    elevator.updateTargetPosition(m_newPosition);
+    intake.setRollerState(2);
+    shooter.updateLoadState(1);
   }
 
-  
   @Override
   public void execute() {}
 
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    intake.setRollerState(0);
+  }
 
   @Override
   public boolean isFinished() {
-    return intake.inPosition() && elevator.inPosition();
+    return shooter.isLoaded();
   }
 }

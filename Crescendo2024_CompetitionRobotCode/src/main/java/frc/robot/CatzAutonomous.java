@@ -55,6 +55,15 @@ public class CatzAutonomous {
     }
 
     //-------------------------------------------Auton Paths--------------------------------------------
+    private Command driveStraightPickup(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
+            new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND),
+            new HandoffCmd()
+        )
+    }
+
     private Command bulldozerAuto() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
