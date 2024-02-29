@@ -41,9 +41,9 @@ public class ShooterIOReal implements ShooterIO {
 
     //Load motor speeds 
     private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
-    private final double LOAD_MOTOR_LOADING_SPEED    = 0.5; //was 0.4
-    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.07;
-    private final double LOAD_MOTOR_FWD_ADJUST_SPEED = 0.07;
+    private final double LOAD_MOTOR_LOADING_SPEED    = 0.45; //was 0.4
+    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.4;
+    private final double LOAD_MOTOR_ADJUST_SPEED = 0.1;
 
 /*---------------------------------------------------------------------------------------
  * Beam Breaks
@@ -69,8 +69,8 @@ public class ShooterIOReal implements ShooterIO {
     private final double FLYWHEEL_THRESHOLD_OFFSET = 4;
 
     //Tunable motor velocities
-    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 85); // was 90
-    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 65); // was 70
+    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 65); // was 65
+    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 85); // was 85
 
     TalonFX[] shooterArray = new TalonFX[2];
 
@@ -197,7 +197,7 @@ public class ShooterIOReal implements ShooterIO {
     //Code that will be tested for double beambreaks
     @Override
     public void fineAdjustFwd() {
-        LOAD_MOTOR.set(-LOAD_MOTOR_FWD_ADJUST_SPEED);
+        LOAD_MOTOR.set(-LOAD_MOTOR_ADJUST_SPEED);
     }
 
     @Override
@@ -223,7 +223,6 @@ public class ShooterIOReal implements ShooterIO {
 
   @Override
   public void setServoPosition(double position) {
-    System.out.println("P " +position);
     shooterServoLT.set(position);
     shooterServoRT.set(position);
   }

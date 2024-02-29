@@ -1,18 +1,15 @@
 package frc.robot;
 
+
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.AutoAlignCmd;
@@ -21,7 +18,6 @@ import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
-import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
@@ -193,7 +189,17 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
     
-   }
+    xboxDrv.rightTrigger().onTrue(shooter.cmdShoot());    //shooter activation
+    xboxDrv.x().onTrue(shooter.cmdShooterEnabled());
+               //.onFalse(shooter.cmdShooterDisabled());
+    xboxDrv.y().onTrue(shooter.loadDisabled());
+    xboxDrv.leftTrigger().onTrue(shooter.loadBackward());
+    xboxDrv.leftBumper().onTrue(shooter.setPosition(0.25));
+    //xboxDrv.rightStick().onTrue(shooter.setPosition(xboxDrv.getRightY()));
+    xboxDrv.rightBumper().onTrue(shooter.cmdLoad());
+    
+
+  }
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
