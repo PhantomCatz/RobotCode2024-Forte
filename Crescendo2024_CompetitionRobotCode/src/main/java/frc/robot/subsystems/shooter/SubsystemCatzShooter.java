@@ -13,10 +13,12 @@ import edu.wpi.first.wpilibj.internal.DriverStationModeThread;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.LoggedTunableNumber;
+
 
 
 public class SubsystemCatzShooter extends SubsystemBase {
@@ -61,7 +63,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //XboxController for rumbling
   private XboxController xboxDrvRumble;
 
-
   public SubsystemCatzShooter() {
     //Shooter delay calculation
     SHOOTER_DELAY_IN_SECONDS = Math.round( (SHOOTER_DELAY_IN_SECONDS / 0.02) + 1);
@@ -85,7 +86,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
   }
   
-
   // Get the singleton instance of the ShooterSubsystem
   public static SubsystemCatzShooter getInstance() {
       return instance;
@@ -214,6 +214,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   
   public Command loadDisabled() {
     return runOnce(()->currentLoaderMode = LOAD_OFF);
+
   }
 
   //-------------------------------------------Servo Commands------------------------------------------

@@ -3,13 +3,13 @@ package frc.robot.subsystems.elevator;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ElevatorIO {
-
     @AutoLog
-    public class ElevatorIOInputs {
+    public class ElevatorIOInputs{
         public double elevatorVoltage;
         public double elevatorVelocity;
         public double elevatorDutyCycle;
         public double elevatorTorqueCurrent;
+        public double elevatorPosRev;
         public boolean forwardSwitchTripped;
         public boolean reverseSwitchTripped;
     }
