@@ -107,7 +107,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
       io.setElevatorPercentOutput(0);
     }
     else {
-
+      
       if(currentElevatorState == ElevatorState.WAITING) {
           if(SubsystemCatzIntake.getInstance().getWristAngle() < INTAKE_WAIT_THRESHOLD_ANGLE) {
             currentElevatorState = ElevatorState.AUTO;
@@ -116,11 +116,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
       } else if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
                 (currentElevatorState == ElevatorState.AUTO  ||
                  currentElevatorState == ElevatorState.SEMI_MANUAL)) {
-            System.out.println("In elev auto");
-            m_finalffVolts = elevatorFeedforward.calculate(0.0);
-            m_finalPIDVolts = elevatorPID.calculate(inputs.elevatorPosRev, m_newPositionRev);
-            m_finalVoltage = m_finalPIDVolts + m_finalffVolts;
-            io.setElevatorVoltage(m_finalVoltage);
+            // m_finalffVolts = elevatorFeedforward.calculate(0.0);
+            // m_finalPIDVolts = elevatorPID.calculate(inputs.elevatorPosRev, m_newPositionRev);
+            // m_finalVoltage = m_finalPIDVolts + m_finalffVolts;
+            // io.setElevatorVoltage(m_finalVoltage);
 
       } else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);

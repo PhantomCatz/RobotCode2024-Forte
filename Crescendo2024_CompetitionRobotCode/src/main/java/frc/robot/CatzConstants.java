@@ -75,10 +75,10 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
 
-    public static final double LT_FRNT_OFFSET =  0.47;//atlas 0.5112305378; //this one changed
-    public static final double LT_BACK_OFFSET = 1.3+0.5;//0.5446386386;
-    public static final double RT_BACK_OFFSET = 0.23;//0.7591109064;
-    public static final double RT_FRNT_OFFSET = -0.15;//0.5363121009;
+    public static final double LT_FRNT_OFFSET =  0.21317;
+    public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
+    public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
+    public static final double RT_FRNT_OFFSET = -0.00320;//0.5363121009;
 
     public static final int LT_FRNT_DRIVE_ID = 1;
     public static final int LT_BACK_DRIVE_ID = 3;
@@ -158,7 +158,7 @@ public final class CatzConstants {
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
   public static final class IntakeConstants {
     public static final double INTAKE_GROUND_PICKUP = -30.0;
-    public static final double INTAKE_SCORE_AMP     = 48.0;
+    public static final double INTAKE_SCORE_AMP     = 92.6; //90.43;
     public static final double INTAKE_STOW          = 160.0;
   
     public static int PIVOT_MTR_ID = 12;

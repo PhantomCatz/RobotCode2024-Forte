@@ -85,22 +85,22 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
    private void configureBindings() {    
     
-    xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
-    xboxAux.leftBumper().onTrue(intake.cmdRollerOut()); 
+    xboxDrv.rightBumper().onTrue(intake.cmdRollerIn());
+    xboxDrv.leftBumper().onTrue(intake.cmdRollerOut()); 
     //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
-    Trigger rollersOffBinding = xboxAux.leftBumper().and (xboxAux.rightBumper());
+    Trigger rollersOffBinding = xboxDrv.leftBumper().and (xboxDrv.rightBumper());
     rollersOffBinding.onTrue(intake.cmdRollerOff());
 
-    Trigger manualTrigger = new Trigger(()-> Math.abs(xboxAux.getLeftY()) > 0.1);
-    manualTrigger.onTrue(new ManualIntakeCmd(()->xboxAux.getLeftY()));
+   // Trigger manualTrigger = new Trigger(()-> Math.abs(xboxDrv.getLeftY()) > 0.1);
+    xboxDrv.leftStick().onTrue(new ManualIntakeCmd(()->xboxDrv.getLeftY()));
     
-    xboxAux.rightStick().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
+    xboxDrv.rightStick().onTrue(new ManualElevatorCmd(()->xboxDrv.getRightY()));
 
-    xboxAux.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW, CatzConstants.currentManipulatorMode));
-    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF, CatzConstants.currentManipulatorMode));
-    xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP, CatzConstants.currentManipulatorMode));
-    xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE, CatzConstants.currentManipulatorMode));
-    xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, CatzConstants.currentManipulatorMode));
+    xboxDrv.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW, CatzConstants.currentManipulatorMode));
+    xboxDrv.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF, CatzConstants.currentManipulatorMode));
+    xboxDrv.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP, CatzConstants.currentManipulatorMode));
+    xboxDrv.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE, CatzConstants.currentManipulatorMode));
+    xboxDrv.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, CatzConstants.currentManipulatorMode));
 
     // //----------------------------------------------------------------------------------------
     // //  DriveControls

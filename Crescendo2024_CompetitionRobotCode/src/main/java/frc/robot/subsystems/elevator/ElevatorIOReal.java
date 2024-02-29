@@ -61,7 +61,6 @@ public class ElevatorIOReal implements ElevatorIO {
         elevatorConfigs.kS = 0.00;
         elevatorConfigs.kG = 0.0;
 
-        elevatorConfigs.GravityType = GravityTypeValue.Elevator_Static;
 
         ElevatorMtrLT.setPosition(0);
         ElevatorMtrRT.setPosition(0);

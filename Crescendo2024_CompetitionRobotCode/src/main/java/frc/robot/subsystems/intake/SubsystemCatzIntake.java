@@ -28,14 +28,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //intake instance
   private static SubsystemCatzIntake instance = new SubsystemCatzIntake();
 
-
+  LoggedTunableNumber speednumber = new LoggedTunableNumber("roller speed out", 0.0);
  /************************************************************************************************************************
   * 
   * rollers
   *
   ************************************************************************************************************************/
   private final double ROLLERS_MTR_PWR_IN  =  0.6;
-  private final double ROLLERS_MTR_PWR_OUT = -0.4;
+  private final double ROLLERS_MTR_PWR_OUT = -0.4; //Make different output powers for //-0.4 for handoff //-0.7 for amp vertical scoring
 
   private static final int ROLLERS_STATE_OFF = 0;
   private static final int ROLLERS_STATE_IN  = 1;
@@ -182,6 +182,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
         if(m_rollerRunningMode == ROLLERS_STATE_OUT) {
             io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT); 
+            System.out.println(speednumber.get());
         } else if(m_rollerRunningMode == ROLLERS_STATE_IN) {
               if(inputs.IntakeBeamBrkBroken) {
                 io.setRollerPercentOutput(0.0);

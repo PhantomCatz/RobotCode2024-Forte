@@ -5,7 +5,9 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
@@ -58,10 +60,10 @@ public class ModuleIOReal implements ModuleIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 2.0;//2.4; //TBD 0.3 has a better graph but it jitters the auton. 0.1 doesnt jitter for auton but slow for telop //for atlas
+        driveConfigs.kP = 0.01;//2.0;//2.4; //TBD 0.3 has a better graph but it jitters the auton. 0.1 doesnt jitter for auton but slow for telop //for atlas
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.00;
-
+ 
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){
             initializationStatus = DRIVE_MOTOR.getConfigurator().apply(talonConfigs);
@@ -75,11 +77,12 @@ public class ModuleIOReal implements ModuleIO {
         inputs.driveMtrVelocity =       DRIVE_MOTOR.getRotorVelocity().getValue();
         inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
         inputs.magEncoderValue = magEnc.get();
+        inputs.steerAppliedVolts = STEER_MOTOR.getOutputCurrent();
     }
 
     @Override
     public void setDriveVelocityIO(double velocity) {
-        DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity));
+        DRIVE_MOTOR.setControl(new VelocityDutyCycle(velocity));
     }
 
     @Override
