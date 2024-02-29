@@ -36,12 +36,23 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
   private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
 
+  private static final double INTAKE_WAIT_THRESHOLD_ANGLE = 60;
+
+  private static final double ELEVATOR_kP = 0.6;
+  private static final double ELEVATOR_kI = 0.0;
+  private static final double ELEVATOR_kD = 0.0;
+
+  private static final double ELEVATOR_kS = 0.0;
+  private static final double ELEVATOR_kG = 0.6;
+  private static final double ELEVATOR_kV = 0.0;
+
+
   //elevator variables
   private double m_newPositionRev = 0.0;
   private double m_elevatorPercentOutput = 0.0;
-  private double finalffVolts = 0.0;
-  private double finalPIDVolts = 0.0;
-  private double finalVoltage = 0.0;
+  private double m_finalffVolts = 0.0;
+  private double m_finalPIDVolts = 0.0;
+  private double m_finalVoltage = 0.0;
   private double elevatorVelocityMTRRPS = 0.0;
   private double currentRotations = 0.0;
   private double previousRotations = 0.0;
@@ -76,8 +87,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
       break;
     }
 
-    elevatorFeedforward = new ElevatorFeedforward(0.0, 0.220, 0.0);
-    elevatorPID         = new PIDController(0.6, 0.0, 0.0);
+    elevatorFeedforward = new ElevatorFeedforward(ELEVATOR_kS, ELEVATOR_kG, ELEVATOR_kV);
+    elevatorPID         = new PIDController(ELEVATOR_kP, ELEVATOR_kI, ELEVATOR_kD);
   }
 
   // Get the singleton instance of the elevator Subsystem
@@ -98,17 +109,18 @@ public class SubsystemCatzElevator extends SubsystemBase {
     else {
 
       if(currentElevatorState == ElevatorState.WAITING) {
-          if(SubsystemCatzIntake.getInstance().getWristAngle() < 60) {
+          if(SubsystemCatzIntake.getInstance().getWristAngle() < INTAKE_WAIT_THRESHOLD_ANGLE) {
             currentElevatorState = ElevatorState.AUTO;
+
           } 
       } else if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
                 (currentElevatorState == ElevatorState.AUTO  ||
-                currentElevatorState == ElevatorState.SEMI_MANUAL)) {
-            
-            finalffVolts = elevatorFeedforward.calculate(0.0);
-            finalPIDVolts = elevatorPID.calculate(inputs.elevatorPosRev, m_newPositionRev);
-            finalVoltage = finalPIDVolts + finalffVolts;
-            io.setElevatorVoltage(finalVoltage);
+                 currentElevatorState == ElevatorState.SEMI_MANUAL)) {
+            System.out.println("In elev auto");
+            m_finalffVolts = elevatorFeedforward.calculate(0.0);
+            m_finalPIDVolts = elevatorPID.calculate(inputs.elevatorPosRev, m_newPositionRev);
+            m_finalVoltage = m_finalPIDVolts + m_finalffVolts;
+            io.setElevatorVoltage(m_finalVoltage);
 
       } else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
@@ -121,12 +133,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
   }
 
   public void updateElevatorTargetRev(CatzMechanismPosition targetPosition) {
-    m_targetPosition = targetPosition;
     //set new target position for elevator
       m_newPositionRev = targetPosition.getElevatorTargetRev();
-
     //checks the package for if the intake is trying to get into a position that may collide with the elevator
-    if(targetPosition.getIntakePivotTargetAngle() > 60) {
+    if(targetPosition.getIntakePivotTargetAngle() > INTAKE_WAIT_THRESHOLD_ANGLE) {
       currentElevatorState = ElevatorState.WAITING;
     } else {
       currentElevatorState = ElevatorState.AUTO;

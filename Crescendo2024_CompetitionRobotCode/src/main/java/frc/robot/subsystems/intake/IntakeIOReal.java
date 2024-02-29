@@ -53,7 +53,7 @@ public class IntakeIOReal implements IntakeIO {
 
         talonConfigsPivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         
-        pivotMtr.setPosition(0.0);//SubsystemCatzIntake.INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV);
+        pivotMtr.setPosition(SubsystemCatzIntake.INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV);
 
         //check if wrist motor is initialized correctly
         pivotInitializationStatus = pivotMtr.getConfigurator().apply(talonConfigsPivot);

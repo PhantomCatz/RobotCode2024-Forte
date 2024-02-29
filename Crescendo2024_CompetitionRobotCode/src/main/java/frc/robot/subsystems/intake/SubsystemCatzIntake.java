@@ -97,6 +97,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   private final double GRAVITY_KG_OFFSET = 0.0;//9.0;
 
+  private final double ELEVATOR_THRESHOLD_FOR_INTAKE = 10;
+
   //pivot variables
   private double m_pivotManualPwr = 0.0;
 
@@ -195,14 +197,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // IntakePivot
       // ----------------------------------------------------------------------------------
       if(currentIntakeState == IntakeState.WAITING){
-        if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < 10) {
+        if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < ELEVATOR_THRESHOLD_FOR_INTAKE) {
           currentIntakeState = IntakeState.AUTO;
         }
 
       } else if ((currentIntakeState == IntakeState.AUTO || 
            currentIntakeState == IntakeState.SEMI_MANUAL) && 
            m_targetPositionDeg != NULL_INTAKE_POSITION) { 
-
+            System.out.println("in auto");
         //check if at final position using counter
         if ((Math.abs(positionError) <= ERROR_INTAKE_THRESHOLD_DEG)) {
           m_numConsectSamples++;
@@ -259,8 +261,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public void updateIntakeTargetPosition(CatzMechanismPosition targetPosition) {
 
     this.m_targetPositionDeg = targetPosition.getIntakePivotTargetAngle();
-
-    currentIntakeState = IntakeState.AUTO;
+    if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE) {
+      currentIntakeState = IntakeState.WAITING;
+    } else {
+      currentIntakeState = IntakeState.AUTO;
+    }
   }
 
   //semi manual
