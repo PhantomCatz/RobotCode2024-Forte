@@ -13,7 +13,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.VisionConstants;
+import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 
 
 /*
@@ -49,10 +52,18 @@ public class SubsystemCatzVision extends SubsystemBase {
     static double aprilTagDistanceToAmp;
     static double distanceToAprilTag;
     static String primaryAprilTag;
+    static double shooterHoodAngle;
+
     static boolean horizontallyAllignedWithAprilTag;
+    static boolean aprilTagInView;
+    static String fieldSide;
+
+    final double testHeight = 11.5;
+    static double wallDistance;
+    static double aprilTagDistance;
 
     static double horizontalTargetOffset;
-
+  
     private int acceptableTagID;
     private boolean useSingleTag = false;
 
@@ -92,14 +103,17 @@ public class SubsystemCatzVision extends SubsystemBase {
         for (int i = 0; i < inputs.length; i++) {
             // update and process new inputs[cameraNum] for camera
             cameras[i].updateInputs(inputs[i]);
-            Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);
-                    
+
+            Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);               
+
             //checks for when to process vision
             if (inputs[i].hasTarget && 
                 inputs[i].isNewVisionPose && 
                 !DriverStation.isAutonomous() && 
                 inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
+
                 useSingleTag = false;
+              
                 if (useSingleTag) {
                     if (inputs[i].singleIDUsed == acceptableTagID) {
                         processVision(i);
@@ -108,12 +122,13 @@ public class SubsystemCatzVision extends SubsystemBase {
                 else {
                     processVision(i);
                 }
+                System.out.println("vision processeed");
             }
         }
 
-        // limelightRangeFinder(1);
-        
 
+        // limelightRangeFinder(1);
+     
         //Logging
         Logger.recordOutput("Vision/ResultCount", results.size());
 
@@ -134,7 +149,18 @@ public class SubsystemCatzVision extends SubsystemBase {
         // add the new pose to a list
         results.add(new PoseAndTimestamp(currentPose, inputs[cameraNum].timestamp));
         camNum = cameraNum;
+
     }
+
+    // public void processVision() {
+    //     // create a new pose based off the new inputs
+    //     Pose2d currentPose = new Pose2d(inputs.x, 
+    //                                     inputs.y, 
+    //                                     new Rotation2d(inputs.rotation));
+
+    //     // add the new pose to a list
+    //     results.add(new PoseAndTimestamp(currentPose, inputs.timestamp));
+    // }
 
     //Returns the last recorded pose in a list
     public List<SubsystemCatzVision.PoseAndTimestamp> getVisionOdometry() {
@@ -168,7 +194,6 @@ public class SubsystemCatzVision extends SubsystemBase {
         this.acceptableTagID = acceptableTagID;
     }
 
-
     public double getOffsetX(int cameraNum) {
         return inputs[cameraNum].tx;
     }
@@ -181,6 +206,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         return camNum;
     }
 
+  
     //----------------------------------Calculation methods-------------------------------------------
 
     // public void limelightRangeFinder(int cameraNum) {

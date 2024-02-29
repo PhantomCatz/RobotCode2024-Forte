@@ -24,6 +24,7 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class PPTrajectoryFollowingCmd extends Command {
+
     private final HolonomicDriveController hocontroller;
     private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
     private PathPlannerTrajectory trajectory;
@@ -38,6 +39,7 @@ public class PPTrajectoryFollowingCmd extends Command {
      */
     public PPTrajectoryFollowingCmd(PathPlannerPath newPath) {
         path = newPath;
+
         hocontroller = DriveConstants.holonomicDriveController;
         addRequirements(m_driveTrain);
     }
@@ -45,7 +47,9 @@ public class PPTrajectoryFollowingCmd extends Command {
     //Auto Pathplanning trajectoreies
     public PPTrajectoryFollowingCmd(List<Translation2d> bezierPoints, PathConstraints constraints, GoalEndState endRobotState) {
         PathPlannerPath newPath = new PathPlannerPath(bezierPoints, constraints, endRobotState);
+
         path = newPath;
+
         hocontroller = DriveConstants.holonomicDriveController;
 
         addRequirements(m_driveTrain);
@@ -57,18 +61,21 @@ public class PPTrajectoryFollowingCmd extends Command {
         timer.reset();
         timer.start();  
         
-        //flippiong path
-        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+
+        //flip auton path to mirrored red side if we choose red alliance
+      if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
             path = path.flipPath();
             System.out.println("flip");
         }
 
+        //path debug
         for(int i=0; i<path.getAllPathPoints().size(); i++){
             System.out.println(path.getAllPathPoints().get(i).position);
         }
         System.out.println("\n");
         Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
+        //create pathplanner trajectory
         this.trajectory = new PathPlannerTrajectory(
                                 path, 
                                 DriveConstants.
@@ -76,6 +83,8 @@ public class PPTrajectoryFollowingCmd extends Command {
                                         toChassisSpeeds(m_driveTrain.getModuleStates()),
                                 m_driveTrain.getRotation2d());
     }
+
+    //private double prevSpeed = previousState.velocityMps;
 
     @Override
     public void execute() {
@@ -85,16 +94,22 @@ public class PPTrajectoryFollowingCmd extends Command {
         PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
         Rotation2d targetOrientation     = goal.targetHolonomicRotation;
         Pose2d currentPose               = m_driveTrain.getPose();
+
         Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         
-        //convert PP trajectory into a wpilib trajectory type to be used with the internal WPILIB trajectory library
+        /* 
+        * Convert PP trajectory into a wpilib trajectory type 
+        * Only takes in the current robot position 
+        * Does not take acceleration to be used with the internal WPILIB trajectory library
+        */
         Trajectory.State state = new Trajectory.State(currentTime, 
                                                       0,  //made the holonomic drive controller only rely on its current position, not its velocity because the target velocity is used as a ff
                                                       0, 
                                                       new Pose2d(goal.positionMeters, new Rotation2d()), 
                                                       0);
 
-        System.out.println(goal.getTargetHolonomicPose());
+        //debug
+        //System.out.println(goal.getTargetHolonomicPose());
         Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
         //construct chassisspeeds
         ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);

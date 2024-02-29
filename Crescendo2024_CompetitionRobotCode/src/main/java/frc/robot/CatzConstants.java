@@ -51,23 +51,12 @@ public final class CatzConstants {
   public static final int kDriverRotAxis = 4;
   public static final int kDriverFieldOrientedButtonIdx = 1;
 
-  public static final double kDeadband = 0.1;
-  }
-
-  public static final class CatzMechanismConstants {
-    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 0, 0);
-    //public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition();
-    //public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition();
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(100000, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, 1, 0);
-    //public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition();
-    //public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition();
-    //public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition();
-    //public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition();
-
+  public static final double kDeadband = 0.3;
+  public static final double kOffPwr = 0.1;
   }
 
   public static final class VisionConstants {
+    public static final double SPEAKER_HOOD_HEIGHT = 83.0;
     public static final double LOWEST_DISTANCE = Units.feetToMeters(10.0);
     public static final Transform3d LIMELIGHT_OFFSET   = new Transform3d(-Units.inchesToMeters(12), -Units.inchesToMeters(9), Units.inchesToMeters(20), new Rotation3d(0.0,0.0,180.0));
     public static final Transform3d LIMELIGHT_OFFSET_2 = new Transform3d(0.0, 0.0, 0.0, null); 
@@ -186,31 +175,18 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
 
-     public static final double LT_FRNT_OFFSET =  -0.7194285554857165; //-0.0013; //MC ID 2
-     public static final double LT_BACK_OFFSET =  0.3238585205964611; //0.0498; //MC ID 4
-     public static final double RT_FRNT_OFFSET =  -0.30105623252640606; //0.0222; //MC ID 8//overtime
-     public static final double RT_BACK_OFFSET =  -0.0855185771379645;
-
-     public static final int LT_FRNT_DRIVE_ID = 1; //overtime
-     public static final int LT_BACK_DRIVE_ID = 3;
-     public static final int RT_BACK_DRIVE_ID = 5;
-     public static final int RT_FRNT_DRIVE_ID = 7;
-
-    // public static final double LT_FRNT_OFFSET = 0.510253350256333775; //0.5112305378; atlas
-    // public static final double LT_BACK_OFFSET = 0.54683660117091502; //0.5446386386;
-    // public static final double RT_BACK_OFFSET = 0.756404343910107;//0.7591109064;
-    // public static final double RT_FRNT_OFFSET = 0.5354068633851713;//0.5363121009;
-    // 0.00406; for SN1
-// -0.03950;
-// -0.75084;
-//  0.55098;
-
-    // public static final int LT_FRNT_DRIVE_ID = 1;
-    // public static final int LT_BACK_DRIVE_ID = 3;
-    // public static final int RT_BACK_DRIVE_ID = 22;
-    // public static final int RT_FRNT_DRIVE_ID = 7; //SN1
 
 
+    public static final double LT_FRNT_OFFSET = 0.00406; 
+    public static final double LT_BACK_OFFSET = -0.03950; 
+    public static final double RT_BACK_OFFSET = -0.75084;
+    public static final double RT_FRNT_OFFSET = 0.55098;
+   
+
+    public static final int LT_FRNT_DRIVE_ID = 1;
+    public static final int LT_BACK_DRIVE_ID = 3;
+    public static final int RT_BACK_DRIVE_ID = 5;
+    public static final int RT_FRNT_DRIVE_ID = 7; 
     
     public static final int LT_FRNT_STEER_ID = 2;
     public static final int LT_BACK_STEER_ID = 4;
@@ -218,9 +194,9 @@ public final class CatzConstants {
     public static final int RT_FRNT_STEER_ID = 8;
 
     public static final int LT_FRNT_ENC_PORT = 9;
-    public static final int LT_BACK_ENC_PORT = 6; //SN1 8 //atlas 6
+    public static final int LT_BACK_ENC_PORT = 8; 
     public static final int RT_BACK_ENC_PORT = 7;
-    public static final int RT_FRNT_ENC_PORT = 8; //SN1 6 //atlas 8
+    public static final int RT_FRNT_ENC_PORT = 6; 
 
     //--------------------------------------MTR CONFIGS------------------------------------
 
@@ -273,18 +249,46 @@ public final class CatzConstants {
 
   //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
   public static final class ElevatorConstants {
-    public static int ELEVATOR_MTR_ID = 50;
+
+    public static final double ELEVATOR_STOW_POSITION = 0.0;
+    public static final double ELEVATOR_FULL_EXTEND   = -16.0;
+    public static final double ElEVATOR_SCORE_AMP     = -8;
+
+    public static int ELEVATOR_LT_MTR_ID = 51;
+    public static int ELEVATOR_RT_MTR_ID = 50;
+
+    public static double REV_SWITCH_POS = 0.0; //dummy
+    public static double FWD_SWITCH_POS = 5.0; //dummy
+
+    public static double MANUAL_PWR = 0.5; //dummy
   }
   
   //any type of Intake Mtr Config Constnats/Logic Constants should go here 
   public static final class IntakeConstants {
-    public static int PIVOT_MTR_ID = 51;
-    public static int ROLLER_MTR_ID = 52;
+    public static final double INTAKE_GROUND_PICKUP = -25.5;
+    public static final double INTAKE_SCORE_AMP     = 48;
+    public static final double INTAKE_STOW          = 0.0;
+    public static int PIVOT_MTR_ID = 12;
+    public static int ROLLER_MTR_ID = 10;
   }
 
   //any type of Shooter Mtr Config Constnats/Logic Constants should go here 
   public static final class ShooterConstants {
     public static int SHOOTER_MTR_ID = 53;
     public static int TURRET_MTR_ID = 54;
+    public static int ACCEPTABLE_VEL_ERROR = 20;
+
+  }
+  public static final class CatzMechanismConstants {
+    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(0, 160, 0, 0);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(0, 160,0, 1);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition(0,0,0,0);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(0, 0, 0,  0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(0, IntakeConstants.INTAKE_GROUND_PICKUP, 0, 0 );
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition(-8, 48,0, 0);
+    public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition(0,0,0,0);
+    public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition(0,0,0,0);
+    public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition(0,0,0,0);
+
   }
 }

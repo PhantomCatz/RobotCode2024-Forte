@@ -58,7 +58,8 @@ public class Robot extends LoggedRobot {
     switch (CatzConstants.currentMode) {
       // Running on a real robot, log to a USB stick
       case REAL:
-        // Logger.addDataReceiver(new WPILOGWriter("/media/sda1")); //uncomment later this thing was cluttering the rio log
+
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
         Logger.addDataReceiver(new NT4Publisher());
         
        // new PowerDistribution(1, ModuleType.kRev);
@@ -148,10 +149,10 @@ public class Robot extends LoggedRobot {
   @Override
   public void testExit() {}
 
+  //-----------------------------------------------------------LED config------------------------------------------------
   public static CatzRGB led = new CatzRGB();
 
-  public enum mechMode
-  {
+  public enum mechMode {
     AutoMode(Color.kGreen),
     ManualHoldMode(Color.kCyan),
     ManualMode(Color.kRed);
@@ -162,7 +163,7 @@ public class Robot extends LoggedRobot {
     }
   }
 
-  public enum gamePiece{
+  public enum gamePiece {
     Cube(Color.kPurple),
     Cone(Color.kYellow),
     None(Color.kGhostWhite);
@@ -173,7 +174,7 @@ public class Robot extends LoggedRobot {
     }
   }
 
-  public enum gameModeLED{
+  public enum gameModeLED {
     Autobalancing(led.oneColorFill, Color.kGreen),
     InAutonomous(led.startFlowing, led.PHANTOM_SAPPHIRE, Color.kWhite),
     MatchEnd(led.startFlowingRainbow),
