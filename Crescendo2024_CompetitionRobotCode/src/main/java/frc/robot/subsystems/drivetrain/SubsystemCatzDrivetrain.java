@@ -2,24 +2,18 @@ package frc.robot.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindHolonomic;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -27,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
-import frc.robot.Utils.GeometryUtils;
 import frc.robot.Utils.LocalADStarAK;
 import frc.robot.subsystems.vision.SubsystemCatzVision;;
 
@@ -49,6 +42,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Swerve drive pose estimator for tracking robot pose
     private static SwerveDrivePoseEstimator m_poseEstimator;
+    private static SwerveDrivePoseEstimator m_poseEstimato;  //TODO remove later
 
     // Swerve modules representing each corner of the robot
     public final CatzSwerveModule LT_FRNT_MODULE;
@@ -97,6 +91,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 Rotation2d.fromDegrees(getGyroAngle()), getModulePositions(), new Pose2d());
 
+        m_poseEstimato = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,   //TODO remove later
+                Rotation2d.fromDegrees(getGyroAngle()), getModulePositions(), new Pose2d());
+
         
         //Configure logging trajectories to advantage kit
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -136,29 +133,25 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         Logger.processInputs("Drive/gyroinputs ", gyroInputs);
 
         // Update pose estimator with module encoder values + gyro
+        m_poseEstimato.update(getRotation2d(), getModulePositions()); //TODO remove later
         m_poseEstimator.update(getRotation2d(), getModulePositions());
 
-
-        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop
-        // for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
-        //     //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less
-        //     m_poseEstimator.setVisionMeasurementStdDevs(
-        //         VecBuilder.fill(1,
-        //                         1,
-        //                         5)
-        //     );               
-        //     m_poseEstimator.addVisionMeasurement(
-        //             vision.getVisionOdometry().get(i).getPose(),
-        //             vision.getVisionOdometry().get(i).getTimestamp());
-        //             // VecBuilder.fill(
-        //             //         1,
-        //             //         1,
-        //             //         5)); //TBD test if increaseing or decrease affects vision estimates updates
-
-        // }
+        m_poseEstimator.setVisionMeasurementStdDevs(
+            VecBuilder.fill(10, 
+                            10, 
+                            20));
+        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop        
+        for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
+            //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less       
+            m_poseEstimator.addVisionMeasurement(
+                vision.getVisionOdometry().get(i).getPose(),
+                Timer.getFPGATimestamp()
+            );
+        }
 
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 
+        Logger.recordOutput("Obometry/estimato",m_poseEstimato.getEstimatedPosition());
         //Logger.recordOutput("Obometry/LimelightPose", vision.getVisionOdometry().get(0).getPose()); 
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
         // Logger.recordOutput("Obometry/pose", getPose());
@@ -280,6 +273,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             angle += 180;
         }
         m_poseEstimator.resetPosition(Rotation2d.fromDegrees(angle),getModulePositions(),pose);
+        m_poseEstimato.resetPosition(Rotation2d.fromDegrees(angle),getModulePositions(),pose); //TODO remove later
+
     }
  
     // Get the current pose of the robot
