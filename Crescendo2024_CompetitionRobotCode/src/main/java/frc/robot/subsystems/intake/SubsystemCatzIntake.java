@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -67,10 +68,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   public static final double INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV = INTAKE_PIVOT_MTR_POS_OFFSET_IN_DEG * INTAKE_PIVOT_MTR_REV_PER_DEG;
 
-  public static final double INTAKE_VOLT_LIMIT = 4.0;
+  public static final double INTAKE_VOLT_LIMIT = 3.5;
 
   public final double PIVOT_FF_kS = 0.00;
-  public final double PIVOT_FF_kG = 0.437;//0.428; //0.435
+  public final double PIVOT_FF_kG = 0.437;
   public final double PIVOT_FF_kV = 0.00;
   public final double PIVOT_FF_kA = 0.0;
 
@@ -78,14 +79,20 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private PIDController pivotPID;
   private ArmFeedforward pivotFeedFoward;
 
-  private static final double PIVOT_PID_kP = 0.043;
-  private static final double PIVOT_PID_kI = 0.005; 
+  private static final double PIVOT_PID_kP = 0.05; //0.044
+  private static final double PIVOT_PID_kI = 0.000; //0.005 
   private static final double PIVOT_PID_kD = 0.000; 
 
   private final double PID_FINE_GROSS_THRESHOLD_DEG = 20;
   private final double ERROR_INTAKE_THRESHOLD_DEG = 5.0;
 
-  private final double STOW_CUTOFF = 150; //TBD need to dial in
+  //
+  public static final double INTAKE_GROUND_PICKUP             = -30.0;
+  public static final double INTAKE_SCORE_AMP                 = 92.6; //90.43;
+  public static final double INTAKE_STOW                      = 160.0;
+  public static final double INTAKE_OFFSET_FROM_ZERO          = 164.0;
+
+  private final double STOW_CUTOFF = INTAKE_OFFSET_FROM_ZERO- 4; //TBD need to dial in
   private final double GROUND_CUTTOFF = 200;
 
   private final double MANUAL_HOLD_STEP_COEFFICIENT = 2.0;
@@ -203,10 +210,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
         }
 
       } else if ((currentIntakeState == IntakeState.AUTO || 
-           currentIntakeState == IntakeState.SEMI_MANUAL) && 
-           m_targetPositionDeg != NULL_INTAKE_POSITION) { 
-            System.out.println("in auto");
-        //check if at final position using counter
+                  currentIntakeState == IntakeState.SEMI_MANUAL) && 
+                  m_targetPositionDeg != NULL_INTAKE_POSITION) { 
+
+
+            //check if at final position using counter
         if ((Math.abs(positionError) <= ERROR_INTAKE_THRESHOLD_DEG)) {
           m_numConsectSamples++;
           if (m_numConsectSamples >= 1) {
@@ -217,10 +225,17 @@ public class SubsystemCatzIntake extends SubsystemBase {
         }
         
         
-        m_ffVolts = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg + GRAVITY_KG_OFFSET), pivotVelRadPerSec, 0);
-        m_pidVolts = -pivotPID.calculate(m_targetPositionDeg, m_currentPositionDeg);
+        m_ffVolts    = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg + GRAVITY_KG_OFFSET), pivotVelRadPerSec, 0);
+        m_pidVolts   = -pivotPID.calculate(m_targetPositionDeg, m_currentPositionDeg);
+
+        // if(m_currentPositionDeg < 0) {
+        //   m_ffVolts = m_ffVolts - 0.2;
+        // }
+
+
         m_finalVolts = m_pidVolts + m_ffVolts;
         
+
 
         //pwr limiting
         if(Math.abs(m_finalVolts) >  INTAKE_VOLT_LIMIT) {
@@ -228,17 +243,19 @@ public class SubsystemCatzIntake extends SubsystemBase {
         }
 
 
-        // // ----------------------------------------------------------------------------------
-        // // If we are going to Stow Position & have passed the power cutoff angle, set
-        // // power to 0, otherwise calculate new motor power based on position error and
-        // // current angle
-        // // ----------------------------------------------------------------------------------
-        // if (m_targetPositionDeg == STOW_ENC_POS && currentPositionDeg > STOW_CUTOFF) {
-        //   io.setIntakePivotPercentOutput(0.0);
-        // } else {
-        // //set final mtr pwr
-        // }
-        io.setIntakePivotVoltage(m_finalVolts);
+
+
+        // ----------------------------------------------------------------------------------
+        //set final mtr voltage If we are going to Stow Position & have passed the power cutoff angle, set
+        // power to 0, otherwise calculate new motor voltage based on position error and
+        // current angle
+        // ----------------------------------------------------------------------------------
+        if (m_targetPositionDeg == INTAKE_STOW && Math.abs(m_pidVolts) < 0.2) {
+          io.setIntakePivotVoltage(0.0);
+          m_targetPositionDeg = NULL_INTAKE_POSITION;
+        } else {
+          io.setIntakePivotVoltage(m_finalVolts);
+        }
         
       } else { //we are current setting pwr through manual
         io.setIntakePivotVoltage(kgtunning.get());
@@ -285,7 +302,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //full manual
   public void pivotFullManual(double fullManualPwr) {
-    m_pivotManualPwr = 0.4*fullManualPwr;
+    m_pivotManualPwr = 0.4 * fullManualPwr;
     currentIntakeState = IntakeState.FULL_MANUAL;
 
   }

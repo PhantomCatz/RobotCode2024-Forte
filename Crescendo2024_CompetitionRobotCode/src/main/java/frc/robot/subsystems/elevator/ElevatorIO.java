@@ -11,7 +11,7 @@ public interface ElevatorIO {
         public double elevatorTorqueCurrent;
         public double elevatorPosRev;
         public double elevatorPositionError;
-        public boolean forwardSwitchTripped;
+        public boolean bottomSwitchTripped;
         public boolean reverseSwitchTripped;
     }
 

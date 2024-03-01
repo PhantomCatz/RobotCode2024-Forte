@@ -100,8 +100,13 @@ public class SubsystemCatzElevator extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator/inputs", inputs);
+    if(inputs.bottomSwitchTripped) {
+      io.setElevatorPosition(0.0);
+    }
 
     elevatorVelocityMTRRPS = (currentRotations - previousRotations)/0.02;
+
+
 
     if(DriverStation.isDisabled()) {
       io.setElevatorPercentOutput(0);

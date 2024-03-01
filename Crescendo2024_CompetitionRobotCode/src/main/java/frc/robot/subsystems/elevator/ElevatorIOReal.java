@@ -32,8 +32,7 @@ public class ElevatorIOReal implements ElevatorIO {
     private Slot0Configs elevatorConfigs = new Slot0Configs();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
-    private DigitalInput m_forwardLimit = new DigitalInput(11); 
-    private DigitalInput m_reverseLimit = new DigitalInput(10);//TBD not set
+    private DigitalInput m_bottomLimit = new DigitalInput(10);//TBD not set
 
     private final TalonFX ElevatorMtrRT;
     private final TalonFX ElevatorMtrLT;
@@ -84,8 +83,7 @@ public class ElevatorIOReal implements ElevatorIO {
         inputs.elevatorPosRev = ElevatorMtrRT.getPosition().getValue();
         inputs.elevatorPositionError = ElevatorMtrRT.getClosedLoopError().getValue();
 
-        inputs.forwardSwitchTripped = m_forwardLimit.get();
-        inputs.reverseSwitchTripped = m_reverseLimit.get();
+        inputs.bottomSwitchTripped = m_bottomLimit.get();
     }
     
     @Override

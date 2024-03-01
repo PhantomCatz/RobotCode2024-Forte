@@ -18,11 +18,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.robot.CatzConstants.DriveConstants;
-import frc.robot.CatzConstants.IntakeConstants;
 import frc.robot.CatzConstants.MtrConfigConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 
 public class IntakeIOReal implements IntakeIO {
+
+    public static int PIVOT_MTR_ID = 12;
+    public static int ROLLER_MTR_ID = 10;
     
     private final DigitalInput IntakeBeamBreak = new DigitalInput(4);
 
@@ -41,7 +43,7 @@ public class IntakeIOReal implements IntakeIO {
         /************************************************************************************************************************
         * pivot
         ************************************************************************************************************************/
-        pivotMtr = new TalonFX(IntakeConstants.PIVOT_MTR_ID);
+        pivotMtr = new TalonFX(PIVOT_MTR_ID);
         pivotMtr.getConfigurator().apply(new TalonFXConfiguration()); //reset to factory defaults
 
             //current limit
@@ -58,13 +60,13 @@ public class IntakeIOReal implements IntakeIO {
         //check if wrist motor is initialized correctly
         pivotInitializationStatus = pivotMtr.getConfigurator().apply(talonConfigsPivot);
         if(!pivotInitializationStatus.isOK()) {
-            System.out.println("Failed to Configure Pivot Mtr Controller CAN ID" + IntakeConstants.PIVOT_MTR_ID);
+            System.out.println("Failed to Configure Pivot Mtr Controller CAN ID" + PIVOT_MTR_ID);
         }
 
         /************************************************************************************************************************
         * roller
         ************************************************************************************************************************/
-        rollerMtr = new TalonFX(IntakeConstants.ROLLER_MTR_ID);
+        rollerMtr = new TalonFX(ROLLER_MTR_ID);
         rollerMtr.getConfigurator().apply(new TalonFXConfiguration());  //reset to factory defaults
 
         talonConfigsRoller = talonConfigsPivot;
@@ -74,7 +76,7 @@ public class IntakeIOReal implements IntakeIO {
         //check if roller motor is initialized correctly
         rollerInitializationStatus = rollerMtr.getConfigurator().apply(talonConfigsRoller);
         if(!rollerInitializationStatus.isOK()) {
-            System.out.println("Failed to Configure Roller Mtr Controller CAN ID" + IntakeConstants.ROLLER_MTR_ID);
+            System.out.println("Failed to Configure Roller Mtr Controller CAN ID" + ROLLER_MTR_ID);
         }
     }
 
