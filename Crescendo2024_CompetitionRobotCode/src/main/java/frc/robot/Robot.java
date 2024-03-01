@@ -26,8 +26,8 @@ import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
 import frc.robot.Utils.LEDs.CatzRGB;
 import frc.robot.Utils.LEDs.ColorMethod;
-import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
-import frc.robot.subsystems.vision.SubsystemCatzVision;
+// import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+// import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -86,7 +86,7 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     DriverStation.silenceJoystickConnectionWarning(true);
-    SubsystemCatzVision.getInstance().setUseSingleTag(true, 4);
+    // SubsystemCatzVision.getInstance().setUseSingleTag(true, 4);
 
   }
 
@@ -106,7 +106,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -118,9 +118,9 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousExit() {
-    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-      SubsystemCatzDrivetrain.getInstance().flipGyro();
-    }
+    // if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+    //   SubsystemCatzDrivetrain.getInstance().flipGyro();
+    // }
   }
 
   @Override
@@ -139,7 +139,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-        SubsystemCatzDrivetrain.getInstance().printAverageWheelMagEncValues();
+        // SubsystemCatzDrivetrain.getInstance().printAverageWheelMagEncValues();
 
   }
 

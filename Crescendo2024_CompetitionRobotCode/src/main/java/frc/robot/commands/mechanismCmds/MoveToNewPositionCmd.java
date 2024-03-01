@@ -41,7 +41,7 @@ public class MoveToNewPositionCmd extends Command {
       iterationCounter++;
     if(m_newPosition == CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF && iterationCounter == 150) {
       intake.setRollerState(2);
-      shooter.updateLoadState(1);
+      // shooter.updateLoadState(1);
     }
   }
 

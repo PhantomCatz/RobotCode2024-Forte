@@ -10,17 +10,19 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.commands.AutoAlignCmd;
-import frc.robot.commands.DriveCmds.TeleopDriveCmd;
+// import frc.robot.commands.AutoAlignCmd;
+// import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
-import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+// import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
-import frc.robot.subsystems.turret.SubsystemCatzTurret;
-import frc.robot.subsystems.vision.SubsystemCatzVision;
+// import frc.robot.subsystems.turret.SubsystemCatzTurret;
+// import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 /**
  * RobotContainer
@@ -37,16 +39,16 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
  public class RobotContainer {
     
     //subsystems
-    private SubsystemCatzDrivetrain driveTrain; 
-    private SubsystemCatzVision vision;
+    // private SubsystemCatzDrivetrain driveTrain; 
+    // private SubsystemCatzVision vision;
     private SubsystemCatzIntake intake;
     private SubsystemCatzShooter shooter;
     private SubsystemCatzElevator elevator;
-    private SubsystemCatzTurret turret;
+    // private SubsystemCatzTurret turret;
     //private SubsystemCatzClimb climb;
 
 
-    private CatzAutonomous auton = new CatzAutonomous();
+    // private CatzAutonomous auton = new CatzAutonomous();
 
     //xbox controller
      CommandXboxController xboxDrv;
@@ -60,12 +62,12 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    public RobotContainer() {
     //instantiate subsystems
 
-    driveTrain = SubsystemCatzDrivetrain.getInstance(); 
-    vision     = SubsystemCatzVision.getInstance();
+    // driveTrain = SubsystemCatzDrivetrain.getInstance(); 
+    // vision     = SubsystemCatzVision.getInstance();
     intake     = SubsystemCatzIntake.getInstance();
     shooter    = SubsystemCatzShooter.getInstance();
     elevator = SubsystemCatzElevator.getInstance();
-    turret = SubsystemCatzTurret.getInstance();
+    // turret = SubsystemCatzTurret.getInstance();
     //climb      = SubsystemCatzClimb.getInstance();
 
     
@@ -73,7 +75,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
      xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
  
      // Configure the trigger bindings and default cmds
-     defaultCommands();
+    //  defaultCommands();
      configureBindings();
    }
  
@@ -105,14 +107,14 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     *
     _______________________________________________________________________________________________*/
 
-     xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());     //Turn Left  (-)
-     xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());    //Turn right (+)
+    //  xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());     //Turn Left  (-)
+    //  xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());    //Turn right (+)
 
-     xboxAux.a().onTrue(turret.cmdResetTurretPosition()).onFalse(turret.cmdTurretOff());    // Go to home position (0.0)
+    //  xboxAux.a().onTrue(turret.cmdResetTurretPosition()).onFalse(turret.cmdTurretOff());    // Go to home position (0.0)
   
-     xboxAux.b().onTrue(turret.cmdAutoRotate()).onFalse(turret.cmdTurretOff());             //Follow April Tags
+    //  xboxAux.b().onTrue(turret.cmdAutoRotate()).onFalse(turret.cmdTurretOff());             //Follow April Tags
 
-     xboxAux.start().onTrue(turret.cmdTurretOff());                                         //Turn off 
+    //  xboxAux.start().onTrue(turret.cmdTurretOff());                                         //Turn off 
     
     /*_____________________________________________________________________________________________
     *
@@ -202,20 +204,20 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   }
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
-   private void defaultCommands() {  
-      driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-                                                      ()-> xboxDrv.getLeftY(),
-                                                      ()-> xboxDrv.getRightX(),
-                                                      ()-> xboxDrv.b().getAsBoolean()));
+  //  private void defaultCommands() {  
+  //     driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+  //                                                     ()-> xboxDrv.getLeftY(),
+  //                                                     ()-> xboxDrv.getRightX(),
+  //                                                     ()-> xboxDrv.b().getAsBoolean()));
     
-   }
+  //  }
 
    /**
     * Use this to pass the autonomous command to the main {@link Robot} class.
     *
     * @return the command to run in autonomous
     */
-    public Command getAutonomousCommand() {
-      return auton.getCommand();
-    }
+    // public Command getAutonomousCommand() {
+    //   return auton.getCommand();
+    // }
 }
