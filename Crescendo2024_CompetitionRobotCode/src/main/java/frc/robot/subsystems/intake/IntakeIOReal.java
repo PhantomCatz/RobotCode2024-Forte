@@ -54,7 +54,7 @@ public class IntakeIOReal implements IntakeIO {
 
         talonConfigsPivot.Slot0.kP = 9.0;
         talonConfigsPivot.Slot0.kI = 0.00;
-        talonConfigsPivot.Slot0.kD = 0.1;
+        talonConfigsPivot.Slot0.kD = 0.36;
         
             //current limit
         talonConfigsPivot.CurrentLimits = new CurrentLimitsConfigs();

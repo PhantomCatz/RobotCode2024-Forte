@@ -38,7 +38,11 @@ public class MoveToNewPositionCmd extends Command {
   public MoveToNewPositionCmd(CatzMechanismPosition newPosition, ManipulatorMode newManipulatorMode) {
     m_manipulatorMode = newManipulatorMode;
     m_newPosition = newPosition;
+
+
+    
     addRequirements(intake, elevator);
+
   }
 
   @Override
@@ -48,6 +52,7 @@ public class MoveToNewPositionCmd extends Command {
 
     intake.updateIntakeTargetPosition(m_newPosition);
     elevator.updateElevatorTargetRev(m_newPosition);
+    //shooter
 
   }
 
@@ -56,17 +61,6 @@ public class MoveToNewPositionCmd extends Command {
   public void execute() {
 
 
-
-
-      iterationCounter++;
-    if(m_newPosition == CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF && iterationCounter == 100) {
-      intake.setRollerState(2);
-      shooter.updateLoadState(1);
-    }
-
-    if(m_newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF && iterationCounter == 200) {
-      intake.setRollerState(0);
-    }
   }
 
   @Override

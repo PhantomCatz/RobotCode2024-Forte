@@ -25,6 +25,7 @@ import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 /**
@@ -44,16 +45,17 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //subsystems
     private SubsystemCatzDrivetrain driveTrain; 
     //private SubsystemCatzVision vision;
-    private SubsystemCatzIntake intake;
-    //private SubsystemCatzShooter shooter;
-    //private SubsystemCatzClimb climb;
-    private SubsystemCatzElevator elevator;
+    private SubsystemCatzIntake     intake;
+    //private SubsystemCatzShooter  shooter;
+    //private SubsystemCatzClimb    climb;
+    private SubsystemCatzElevator   elevator;
+    private SubsystemCatzTurret     turret;
 
     private CatzAutonomous auton = new CatzAutonomous();
 
     //xbox controller
     public static CommandXboxController xboxDrv;
-    private CommandXboxController xboxAux;
+    private CommandXboxController       xboxAux;
  
        
    /** The container for the robot. Contains subsystems, OI devices, and commands. 
@@ -62,11 +64,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     */
    public RobotContainer() {
     //instantiate subsystems
-    elevator = SubsystemCatzElevator.getInstance();
+    elevator   = SubsystemCatzElevator.getInstance();
     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
-    //vision     = SubsystemCatzVision.getInstance();
+    //vision   = SubsystemCatzVision.getInstance();
     intake     = SubsystemCatzIntake.getInstance();
-
+    turret     = SubsystemCatzTurret.getInstance();
    // shooter    = SubsystemCatzShooter.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();

@@ -135,6 +135,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
     if(targetPosition.getIntakePivotTargetAngle() > INTAKE_WAIT_THRESHOLD_ANGLE &&
        getElevatorRevPos() > 10) {
       currentElevatorState = ElevatorState.WAITING;
+      
     } else {
       currentElevatorState = ElevatorState.AUTO;
     }
