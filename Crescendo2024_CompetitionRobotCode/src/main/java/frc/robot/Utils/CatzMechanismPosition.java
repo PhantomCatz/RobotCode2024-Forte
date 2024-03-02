@@ -27,7 +27,7 @@ public class CatzMechanismPosition {
         return m_intakePivotTargetAngle;
     }
 
-    public double getshooterVerticalTargetAngle() {
+    public double getShooterVerticalTargetAngle() {
         return m_shooterVerticalTargetAngle;
     }
 

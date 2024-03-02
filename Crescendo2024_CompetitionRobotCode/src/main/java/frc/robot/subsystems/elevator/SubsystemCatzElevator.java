@@ -126,7 +126,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
     Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
   }
 
-  public void updateElevatorTargetRev(CatzMechanismPosition targetPosition) {
+  public void updateElevatorTargetPosition(CatzMechanismPosition targetPosition) {
 
     //set new target position for elevator
     m_newPositionRev = targetPosition.getElevatorTargetRev();

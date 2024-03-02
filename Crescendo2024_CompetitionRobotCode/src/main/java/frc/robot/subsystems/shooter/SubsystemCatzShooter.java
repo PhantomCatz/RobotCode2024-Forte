@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
@@ -47,6 +48,15 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final int SHOOTING = 7;
   private static final int LOAD_OFF = 8;
   private static final int LOAD_OUT = 9;
+
+  private double newServoPosition;
+
+  private shooterServoState currentShooterServoState;
+
+  private enum shooterServoState {
+    FULL_MANUAL,
+    AUTO
+  }
   
   private final double LOOP_CYCLE_MS = 0.02;
 
@@ -94,7 +104,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
     double servoPosition = servoPos.get();
     io.setServoPosition(servoPosition);
 
-    switch(currentLoaderMode) { 
+    /*--------------------------------------------------------------------------------------------------------
+     * 
+     * Load motor Logic
+     * 
+     *-------------------------------------------------------------------------------------------------------*/
+    switch(currentLoaderMode) {
         case LOAD_IN:
           io.loadNote();
           currentLoaderMode = LOAD_IN_DONE;
@@ -179,14 +194,29 @@ public class SubsystemCatzShooter extends SubsystemBase {
         break;
     }
     Logger.recordOutput("current load state", currentLoaderMode);
+    
+  /*----------------------------------------------------------------------------------------
+   * 
+   * Servo Logic
+   * 
+   *---------------------------------------------------------------------------------------*/
+
+    if(currentShooterServoState == shooterServoState.AUTO) {
+      io.setServoPosition(newServoPosition);
+    }
   }
 
+
   public void updateShooterTargetPosition(CatzMechanismPosition newPosition) {
-    
+    currentShooterServoState = shooterServoState.AUTO;
+    newServoPosition = newPosition.getShooterVerticalTargetAngle();
+    if(newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP) {
+      currentLoaderMode = LOAD_IN;
+    }
   }
  
   private double timer(double seconds){ // in seconds; converts time to iteration counter units
-      System.out.println(Math.round(seconds/LOOP_CYCLE_MS) + 1);
+    System.out.println(Math.round(seconds/LOOP_CYCLE_MS) + 1);
     return Math.round(seconds/LOOP_CYCLE_MS) + 1;
   }
   //-------------------------------------------Flywheel Commands------------------------------------------
@@ -222,6 +252,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------Servo Commands------------------------------------------
 
   public Command setPosition(double position) {
+    currentShooterServoState = shooterServoState.FULL_MANUAL;
     System.out.println("aa");
     return run(()->io.setServoPosition(position));
   }

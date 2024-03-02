@@ -13,6 +13,7 @@ import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class MoveToNewPositionCmd extends Command {
   
@@ -20,6 +21,7 @@ public class MoveToNewPositionCmd extends Command {
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
+  private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
 
 
   private CatzMechanismPosition m_newPosition;
@@ -41,18 +43,18 @@ public class MoveToNewPositionCmd extends Command {
 
 
     
-    addRequirements(intake, elevator);
+    addRequirements(intake, elevator, turret, shooter);
 
   }
 
   @Override
   public void initialize() {
     iterationCounter = 0;
-
-
     intake.updateIntakeTargetPosition(m_newPosition);
-    elevator.updateElevatorTargetRev(m_newPosition);
-    //shooter
+    elevator.updateElevatorTargetPosition(m_newPosition);
+    shooter.updateShooterTargetPosition(m_newPosition);
+    turret.updateTurretTargetPosition(m_newPosition);
+
 
   }
 

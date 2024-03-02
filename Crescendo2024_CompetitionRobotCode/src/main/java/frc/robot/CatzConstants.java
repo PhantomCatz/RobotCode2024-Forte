@@ -167,7 +167,7 @@ public final class CatzConstants {
 
   public static final class CatzMechanismConstants {
     public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW,0, 1);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF_AMP_PREP = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW,0, 1);
     public static final CatzMechanismPosition NOTE_POS_HANDOFF_SPEAKER_PREP = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION , SubsystemCatzIntake.INTAKE_STOW, 0 , 1);
     public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION,0,0,0);
     public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(ElevatorConstants.ElEVATOR_POS_SCORE_AMP, 0, 0,  0);

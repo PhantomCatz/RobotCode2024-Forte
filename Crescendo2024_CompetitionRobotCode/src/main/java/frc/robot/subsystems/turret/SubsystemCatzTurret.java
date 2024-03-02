@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMathUtils;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -109,7 +110,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public static enum TurretState {
     AUTO,
     TRACKING_APRILTAG,
-    FULL_MANUAL
+    FULL_MANUAL,
+    IN_POSITION
   }
 
   @Override
@@ -131,6 +133,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     } else { 
       if (currentTurretState == TurretState.AUTO) {
         io.turretSetPwr(setPositionPower);
+        if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 1) {
+          currentTurretState = TurretState.IN_POSITION;
+        } 
 
       // } else if (currentTurretState == TurretState.TRACKING_APRILTAG) {
       //   //only track the shooterlimelight to the speaker apriltag
@@ -261,4 +266,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //   return run(() -> aimAtGoal(new Translation2d(), true));
   // }
   
+
+    public void updateTurretTargetPosition(CatzMechanismPosition newPosition) {
+    currentTurretState = TurretState.AUTO;
+    m_turretTargetDegree = newPosition.getTurretTargetAngle();
+  }
 }

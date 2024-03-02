@@ -99,7 +99,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxDrv.rightStick().onTrue(new ManualElevatorCmd(()->xboxDrv.getRightY()));
 
     xboxDrv.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW, CatzConstants.currentManipulatorMode));
-    xboxDrv.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF, CatzConstants.currentManipulatorMode));
+    xboxDrv.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP, CatzConstants.currentManipulatorMode));
     xboxDrv.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP, CatzConstants.currentManipulatorMode));
     xboxDrv.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE, CatzConstants.currentManipulatorMode));
     xboxDrv.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, CatzConstants.currentManipulatorMode));
