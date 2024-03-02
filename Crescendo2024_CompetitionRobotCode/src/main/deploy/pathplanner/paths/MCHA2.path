@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 5.764053066567673,
+        "x": 5.76,
         "y": 3.7790390965397322
       },
       "prevControl": {
-        "x": 6.46460600613509,
+        "x": 6.460552939567417,
         "y": 3.3448936128641495
       },
       "nextControl": null,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Mid Clear + Hoard Amp",
+  "folder": null,
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

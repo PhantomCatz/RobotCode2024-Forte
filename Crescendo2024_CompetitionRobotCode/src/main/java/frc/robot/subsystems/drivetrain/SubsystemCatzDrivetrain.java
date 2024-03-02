@@ -149,13 +149,28 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Update pose estimator with module encoder values + gyro
         m_poseEstimator.update(getRotation2d(), getModulePositions());
+<<<<<<< Updated upstream
 
         // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop
+=======
+      
+        m_poseEstimator.setVisionMeasurementStdDevs( //not be hardcoded
+            VecBuilder.fill(10, 
+                            10, 
+                            20));
+        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop        
+>>>>>>> Stashed changes
         for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
             m_poseEstimator.addVisionMeasurement(
+<<<<<<< Updated upstream
                     vision.getVisionOdometry().get(i).getPose(),
                     vision.getVisionOdometry().get(i).getTimestamp());
 
+=======
+                vision.getVisionOdometry().get(i).getPose(),
+                vision.getVisionOdometry().get(i).getTimestamp()
+            );
+>>>>>>> Stashed changes
         }
 
         //logging
