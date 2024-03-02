@@ -27,10 +27,11 @@ public class TeleopDriveCmd extends Command {
     this.m_supplierLeftJoyY        = supplierLeftJoyY;
     this.m_supplierRightJoyX       = supplierRightJoyX;
     this.m_isFieldOrientedDisabled = supplierFieldOriented;
-                        }
 
-  //   addRequirements(m_driveTrain);
-  // }
+    addRequirements(m_driveTrain);
+    //note:this addRequirements method is required to use the defaultcommands
+    //in robotcontainer 
+  }
 
   @Override
   public void initialize() {}
@@ -38,11 +39,9 @@ public class TeleopDriveCmd extends Command {
   @Override
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
-
     double xSpeed = -m_supplierLeftJoyY.get();
     double ySpeed = -m_supplierLeftJoyX.get(); 
     double turningSpeed = -m_supplierRightJoyX.get();
-
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
@@ -62,15 +61,15 @@ public class TeleopDriveCmd extends Command {
     }
 
   //   //send new chassisspeeds object to the drivetrain
-  //   m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
+  m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
 
   //   //logging
-  //   Logger.recordOutput("robot xspeed", xSpeed);
-  //   Logger.recordOutput("robot yspeed", ySpeed);
-  //   Logger.recordOutput("robot turnspeed", turningSpeed);
-  //   Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
-  //   Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
-  //   Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
+    Logger.recordOutput("robot xspeed", xSpeed);
+    Logger.recordOutput("robot yspeed", ySpeed);
+    Logger.recordOutput("robot turnspeed", turningSpeed);
+    Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
+    Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
+    Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
 
   // }
 

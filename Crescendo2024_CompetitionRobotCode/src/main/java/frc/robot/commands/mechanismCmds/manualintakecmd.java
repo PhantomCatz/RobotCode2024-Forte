@@ -8,14 +8,14 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.subsystems.intake.SubsystemCatzIntake;
+// import frc.robot.subsystems.intake.SubsystemCatzIntake;
 
 public class ManualIntakeCmd extends Command {
-  SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
+  // SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   Supplier<Double> supplierLeftJoyY;
   public ManualIntakeCmd(Supplier<Double> supplierLeftJoyY) {
     this.supplierLeftJoyY = supplierLeftJoyY;
-    addRequirements(intake);
+    // addRequirements(intake);
   }
 
   @Override
@@ -23,16 +23,16 @@ public class ManualIntakeCmd extends Command {
 
   @Override
   public void execute() {
-    if(supplierLeftJoyY.get() > 0.1) {
-      System.out.println("going to 10");
-      intake.updateIntakeTargetPosition(10);
-    } else if (supplierLeftJoyY.get() < -0.1) {
-      intake.updateIntakeTargetPosition(-10);
-      System.out.println("going to -10");
+    // if(supplierLeftJoyY.get() > 0.1) {
+    //   System.out.println("going to 10");
+    //   intake.updateIntakeTargetPosition(10);
+    // } else if (supplierLeftJoyY.get() < -0.1) {
+    //   intake.updateIntakeTargetPosition(-10);
+    //   System.out.println("going to -10");
 
-    } else {
-      intake.updateIntakeTargetPosition(0);
-    }
+    // } else {
+    //   intake.updateIntakeTargetPosition(0);
+    // }
   }
 
   @Override
