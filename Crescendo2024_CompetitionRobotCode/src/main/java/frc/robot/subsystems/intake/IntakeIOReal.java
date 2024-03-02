@@ -26,7 +26,7 @@ public class IntakeIOReal implements IntakeIO {
     public static int PIVOT_MTR_ID = 12;
     public static int ROLLER_MTR_ID = 10;
     
-    private final DigitalInput IntakeBeamBreak = new DigitalInput(4);
+    private final DigitalInput intakeBeamBreak = new DigitalInput(4);
 
     private final TalonFX pivotMtr;
     private final TalonFX rollerMtr;
@@ -46,6 +46,16 @@ public class IntakeIOReal implements IntakeIO {
         pivotMtr = new TalonFX(PIVOT_MTR_ID);
         pivotMtr.getConfigurator().apply(new TalonFXConfiguration()); //reset to factory defaults
 
+        // set Motion Magic settings
+        talonConfigsPivot.MotionMagic.MotionMagicCruiseVelocity = 30; // Target cruise velocity of 80 rps
+        talonConfigsPivot.MotionMagic.MotionMagicAcceleration   = 160; // Target acceleration of 160 rps/s (0.5 seconds)
+        talonConfigsPivot.MotionMagic.MotionMagicJerk           = 16000; // Target jerk of 1600 rps/s/s (0.1 seconds)
+
+
+        talonConfigsPivot.Slot0.kP = 9.0;
+        talonConfigsPivot.Slot0.kI = 0.00;
+        talonConfigsPivot.Slot0.kD = 0.1;
+        
             //current limit
         talonConfigsPivot.CurrentLimits = new CurrentLimitsConfigs();
         talonConfigsPivot.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT; //TBD make these are apart of the the real class
@@ -89,10 +99,10 @@ public class IntakeIOReal implements IntakeIO {
         inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
         inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
         inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
+        inputs.pivotMtrVelocityRPS =    pivotMtr.getVelocity().getValue();
         //true if beambreak is broken \/ \/
-        inputs.IntakeBeamBrkBroken = !IntakeBeamBreak.get(); //TBD add method for controling inputs
-        //inputs.BeamBrkFrontBroken = !beamBreakFront.get();
-        inputs.closedLoopPivotMtr = pivotMtr.getClosedLoopError().getValue();
+        inputs.isIntakeBeamBrkBroken =   !intakeBeamBreak.get(); //TBD add method for controling inputs
+        inputs.closedLoopPivotMtr =     pivotMtr.getClosedLoopError().getValue();
     }
 
     @Override
@@ -116,10 +126,10 @@ public class IntakeIOReal implements IntakeIO {
     }
 
     @Override
-    public void setIntakePivotEncOutput(double encOutput, double ffPercentOutput) {
+    public void setIntakePivotEncOutput(double encOutput, double ffVoltage) {
         pivotMtr.setControl(new MotionMagicVoltage(encOutput, 
                                                      true, 
-                                                     ffPercentOutput, 
+                                                     ffVoltage, 
                                                      0, 
                                                      false, 
                                                      false, 

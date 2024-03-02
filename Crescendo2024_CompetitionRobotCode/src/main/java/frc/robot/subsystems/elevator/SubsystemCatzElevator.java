@@ -38,10 +38,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
   private static final double INTAKE_WAIT_THRESHOLD_ANGLE = 60;
 
-  private static final double ELEVATOR_kP = 0.6;
-  private static final double ELEVATOR_kI = 0.0;
-  private static final double ELEVATOR_kD = 0.0;
-
   private static final double ELEVATOR_kS = 0.0;
   private static final double ELEVATOR_kG = 0.6;
   private static final double ELEVATOR_kV = 0.0;
@@ -58,7 +54,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private double previousRotations = 0.0;
 
   private ElevatorFeedforward elevatorFeedforward;
-  private PIDController elevatorPID;
   private CatzMechanismPosition m_targetPosition;
 
   LoggedTunableNumber kgElevatorTunning = new LoggedTunableNumber("kgElevatorTunning", 0.0);
@@ -88,7 +83,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
     }
 
     elevatorFeedforward = new ElevatorFeedforward(ELEVATOR_kS, ELEVATOR_kG, ELEVATOR_kV);
-    elevatorPID         = new PIDController(ELEVATOR_kP, ELEVATOR_kI, ELEVATOR_kD);
   }
 
   // Get the singleton instance of the elevator Subsystem
@@ -101,12 +95,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator/inputs", inputs);
     if(inputs.bottomSwitchTripped) {
-      io.setElevatorPosition(0.0);
+      io.setElevatorPosition(0.0, 0.0);
     }
 
     elevatorVelocityMTRRPS = (currentRotations - previousRotations)/0.02;
-
-
 
     if(DriverStation.isDisabled()) {
       io.setElevatorPercentOutput(0);
@@ -116,15 +108,13 @@ public class SubsystemCatzElevator extends SubsystemBase {
       if(currentElevatorState == ElevatorState.WAITING) {
           if(SubsystemCatzIntake.getInstance().getWristAngle() < INTAKE_WAIT_THRESHOLD_ANGLE) {
             currentElevatorState = ElevatorState.AUTO;
-
           } 
       } else if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
                 (currentElevatorState == ElevatorState.AUTO  ||
                  currentElevatorState == ElevatorState.SEMI_MANUAL)) {
-            // m_finalffVolts = elevatorFeedforward.calculate(0.0);
-            // m_finalPIDVolts = elevatorPID.calculate(inputs.elevatorPosRev, m_newPositionRev);
-            // m_finalVoltage = m_finalPIDVolts + m_finalffVolts;
-            // io.setElevatorVoltage(m_finalVoltage);
+             m_finalffVolts = elevatorFeedforward.calculate(0.0);
+
+           // io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
 
       } else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
@@ -137,14 +127,18 @@ public class SubsystemCatzElevator extends SubsystemBase {
   }
 
   public void updateElevatorTargetRev(CatzMechanismPosition targetPosition) {
+
     //set new target position for elevator
-      m_newPositionRev = targetPosition.getElevatorTargetRev();
+    m_newPositionRev = targetPosition.getElevatorTargetRev();
+
     //checks the package for if the intake is trying to get into a position that may collide with the elevator
-    if(targetPosition.getIntakePivotTargetAngle() > INTAKE_WAIT_THRESHOLD_ANGLE) {
+    if(targetPosition.getIntakePivotTargetAngle() > INTAKE_WAIT_THRESHOLD_ANGLE &&
+       getElevatorRevPos() > 10) {
       currentElevatorState = ElevatorState.WAITING;
     } else {
       currentElevatorState = ElevatorState.AUTO;
     }
+
   }
 
   public void setElevatorSemiManualPwr(double output) {
@@ -156,10 +150,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
     currentElevatorState = ElevatorState.FULL_MANUAL;
     this.m_elevatorPercentOutput = percentOutput/10;
   }
+
   // ----------------------------------------------------------------------------------
   // Elevator getters
   // ----------------------------------------------------------------------------------
-
   public double getElevatorRevPos() {
     return inputs.elevatorPosRev;
   }

@@ -8,11 +8,12 @@ public interface IntakeIO {
     public class IntakeIOInputs {
         public double pivotMtrRev;
         public double pivotMtrPercentOutput;
+        public double pivotMtrVelocityRPS;
         public double rollerVoltage;
         public double rollerPercentOutput;
         public double rollerVelocity;
         public boolean BeamBrkFrontBroken;
-        public boolean IntakeBeamBrkBroken;
+        public boolean isIntakeBeamBrkBroken;
         public double closedLoopPivotMtr;
     }
 

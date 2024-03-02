@@ -29,9 +29,9 @@ public class ModuleIOReal implements ModuleIO {
 
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
-            //create new config objects
+        //create new config objects
     private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
-    private Slot0Configs driveConfigs = new Slot0Configs();
+    private Slot0Configs driveConfigs         = new Slot0Configs();
 
     public ModuleIOReal(int driveMotorIDIO, int steerMotorIDIO, int magDIOPort) {
 

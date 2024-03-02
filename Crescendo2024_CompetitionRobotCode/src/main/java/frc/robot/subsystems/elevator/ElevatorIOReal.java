@@ -2,37 +2,24 @@ package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycle;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.ElevatorConstants;
 import frc.robot.CatzConstants.MtrConfigConstants;
 
 public class ElevatorIOReal implements ElevatorIO {
                 //create new config objects
-    private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
-    private Slot0Configs elevatorConfigs = new Slot0Configs();
+    private TalonFXConfiguration elevatorTalonConfigs = new TalonFXConfiguration();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
-    private DigitalInput m_bottomLimit = new DigitalInput(10);//TBD not set
+    private DigitalInput m_bottomLimit = new DigitalInput(10);
 
     private final TalonFX ElevatorMtrRT;
     private final TalonFX ElevatorMtrLT;
@@ -44,21 +31,23 @@ public class ElevatorIOReal implements ElevatorIO {
             //reset to factory defaults
         ElevatorMtrLT.getConfigurator().apply(new TalonFXConfiguration());
         ElevatorMtrRT.getConfigurator().apply(new TalonFXConfiguration());
-        talonConfigs.Slot0 = elevatorConfigs;
+
+        // set Motion Magic settings
+        elevatorTalonConfigs.MotionMagic.MotionMagicCruiseVelocity = 30; // Target cruise velocity of 80 rps
+        elevatorTalonConfigs.MotionMagic.MotionMagicAcceleration   = 160; // Target acceleration of 160 rps/s (0.5 seconds)
+        elevatorTalonConfigs.MotionMagic.MotionMagicJerk           = 16000; // Target jerk of 1600 rps/s/s (0.1 seconds)
+
+        elevatorTalonConfigs.Slot0.kP = 2.0;
+        elevatorTalonConfigs.Slot0.kI = 0.0;
+        elevatorTalonConfigs.Slot0.kD = 0.0;
             //current limit
-        talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT;
-        talonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
-        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
-        talonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
+        elevatorTalonConfigs.CurrentLimits = new CurrentLimitsConfigs();
+        elevatorTalonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT;
+        elevatorTalonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
+        elevatorTalonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
+        elevatorTalonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
-        talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-            //pid
-        elevatorConfigs.kP = 0.0; //TBD 
-        elevatorConfigs.kI = 0.0;
-        elevatorConfigs.kD = 0.00;
-        elevatorConfigs.kS = 0.00;
-        elevatorConfigs.kG = 0.0;
+        elevatorTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
 
         ElevatorMtrLT.setPosition(0);
@@ -67,30 +56,35 @@ public class ElevatorIOReal implements ElevatorIO {
 
         //check if elevator motor is initialized correctly
         ElevatorMtrLT.setControl(new Follower(ElevatorMtrRT.getDeviceID(), true));
-        initializationStatus = ElevatorMtrRT.getConfigurator().apply(talonConfigs);
-        initializationStatus = ElevatorMtrLT.getConfigurator().apply(talonConfigs);
-        if(!initializationStatus.isOK())
+        initializationStatus = ElevatorMtrRT.getConfigurator().apply(elevatorTalonConfigs);
+        initializationStatus = ElevatorMtrLT.getConfigurator().apply(elevatorTalonConfigs);
+        if(!initializationStatus.isOK()) {
             System.out.println("Failed to Configure CAN ID" + CatzConstants.ElevatorConstants.ELEVATOR_RT_MTR_ID);
+        }
             
     }
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.elevatorVoltage = ElevatorMtrRT.getMotorVoltage().getValue();
-        inputs.elevatorDutyCycle = ElevatorMtrRT.getDutyCycle().getValue();
-        inputs.elevatorTorqueCurrent = ElevatorMtrRT.getTorqueCurrent().getValue();
-        inputs.elevatorVelocity = ElevatorMtrRT.getVelocity().getValue();
-        inputs.elevatorPosRev = ElevatorMtrRT.getPosition().getValue();
-        inputs.elevatorPositionError = ElevatorMtrRT.getClosedLoopError().getValue();
+        inputs.elevatorVoltage          = ElevatorMtrRT.getMotorVoltage().getValue();
+        inputs.elevatorDutyCycle        = ElevatorMtrRT.getDutyCycle().getValue();
+        inputs.elevatorTorqueCurrent    = ElevatorMtrRT.getTorqueCurrent().getValue();
+        inputs.elevatorVelocity         = ElevatorMtrRT.getVelocity().getValue();
+        inputs.elevatorPosRev           = ElevatorMtrRT.getPosition().getValue();
+        inputs.elevatorPositionError    = ElevatorMtrRT.getClosedLoopError().getValue();
 
-        inputs.bottomSwitchTripped = m_bottomLimit.get();
+        inputs.bottomSwitchTripped      = m_bottomLimit.get();
     }
     
     @Override
-    public void setElevatorPosition(double newPositionElevator) {
-        ElevatorMtrRT.setControl(new PositionVoltage(newPositionElevator)
-
-        );
+    public void setElevatorPosition(double newPositionElevator, double elevatorFF) {
+        ElevatorMtrRT.setControl(new MotionMagicVoltage(newPositionElevator,
+                                                        true, 
+                                                        elevatorFF,
+                                                        0, 
+                                                        false,
+                                                        false,
+                                                        false));
     }
 
     @Override

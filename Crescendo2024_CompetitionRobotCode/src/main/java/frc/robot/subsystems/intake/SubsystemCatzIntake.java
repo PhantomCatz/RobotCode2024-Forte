@@ -36,7 +36,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   *
   ************************************************************************************************************************/
   private final double ROLLERS_MTR_PWR_IN  =  0.6;
-  private final double ROLLERS_MTR_PWR_OUT = -0.4; //Make different output powers for //-0.4 for handoff //-0.7 for amp vertical scoring
+  private final double ROLLERS_MTR_PWR_OUT = -0.7; //Make different output powers for //-0.4 for handoff //-0.7 for amp vertical scoring
 
   private static final int ROLLERS_STATE_OFF = 0;
   private static final int ROLLERS_STATE_IN  = 1;
@@ -191,7 +191,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
             io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT); 
             System.out.println(speednumber.get());
         } else if(m_rollerRunningMode == ROLLERS_STATE_IN) {
-              if(inputs.IntakeBeamBrkBroken) {
+              if(inputs.isIntakeBeamBrkBroken) {
                 io.setRollerPercentOutput(0.0);
                 m_rollerRunningMode = ROLLERS_STATE_OFF;
               } else {
@@ -204,7 +204,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // ----------------------------------------------------------------------------------
       // IntakePivot
       // ----------------------------------------------------------------------------------
-      if(currentIntakeState == IntakeState.WAITING){
+      if(currentIntakeState == IntakeState.WAITING) {
+
         if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < ELEVATOR_THRESHOLD_FOR_INTAKE) {
           currentIntakeState = IntakeState.AUTO;
         }
@@ -224,23 +225,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
           m_numConsectSamples = 0; //resetcounter if intake hasn't leveled off
         }
         
-        
+        //voltage control
         m_ffVolts    = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg + GRAVITY_KG_OFFSET), pivotVelRadPerSec, 0);
         m_pidVolts   = -pivotPID.calculate(m_targetPositionDeg, m_currentPositionDeg);
-
-        // if(m_currentPositionDeg < 0) {
-        //   m_ffVolts = m_ffVolts - 0.2;
-        // }
-
-
         m_finalVolts = m_pidVolts + m_ffVolts;
         
-
-
-        //pwr limiting
-        if(Math.abs(m_finalVolts) >  INTAKE_VOLT_LIMIT) {
-          m_finalVolts = Math.signum(m_finalVolts) * INTAKE_VOLT_LIMIT;
-        }
 
 
 
@@ -254,7 +243,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
           io.setIntakePivotVoltage(0.0);
           m_targetPositionDeg = NULL_INTAKE_POSITION;
         } else {
-          io.setIntakePivotVoltage(m_finalVolts);
+          io.setIntakePivotEncOutput(m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts);
+         // io.setIntakePivotVoltage(m_finalVolts);
         }
         
       } else { //we are current setting pwr through manual
@@ -279,7 +269,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public void updateIntakeTargetPosition(CatzMechanismPosition targetPosition) {
 
     this.m_targetPositionDeg = targetPosition.getIntakePivotTargetAngle();
-    if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE) {
+    if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE &&
+       targetPosition.getIntakePivotTargetAngle() > 90) {
       currentIntakeState = IntakeState.WAITING;
     } else {
       currentIntakeState = IntakeState.AUTO;
