@@ -1,87 +1,87 @@
-// package frc.robot.commands.DriveCmds;
+package frc.robot.commands.DriveCmds;
 
-// import java.util.function.Supplier;
+import java.util.function.Supplier;
 
-// import org.littletonrobotics.junction.Logger;
-// import edu.wpi.first.math.kinematics.ChassisSpeeds;
-// import edu.wpi.first.wpilibj2.command.Command;
-// import frc.robot.CatzConstants.DriveConstants;
-// import frc.robot.CatzConstants.OIConstants;
-// import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.CatzConstants.DriveConstants;
+import frc.robot.CatzConstants.OIConstants;
+import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
-// public class TeleopDriveCmd extends Command {
-//   //subystem declaration collection
-//   private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
+public class TeleopDriveCmd extends Command {
+  //subystem declaration collection
+  private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
 
-//   //
-//   private Supplier<Double> m_supplierLeftJoyX;
-//   private Supplier<Double> m_supplierLeftJoyY;
-//   private Supplier<Double> m_supplierRightJoyX;
-//   private Supplier<Boolean> m_isFieldOrientedDisabled;
+  //
+  private Supplier<Double> m_supplierLeftJoyX;
+  private Supplier<Double> m_supplierLeftJoyY;
+  private Supplier<Double> m_supplierRightJoyX;
+  private Supplier<Boolean> m_isFieldOrientedDisabled;
 
-//   public TeleopDriveCmd(Supplier<Double> supplierLeftJoyX,
-//                         Supplier<Double> supplierLeftJoyY,
-//                         Supplier<Double> supplierRightJoyX,
-//                         Supplier<Boolean> supplierFieldOriented) {
-//     this.m_supplierLeftJoyX        = supplierLeftJoyX;
-//     this.m_supplierLeftJoyY        = supplierLeftJoyY;
-//     this.m_supplierRightJoyX       = supplierRightJoyX;
-//     this.m_isFieldOrientedDisabled = supplierFieldOriented;
-//                         }
+  public TeleopDriveCmd(Supplier<Double> supplierLeftJoyX,
+                        Supplier<Double> supplierLeftJoyY,
+                        Supplier<Double> supplierRightJoyX,
+                        Supplier<Boolean> supplierFieldOriented) {
+    this.m_supplierLeftJoyX        = supplierLeftJoyX;
+    this.m_supplierLeftJoyY        = supplierLeftJoyY;
+    this.m_supplierRightJoyX       = supplierRightJoyX;
+    this.m_isFieldOrientedDisabled = supplierFieldOriented;
+                        }
 
-//   //   addRequirements(m_driveTrain);
-//   // }
+  //   addRequirements(m_driveTrain);
+  // }
 
-//   @Override
-//   public void initialize() {}
+  @Override
+  public void initialize() {}
 
-//   @Override
-//   public void execute() {
-//     //obtain realtime joystick inputs with supplier methods
+  @Override
+  public void execute() {
+    //obtain realtime joystick inputs with supplier methods
 
-//     double xSpeed = -m_supplierLeftJoyY.get();
-//     double ySpeed = -m_supplierLeftJoyX.get(); 
-//     double turningSpeed = -m_supplierRightJoyX.get();
+    double xSpeed = -m_supplierLeftJoyY.get();
+    double ySpeed = -m_supplierLeftJoyX.get(); 
+    double turningSpeed = -m_supplierRightJoyX.get();
 
 
-//     // Apply deadbands to prevent modules from receiving unintentional pwr
-//     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
-//     ySpeed =       Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed * DriveConstants.MAX_SPEED: 0.0;
-//     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed * DriveConstants.MAX_ANGSPEED_RAD_PER_SEC: 0.0;
+    // Apply deadbands to prevent modules from receiving unintentional pwr
+    xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
+    ySpeed =       Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed * DriveConstants.MAX_SPEED: 0.0;
+    turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed * DriveConstants.MAX_ANGSPEED_RAD_PER_SEC: 0.0;
 
-//     //Construct desired chassis speeds
-//     ChassisSpeeds chassisSpeeds;
-//     if (m_isFieldOrientedDisabled.get()) {
-//         // Relative to robot
-//         chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
-//     } else {
-//         // Relative to field
-//         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-//                                             xSpeed, ySpeed, turningSpeed, m_driveTrain.getRotation2d()
-//                                                               );
-//     }
+    //Construct desired chassis speeds
+    ChassisSpeeds chassisSpeeds;
+    if (m_isFieldOrientedDisabled.get()) {
+        // Relative to robot
+        chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
+    } else {
+        // Relative to field
+        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                                            xSpeed, ySpeed, turningSpeed, m_driveTrain.getRotation2d()
+                                                              );
+    }
 
-//   //   //send new chassisspeeds object to the drivetrain
-//   //   m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
+  //   //send new chassisspeeds object to the drivetrain
+  //   m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
 
-//   //   //logging
-//   //   Logger.recordOutput("robot xspeed", xSpeed);
-//   //   Logger.recordOutput("robot yspeed", ySpeed);
-//   //   Logger.recordOutput("robot turnspeed", turningSpeed);
-//   //   Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
-//   //   Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
-//   //   Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
+  //   //logging
+  //   Logger.recordOutput("robot xspeed", xSpeed);
+  //   Logger.recordOutput("robot yspeed", ySpeed);
+  //   Logger.recordOutput("robot turnspeed", turningSpeed);
+  //   Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
+  //   Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
+  //   Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
 
-//   // }
+  // }
 
-//   // // Called once the command ends or is interrupted.
-//   // @Override
-//   // public void end(boolean interrupted) {}
+  // // Called once the command ends or is interrupted.
+  // @Override
+  // public void end(boolean interrupted) {}
 
-//   // // Returns true when the command should end.
-//   // @Override
-//   // public boolean isFinished() {
-//   //   return false;
-//   // }
-// }
-// }
+  // // Returns true when the command should end.
+  // @Override
+  // public boolean isFinished() {
+  //   return false;
+  // }
+}
+}

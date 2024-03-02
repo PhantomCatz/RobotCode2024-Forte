@@ -15,14 +15,14 @@ import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 // import frc.robot.commands.AutoAlignCmd;
 // import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
-import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
+// import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
+// import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
 // import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator;
-import frc.robot.subsystems.intake.SubsystemCatzIntake;
+// import frc.robot.subsystems.elevator.SubsystemCatzElevator;
+// import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
-// import frc.robot.subsystems.turret.SubsystemCatzTurret;
 // import frc.robot.subsystems.vision.SubsystemCatzVision;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 /**
  * RobotContainer
@@ -41,17 +41,17 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
     //subsystems
     // private SubsystemCatzDrivetrain driveTrain; 
     // private SubsystemCatzVision vision;
-    private SubsystemCatzIntake intake;
+    // private SubsystemCatzIntake intake;
     private SubsystemCatzShooter shooter;
-    private SubsystemCatzElevator elevator;
-    // private SubsystemCatzTurret turret;
+    // private SubsystemCatzElevator elevator;
+    private SubsystemCatzTurret turret;
     //private SubsystemCatzClimb climb;
 
 
     // private CatzAutonomous auton = new CatzAutonomous();
 
     //xbox controller
-     CommandXboxController xboxDrv;
+    private CommandXboxController xboxDrv;
     private CommandXboxController xboxAux;
  
        
@@ -64,10 +64,10 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 
     // driveTrain = SubsystemCatzDrivetrain.getInstance(); 
     // vision     = SubsystemCatzVision.getInstance();
-    intake     = SubsystemCatzIntake.getInstance();
+    // intake     = SubsystemCatzIntake.getInstance();
     shooter    = SubsystemCatzShooter.getInstance();
-    elevator = SubsystemCatzElevator.getInstance();
-    // turret = SubsystemCatzTurret.getInstance();
+    //elevator = SubsystemCatzElevator.getInstance();
+    turret = SubsystemCatzTurret.getInstance();
     //climb      = SubsystemCatzClimb.getInstance();
 
     
@@ -92,11 +92,11 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
     *
     _______________________________________________________________________________________________*/
 
-    xboxDrv.rightBumper().onTrue(intake.cmdRollerIn());                             //intake in
-    xboxDrv.leftBumper().onTrue(intake.cmdRollerOut());                             //intake out
+    // xboxDrv.rightBumper().onTrue(intake.cmdRollerIn());                             //intake in
+    // xboxDrv.leftBumper().onTrue(intake.cmdRollerOut());                             //intake out
 
-    Trigger rollersOffBinding = xboxDrv.leftBumper().and(xboxDrv.rightBumper());
-    rollersOffBinding.onTrue(intake.cmdRollerOff());                                //stop rollers
+    // Trigger rollersOffBinding = xboxDrv.leftBumper().and(xboxDrv.rightBumper());
+    // rollersOffBinding.onTrue(intake.cmdRollerOff());                                //stop rollers
 
     
     /*_____________________________________________________________________________________________
@@ -107,10 +107,9 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
     *
     _______________________________________________________________________________________________*/
 
-    //  xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());     //Turn Left  (-)
-    //  xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());    //Turn right (+)
-
-    //  xboxAux.a().onTrue(turret.cmdResetTurretPosition()).onFalse(turret.cmdTurretOff());    // Go to home position (0.0)
+    xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());     //Turn Left  (-)
+    xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());    //Turn right (+)
+    xboxAux.a().onTrue(turret.cmdResetTurretPosition());  // Go to home position (0.0)
   
     //  xboxAux.b().onTrue(turret.cmdAutoRotate()).onFalse(turret.cmdTurretOff());             //Follow April Tags
 
@@ -123,14 +122,12 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
     * 
     *
     _______________________________________________________________________________________________*/
-    xboxAux.b().onTrue(shooter.cmdShoot());   
-    xboxAux.x().onTrue(shooter.cmdShooterEnabled())
-               .onFalse(shooter.cmdShooterDisabled());
-    xboxAux.y().onTrue(shooter.loadDisabled());
-    xboxAux.leftTrigger().onTrue(shooter.loadBackward());
-    xboxAux.leftBumper().onTrue(shooter.setPosition(0.83));
-    xboxAux.rightBumper().onTrue(shooter.cmdLoad());
- 
+    xboxDrv.rightTrigger().onTrue(shooter.cmdShoot());    //shooter activation
+    xboxDrv.x().onTrue(shooter.cmdShooterEnabled());
+    xboxDrv.y().onTrue(shooter.loadDisabled());
+    xboxDrv.leftTrigger().onTrue(shooter.loadBackward());
+    //xboxDrv.leftBumper().onTrue(shooter.setPosition(0.25));
+    xboxDrv.rightBumper().onTrue(shooter.cmdLoad());
     
     /*_____________________________________________________________________________________________
     *
@@ -140,12 +137,12 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
     *
     _______________________________________________________________________________________________*/
 
-    xboxAux.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
+    // xboxAux.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW));
 
-    xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
-    xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
-    xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE));
-    xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
+    // xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF));
+    // xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP));
+    // xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE));
+    // xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND));
 
     
     /*_____________________________________________________________________________________________
@@ -156,7 +153,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
     *
     _______________________________________________________________________________________________*/
     
-    xboxAux.rightStick().onTrue(new ManualElevatorCmd(()-> xboxAux.getRightY()));
+    // xboxAux.rightStick().onTrue(new ManualElevatorCmd(()-> xboxAux.getRightY()));
 
     /*_____________________________________________________________________________________________
     *
@@ -191,14 +188,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 
     // xboxDrv.b().onTrue(driveTrain.stopDriving()); //TBD need to add this back in TBD runs when disabled where?
     
-    xboxDrv.rightTrigger().onTrue(shooter.cmdShoot());    //shooter activation
-    xboxDrv.x().onTrue(shooter.cmdShooterEnabled());
-               //.onFalse(shooter.cmdShooterDisabled());
-    xboxDrv.y().onTrue(shooter.loadDisabled());
-    xboxDrv.leftTrigger().onTrue(shooter.loadBackward());
-    xboxDrv.leftBumper().onTrue(shooter.setPosition(0.25));
-    //xboxDrv.rightStick().onTrue(shooter.setPosition(xboxDrv.getRightY()));
-    xboxDrv.rightBumper().onTrue(shooter.cmdLoad());
+
     
 
   }

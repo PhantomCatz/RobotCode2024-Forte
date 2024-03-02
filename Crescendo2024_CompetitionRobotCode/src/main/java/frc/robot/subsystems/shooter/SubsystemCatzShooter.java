@@ -4,16 +4,12 @@
 
 package frc.robot.subsystems.shooter;
 
-import java.sql.Driver;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.internal.DriverStationModeThread;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.OIConstants;
@@ -50,11 +46,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final int SHOOTING = 7;
   private static final int LOAD_OFF = 8;
   private static final int LOAD_OUT = 9;
+  
+  private final double LOOP_CYCLE_MS = 0.02;
 
   private static final boolean BEAM_IS_BROKEN  = true;
   private static final boolean BEAM_IS_NOT_BROKEN = false;
-
-  private double SHOOTER_DELAY_IN_SECONDS = 1;
 
   private boolean desiredBeamBreakState;
 
@@ -64,9 +60,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private XboxController xboxDrvRumble;
 
   public SubsystemCatzShooter() {
-    //Shooter delay calculation
-    SHOOTER_DELAY_IN_SECONDS = Math.round( (SHOOTER_DELAY_IN_SECONDS / 0.02) + 1);
-
     //XboxController
     xboxDrvRumble = new XboxController(OIConstants.XBOX_DRV_PORT);
 
@@ -102,7 +95,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     double servoPosition = servoPos.get();
     io.setServoPosition(servoPosition);
 
-      switch(currentLoaderMode) { 
+    switch(currentLoaderMode) { 
         case LOAD_IN:
           io.loadNote();
           currentLoaderMode = LOAD_IN_DONE;
@@ -118,21 +111,24 @@ public class SubsystemCatzShooter extends SubsystemBase {
         break;
 
         case WAIT_FOR_NOTE_TO_SETTLE:
-          iterationCounter++;
-          if(iterationCounter > 0) {
-              if(inputs.shooterAdjustBeamBreakState == BEAM_IS_BROKEN) { //set off flag that determines adjust direction
-                desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
-                io.fineAdjustBck();
-              } else {
-                desiredBeamBreakState = BEAM_IS_BROKEN;
-                io.fineAdjustFwd();
-              }
+          if(inputs.shooterAdjustBeamBreakState == BEAM_IS_BROKEN) { //set off flag that determines adjust direction
+            desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
+            io.fineAdjustBck();
+            System.out.println("Back");
+          } 
+
+          // else {
+          //   desiredBeamBreakState = BEAM_IS_BROKEN;
+          //   System.out.println("Foward");
+          //   io.fineAdjustFwd();
+          // }
+              
               currentLoaderMode = FINE_TUNE;
-          }
         break;
 
         case FINE_TUNE:
           if(inputs.shooterAdjustBeamBreakState == desiredBeamBreakState) { //if front is still conncected adjust foward until it breaks
+            io.loadDisabled();
             currentLoaderMode = LOAD_OFF;
           }
         break;
@@ -153,7 +149,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
               xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0.7);
               
               iterationCounter = 0;
-              currentLoaderMode = 100;
             }
           }
         break;
@@ -164,7 +159,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
             xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0);
           }
           iterationCounter++;
-          if(iterationCounter >= SHOOTER_DELAY_IN_SECONDS) {
+          if(iterationCounter >= timer(1)) {
             io.setShooterDisabled();
             currentLoaderMode = LOAD_OFF;
           }
@@ -177,7 +172,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
         case LOAD_OUT:
           io.loadBackward();
           iterationCounter++;
-          if(iterationCounter >= 25) { //0.5s
+          if(iterationCounter >= timer(0.5)) {
             io.loadDisabled();
             currentLoaderMode = LOAD_OFF;
             iterationCounter = 0;
@@ -186,7 +181,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
     Logger.recordOutput("current load state", currentLoaderMode);
   }
-
+ 
+  private double timer(double seconds){ // in seconds; converts time to iteration counter units
+      System.out.println(Math.round(seconds/LOOP_CYCLE_MS) + 1);
+    return Math.round(seconds/LOOP_CYCLE_MS) + 1;
+  }
   //-------------------------------------------Flywheel Commands------------------------------------------
 
   public Command cmdShooterEnabled() {

@@ -29,7 +29,7 @@ public class TurretIOReal implements TurretIO {
     private final CANSparkMax turretMtr;
 
     public TurretIOReal() {
-        
+       
         turretMtr = new CANSparkMax(60, MotorType.kBrushless);
         turretMtr.restoreFactoryDefaults();
         turretMtr.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
@@ -46,12 +46,19 @@ public class TurretIOReal implements TurretIO {
 
     @Override
     public void turretSetPwr(double outputPwr) {
+        
         turretMtr.set(outputPwr);
     }
 
     @Override 
     public void turretSetEncoderPos(double position){
         turretMtr.getEncoder().setPosition(position);
+    }
+
+    @Override
+    public double getTurretEncoderPos() {
+        double turretEncPosition = turretMtr.getEncoder().getPosition();
+        return turretEncPosition;
     }
 }
 
