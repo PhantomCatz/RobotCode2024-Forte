@@ -22,12 +22,13 @@ public class TeleopDriveCmd extends Command {
   public TeleopDriveCmd(Supplier<Double> supplierLeftJoyX,
                         Supplier<Double> supplierLeftJoyY,
                         Supplier<Double> supplierRightJoyX,
-                        Supplier<Boolean> supplierFieldOriented) {
+                        Supplier<Boolean> supplierFieldOriented) 
+  {
     this.m_supplierLeftJoyX        = supplierLeftJoyX;
     this.m_supplierLeftJoyY        = supplierLeftJoyY;
     this.m_supplierRightJoyX       = supplierRightJoyX;
     this.m_isFieldOrientedDisabled = supplierFieldOriented;
-                        }
+  }
 
   //   addRequirements(m_driveTrain);
   // }
@@ -83,4 +84,5 @@ public class TeleopDriveCmd extends Command {
   // public boolean isFinished() {
   //   return false;
   // }
+    }
 }
