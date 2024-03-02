@@ -207,7 +207,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     //offset new turret angle based off current robot rotation
     angle = Math.PI + angle - robotPose.getRotation().getRadians();
 
-    angle = CatzMathUtils.toUnitCircleAngle(angle);
+    angle = CatzMathUtils.toUnitCircAngle(angle);
 
     //TBD add logic that will turn on a flag when the turret it currently tracking with info
 

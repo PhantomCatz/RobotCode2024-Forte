@@ -175,13 +175,10 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
 
-
-
-    public static final double LT_FRNT_OFFSET = 0.00406; 
-    public static final double LT_BACK_OFFSET = -0.03950; 
-    public static final double RT_BACK_OFFSET = -0.75084;
-    public static final double RT_FRNT_OFFSET = 0.55098;
-   
+    public static final double LT_FRNT_OFFSET = 0.2325062558+0.5;  //mag encoder 0
+    public static final double LT_BACK_OFFSET = 0.2868553535;       //mag encoder 1
+    public static final double RT_BACK_OFFSET = 0.11024530275;      //mag encoder 2
+    public static final double RT_FRNT_OFFSET = 0.32310630807;      //mag encoder 3
 
     public static final int LT_FRNT_DRIVE_ID = 1;
     public static final int LT_BACK_DRIVE_ID = 3;
@@ -228,6 +225,8 @@ public final class CatzConstants {
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction
     public static final double SDS_L2_PLUS_GEAR_RATIO = 6.75 * (14/16);       //SDS mk4i L2 ratio reduction plud random numbers from eddy
+    public static final double SDS_L2_GEAR_RATIO_PLUS_16T = 5.90;  //SDS mk4i L2+ ratio reduction 16th tooth
+    public static final double SDS_L2_GEAR_RATIO_PLUS_15T = 6.30;  //SDS mk4i L2+ ratio reduction 15th tooth
 
                                                                 //overtime
     public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(3.3);//0.095;// mUnits.inchesToMeters(4);
