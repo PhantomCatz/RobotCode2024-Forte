@@ -27,10 +27,10 @@ public class TeleopDriveCmd extends Command {
     this.m_supplierLeftJoyY        = supplierLeftJoyY;
     this.m_supplierRightJoyX       = supplierRightJoyX;
     this.m_isFieldOrientedDisabled = supplierFieldOriented;
-                        }
+                        
 
-  //   addRequirements(m_driveTrain);
-  // }
+    addRequirements(m_driveTrain);
+  }
 
   @Override
   public void initialize() {}
@@ -61,27 +61,27 @@ public class TeleopDriveCmd extends Command {
                                                               );
     }
 
-  //   //send new chassisspeeds object to the drivetrain
-  //   m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
+    //send new chassisspeeds object to the drivetrain
+    m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
 
-  //   //logging
-  //   Logger.recordOutput("robot xspeed", xSpeed);
-  //   Logger.recordOutput("robot yspeed", ySpeed);
-  //   Logger.recordOutput("robot turnspeed", turningSpeed);
-  //   Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
-  //   Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
-  //   Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
+    //logging
+    Logger.recordOutput("robot xspeed", xSpeed);
+    Logger.recordOutput("robot yspeed", ySpeed);
+    Logger.recordOutput("robot turnspeed", turningSpeed);
+    Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
+    Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
+    Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
 
-  // }
+  }
 
-  // // Called once the command ends or is interrupted.
-  // @Override
-  // public void end(boolean interrupted) {}
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {}
 
-  // // Returns true when the command should end.
-  // @Override
-  // public boolean isFinished() {
-  //   return false;
-  // }
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
 }
-}
+

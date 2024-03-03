@@ -14,7 +14,6 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import frc.robot.CatzConstants.MtrConfigConstants;
-import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 //import frc.robot.subsystems.turret.TurretIOReal;
 
@@ -165,8 +164,8 @@ public class ShooterIOReal implements ShooterIO {
         inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
         inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
 
-        inputs.servoLeft  = shooterServoLT.get();
-        inputs.servoRight = shooterServoRT.get();
+        inputs.servoLeftPosition  = shooterServoLT.get();
+        inputs.servoRightPosition = shooterServoRT.get();
 
     }
 

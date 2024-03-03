@@ -2,44 +2,50 @@
 // // Open Source Software; you can modify and/or share it under the terms of
 // // the WPILib BSD license file in the root directory of this project.
 
-// package frc.robot.commands.mechanismCmds;
+package frc.robot.commands.mechanismCmds;
 
-// import java.util.function.Supplier;
+import java.util.function.Supplier;
 
-// import edu.wpi.first.wpilibj2.command.Command;
-// import edu.wpi.first.wpilibj2.command.Subsystem;
-// import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
 
-// public class ManualIntakeCmd extends Command {
-//   SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
-//   Supplier<Double> supplierLeftJoyY;
-//   public ManualIntakeCmd(Supplier<Double> supplierLeftJoyY) {
-//     this.supplierLeftJoyY = supplierLeftJoyY;
-//     addRequirements(intake);
-//   }
+public class ManualIntakeCmd extends Command {
+  SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
+  Supplier<Double> m_supplierLeftJoyY;
+  Supplier<Boolean> m_supplierLeftJoyStickPressed;
 
-//   @Override
-//   public void initialize() {}
+  private int pressCounter = 0;
+  public ManualIntakeCmd(Supplier<Double> supplierLeftJoyY, Supplier<Boolean> supplierLeftJoyStickPressed) {
+    this.m_supplierLeftJoyY = supplierLeftJoyY;
+    this.m_supplierLeftJoyStickPressed = supplierLeftJoyStickPressed;
+    addRequirements(intake);
+  }
 
-//   @Override
-//   public void execute() {
-//     if(supplierLeftJoyY.get() > 0.1) {
-//       System.out.println("going to 10");
-//       intake.updateIntakeTargetPosition(10);
-//     } else if (supplierLeftJoyY.get() < -0.1) {
-//       intake.updateIntakeTargetPosition(-10);
-//       System.out.println("going to -10");
+  @Override
+  public void initialize() {
+    pressCounter = 0;
+  }
 
-//     } else {
-//       intake.updateIntakeTargetPosition(0);
-//     }
-//   }
+  @Override
+  public void execute() {
+    if(m_supplierLeftJoyStickPressed.get()) {
+      pressCounter = 1;
+    }
 
-//   @Override
-//   public void end(boolean interrupted) {}
+    if(pressCounter == 1) {
+      intake.pivotFullManual(m_supplierLeftJoyY.get());
+    } else {
+      intake.pivotSemiManual(m_supplierLeftJoyY.get());
+    }
+  }
 
-//   @Override
-//   public boolean isFinished() {
-//     return false;
-//   }
-// }
+  @Override
+  public void end(boolean interrupted) {}
+
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+}

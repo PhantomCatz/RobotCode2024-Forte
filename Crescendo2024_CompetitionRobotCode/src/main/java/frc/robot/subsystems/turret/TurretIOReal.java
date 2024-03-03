@@ -13,20 +13,19 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkPIDController.AccelStrategy;
 
 import frc.robot.CatzConstants.MtrConfigConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 
 public class TurretIOReal implements TurretIO {
 
-    LoggedTunableNumber rollerMotorTunableNumber = new LoggedTunableNumber("IntakeRoller", 0.6);
-    
-   // private final DigitalInput beamBreakBack = new DigitalInput(4);
-    //private final DigitalInput beamBreakFront = new DigitalInput(5);
-
     private final CANSparkMax turretMtr;
+    private final SparkPIDController smartMotionPID;
 
     public TurretIOReal() {
        
@@ -35,18 +34,26 @@ public class TurretIOReal implements TurretIO {
         turretMtr.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
         turretMtr.setIdleMode(IdleMode.kBrake);
         turretMtr.enableVoltageCompensation(12.0);
+
+        smartMotionPID = turretMtr.getPIDController();
+        smartMotionPID.setP(0.02);
+        smartMotionPID.setI(0);
+        smartMotionPID.setD(0);
+
+        smartMotionPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
+        smartMotionPID.setSmartMotionAllowedClosedLoopError(5, 0);
+        smartMotionPID.setSmartMotionMaxVelocity(2000, 0);
+        smartMotionPID.setSmartMotionMinOutputVelocity(0,0);
     }
     @Override
     public void updateInputs(TurretIOInputs inputs) {
         inputs.turretMtrPercentOutput = turretMtr.get();
         inputs.turretMtrOutputCurrent = turretMtr.getOutputCurrent();
         inputs.turretEncValue         = turretMtr.getEncoder().getPosition();
-        Logger.recordOutput("turretEncValue", inputs.turretEncValue);
     }
 
     @Override
     public void turretSetPwr(double outputPwr) {
-        
         turretMtr.set(outputPwr);
     }
 
@@ -56,9 +63,10 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
-    public double getTurretEncoderPos() {
-        double turretEncPosition = turretMtr.getEncoder().getPosition();
-        return turretEncPosition;
+    public void turretSetPositionSM(double angle) {
+        smartMotionPID.setReference(angle * SubsystemCatzTurret.TURRET_REV_PER_DEG, ControlType.kSmartMotion);
     }
+
+
 }
 

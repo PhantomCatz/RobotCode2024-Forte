@@ -15,12 +15,10 @@ public interface TurretIO {
 
     public default void updateInputs(TurretIOInputs inputs) {}
 
-    public default void turretSetPwr(double outputPwr) {}//targetEncPos) {}
+    public default void turretSetPwr(double outputPwr) {}
 
     public default void turretSetEncoderPos(double position){}
 
-    public default double getTurretEncoderPos() {
-        return 0;
-    }
+    public default void turretSetPositionSM(double position) {}
 
 }
