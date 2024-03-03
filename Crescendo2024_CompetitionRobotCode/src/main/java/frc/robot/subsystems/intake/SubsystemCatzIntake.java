@@ -94,7 +94,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static final double INTAKE_STOW                      = 160.0;
   public static final double INTAKE_OFFSET_FROM_ZERO          = 164.0;
 
-  private final double STOW_CUTOFF = INTAKE_OFFSET_FROM_ZERO- 4; //TBD need to dial in
+  private final double STOW_CUTOFF = INTAKE_OFFSET_FROM_ZERO - 4; //TBD need to dial in
   private final double GROUND_CUTTOFF = 200;
 
   private final double MANUAL_HOLD_STEP_COEFFICIENT = 2.0;
@@ -106,7 +106,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   private final double GRAVITY_KG_OFFSET = 0.0;//9.0;
 
-  private final double ELEVATOR_THRESHOLD_FOR_INTAKE = 10;
+  private final double ELEVATOR_THRESHOLD_FOR_INTAKE = 4;
 
   //pivot variables
   private double m_pivotManualPwr = 0.0;
@@ -150,8 +150,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
     }
 
     pivotPID = new PIDController(PIVOT_PID_kP, 
-                            PIVOT_PID_kI, 
-                            PIVOT_PID_kD);
+                                 PIVOT_PID_kI, 
+                                 PIVOT_PID_kD);
 
     pivotFeedFoward = new ArmFeedforward(PIVOT_FF_kS,
                                          PIVOT_FF_kG,
@@ -171,8 +171,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
     WAITING,
     IN_POSITION
   }
-  // how did u plano on doing it?
-  ///state machine on the intake // ok, we we're just planning to do it on a button; like just run a logic through a menthod and use that fot cmd
+  // how did u plan on doing it?
+  //state machine on the intake // ok, we we're just planning to do it on a button; like just run a logic through a menthod and use that fot cmd
   //logic == logic?
   @Override
   public void periodic() {
@@ -198,17 +198,17 @@ public class SubsystemCatzIntake extends SubsystemBase {
       switch(m_rollerRunningMode) {
         case ROLLERS_STATE_IN:
             if(inputs.isIntakeBeamBrkBroken) {
-              io.setRollerPercentOutput(0.0);
               m_rollerRunningMode = ROLLERS_STATE_OFF;
             } else {
               io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN);
-            }        break;
-
+            }        
+            break;
         case ROLLERS_STATE_OUT:
-            io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT); 
+            io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT);
+            break; 
         case ROLLERS_STATE_OFF:
-          io.setRollerPercentOutput(0.0);
-        break;
+            io.setRollerPercentOutput(0.0);
+            break;
       }
 
       //if turret and Intake is in position
@@ -220,16 +220,18 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // ----------------------------------------------------------------------------------
       // IntakePivot
       // ----------------------------------------------------------------------------------
-      if(currentIntakeState == IntakeState.WAITING) {
+      if(currentIntakeState == IntakeState.WAITING) { //when intake is waiting for elevator
 
         if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < ELEVATOR_THRESHOLD_FOR_INTAKE) {
           currentIntakeState = IntakeState.AUTO;
+          this.m_targetPositionDeg = m_targetPosition.getIntakePivotTargetAngle();
+
         }
 
       } else if ((currentIntakeState == IntakeState.AUTO || 
                   currentIntakeState == IntakeState.SEMI_MANUAL) && 
                   m_targetPositionDeg != NULL_INTAKE_POSITION) { 
-
+                    //if in automated state
 
             //check if at final position using counter
         if ((Math.abs(positionError) <= ERROR_INTAKE_THRESHOLD_DEG)) {
@@ -243,7 +245,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         
         //voltage control
         m_ffVolts    = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg + GRAVITY_KG_OFFSET), pivotVelRadPerSec, 0);
-        m_pidVolts   = -pivotPID.calculate(m_targetPositionDeg, m_currentPositionDeg);
+       // m_pidVolts   = -pivotPID.calculate(m_targetPositionDeg, m_currentPositionDeg);
         m_finalVolts = m_pidVolts + m_ffVolts;
 
 
@@ -252,7 +254,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         // power to 0, otherwise calculate new motor voltage based on position error and
         // current angle
         // ----------------------------------------------------------------------------------
-        if (m_targetPositionDeg == INTAKE_STOW && Math.abs(positionError) < 2) {
+        if (m_targetPositionDeg == INTAKE_STOW && Math.abs(positionError) < 0.5) {
           io.setIntakePivotVoltage(0.0);
           m_targetPositionDeg = NULL_INTAKE_POSITION;
           currentIntakeState = IntakeState.IN_POSITION;
@@ -274,21 +276,22 @@ public class SubsystemCatzIntake extends SubsystemBase {
     Logger.recordOutput("intake/position error", positionError);
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
     Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
-    //Logger.recordOutput("intake/roller target",m_rollerRunningMode);
+    Logger.recordOutput("intake/roller mode",m_rollerRunningMode);
 
   }
 
   //-------------------------------------Pivot methods--------------------------------
   //auto update intake angle
   public void updateIntakeTargetPosition(CatzMechanismPosition targetPosition) {
-    this.m_targetPosition = targetPosition;
-    this.m_targetPositionDeg = targetPosition.getIntakePivotTargetAngle();
+    this.m_targetPosition    = targetPosition;
 
     if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE &&
        targetPosition.getIntakePivotTargetAngle() > 90) {
       currentIntakeState = IntakeState.WAITING;
+      this.m_targetPositionDeg = SubsystemCatzIntake.INTAKE_SCORE_AMP;
     } else {
       currentIntakeState = IntakeState.AUTO;
+       this.m_targetPositionDeg = targetPosition.getIntakePivotTargetAngle();
     }
   }
 

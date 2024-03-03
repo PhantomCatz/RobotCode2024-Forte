@@ -145,7 +145,7 @@ public final class CatzConstants {
   public static final class ElevatorConstants {
     public static final double ELEVATOR_POS_STOW_POSITION = 0.0;
     public static final double ELEVATOR_POS_FULL_EXTEND   = -16.0;
-    public static final double ElEVATOR_POS_SCORE_AMP     = 8;
+    public static final double ElEVATOR_POS_SCORE_AMP     = 12.0;//8;
 
     public static int ELEVATOR_LT_MTR_ID = 50; //TBD ids are swapped for testing change back to 51
     public static int ELEVATOR_RT_MTR_ID = 51;
@@ -167,15 +167,15 @@ public final class CatzConstants {
 
   public static final class CatzMechanismConstants {
     public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF_AMP_PREP = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW,0, 1);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF_SPEAKER_PREP = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION , SubsystemCatzIntake.INTAKE_STOW, 0 , 1);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF_AMP_PREP = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW,0, 0);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF_SPEAKER_PREP = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION , SubsystemCatzIntake.INTAKE_STOW, 0 , 0);
     public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION,0,0,0);
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(ElevatorConstants.ElEVATOR_POS_SCORE_AMP, 0, 0,  0);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(ElevatorConstants.ElEVATOR_POS_SCORE_AMP, 0.0, 0,  0);
     public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_GROUND_PICKUP, 0, 0 );
     public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition(ElevatorConstants.ElEVATOR_POS_SCORE_AMP, SubsystemCatzIntake.INTAKE_SCORE_AMP,0, 0);
     public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition(0,0,0,0);
     public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition(0,0,0,0);
-    public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition(0,0,0,0);
+    public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_FULL_EXTEND, SubsystemCatzIntake.INTAKE_SCORE_AMP,0,0);
     public static final CatzMechanismPosition AUTO_ALIGN_WITH_SPEAKER = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW, 0, 0);
     
   }

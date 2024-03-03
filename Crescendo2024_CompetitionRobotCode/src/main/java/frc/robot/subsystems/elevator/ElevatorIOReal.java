@@ -37,7 +37,7 @@ public class ElevatorIOReal implements ElevatorIO {
         elevatorTalonConfigs.MotionMagic.MotionMagicAcceleration   = 160; // Target acceleration of 160 rps/s (0.5 seconds)
         elevatorTalonConfigs.MotionMagic.MotionMagicJerk           = 16000; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
-        elevatorTalonConfigs.Slot0.kP = 2.0;
+        elevatorTalonConfigs.Slot0.kP = 1.5;
         elevatorTalonConfigs.Slot0.kI = 0.0;
         elevatorTalonConfigs.Slot0.kD = 0.0;
             //current limit

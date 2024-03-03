@@ -114,7 +114,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
                  currentElevatorState == ElevatorState.SEMI_MANUAL)) {
              m_finalffVolts = elevatorFeedforward.calculate(0.0);
 
-           // io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
+            io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
 
       } else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
@@ -149,7 +149,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
   public void setElevatorPercentOutput(double percentOutput) {
     currentElevatorState = ElevatorState.FULL_MANUAL;
-    this.m_elevatorPercentOutput = percentOutput/10;
+    this.m_elevatorPercentOutput = percentOutput/5;
   }
 
   // ----------------------------------------------------------------------------------
