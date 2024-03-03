@@ -1,39 +1,39 @@
-package frc.robot.subsystems.intake;
+// package frc.robot.subsystems.intake;
 
-import org.littletonrobotics.junction.AutoLog;
+// import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeIO {
+// public interface IntakeIO {
 
-    @AutoLog
+//     @AutoLog
 
-    public class IntakeIOInputs {
-        public double pivotMtrRev;
-        public double pivotMtrPercentOutput;
-        public double rollerVoltage;
-        public double rollerPercentOutput;
-        public double rollerVelocity;
-        public boolean BeamBrkFrontBroken;
-        public boolean IntakeBeamBrkBroken;
-        public double closedLoopPivotMtr;
-    }
+//     public class IntakeIOInputs {
+//         public double pivotMtrRev;
+//         public double pivotMtrPercentOutput;
+//         public double rollerVoltage;
+//         public double rollerPercentOutput;
+//         public double rollerVelocity;
+//         public boolean BeamBrkFrontBroken;
+//         public boolean IntakeBeamBrkBroken;
+//         public double closedLoopPivotMtr;
+//     }
 
-    public default void updateInputs(IntakeIOInputs inputs) {}
+//     public default void updateInputs(IntakeIOInputs inputs) {}
 
-    public default void rollerEnable(boolean enable) {}
+//     public default void rollerEnable(boolean enable) {}
 
-    public default void setRollerPercentOutput(double speed) {}
+//     public default void setRollerPercentOutput(double speed) {}
 
-    public default void rollerIn() {}
+//     public default void rollerIn() {}
 
-    public default void rollerOut() {}
+//     public default void rollerOut() {}
 
-    public default void rollerDisable() {}
+//     public default void rollerDisable() {}
 
-    public default void resetPivotEncPos(double defaultEncoderPosition) {}
+//     public default void resetPivotEncPos(double defaultEncoderPosition) {}
 
-    public default void setIntakePivotVoltage(double volts) {}
+//     public default void setIntakePivotVoltage(double volts) {}
 
-    public default void setIntakePivotPercentOutput(double percentOutput) {}
+//     public default void setIntakePivotPercentOutput(double percentOutput) {}
 
-    public default void setIntakePivotEncOutput(double pivotEncOuput, double ffVolts) {}
-}
+//     public default void setIntakePivotEncOutput(double pivotEncOuput, double ffVolts) {}
+// }

@@ -55,4 +55,10 @@ public interface ShooterIO {
     
     public default void setServoSpeed(double speed) {}
 
+    // public default void handoffProcedure() {}
+
+    // public default void updateTurretState(){}
+
+    // public default void updateShooterState(){}
+
 }

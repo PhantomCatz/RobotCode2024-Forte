@@ -114,21 +114,21 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   @Override
   public void periodic() {
+    //System.out.println("periodic");
     io.updateInputs(inputs);
-
     currentTurretDegree = inputs.turretEncValue / TURRET_REV_PER_DEG; //TBD make conversion
     
     //obtain calculation values
     apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0);
     setPositionPower      = m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
-    offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
+    //offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
     
 
-    if(DriverStation.isDisabled() || 
-       Math.abs(currentTurretDegree) > TURRET_POSITIVE_MAX_RANGE) {
+    if(DriverStation.isDisabled()) {// || 
+      //  Math.abs(currentTurretDegree) > TURRET_POSITIVE_MAX_RANGE) {
       io.turretSetPwr(0.0);
+      manualTurretPwr = 0;
     } else { 
-
       if (currentTurretState == TurretState.AUTO) {
         io.turretSetPwr(setPositionPower);
 
@@ -137,16 +137,25 @@ public class SubsystemCatzTurret extends SubsystemBase {
         if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {
           io.turretSetPwr(apriltagTrackingPower);
         }
-      }
-      else {
+      } else {
         io.turretSetPwr(manualTurretPwr);
+        // System.out.println("Manual Control");
       }
-
+    }
+    // System.out.println("Manual turret power: " + manualTurretPwr);
+    // System.out.println("Current Turret Degree: " + currentTurretDegree);
+    if (currentTurretDegree > TURRET_POSITIVE_MAX_RANGE) { //Added limits to periodic because resetEncoder bugged and turned uncontrolably bypassing limits
+      manualTurretPwr = 0.0;
+    } else {
+      if (currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE) {
+        manualTurretPwr = 0.0;
+      }
     }
 
     Logger.recordOutput("turret/offsetXTurret", offsetAprilTagX);
-    Logger.recordOutput("turret/PwrPID", apriltagTrackingPower);
-    Logger.recordOutput("turret/curretnTurretState", currentTurretState);
+    // whc 01Mar24 need to fix.  Do we need to install a limelight?
+   //Logger.recordOutput("turret/PwrPID", apriltagTrackingPower);
+   // Logger.recordOutput("turret/currentTurretState", currentTurretState);
     Logger.recordOutput("turret/currentTurretDeg", currentTurretDegree);
     Logger.recordOutput("turret/m_TurretTargetDegree", m_turretTargetDegree);
   }
@@ -207,7 +216,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     //offset new turret angle based off current robot rotation
     angle = Math.PI + angle - robotPose.getRotation().getRadians();
 
-    angle = CatzMathUtils.toUnitCircleAngle(angle);
+    angle = CatzMathUtils.toUnitCircAngle(angle);
 
     //TBD add logic that will turn on a flag when the turret it currently tracking with info
 
@@ -248,8 +257,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return run(() -> setTurretTargetDegree(turretDeg));
   }
 
-  public Command cmdAutoRotate() {
-    return run(() -> aimAtGoal(new Translation2d(), true));
-  }
+  // public Command cmdAutoRotate() {
+  //   return run(() -> aimAtGoal(new Translation2d(), true));
+  // }
   
 }

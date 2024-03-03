@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Servo;
 import frc.robot.CatzConstants.MtrConfigConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.LoggedTunableNumber;
+//import frc.robot.subsystems.turret.TurretIOReal;
 
 public class ShooterIOReal implements ShooterIO {
 
@@ -31,6 +32,7 @@ public class ShooterIOReal implements ShooterIO {
     private final int SHOOTER_MOTOR_LT_CAN_ID = 21;
     private final int SHOOTER_MOTOR_RT_CAN_ID = 20;
 
+    private final double FLYWHEEL_THRESHOLD_OFFSET = 4;
 /*-----------------------------------------------------------------------------------------
  *
  * Load Motors
@@ -41,15 +43,15 @@ public class ShooterIOReal implements ShooterIO {
 
     //Load motor speeds 
     private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
-    private final double LOAD_MOTOR_LOADING_SPEED    = 0.45; //was 0.4
+    private final double LOAD_MOTOR_LOADING_SPEED    = 0.4; //was 0.4
     private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.4;
-    private final double LOAD_MOTOR_ADJUST_SPEED = 0.1;
+    private final double LOAD_MOTOR_ADJUST_SPEED     = 0.04;
 
 /*---------------------------------------------------------------------------------------
  * Beam Breaks
  *-------------------------------------------------------------------------------------*/
-    private final DigitalInput ADJUST_BEAM_BREAK   = new DigitalInput(0); //Swapped ids temporarily
-    private final DigitalInput LOAD_BEAM_BREAK = new DigitalInput(1);
+    private final DigitalInput ADJUST_BEAM_BREAK   = new DigitalInput(0);
+    private final DigitalInput LOAD_BEAM_BREAK     = new DigitalInput(1);
 
 /*---------------------------------------------------------------------------------------
  * Linear Servos
@@ -58,6 +60,7 @@ public class ShooterIOReal implements ShooterIO {
     private Servo shooterServoRT;
 
     private final int SERVO_LEFT_PWM_ID  = 0;
+
     private final int SERVO_RIGHT_PWM_ID = 1;
 
     private final int SERVO_PW_US_MAX_POSITION          = 2000;
@@ -66,8 +69,6 @@ public class ShooterIOReal implements ShooterIO {
     private final int SERVO_PW_US_MIN_DEADBAND_POSITION = 1200;
     private final int SERVO_PW_US_MIN_POSITION          = 1000;
 
-    private final double FLYWHEEL_THRESHOLD_OFFSET = 4;
-
     //Tunable motor velocities
     LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 65); // was 65
     LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 85); // was 85
@@ -75,7 +76,7 @@ public class ShooterIOReal implements ShooterIO {
     TalonFX[] shooterArray = new TalonFX[2];
 
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
-
+    
     //Create new Talong FX config objects
     private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
     private Slot0Configs         pidConfigs   = new Slot0Configs();
@@ -109,8 +110,6 @@ public class ShooterIOReal implements ShooterIO {
         //Create shooter mtr array for easier calls
         shooterArray[0] = SHOOTER_MOTOR_RT;
         shooterArray[1] = SHOOTER_MOTOR_LT;
-
-        
 
         //Reset to factory defaults
         SHOOTER_MOTOR_RT.getConfigurator().apply(new TalonFXConfiguration());
@@ -245,3 +244,4 @@ public class ShooterIOReal implements ShooterIO {
     shooterServoLT.setSpeed(speed);
   }
 }
+

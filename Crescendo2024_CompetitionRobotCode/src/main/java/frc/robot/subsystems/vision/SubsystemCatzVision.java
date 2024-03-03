@@ -85,7 +85,7 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight", VisionConstants.LIMELIGHT_OFFSET)
+                // new VisionIOLimeLight("limelight", VisionConstants.LIMELIGHT_OFFSET)
                 // new VisionIOLimeLight("limelight-turret", VisionConstants.LIMELIGHT_OFFSET_2)
             });
         }
@@ -99,7 +99,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         // clear results from last periodic
         results.clear();
         
-        //for every limlight camera process vision with according logic
+        // for every limlight camera process vision with according logic
         for (int i = 0; i < inputs.length; i++) {
             // update and process new inputs[cameraNum] for camera
             cameras[i].updateInputs(inputs[i]);
@@ -129,7 +129,7 @@ public class SubsystemCatzVision extends SubsystemBase {
 
         // limelightRangeFinder(1);
      
-        //Logging
+        // Logging
         Logger.recordOutput("Vision/ResultCount", results.size());
 
         //log data
@@ -152,6 +152,7 @@ public class SubsystemCatzVision extends SubsystemBase {
 
     }
 
+    //Parameter-less processVision
     // public void processVision() {
     //     // create a new pose based off the new inputs
     //     Pose2d currentPose = new Pose2d(inputs.x, 
@@ -173,17 +174,17 @@ public class SubsystemCatzVision extends SubsystemBase {
         double timestamp;
 
         public PoseAndTimestamp(Pose2d pose, double timestamp) {
-            this.pose = pose;
-            this.timestamp = timestamp;
+            // this.pose = pose;
+            // this.timestamp = timestamp;
         }
 
         public Pose2d getPose() {
             return pose;
         }
 
-        public double getTimestamp() {
-            return timestamp;
-        }
+        // public double getTimestamp() {
+        //     return timestamp;
+        // }
     }
 
     //------------------------------------------------------------------------
