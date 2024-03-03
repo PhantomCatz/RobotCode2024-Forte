@@ -25,7 +25,7 @@ import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.Utils.GeometryUtils;
 import frc.robot.Utils.LocalADStarAK;
-import frc.robot.subsystems.vision.SubsystemCatzVision;;
+// import frc.robot.subsystems.vision.SubsystemCatzVision;;
 
 // Drive train subsystem for swerve drive implementation
 public class SubsystemCatzDrivetrain extends SubsystemBase {
@@ -38,7 +38,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
     //Vision instatiation
-    private final SubsystemCatzVision vision = SubsystemCatzVision.getInstance();
+    // private final SubsystemCatzVision vision = SubsystemCatzVision.getInstance();
 
     // Array of swerve modules representing each wheel in the drive train
     private CatzSwerveModule[] m_swerveModules = new CatzSwerveModule[4];
@@ -154,13 +154,13 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                             10, 
                             20));
         // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop        
-        for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
-            //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less       
-            m_poseEstimator.addVisionMeasurement(
-                vision.getVisionOdometry().get(i).getPose(),
-                Timer.getFPGATimestamp()
-            );
-        }
+        // for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
+        //     //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less       
+        //     m_poseEstimator.addVisionMeasurement(
+        //         vision.getVisionOdometry().get(i).getPose(),
+        //         Timer.getFPGATimestamp()
+        //     );
+        // }
 
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 

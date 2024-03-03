@@ -98,8 +98,7 @@ public class CatzAutonomous {
     private Command driveTranslateAuto() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Right"))
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
         );
     }
 

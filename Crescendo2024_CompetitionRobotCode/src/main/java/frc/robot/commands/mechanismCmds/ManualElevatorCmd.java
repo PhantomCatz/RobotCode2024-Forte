@@ -7,14 +7,14 @@ package frc.robot.commands.mechanismCmds;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator;
+// import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 
 public class ManualElevatorCmd extends Command {
-  private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
+  // private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   Supplier<Double> supplierRightY;
 
   public ManualElevatorCmd(Supplier<Double> supplierRightY) {
-    addRequirements(elevator);
+    // addRequirements(elevator);
 
     this.supplierRightY = supplierRightY;
   }
@@ -25,7 +25,7 @@ public class ManualElevatorCmd extends Command {
 
   @Override
   public void execute() {
-    elevator.setElevatorPercentOutput(supplierRightY.get());
+    // elevator.setElevatorPercentOutput(supplierRightY.get());
   }
 
   @Override

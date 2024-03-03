@@ -20,8 +20,8 @@ import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.Utils.LinearInterpolationTable;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
-import frc.robot.subsystems.turret.SubsystemCatzTurret;
-import frc.robot.subsystems.vision.SubsystemCatzVision;
+// import frc.robot.subsystems.turret.SubsystemCatzTurret;
+// import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
 public class AutoAlignCmd extends InstantCommand {
@@ -91,7 +91,7 @@ public class AutoAlignCmd extends InstantCommand {
   private static LinearInterpolationTable m_hoodTable = kHoodTable;
   private static LinearInterpolationTable m_rpmTable = kRPMTable;
   private final SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
-  private final SubsystemCatzTurret     turret     = SubsystemCatzTurret.getInstance();
+  // private final SubsystemCatzTurret     turret     = SubsystemCatzTurret.getInstance();
   private DriverStation.Alliance alliance = null;
 
   private static final double SPEAKER_COORD_MTRS_Y = Units.inchesToMeters(219.277);
@@ -102,8 +102,7 @@ public class AutoAlignCmd extends InstantCommand {
 
 
   public AutoAlignCmd() {
-    addRequirements(turret);
-
+    // addRequirements(turret);
   }
 
   // Called when the command is initially scheduled.
@@ -145,7 +144,7 @@ public class AutoAlignCmd extends InstantCommand {
 
     double newDist = toMovingGoal.getDistance(new Translation2d())*39.37;
 
-    turret.aimAtGoal( movingGoalLocation, false);
+    // turret.aimAtGoal( movingGoalLocation, false);
     
         if(SmartDashboard.getBoolean("Adjust Shot?", false)){
             //m_shooter.run(kRPMTable.getOutput(newDist)+SmartDashboard.getNumber("SetShotAdjust", 0));

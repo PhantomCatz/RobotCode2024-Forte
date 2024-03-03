@@ -15,11 +15,11 @@ public interface ElevatorIO {
         public boolean reverseSwitchTripped;
     }
 
-    public default void updateInputs(ElevatorIOInputs inputs) {}
+//     public default void updateInputs(ElevatorIOInputs inputs) {}
 
     public default void setElevatorPosition(double newRevPosition, double elevatorFF) {}
 
-    public default void setElevatorPercentOutput(double speed) {}
+//     public default void setElevatorPercentOutput(double speed) {}
 
     public default void setSelectedSensorPosition(double pos) {}
 

@@ -1,10 +1,10 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// // Copyright (c) FIRST and other WPILib contributors.
+// // Open Source Software; you can modify and/or share it under the terms of
+// // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems.shooter;
 
-import org.littletonrobotics.junction.Logger;
+// import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -21,16 +21,16 @@ import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 
-public class SubsystemCatzShooter extends SubsystemBase {
+// public class SubsystemCatzShooter extends SubsystemBase {
   
-  private final ShooterIO io;
-  private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
+//   private final ShooterIO io;
+//   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
 
   private static SubsystemCatzShooter instance = new SubsystemCatzShooter();
   
   
-  //shooter constants and variables
-  private static int currentLoaderMode;
+//   //shooter constants and variables
+//   private static int currentLoaderMode;
       
   /*-----------------------------------------------------------------------------------------
    * Linear Servo Values
@@ -81,8 +81,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
 
   
-  //XboxController for rumbling
-  private XboxController xboxDrvRumble;
+//   //XboxController for rumbling
+//   private XboxController xboxDrvRumble;
 
   public SubsystemCatzShooter() {
     
@@ -91,14 +91,14 @@ public class SubsystemCatzShooter extends SubsystemBase {
     //XboxController
     xboxDrvRumble = new XboxController(OIConstants.XBOX_DRV_PORT);
 
-    switch (CatzConstants.currentMode) {
-      case REAL: io = new ShooterIOReal();
-                 System.out.println("Shooter Configured for Real");
-      break;
+//     switch (CatzConstants.currentMode) {
+//       case REAL: io = new ShooterIOReal();
+//                  System.out.println("Shooter Configured for Real");
+//       break;
 
-      case REPLAY: io = new ShooterIOReal() {};
-                   System.out.println("Shooter Configured for Replayed Simulation");
-      break;
+//       case REPLAY: io = new ShooterIOReal() {};
+//                    System.out.println("Shooter Configured for Replayed Simulation");
+//       break;
 
       case SIM:
       default: io = null;
@@ -173,15 +173,15 @@ public class SubsystemCatzShooter extends SubsystemBase {
         break;
         
         
-        case WAIT_FOR_MOTORS_TO_REV_UP:
-        //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
-          if(-inputs.shooterVelocityLT >= inputs.velocityThresholdLT &&
-              inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
+//         case WAIT_FOR_MOTORS_TO_REV_UP:
+//         //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
+//           if(-inputs.shooterVelocityLT >= inputs.velocityThresholdLT &&
+//               inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
 
-            if(DriverStation.isAutonomous()) {
-              currentLoaderMode = SHOOTING;
-            } else {
-              xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0.7);
+//             if(DriverStation.isAutonomous()) {
+//               currentLoaderMode = SHOOTING;
+//             } else {
+//               xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0.7);
               
               m_iterationCounter = 0;
             }
@@ -202,9 +202,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
           }
         break;
 
-        case LOAD_OFF:
-          io.loadDisabled();
-        break;
+//         case LOAD_OFF:
+//           io.loadDisabled();
+//         break;
 
         case LOAD_OUT:
           io.loadBackward();
@@ -263,19 +263,19 @@ public class SubsystemCatzShooter extends SubsystemBase {
     currentLoaderMode = START_SHOOTER_FLYWHEEL;
   }
 
-  public Command cmdShooterDisabled() {
-    return runOnce(()->io.setShooterDisabled());
-  }
+//   public Command cmdShooterDisabled() {
+//     return runOnce(()->io.setShooterDisabled());
+//   }
 
-  //-------------------------------------------Load Commands------------------------------------------
+//   //-------------------------------------------Load Commands------------------------------------------
 
-  public Command cmdShoot() {
-      return runOnce(()->currentLoaderMode = SHOOTING);
-  }
+//   public Command cmdShoot() {
+//       return runOnce(()->currentLoaderMode = SHOOTING);
+//   }
 
-  public Command cmdLoad(){
-    return runOnce(()->currentLoaderMode = LOAD_IN);
-  }
+//   public Command cmdLoad(){
+//     return runOnce(()->currentLoaderMode = LOAD_IN);
+//   }
   
   public Command loadBackward() {
     m_iterationCounter = 0;
@@ -286,7 +286,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return runOnce(()->currentLoaderMode = LOAD_OFF);
   }
 
-  //-------------------------------------------Servo Commands------------------------------------------
+//   //-------------------------------------------Servo Commands------------------------------------------
 
   public Command setPosition(double position) {
     currentShooterServoState = ShooterServoState.FULL_MANUAL;

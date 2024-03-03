@@ -27,9 +27,10 @@ public class TeleopDriveCmd extends Command {
     this.m_supplierLeftJoyY        = supplierLeftJoyY;
     this.m_supplierRightJoyX       = supplierRightJoyX;
     this.m_isFieldOrientedDisabled = supplierFieldOriented;
-                        
 
     addRequirements(m_driveTrain);
+    //note:this addRequirements method is required to use the defaultcommands
+    //in robotcontainer 
   }
 
   @Override
@@ -38,11 +39,9 @@ public class TeleopDriveCmd extends Command {
   @Override
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
-
     double xSpeed = -m_supplierLeftJoyY.get();
     double ySpeed = -m_supplierLeftJoyX.get(); 
     double turningSpeed = -m_supplierRightJoyX.get();
-
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;

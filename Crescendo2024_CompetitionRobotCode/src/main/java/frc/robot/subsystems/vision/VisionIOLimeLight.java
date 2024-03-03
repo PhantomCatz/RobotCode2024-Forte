@@ -1,6 +1,6 @@
-package frc.robot.subsystems.vision;
+// package frc.robot.subsystems.vision;
 
-import org.littletonrobotics.junction.Logger;
+// import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -13,33 +13,33 @@ import edu.wpi.first.wpilibj.DriverStation;
 // import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 
-public class VisionIOLimeLight implements VisionIO {
+// public class VisionIOLimeLight implements VisionIO {
     
-    public String name;
-    private Transform3d cameraOffset;
-    private double[] lastData = new double[6];
+//     public String name;
+//     private Transform3d cameraOffset;
+//     private double[] lastData = new double[6];
 
-     /**
-     * Implements Limelight camera
-     *
-     * @param name Name of the limelight used, and should be configured in limelight software first
-     * @param cameraOffset Location of the camera on the robot (from center, positive x towards the arm, positive y to the left, and positive angle is counterclockwise.
-     */
-    public VisionIOLimeLight(String name, Transform3d limelightOffset) {
-        NetworkTableInstance.getDefault().getTable(name).getEntry("ledMode").setNumber(1);
-        this.name = name;
-        this.cameraOffset = limelightOffset;
-        System.out.println(name);
-        System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
+//      /**
+//      * Implements Limelight camera
+//      *
+//      * @param name Name of the limelight used, and should be configured in limelight software first
+//      * @param cameraOffset Location of the camera on the robot (from center, positive x towards the arm, positive y to the left, and positive angle is counterclockwise.
+//      */
+//     public VisionIOLimeLight(String name, Transform3d limelightOffset) {
+//         NetworkTableInstance.getDefault().getTable(name).getEntry("ledMode").setNumber(1);
+//         this.name = name;
+//         this.cameraOffset = limelightOffset;
+//         System.out.println(name);
+//         System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
         
 
-        Logger.recordOutput("Obometry/VisionPose", new Pose2d());
+//         Logger.recordOutput("Obometry/VisionPose", new Pose2d());
 
-    }
+//     }
 
-    @Override
-    public void updateInputs(VisionIOInputs inputs) {
-            //load up raw apriltag values for distance calculations
+//     @Override
+//     public void updateInputs(VisionIOInputs inputs) {
+//             //load up raw apriltag values for distance calculations
 
         // inputs.ty = NetworkTableInstance.getDefault().getTable(name).getEntry("ty").getDouble(0); //vertical offset from crosshair to target in degrees
         // inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("tx").getDouble(0); //horizontal offset from crosshair to target
@@ -117,8 +117,8 @@ public class VisionIOLimeLight implements VisionIO {
         // lastData = data;
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-}
+//     @Override
+//     public String getName() {
+//         return name;
+//     }
+// }
