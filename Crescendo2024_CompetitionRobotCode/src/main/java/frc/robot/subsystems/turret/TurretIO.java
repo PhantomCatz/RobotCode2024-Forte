@@ -19,6 +19,6 @@ public interface TurretIO {
 
     public default void turretSetEncoderPos(double position){}
 
-    public default void turretSetPosition(double position) {}
+    public default void turretSetPositionSM(double position) {}
 
 }

@@ -1,10 +1,12 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// // Copyright (c) FIRST and other WPILib contributors.
+// // Open Source Software; you can modify and/or share it under the terms of
+// // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -25,6 +27,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
+
 
 public class SubsystemCatzIntake extends SubsystemBase {
   //intake io block
@@ -264,12 +267,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
         // current angle
         // ----------------------------------------------------------------------------------
         if(Math.abs(positionError) < 0.7) { //for normal stow
-
           //pwr off if we are going to STOW
           if(m_targetPositionDeg == INTAKE_STOW) {
             io.setIntakePivotVoltage(0.0);
           }
-
           //check for bounce
           m_iterationCounter++;
           if (m_iterationCounter >= 5) {
@@ -297,7 +298,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
     Logger.recordOutput("intake/roller mode",m_rollerRunningMode);
 
-  }
+} 
 
   //-------------------------------------Pivot methods--------------------------------
   //auto update intake angle

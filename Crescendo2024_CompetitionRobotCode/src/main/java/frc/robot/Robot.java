@@ -15,16 +15,19 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
 import frc.robot.Utils.LEDs.CatzRGB;
 import frc.robot.Utils.LEDs.ColorMethod;
-import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+// import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+// import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -55,8 +58,10 @@ public class Robot extends LoggedRobot {
     switch (CatzConstants.currentMode) {
       // Running on a real robot, log to a USB stick
       case REAL:
+
         Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
         Logger.addDataReceiver(new NT4Publisher());
+        
        // new PowerDistribution(1, ModuleType.kRev);
         break;
 
@@ -79,6 +84,10 @@ public class Robot extends LoggedRobot {
 
     //instantiate the robot subsystems and commands using an object
     m_robotContainer = new RobotContainer();
+
+    DriverStation.silenceJoystickConnectionWarning(true);
+    // SubsystemCatzVision.getInstance().setUseSingleTag(true, 4);
+
   }
 
   @Override
@@ -97,7 +106,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -108,7 +117,11 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    // if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+    //   SubsystemCatzDrivetrain.getInstance().flipGyro();
+    // }
+  }
 
   @Override
   public void teleopInit() {
@@ -129,6 +142,8 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
+        // SubsystemCatzDrivetrain.getInstance().printAverageWheelMagEncValues();
+
   }
 
   @Override
@@ -137,6 +152,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void testExit() {}
 
+  //-----------------------------------------------------------LED config------------------------------------------------
   public static CatzRGB led = new CatzRGB();
 
   //leds for mechanism state

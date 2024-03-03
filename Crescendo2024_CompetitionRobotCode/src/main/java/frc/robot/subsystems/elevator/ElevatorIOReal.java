@@ -50,8 +50,8 @@ public class ElevatorIOReal implements ElevatorIO {
         elevatorTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
 
-        ElevatorMtrLT.setPosition(0);
-        ElevatorMtrRT.setPosition(0);
+//         ElevatorMtrLT.setPosition(0);
+//         ElevatorMtrRT.setPosition(0);
 
 
         //check if elevator motor is initialized correctly
@@ -101,4 +101,5 @@ public class ElevatorIOReal implements ElevatorIO {
     public void setSelectedSensorPosition(double setNewReadPosition) {
         ElevatorMtrRT.setPosition(setNewReadPosition);
     }
+
 }

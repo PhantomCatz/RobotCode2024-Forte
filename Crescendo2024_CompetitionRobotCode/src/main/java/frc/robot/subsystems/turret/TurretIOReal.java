@@ -63,8 +63,8 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
-    public void turretSetPosition(double position) {
-        smartMotionPID.setReference(position, ControlType.kSmartMotion);
+    public void turretSetPositionSM(double angle) {
+        smartMotionPID.setReference(angle * SubsystemCatzTurret.TURRET_REV_PER_DEG, ControlType.kSmartMotion);
     }
 
 

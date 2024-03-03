@@ -43,4 +43,7 @@ public interface VisionIO {
     }
 
     public default void setReferencePose(Pose2d pose) {}
+
+    public default void getHorizontalAngle() {}
+    
 }

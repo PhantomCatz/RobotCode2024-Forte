@@ -7,7 +7,9 @@ package frc.robot.subsystems.shooter;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +30,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   private static SubsystemCatzShooter instance = new SubsystemCatzShooter();
   
+  
   //shooter constants and variables
   private static int currentLoaderMode;
       
@@ -37,9 +40,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   LoggedTunableNumber servoPosTunning = new LoggedTunableNumber("ServoPos", 0);
     
   /*-----------------------------------------------------------------------------------------
-   *
    * States and Variables for Periodic
-   *  
    *-----------------------------------------------------------------------------------------*/
   private static final int LOAD_IN = 1;
   private static final int FINE_TUNE = 2;
@@ -54,6 +55,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private double m_newServoPosition;
   private double m_servoPosError;
 
+  //for determining state machine for shooter
   private ShooterServoState currentShooterServoState;
   public enum ShooterServoState {
     FULL_MANUAL,
@@ -61,7 +63,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     TUNNING,
     IN_POSITION
   }
-  
+ 
+  //shooter note state for determining when other mechanism should turn off
   private ShooterNoteState currentNoteState;
   public enum ShooterNoteState {
     NOTE_IN_POSTION,
@@ -86,6 +89,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public SubsystemCatzShooter() {
     //XboxController
     xboxDrvRumble = new XboxController(OIConstants.XBOX_DRV_PORT);
+    //XboxController
+    xboxDrvRumble = new XboxController(OIConstants.XBOX_DRV_PORT);
 
     switch (CatzConstants.currentMode) {
       case REAL: io = new ShooterIOReal();
@@ -103,6 +108,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
   }
   
+  
   // Get the singleton instance of the ShooterSubsystem
   public static SubsystemCatzShooter getInstance() {
       return instance;
@@ -110,7 +116,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
 
@@ -142,6 +147,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
             m_iterationCounter = 0;
             currentLoaderMode = WAIT_FOR_NOTE_TO_SETTLE;
 
+
           }
         break;
 
@@ -150,14 +156,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
             m_desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
             io.fineAdjustBck();
             System.out.println("Back");
-          } 
-
-          // else {
-          //   desiredBeamBreakState = BEAM_IS_BROKEN;
-          //   System.out.println("Foward");
-          //   io.fineAdjustFwd();
-          // }
-              
+          }   
               currentLoaderMode = FINE_TUNE;
         break;
 
@@ -173,6 +172,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
           io.setShooterEnabled();
           currentLoaderMode = WAIT_FOR_MOTORS_TO_REV_UP;
         break;
+        
         
         case WAIT_FOR_MOTORS_TO_REV_UP:
         //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
@@ -195,7 +195,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
             xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0);
           }
           m_iterationCounter++;
-          if(m_iterationCounter >= timer(1)) { //add beambreak logic here? TBD
+          if(m_iterationCounter >= timer(1)) {
             io.setShooterDisabled();
             currentLoaderMode = LOAD_OFF;
             currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOOT;
@@ -284,7 +284,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
   
   public Command loadDisabled() {
     return runOnce(()->currentLoaderMode = LOAD_OFF);
-
   }
 
   //-------------------------------------------Servo Commands------------------------------------------

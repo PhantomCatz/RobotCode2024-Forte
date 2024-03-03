@@ -21,6 +21,7 @@ import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.MtrConfigConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 
+
 public class IntakeIOReal implements IntakeIO {
 
     public static int PIVOT_MTR_ID = 12;
@@ -137,5 +138,5 @@ public class IntakeIOReal implements IntakeIO {
     }
 
 
-}
+ }
 

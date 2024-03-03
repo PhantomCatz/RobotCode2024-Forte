@@ -1,14 +1,21 @@
 {
-  "robotWidth": 0.7366,
-  "robotLength": 0.74,
+  "robotWidth": 0.6,
+  "robotLength": 0.6,
   "holonomicMode": true,
   "pathFolders": [
-    "3 gp auto",
+    "1 wing, bulldoze above",
+    "1 wing, bulldoze under",
     "5 gp path",
     "6 Note Auton 5940",
-    "Scoring C2-4",
+    "BottomMidClear",
+    "CenterRushMid",
+    "Hoarding Lower Mid",
+    "Mid Clear + Hoard Amp",
     "Scoring C1-3",
-    "Scoring C5-3"
+    "Scoring C2-4",
+    "Scoring C5-3",
+    "Speaker 4 piece wing",
+    "test"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.0,

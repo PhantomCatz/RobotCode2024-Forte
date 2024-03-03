@@ -20,13 +20,15 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 
 public class ModuleIOReal implements ModuleIO {
-
+    //Motor instantiation
     private final CANSparkMax STEER_MOTOR;
     private final TalonFX DRIVE_MOTOR;
 
+    //Mag enc instatiation
     private DutyCycleEncoder magEnc;
     private DigitalInput MagEncPWMInput;
 
+    //status code initialization
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
         //create new config objects
@@ -70,14 +72,19 @@ public class ModuleIOReal implements ModuleIO {
             if(!initializationStatus.isOK())
                 System.out.println("Failed to Configure CAN ID" + driveMotorIDIO);
         }
+
     }
 
     @Override
     public void updateInputs(ModuleIOInputs inputs) {
-        inputs.driveMtrVelocity =       DRIVE_MOTOR.getRotorVelocity().getValue();
+
+        inputs.driveMtrVelocity       = DRIVE_MOTOR.getRotorVelocity().getValue();
         inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
-        inputs.magEncoderValue = magEnc.get();
-        inputs.steerAppliedVolts = STEER_MOTOR.getOutputCurrent();
+        inputs.driveAppliedVolts      = DRIVE_MOTOR.getMotorVoltage().getValueAsDouble();
+        inputs.magEncoderValue        = magEnc.get();
+        inputs.steerAppliedVolts      = STEER_MOTOR.getOutputCurrent();
+        inputs.driveVelocityError     = DRIVE_MOTOR.getClosedLoopError().getValueAsDouble();
+        inputs.steerAppliedVolts      = STEER_MOTOR.getAppliedOutput();
     }
 
     @Override
@@ -98,11 +105,6 @@ public class ModuleIOReal implements ModuleIO {
     @Override
     public void setSteerPwrIO(double SteerPwr) {
         STEER_MOTOR.set(SteerPwr);
-    }
-
-    @Override
-    public void setSteerVoltageIO(double steerVoltage) {
-        STEER_MOTOR.setVoltage(steerVoltage);
     }
 
     @Override
