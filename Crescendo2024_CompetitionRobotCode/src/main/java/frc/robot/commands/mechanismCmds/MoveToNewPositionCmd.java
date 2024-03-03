@@ -42,26 +42,23 @@ public class MoveToNewPositionCmd extends Command {
     m_newPosition = newPosition;
 
 
-    
     addRequirements(intake, elevator, turret, shooter);
-
   }
 
   @Override
   public void initialize() {
-    iterationCounter = 0;
     intake.updateIntakeTargetPosition(m_newPosition);
     elevator.updateElevatorTargetPosition(m_newPosition);
     shooter.updateShooterTargetPosition(m_newPosition);
     turret.updateTurretTargetPosition(m_newPosition);
-
-
   }
 
   
   @Override
   public void execute() {
-
+    if(m_manipulatorMode == ManipulatorMode.SPEAKER); {
+      shooter.cmdShooterEnabled(); 
+    }
 
   }
 

@@ -95,13 +95,17 @@ public class SubsystemCatzElevator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator/inputs", inputs);
     if(inputs.bottomSwitchTripped) {
-      io.setElevatorPosition(0.0, 0.0);
+      io.setSelectedSensorPosition(0.0);
     }
 
     elevatorVelocityMTRRPS = (currentRotations - previousRotations)/0.02;
+    m_finalffVolts = elevatorFeedforward.calculate(0.0);
+
 
     if(DriverStation.isDisabled()) {
       io.setElevatorPercentOutput(0);
+      currentElevatorState = ElevatorState.FULL_MANUAL;
+      m_elevatorPercentOutput = 0.0;
     }
     else {
       
@@ -112,8 +116,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
       } else if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
                 (currentElevatorState == ElevatorState.AUTO  ||
                  currentElevatorState == ElevatorState.SEMI_MANUAL)) {
-             m_finalffVolts = elevatorFeedforward.calculate(0.0);
-
             io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
 
       } else {

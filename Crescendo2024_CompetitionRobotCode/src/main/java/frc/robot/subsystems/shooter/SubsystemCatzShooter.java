@@ -16,6 +16,8 @@ import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
 
 
@@ -32,7 +34,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   /*-----------------------------------------------------------------------------------------
    * Linear Servo Values
    *-----------------------------------------------------------------------------------------*/
-  LoggedTunableNumber servoPos = new LoggedTunableNumber("ServoPos", 0);
+  LoggedTunableNumber servoPosTunning = new LoggedTunableNumber("ServoPos", 0);
     
   /*-----------------------------------------------------------------------------------------
    *
@@ -49,23 +51,34 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final int LOAD_OFF = 8;
   private static final int LOAD_OUT = 9;
 
-  private double newServoPosition;
+  private double m_newServoPosition;
+  private double m_servoPosError;
 
-  private shooterServoState currentShooterServoState;
-
-  private enum shooterServoState {
+  private ShooterServoState currentShooterServoState;
+  public enum ShooterServoState {
     FULL_MANUAL,
-    AUTO
+    AUTO,
+    TUNNING,
+    IN_POSITION
   }
   
+  private ShooterNoteState currentNoteState;
+  public enum ShooterNoteState {
+    NOTE_IN_POSTION,
+    NOTE_IN_ADJUST,
+    NOTE_HAS_BEEN_SHOOT,
+    NULL
+  }
+
   private final double LOOP_CYCLE_MS = 0.02;
 
   private static final boolean BEAM_IS_BROKEN  = true;
   private static final boolean BEAM_IS_NOT_BROKEN = false;
 
-  private boolean desiredBeamBreakState;
+  private boolean m_desiredBeamBreakState;
+  private int m_iterationCounter;
 
-  private int iterationCounter;
+
   
   //XboxController for rumbling
   private XboxController xboxDrvRumble;
@@ -101,8 +114,15 @@ public class SubsystemCatzShooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
 
-    double servoPosition = servoPos.get();
-    io.setServoPosition(servoPosition);
+    //variable calculations
+    m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
+
+    if(currentShooterServoState == ShooterServoState.TUNNING) {
+      double servoPosition = servoPosTunning.get();
+      io.setServoPosition(servoPosition);
+    }
+
+    
 
     /*--------------------------------------------------------------------------------------------------------
      * 
@@ -113,12 +133,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
         case LOAD_IN:
           io.loadNote();
           currentLoaderMode = LOAD_IN_DONE;
+          currentNoteState = ShooterNoteState.NOTE_IN_ADJUST;
         break;
 
         case LOAD_IN_DONE:
           if(inputs.shooterLoadBeamBreakState == BEAM_IS_BROKEN) { 
             io.loadDisabled();
-            iterationCounter = 0;
+            m_iterationCounter = 0;
             currentLoaderMode = WAIT_FOR_NOTE_TO_SETTLE;
 
           }
@@ -126,7 +147,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
         case WAIT_FOR_NOTE_TO_SETTLE:
           if(inputs.shooterAdjustBeamBreakState == BEAM_IS_BROKEN) { //set off flag that determines adjust direction
-            desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
+            m_desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
             io.fineAdjustBck();
             System.out.println("Back");
           } 
@@ -141,9 +162,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
         break;
 
         case FINE_TUNE:
-          if(inputs.shooterAdjustBeamBreakState == desiredBeamBreakState) { //if front is still conncected adjust foward until it breaks
+          if(inputs.shooterAdjustBeamBreakState == m_desiredBeamBreakState) { //if front is still conncected adjust foward until it breaks
             io.loadDisabled();
             currentLoaderMode = LOAD_OFF;
+            currentNoteState = ShooterNoteState.NOTE_IN_POSTION;
           }
         break;
         
@@ -162,7 +184,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
             } else {
               xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0.7);
               
-              iterationCounter = 0;
+              m_iterationCounter = 0;
             }
           }
         break;
@@ -172,10 +194,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
           if(DriverStation.isAutonomous() == false) {
             xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0);
           }
-          iterationCounter++;
-          if(iterationCounter >= timer(1)) {
+          m_iterationCounter++;
+          if(m_iterationCounter >= timer(1)) { //add beambreak logic here? TBD
             io.setShooterDisabled();
             currentLoaderMode = LOAD_OFF;
+            currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOOT;
+            SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
           }
         break;
 
@@ -185,31 +209,34 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
         case LOAD_OUT:
           io.loadBackward();
-          iterationCounter++;
-          if(iterationCounter >= timer(0.5)) {
+          m_iterationCounter++;
+          if(m_iterationCounter >= timer(0.5)) {
             io.loadDisabled();
             currentLoaderMode = LOAD_OFF;
-            iterationCounter = 0;
+            m_iterationCounter = 0;
           }
         break;
     }
     Logger.recordOutput("current load state", currentLoaderMode);
     
   /*----------------------------------------------------------------------------------------
-   * 
    * Servo Logic
-   * 
    *---------------------------------------------------------------------------------------*/
 
-    if(currentShooterServoState == shooterServoState.AUTO) {
-      io.setServoPosition(newServoPosition);
+    if(currentShooterServoState == ShooterServoState.AUTO) {
+      io.setServoPosition(m_newServoPosition);
+      if(Math.abs(m_servoPosError) < 0.1) {
+        currentShooterServoState = ShooterServoState.IN_POSITION;
+      }
     }
   }
 
-
+  //--------------------------------------------------------------------------------------------
+  //Access methods
+  //------------------------------------------------------------------------------------------
   public void updateShooterTargetPosition(CatzMechanismPosition newPosition) {
-    currentShooterServoState = shooterServoState.AUTO;
-    newServoPosition = newPosition.getShooterVerticalTargetAngle();
+    currentShooterServoState = ShooterServoState.AUTO;
+    m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
     if(newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP) {
       currentLoaderMode = LOAD_IN;
     }
@@ -219,10 +246,21 @@ public class SubsystemCatzShooter extends SubsystemBase {
     System.out.println(Math.round(seconds/LOOP_CYCLE_MS) + 1);
     return Math.round(seconds/LOOP_CYCLE_MS) + 1;
   }
+  
+  public ShooterServoState getShooterServoState() {
+    return currentShooterServoState;
+  }
+  public ShooterNoteState getShooterNoteState() {
+    return currentNoteState;
+  }
   //-------------------------------------------Flywheel Commands------------------------------------------
 
   public Command cmdShooterEnabled() {
     return runOnce(()->currentLoaderMode = START_SHOOTER_FLYWHEEL);
+  }
+
+  public void startShooterFlywheel() {
+    currentLoaderMode = START_SHOOTER_FLYWHEEL;
   }
 
   public Command cmdShooterDisabled() {
@@ -240,7 +278,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
   
   public Command loadBackward() {
-    iterationCounter = 0;
+    m_iterationCounter = 0;
     return runOnce(()->currentLoaderMode = LOAD_OUT);
   }
   
@@ -252,7 +290,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------Servo Commands------------------------------------------
 
   public Command setPosition(double position) {
-    currentShooterServoState = shooterServoState.FULL_MANUAL;
+    currentShooterServoState = ShooterServoState.FULL_MANUAL;
     System.out.println("aa");
     return run(()->io.setServoPosition(position));
   }

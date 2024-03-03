@@ -20,6 +20,11 @@ import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
 public class SubsystemCatzIntake extends SubsystemBase {
   //intake io block
@@ -119,7 +124,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double m_currentPositionDeg = 0.0;
   private double m_previousCurrentDeg = 0.0;
 
-  private double m_numConsectSamples;
+  private double m_iterationCounter;
   private boolean m_intakeInPosition;
 
   private double positionError = 0.0;
@@ -171,9 +176,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     WAITING,
     IN_POSITION
   }
-  // how did u plan on doing it?
-  //state machine on the intake // ok, we we're just planning to do it on a button; like just run a logic through a menthod and use that fot cmd
-  //logic == logic?
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -183,7 +186,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
     m_currentPositionDeg = calcWristAngleDeg();
     positionError = m_currentPositionDeg - m_targetPositionDeg;
     pivotVelRadPerSec = Math.toRadians(m_currentPositionDeg - m_previousCurrentDeg)/0.02;
-    
+
+    //voltage control calculation
+    m_ffVolts    = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg + GRAVITY_KG_OFFSET), pivotVelRadPerSec, 0);
+
     if(DriverStation.isDisabled()) {
       io.setRollerPercentOutput(0.0);
       m_rollerRunningMode = 0;
@@ -211,21 +217,31 @@ public class SubsystemCatzIntake extends SubsystemBase {
             break;
       }
 
-      //if turret and Intake is in position
-      if(currentIntakeState == IntakeState.IN_POSITION && (m_targetPosition == CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP)) {
-        m_rollerRunningMode = ROLLERS_STATE_OUT;
+      //for going into handoff position
+      if(m_targetPosition == CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP) {
+        //if turret/shooterservos/Intake is in position 
+        if(currentIntakeState == IntakeState.IN_POSITION && 
+          SubsystemCatzTurret.getInstance().getTurretState() == TurretState.IN_POSITION &&
+          SubsystemCatzShooter.getInstance().getShooterServoState() == ShooterServoState.IN_POSITION) {
+          m_rollerRunningMode = ROLLERS_STATE_OUT;
+        }
+
+        //if note is in position shut off rollers
+        if(SubsystemCatzShooter.getInstance().getShooterNoteState() == ShooterNoteState.NOTE_IN_POSTION) {
+          m_rollerRunningMode = ROLLERS_STATE_OFF;
+        }
       }
 
 
       // ----------------------------------------------------------------------------------
       // IntakePivot
       // ----------------------------------------------------------------------------------
-      if(currentIntakeState == IntakeState.WAITING) { //when intake is waiting for elevator
+      if(currentIntakeState == IntakeState.WAITING) { //when intake is waiting for elevator change state to auto to wait in holding position
+          io.setIntakePivotEncOutput(m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts); //go to holding position
 
         if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < ELEVATOR_THRESHOLD_FOR_INTAKE) {
-          currentIntakeState = IntakeState.AUTO;
           this.m_targetPositionDeg = m_targetPosition.getIntakePivotTargetAngle();
-
+          currentIntakeState = IntakeState.AUTO;
         }
 
       } else if ((currentIntakeState == IntakeState.AUTO || 
@@ -235,32 +251,35 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
             //check if at final position using counter
         if ((Math.abs(positionError) <= ERROR_INTAKE_THRESHOLD_DEG)) {
-          m_numConsectSamples++;
-          if (m_numConsectSamples >= 1) {
+          m_iterationCounter++;
+          if (m_iterationCounter >= 1) {
               m_intakeInPosition = true;
           }
         } else {
-          m_numConsectSamples = 0; //resetcounter if intake hasn't leveled off
+          m_iterationCounter = 0; //resetcounter if intake hasn't leveled off
         }
-        
-        //voltage control
-        m_ffVolts    = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg + GRAVITY_KG_OFFSET), pivotVelRadPerSec, 0);
-       // m_pidVolts   = -pivotPID.calculate(m_targetPositionDeg, m_currentPositionDeg);
-        m_finalVolts = m_pidVolts + m_ffVolts;
-
-
         // ----------------------------------------------------------------------------------
         //set final mtr voltage If we are going to Stow Position & have passed the power cutoff angle, set
         // power to 0, otherwise calculate new motor voltage based on position error and
         // current angle
         // ----------------------------------------------------------------------------------
-        if (m_targetPositionDeg == INTAKE_STOW && Math.abs(positionError) < 0.5) {
-          io.setIntakePivotVoltage(0.0);
-          m_targetPositionDeg = NULL_INTAKE_POSITION;
-          currentIntakeState = IntakeState.IN_POSITION;
-        } else {
+        if(Math.abs(positionError) < 0.7) { //for normal stow
+
+          //pwr off if we are going to STOW
+          if(m_targetPositionDeg == INTAKE_STOW) {
+            io.setIntakePivotVoltage(0.0);
+          }
+
+          //check for bounce
+          m_iterationCounter++;
+          if (m_iterationCounter >= 5) {
+            m_targetPositionDeg = NULL_INTAKE_POSITION;
+            currentIntakeState = IntakeState.IN_POSITION;          
+          }
+        }
+        else {
           io.setIntakePivotEncOutput(m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts);
-         // io.setIntakePivotVoltage(m_finalVolts);
+          m_iterationCounter = 0; //resetcounter if intake hasn't leveled off
         }
         
       } else { //we are current setting pwr through manual
@@ -283,13 +302,15 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //-------------------------------------Pivot methods--------------------------------
   //auto update intake angle
   public void updateIntakeTargetPosition(CatzMechanismPosition targetPosition) {
+    //set member variable
     this.m_targetPosition    = targetPosition;
 
+    //if the elevator is too high and the intake has a target position in the crash zone
     if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE &&
-       targetPosition.getIntakePivotTargetAngle() > 90) {
+       targetPosition.getIntakePivotTargetAngle() > 100) {
       currentIntakeState = IntakeState.WAITING;
-      this.m_targetPositionDeg = SubsystemCatzIntake.INTAKE_SCORE_AMP;
-    } else {
+      this.m_targetPositionDeg = SubsystemCatzIntake.INTAKE_SCORE_AMP; //set the target to a holding position
+    } else { //if the intakes free to move
       currentIntakeState = IntakeState.AUTO;
        this.m_targetPositionDeg = targetPosition.getIntakePivotTargetAngle();
     }
@@ -306,7 +327,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
     }
 
     currentIntakeState = IntakeState.SEMI_MANUAL;
-
   }
 
   //full manual

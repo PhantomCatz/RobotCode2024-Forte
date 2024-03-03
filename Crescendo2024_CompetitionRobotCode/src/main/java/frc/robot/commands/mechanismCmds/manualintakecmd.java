@@ -13,18 +13,32 @@ import frc.robot.subsystems.intake.SubsystemCatzIntake;
 
 public class ManualIntakeCmd extends Command {
   SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
-  Supplier<Double> supplierLeftJoyY;
-  public ManualIntakeCmd(Supplier<Double> supplierLeftJoyY) {
-    this.supplierLeftJoyY = supplierLeftJoyY;
+  Supplier<Double> m_supplierLeftJoyY;
+  Supplier<Boolean> m_supplierLeftJoyStickPressed;
+
+  private int pressCounter = 0;
+  public ManualIntakeCmd(Supplier<Double> supplierLeftJoyY, Supplier<Boolean> supplierLeftJoyStickPressed) {
+    this.m_supplierLeftJoyY = supplierLeftJoyY;
+    this.m_supplierLeftJoyStickPressed = supplierLeftJoyStickPressed;
     addRequirements(intake);
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    pressCounter = 0;
+  }
 
   @Override
   public void execute() {
+    if(m_supplierLeftJoyStickPressed.get()) {
+      pressCounter = 1;
+    }
 
+    if(pressCounter == 1) {
+      intake.pivotFullManual(m_supplierLeftJoyY.get());
+    } else {
+      intake.pivotSemiManual(m_supplierLeftJoyY.get());
+    }
   }
 
   @Override

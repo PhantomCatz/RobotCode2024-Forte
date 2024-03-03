@@ -165,8 +165,8 @@ public class ShooterIOReal implements ShooterIO {
         inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
         inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
 
-        inputs.servoLeft  = shooterServoLT.get();
-        inputs.servoRight = shooterServoRT.get();
+        inputs.servoLeftPosition  = shooterServoLT.get();
+        inputs.servoRightPosition = shooterServoRT.get();
 
     }
 

@@ -25,6 +25,7 @@ import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
@@ -46,7 +47,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     private SubsystemCatzDrivetrain driveTrain; 
     //private SubsystemCatzVision vision;
     private SubsystemCatzIntake     intake;
-    //private SubsystemCatzShooter  shooter;
+    private SubsystemCatzShooter  shooter;
     //private SubsystemCatzClimb    climb;
     private SubsystemCatzElevator   elevator;
     private SubsystemCatzTurret     turret;
@@ -69,7 +70,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //vision   = SubsystemCatzVision.getInstance();
     intake     = SubsystemCatzIntake.getInstance();
     turret     = SubsystemCatzTurret.getInstance();
-   // shooter    = SubsystemCatzShooter.getInstance();
+    shooter    = SubsystemCatzShooter.getInstance();
     //  climb      = SubsystemCatzClimb.getInstance();
     //  arm        = SubsystemCatzElevator.getInstance();
     
@@ -94,9 +95,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     rollersOffBinding.onTrue(intake.cmdRollerOff());
 
    // Trigger manualTrigger = new Trigger(()-> Math.abs(xboxDrv.getLeftY()) > 0.1);
-    xboxDrv.leftStick().onTrue(new ManualIntakeCmd(()->xboxDrv.getLeftY()));
+    xboxDrv.leftStick().onTrue(new ManualIntakeCmd(()->xboxDrv.getLeftY(), ()->xboxDrv.leftStick().getAsBoolean()));
     
     xboxDrv.rightStick().onTrue(new ManualElevatorCmd(()->xboxDrv.getRightY()));
+
+    xboxDrv.back().onTrue(shooter.cmdShoot());
 
     xboxDrv.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW, CatzConstants.currentManipulatorMode));
     xboxDrv.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP, CatzConstants.currentManipulatorMode));

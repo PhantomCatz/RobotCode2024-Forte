@@ -96,8 +96,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
                                          TURRET_kD);
 
     m_trackingApriltagPID = new PIDController(LIMELIGHT_kP,
-                                     LIMELIGHT_kI,
-                                     LIMELIGHT_kD);
+                                              LIMELIGHT_kI,
+                                              LIMELIGHT_kD);
   }
   
   // Get the singleton instance of the Turret Subsystem
@@ -116,9 +116,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //System.out.println("periodic");
     io.updateInputs(inputs);
-    currentTurretDegree = inputs.turretEncValue / TURRET_REV_PER_DEG; //TBD make conversion
+    currentTurretDegree = inputs.turretEncValue / TURRET_REV_PER_DEG; 
     
     //obtain calculation values
     apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0);
@@ -126,8 +125,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     //offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
     
 
-    if(DriverStation.isDisabled()) {// || 
-      //  Math.abs(currentTurretDegree) > TURRET_POSITIVE_MAX_RANGE) {
+    if(DriverStation.isDisabled()) {
       io.turretSetPwr(0.0);
       manualTurretPwr = 0;
     } else { 
@@ -144,11 +142,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //   }
       } else {
         io.turretSetPwr(manualTurretPwr);
-        // System.out.println("Manual Control");
       }
     }
-    // System.out.println("Manual turret power: " + manualTurretPwr);
-    // System.out.println("Current Turret Degree: " + currentTurretDegree);
     if (currentTurretDegree > TURRET_POSITIVE_MAX_RANGE) { //Added limits to periodic because resetEncoder bugged and turned uncontrolably bypassing limits
       manualTurretPwr = 0.0;
     } else {
@@ -158,7 +153,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     }
 
     Logger.recordOutput("turret/offsetXTurret", offsetAprilTagX);
-    // whc 01Mar24 need to fix.  Do we need to install a limelight?
+    // whc 01Mar24 need to fix.  Do we need to install a limelight? TBD
    //Logger.recordOutput("turret/PwrPID", apriltagTrackingPower);
    // Logger.recordOutput("turret/currentTurretState", currentTurretState);
     Logger.recordOutput("turret/currentTurretDeg", currentTurretDegree);
@@ -238,7 +233,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return currentTurretDegree;
   }
 
-  
+  public TurretState getTurretState() {
+    return currentTurretState;
+  }
   
   //-------------------------------------Manual methods--------------------------------
   public Command cmdTurretLT() {
@@ -266,7 +263,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //   return run(() -> aimAtGoal(new Translation2d(), true));
   // }
   
-
     public void updateTurretTargetPosition(CatzMechanismPosition newPosition) {
     currentTurretState = TurretState.AUTO;
     m_turretTargetDegree = newPosition.getTurretTargetAngle();
