@@ -14,7 +14,6 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import frc.robot.CatzConstants.MtrConfigConstants;
-import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 //import frc.robot.subsystems.turret.TurretIOReal;
 

@@ -19,8 +19,6 @@ import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
-import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
-
 
 
 public class SubsystemCatzShooter extends SubsystemBase {
@@ -75,11 +73,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   private final double LOOP_CYCLE_MS = 0.02;
 
-  private static final boolean BEAM_IS_BROKEN  = true;
+  private static final boolean BEAM_IS_BROKEN     = true;
   private static final boolean BEAM_IS_NOT_BROKEN = false;
 
   private boolean m_desiredBeamBreakState;
-  private int m_iterationCounter;
+  private int     m_iterationCounter;
 
 
   
@@ -87,6 +85,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private XboxController xboxDrvRumble;
 
   public SubsystemCatzShooter() {
+    
     //XboxController
     xboxDrvRumble = new XboxController(OIConstants.XBOX_DRV_PORT);
     //XboxController
@@ -231,9 +230,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
   }
 
-  //--------------------------------------------------------------------------------------------
-  //Access methods
-  //------------------------------------------------------------------------------------------
+  /*----------------------------------------------------------------------------------------
+   * Access Methods
+   *---------------------------------------------------------------------------------------*/
   public void updateShooterTargetPosition(CatzMechanismPosition newPosition) {
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
@@ -253,6 +252,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public ShooterNoteState getShooterNoteState() {
     return currentNoteState;
   }
+  
   //-------------------------------------------Flywheel Commands------------------------------------------
 
   public Command cmdShooterEnabled() {

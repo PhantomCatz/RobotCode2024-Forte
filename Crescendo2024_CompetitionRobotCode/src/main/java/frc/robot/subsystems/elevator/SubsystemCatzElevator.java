@@ -30,7 +30,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
   //elevator constants
   private static final double ElEVATOR_REV_TO_INCHES = 0.0;
-  private static final double ELEVATOR_GEAR_RATIO    = 0.0;
+  private static final double ELEVATOR_GEAR_RATIO    = 16;
 
   private static final double ELEVATOR_NULL_POSITION = -999.0;
 

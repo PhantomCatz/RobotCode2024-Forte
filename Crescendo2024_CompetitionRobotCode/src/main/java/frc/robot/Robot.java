@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.sql.Driver;
-
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -26,8 +24,6 @@ import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
 import frc.robot.Utils.LEDs.CatzRGB;
 import frc.robot.Utils.LEDs.ColorMethod;
-// import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
-// import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
