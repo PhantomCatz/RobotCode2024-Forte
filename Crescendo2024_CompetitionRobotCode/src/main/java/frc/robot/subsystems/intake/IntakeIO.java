@@ -4,18 +4,18 @@
 
 // public interface IntakeIO {
 
-//     @AutoLog
-
-//     public class IntakeIOInputs {
-//         public double pivotMtrRev;
-//         public double pivotMtrPercentOutput;
-//         public double rollerVoltage;
-//         public double rollerPercentOutput;
-//         public double rollerVelocity;
-//         public boolean BeamBrkFrontBroken;
-//         public boolean IntakeBeamBrkBroken;
-//         public double closedLoopPivotMtr;
-//     }
+    @AutoLog
+    public class IntakeIOInputs {
+        public double pivotMtrRev;
+        public double pivotMtrPercentOutput;
+        public double pivotMtrVelocityRPS;
+        public double rollerVoltage;
+        public double rollerPercentOutput;
+        public double rollerVelocity;
+        public boolean BeamBrkFrontBroken;
+        public boolean isIntakeBeamBrkBroken;
+        public double closedLoopPivotMtr;
+    }
 
 //     public default void updateInputs(IntakeIOInputs inputs) {}
 

@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.sql.Driver;
-
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -26,8 +24,6 @@ import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
 import frc.robot.Utils.LEDs.CatzRGB;
 import frc.robot.Utils.LEDs.ColorMethod;
-import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
-// import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -106,7 +102,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -118,9 +114,9 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousExit() {
-    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-      SubsystemCatzDrivetrain.getInstance().flipGyro();
-    }
+    // if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+    //   SubsystemCatzDrivetrain.getInstance().flipGyro();
+    // }
   }
 
   @Override
@@ -131,7 +127,10 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+ 
+  }
 
   @Override
   public void teleopExit() {}
@@ -139,7 +138,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-        SubsystemCatzDrivetrain.getInstance().printAverageWheelMagEncValues();
+        // SubsystemCatzDrivetrain.getInstance().printAverageWheelMagEncValues();
 
   }
 
@@ -152,6 +151,7 @@ public class Robot extends LoggedRobot {
   //-----------------------------------------------------------LED config------------------------------------------------
   public static CatzRGB led = new CatzRGB();
 
+  //leds for mechanism state
   public enum mechMode {
     AutoMode(Color.kGreen),
     ManualHoldMode(Color.kCyan),
@@ -163,19 +163,36 @@ public class Robot extends LoggedRobot {
     }
   }
 
-  public enum gamePiece {
-    Cube(Color.kPurple),
-    Cone(Color.kYellow),
-    None(Color.kGhostWhite);
+  //leds for autoaligning
+  public enum AutoAlignState {
+    Aligned(Color.kGreen),
+    Misaligned_Veritcal(Color.kPurple),
+    Misaligned_Horizontal(Color.kYellow),
+    TargetNotFound(Color.kBlack);
 
     public Color color;
-    gamePiece(Color color){
+    AutoAlignState(Color color){
       this.color = color;
     }
   }
 
-  public enum gameModeLED {
-    Autobalancing(led.oneColorFill, Color.kGreen),
+  //leds for the type of robot note state mode we are in
+  public enum manipulatorMode {
+    Amp(Color.kOrange), Amp_No_Note(Color.kWhite),
+    Speaker(Color.kOrange), Speaker_No_Note(Color.kWhite),
+    Climb(Color.kBlue), Climb_No_Note(Color.kYellow),
+    Hoard(Color.kAntiqueWhite),
+    Source(Color.kRed),
+    None(Color.kGhostWhite);
+
+    public Color color;
+    manipulatorMode(Color color){
+      this.color = color;
+    }
+  }
+
+    //default leds
+  public enum gameModeLED{
     InAutonomous(led.startFlowing, led.PHANTOM_SAPPHIRE, Color.kWhite),
     MatchEnd(led.startFlowingRainbow),
     EndgameWheelLock(led.oneColorFillAllianceColor), 
@@ -194,6 +211,6 @@ public class Robot extends LoggedRobot {
   public static mechMode elevatorControlMode = mechMode.AutoMode;
   public static mechMode armControlMode = mechMode.AutoMode;
   public static gameModeLED currentGameModeLED = gameModeLED.MatchEnd;
-  public static gamePiece currentGamePiece = gamePiece.None;
+  public static manipulatorMode currentGamePiece = manipulatorMode.None;
 }
 

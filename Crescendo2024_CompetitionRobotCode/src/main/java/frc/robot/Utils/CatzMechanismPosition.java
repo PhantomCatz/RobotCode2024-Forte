@@ -7,16 +7,16 @@ package frc.robot.Utils;
 
 public class CatzMechanismPosition {
 
-    public double m_elevatorTargetEncPos;
-    public double m_intakePivotTargetAngle;
-    public double m_shooterTargetHorizontalAngle;
-    public double m_rollerState;
+    private double m_elevatorTargetEncPos;
+    private double m_intakePivotTargetAngle;
+    private double m_shooterVerticalTargetAngle;
+    private double m_turretTargetAngle;
 
-    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetAngle, double shooterTargetHorizontalAngle, int rollerState) {
+    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetAngle, double shooterTargetHorizontalAngle, double turretTargetAngle) {
         this.m_elevatorTargetEncPos = elevatorTargetEncPos;
         this.m_intakePivotTargetAngle = intakePivotTargetAngle;
-        this.m_shooterTargetHorizontalAngle = shooterTargetHorizontalAngle;
-        this.m_rollerState = rollerState;
+        this.m_shooterVerticalTargetAngle = shooterTargetHorizontalAngle;
+        this.m_turretTargetAngle = turretTargetAngle;
     }
 
     public double getElevatorTargetRev() {
@@ -27,8 +27,12 @@ public class CatzMechanismPosition {
         return m_intakePivotTargetAngle;
     }
 
-    public double getshooterTargetHorizontalAngle() {
-        return m_shooterTargetHorizontalAngle;
+    public double getShooterVerticalTargetAngle() {
+        return m_shooterVerticalTargetAngle;
+    }
+
+    public double getTurretTargetAngle() {
+        return m_turretTargetAngle;
     }
 
 }

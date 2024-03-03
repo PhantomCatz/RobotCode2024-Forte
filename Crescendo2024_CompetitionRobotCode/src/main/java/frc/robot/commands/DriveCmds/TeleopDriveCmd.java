@@ -60,10 +60,10 @@ public class TeleopDriveCmd extends Command {
                                                               );
     }
 
-  //   //send new chassisspeeds object to the drivetrain
-  m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
+    //send new chassisspeeds object to the drivetrain
+    m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
 
-  //   //logging
+    //logging
     Logger.recordOutput("robot xspeed", xSpeed);
     Logger.recordOutput("robot yspeed", ySpeed);
     Logger.recordOutput("robot turnspeed", turningSpeed);
@@ -71,16 +71,16 @@ public class TeleopDriveCmd extends Command {
     Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
     Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
 
-  // }
+  }
 
-  // // Called once the command ends or is interrupted.
-  // @Override
-  // public void end(boolean interrupted) {}
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {}
 
-  // // Returns true when the command should end.
-  // @Override
-  // public boolean isFinished() {
-  //   return false;
-  // }
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
   }
 }
+

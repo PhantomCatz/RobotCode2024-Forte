@@ -1,21 +1,21 @@
 // package frc.robot.subsystems.shooter;
 
-// import com.ctre.phoenix6.StatusCode;
-// import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-// import com.ctre.phoenix6.configs.Slot0Configs;
-// import com.ctre.phoenix6.configs.TalonFXConfiguration;
-// import com.ctre.phoenix6.controls.DutyCycleOut;
-// import com.ctre.phoenix6.controls.VelocityVoltage;
-// import com.ctre.phoenix6.hardware.TalonFX;
-// import com.ctre.phoenix6.signals.NeutralModeValue;
-// import com.revrobotics.CANSparkBase.IdleMode;
-// import com.revrobotics.CANSparkLowLevel.MotorType;
-// import com.revrobotics.CANSparkMax;
-// import edu.wpi.first.wpilibj.DigitalInput;
-// import edu.wpi.first.wpilibj.Servo;
-// import frc.robot.CatzConstants.MtrConfigConstants;
-// import frc.robot.CatzConstants.OIConstants;
-// import frc.robot.Utils.LoggedTunableNumber;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Servo;
+import frc.robot.CatzConstants.MtrConfigConstants;
+import frc.robot.Utils.LoggedTunableNumber;
+//import frc.robot.subsystems.turret.TurretIOReal;
 
 // public class ShooterIOReal implements ShooterIO {
 
@@ -31,25 +31,26 @@
 //     private final int SHOOTER_MOTOR_LT_CAN_ID = 21;
 //     private final int SHOOTER_MOTOR_RT_CAN_ID = 20;
 
-// /*-----------------------------------------------------------------------------------------
-//  *
-//  * Load Motors
-//  * 
-//  *---------------------------------------------------------------------------------------*/
-//     private final CANSparkMax LOAD_MOTOR;
-//     private final int LOAD_MOTOR_CAN_ID = 23;
+    private final double FLYWHEEL_THRESHOLD_OFFSET = 4;
+/*-----------------------------------------------------------------------------------------
+ *
+ * Load Motors
+ * 
+ *---------------------------------------------------------------------------------------*/
+    private final CANSparkMax LOAD_MOTOR;
+    private final int LOAD_MOTOR_CAN_ID = 23;
 
-//     //Load motor speeds 
-//     private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
-//     private final double LOAD_MOTOR_LOADING_SPEED    = 0.45; //was 0.4
-//     private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.4;
-//     private final double LOAD_MOTOR_ADJUST_SPEED = 0.1;
+    //Load motor speeds 
+    private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
+    private final double LOAD_MOTOR_LOADING_SPEED    = 0.4; //was 0.4
+    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.4;
+    private final double LOAD_MOTOR_ADJUST_SPEED     = 0.04;
 
-// /*---------------------------------------------------------------------------------------
-//  * Beam Breaks
-//  *-------------------------------------------------------------------------------------*/
-//     private final DigitalInput ADJUST_BEAM_BREAK   = new DigitalInput(0); //Swapped ids temporarily
-//     private final DigitalInput LOAD_BEAM_BREAK = new DigitalInput(1);
+/*---------------------------------------------------------------------------------------
+ * Beam Breaks
+ *-------------------------------------------------------------------------------------*/
+    private final DigitalInput ADJUST_BEAM_BREAK   = new DigitalInput(0);
+    private final DigitalInput LOAD_BEAM_BREAK     = new DigitalInput(1);
 
 // /*---------------------------------------------------------------------------------------
 //  * Linear Servos
@@ -57,16 +58,15 @@
 //     private Servo shooterServoLT;
 //     private Servo shooterServoRT;
 
-//     private final int SERVO_LEFT_PWM_ID  = 0;
-//     private final int SERVO_RIGHT_PWM_ID = 1;
+    private final int SERVO_LEFT_PWM_ID  = 0;
 
-//     private final int SERVO_PW_US_MAX_POSITION          = 2000;
-//     private final int SERVO_PW_US_MAX_DEADBAND_POSITION = 1800;
-//     private final int SERVO_PW_US_CENTER_POSITION       = 1500;
-//     private final int SERVO_PW_US_MIN_DEADBAND_POSITION = 1200;
-//     private final int SERVO_PW_US_MIN_POSITION          = 1000;
+    private final int SERVO_RIGHT_PWM_ID = 1;
 
-//     private final double FLYWHEEL_THRESHOLD_OFFSET = 4;
+    private final int SERVO_PW_US_MAX_POSITION          = 2000;
+    private final int SERVO_PW_US_MAX_DEADBAND_POSITION = 1800;
+    private final int SERVO_PW_US_CENTER_POSITION       = 1500;
+    private final int SERVO_PW_US_MIN_DEADBAND_POSITION = 1200;
+    private final int SERVO_PW_US_MIN_POSITION          = 1000;
 
 //     //Tunable motor velocities
 //     LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 65); // was 65
@@ -74,11 +74,11 @@
 
 //     TalonFX[] shooterArray = new TalonFX[2];
 
-//     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
-
-//     //Create new Talong FX config objects
-//     private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
-//     private Slot0Configs         pidConfigs   = new Slot0Configs();
+    private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
+    
+    //Create new Talong FX config objects
+    private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
+    private Slot0Configs         pidConfigs   = new Slot0Configs();
     
 //     public ShooterIOReal() {
 //         //Servo setup
@@ -106,11 +106,9 @@
 //         LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
 //         LOAD_MOTOR.enableVoltageCompensation(12.0); //TBD is this the default value?
         
-//         //Create shooter mtr array for easier calls
-//         shooterArray[0] = SHOOTER_MOTOR_RT;
-//         shooterArray[1] = SHOOTER_MOTOR_LT;
-
-        
+        //Create shooter mtr array for easier calls
+        shooterArray[0] = SHOOTER_MOTOR_RT;
+        shooterArray[1] = SHOOTER_MOTOR_LT;
 
 //         //Reset to factory defaults
 //         SHOOTER_MOTOR_RT.getConfigurator().apply(new TalonFXConfiguration());
@@ -166,8 +164,8 @@
 //         inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
 //         inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
 
-//         inputs.servoLeft  = shooterServoLT.get();
-//         inputs.servoRight = shooterServoRT.get();
+        inputs.servoLeftPosition  = shooterServoLT.get();
+        inputs.servoRightPosition = shooterServoRT.get();
 
 //     }
 
@@ -239,9 +237,10 @@
 //     shooterServoRT.setAngle(angle);
 //   } 
 
-//   @Override
-//   public void setServoSpeed(double speed) {
-//     shooterServoRT.setSpeed(speed);
-//     shooterServoLT.setSpeed(speed);
-//   }
-// }
+  @Override
+  public void setServoSpeed(double speed) {
+    shooterServoRT.setSpeed(speed);
+    shooterServoLT.setSpeed(speed);
+  }
+}
+
