@@ -42,7 +42,7 @@ public class TurretIOReal implements TurretIO {
 
         smartMotionPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
         smartMotionPID.setSmartMotionAllowedClosedLoopError(5, 0);
-        smartMotionPID.setSmartMotionMaxVelocity(11000, 0);
+        smartMotionPID.setSmartMotionMaxVelocity(2000, 0);
         smartMotionPID.setSmartMotionMinOutputVelocity(0,0);
     }
     @Override
