@@ -1,19 +1,19 @@
-// package frc.robot.subsystems.intake;
+package frc.robot.subsystems.intake;
 
-// import com.ctre.phoenix6.StatusCode;
-// import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-// import com.ctre.phoenix6.configs.Slot0Configs;
-// import com.ctre.phoenix6.configs.Slot1Configs;
-// import com.ctre.phoenix6.configs.TalonFXConfiguration;
-// import com.ctre.phoenix6.controls.DutyCycleOut;
-// import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
-// import com.ctre.phoenix6.controls.MotionMagicVoltage;
-// import com.ctre.phoenix6.controls.PositionVoltage;
-// import com.ctre.phoenix6.controls.VelocityVoltage;
-// import com.ctre.phoenix6.controls.VoltageOut;
-// import com.ctre.phoenix6.hardware.TalonFX;
-// import com.ctre.phoenix6.signals.GravityTypeValue;
-// import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
@@ -29,8 +29,8 @@ public class IntakeIOReal implements IntakeIO {
     
     private final DigitalInput intakeBeamBreak = new DigitalInput(4);
 
-//     private final TalonFX pivotMtr;
-//     private final TalonFX rollerMtr;
+    private final TalonFX pivotMtr;
+    private final TalonFX rollerMtr;
 
     private StatusCode pivotInitializationStatus  = StatusCode.StatusCodeNotInitialized;
     private StatusCode rollerInitializationStatus = StatusCode.StatusCodeNotInitialized;
@@ -106,25 +106,25 @@ public class IntakeIOReal implements IntakeIO {
         inputs.closedLoopPivotMtr =     pivotMtr.getClosedLoopError().getValue();
     }
 
-//     @Override
-//     public void resetPivotEncPos(double defaultEncPos) {
-//        pivotMtr.setPosition(defaultEncPos);
-//     }
+    @Override
+    public void resetPivotEncPos(double defaultEncPos) {
+       pivotMtr.setPosition(defaultEncPos);
+    }
 
-//     @Override
-//     public void setRollerPercentOutput(double speed) {
-//         rollerMtr.set(speed);
-//     }
+    @Override
+    public void setRollerPercentOutput(double speed) {
+        rollerMtr.set(speed);
+    }
 
-//     @Override
-//     public void setIntakePivotPercentOutput(double percentOutput) {
-//        pivotMtr.set(-percentOutput);
-//     }
+    @Override
+    public void setIntakePivotPercentOutput(double percentOutput) {
+       pivotMtr.set(-percentOutput);
+    }
 
-//     @Override
-//     public void setIntakePivotVoltage(double volts) {
-//         pivotMtr.setControl(new VoltageOut(volts));
-//     }
+    @Override
+    public void setIntakePivotVoltage(double volts) {
+        pivotMtr.setControl(new VoltageOut(volts));
+    }
 
     @Override
     public void setIntakePivotEncOutput(double encOutput, double ffVoltage) {
