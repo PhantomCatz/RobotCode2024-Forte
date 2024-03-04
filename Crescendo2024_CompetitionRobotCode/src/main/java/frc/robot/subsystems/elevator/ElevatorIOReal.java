@@ -1,4 +1,4 @@
-// package frc.robot.subsystems.elevator;
+package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -21,8 +21,8 @@ public class ElevatorIOReal implements ElevatorIO {
 
     private DigitalInput m_bottomLimit = new DigitalInput(10);
 
-//     private final TalonFX ElevatorMtrRT;
-//     private final TalonFX ElevatorMtrLT;
+    private final TalonFX ElevatorMtrRT;
+    private final TalonFX ElevatorMtrLT;
 
     public ElevatorIOReal() {
         //Elevator Motor setup
@@ -50,8 +50,8 @@ public class ElevatorIOReal implements ElevatorIO {
         elevatorTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
 
-//         ElevatorMtrLT.setPosition(0);
-//         ElevatorMtrRT.setPosition(0);
+        ElevatorMtrLT.setPosition(0);
+        ElevatorMtrRT.setPosition(0);
 
 
         //check if elevator motor is initialized correctly
@@ -62,7 +62,7 @@ public class ElevatorIOReal implements ElevatorIO {
             System.out.println("Failed to Configure CAN ID" + CatzConstants.ElevatorConstants.ELEVATOR_RT_MTR_ID);
         }
             
-//     }
+    }
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
@@ -92,14 +92,14 @@ public class ElevatorIOReal implements ElevatorIO {
         ElevatorMtrRT.setControl(new VoltageOut(volts));
     }
 
-//     @Override
-//     public void setElevatorPercentOutput(double speed) {
-//         ElevatorMtrRT.set(speed);
-//     }
+    @Override
+    public void setElevatorPercentOutput(double speed) {
+        ElevatorMtrRT.set(speed);
+    }
 
-//     @Override
-//     public void setSelectedSensorPosition(double setNewReadPosition) {
-//         ElevatorMtrRT.setPosition(setNewReadPosition);
-//     }
+    @Override
+    public void setSelectedSensorPosition(double setNewReadPosition) {
+        ElevatorMtrRT.setPosition(setNewReadPosition);
+    }
 
-// }
+}

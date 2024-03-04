@@ -1,6 +1,6 @@
-// package frc.robot.subsystems.turret;
+package frc.robot.subsystems.turret;
 
-// import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -19,8 +19,8 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController.AccelStrategy;
 
-// import frc.robot.CatzConstants.MtrConfigConstants;
-// import frc.robot.Utils.LoggedTunableNumber;
+import frc.robot.CatzConstants.MtrConfigConstants;
+import frc.robot.Utils.LoggedTunableNumber;
 
 public class TurretIOReal implements TurretIO {
 
@@ -52,10 +52,10 @@ public class TurretIOReal implements TurretIO {
         inputs.turretEncValue         = turretMtr.getEncoder().getPosition();
     }
 
-//     @Override
-//     public void turretSetPwr(double outputPwr) {
-//         turretMtr.set(outputPwr);
-//     }
+    @Override
+    public void turretSetPwr(double outputPwr) {
+        turretMtr.set(outputPwr);
+    }
 
     @Override 
     public void turretSetEncoderPos(double position){

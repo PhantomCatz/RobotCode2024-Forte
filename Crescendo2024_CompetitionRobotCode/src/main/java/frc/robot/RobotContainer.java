@@ -84,10 +84,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    private void configureBindings() {    
     
     xboxDrv.rightBumper().onTrue(intake.cmdRollerIn());
-    xboxDrv.leftBumper().onTrue(intake.cmdRollerOut()); 
+    //xboxDrv.leftBumper().onTrue(intake.cmdRollerOut()); 
     //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
-    Trigger rollersOffBinding = xboxDrv.leftBumper().and (xboxDrv.rightBumper());
-    rollersOffBinding.onTrue(intake.cmdRollerOff());
+   // Trigger rollersOffBinding = xboxDrv.leftBumper().and (xboxDrv.rightBumper());
+    //rollersOffBinding.onTrue(intake.cmdRollerOff());
 
    // Trigger manualTrigger = new Trigger(()-> Math.abs(xboxDrv.getLeftY()) > 0.1);
     xboxDrv.leftStick().onTrue(new ManualIntakeCmd(()->xboxDrv.getLeftY(), ()->xboxDrv.leftStick().getAsBoolean()));
@@ -101,6 +101,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxDrv.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP, CatzConstants.currentManipulatorMode));
     xboxDrv.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE, CatzConstants.currentManipulatorMode));
     xboxDrv.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, CatzConstants.currentManipulatorMode));
+
+    xboxDrv.leftBumper().onTrue(shooter.cmdLoad());
+    xboxDrv.rightBumper().onTrue(shooter.loadBackward()).onFalse(shooter.loadDisabled());
+
 
     // //----------------------------------------------------------------------------------------
     // //  DriveControls
