@@ -11,12 +11,17 @@ import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 
 public class ManualElevatorCmd extends Command {
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
-  Supplier<Double> supplierRightY;
+  Supplier<Double> m_supplierRightY;
+  Supplier<Boolean> m_supplierLeftJoyStickPressed;
 
-  public ManualElevatorCmd(Supplier<Double> supplierRightY) {
+
+  private double pressCounter;
+
+  public ManualElevatorCmd(Supplier<Double> supplierRightY, Supplier<Boolean> supplierLeftJoyStickPressed) {
     addRequirements(elevator);
 
-    this.supplierRightY = supplierRightY;
+    this.m_supplierRightY = supplierRightY;
+    this.m_supplierLeftJoyStickPressed = supplierLeftJoyStickPressed;
   }
 
   @Override
@@ -25,8 +30,15 @@ public class ManualElevatorCmd extends Command {
 
   @Override
   public void execute() {
-    elevator.setElevatorPercentOutput(supplierRightY.get());
-  }
+    if(m_supplierLeftJoyStickPressed.get()) {
+      pressCounter = 1;
+    }
+
+    if(pressCounter == 1) {
+      elevator.setElevatorSemiManualPwr(m_supplierRightY.get());
+    } else {
+      elevator.setElevatorSemiManualPwr(m_supplierRightY.get());
+    }  }
 
   @Override
   public void end(boolean interrupted) {}

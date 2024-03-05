@@ -8,153 +8,135 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
-import java.util.logging.Logger;
+import org.littletonrobotics.junction.Logger;
 
 import java.awt.geom.Point2D;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import frc.robot.CatzConstants.ShooterConstants;
 import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.Utils.LinearInterpolationTable;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
-// import frc.robot.subsystems.turret.SubsystemCatzTurret;
-// import frc.robot.subsystems.vision.SubsystemCatzVision;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
 public class AutoAlignCmd extends InstantCommand {
+  //subsystem declaration
+  private static SubsystemCatzTurret turret   = SubsystemCatzTurret.getInstance();
+  private static SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
+  private static SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
+
+  //timer instatntiation
   private final Timer m_timer = new Timer();
 
-  private static final Point2D[] kHoodPoints = new Point2D.Double[] {
-    // (ty-angle,distance)
-    new Point2D.Double(35, 0.0),
-    new Point2D.Double(55, 0.0),
-    new Point2D.Double(80, 7.5), //
-    new Point2D.Double(105, 16.5), //
-    new Point2D.Double(130, 22.0), //
-    new Point2D.Double(155, 25.5), //
-    new Point2D.Double(165, 25.5), //
-    new Point2D.Double(180, 27.5), //
-    new Point2D.Double(205, 29.0), //
-    new Point2D.Double(230, 33.0), //
-    new Point2D.Double(255, 33.0), //
-    new Point2D.Double(270, 33.5), //
-    new Point2D.Double(280, 36.1)
-    };
+  //--------------------------------------------------------------
+  // Interpolation tables
+  //--------------------------------------------------------------
+  /** Shooter angle look up table key: meters, values: pivot position */
+  private static final InterpolatingDoubleTreeMap shooterPivotTable = new InterpolatingDoubleTreeMap();
 
-    public static final LinearInterpolationTable kHoodTable = new LinearInterpolationTable(kHoodPoints);
+  static { //TBD add values in through testing
+    shooterPivotTable.put(1.0, 2.0);
+  }
 
-    private static final Point2D[] kRPMPoints = new Point2D.Double[] {
-        // (ty-angle,distance)
-        new Point2D.Double(35, 1500+10),
-        new Point2D.Double(55, 1860+10),
-        new Point2D.Double(80, 2000+10), //
-        new Point2D.Double(105, 2100+10), //
-        new Point2D.Double(130, 2170+20), //
-        new Point2D.Double(155, 2245+30), //
-        new Point2D.Double(165, 2380), //
-        new Point2D.Double(180, 2465+30), //
-        new Point2D.Double(205, 2670+30), //
-        new Point2D.Double(230, 2840+35), //
-        new Point2D.Double(255, 2980+40), //
-        new Point2D.Double(270, 3300), //
-        new Point2D.Double(280, 3350+60)
+  /** Turret angle look up table key: meters, values: degrees */
+  private static final InterpolatingDoubleTreeMap timeTable = new InterpolatingDoubleTreeMap();
+      // (ty-angle,time)
+  static { //TBD add values in through testing
+    timeTable.put(80.0, 2.0);
+  }
 
-    };
-
-    public static final LinearInterpolationTable kRPMTable = new LinearInterpolationTable(kRPMPoints);
-
-    private static final Point2D[] kShotTimes = new Point2D.Double[] {
-        // (ty-angle,time)
-        new Point2D.Double(80, 0.78),
-        new Point2D.Double(130, 0.80),
-        new Point2D.Double(190, 0.81),
-        new Point2D.Double(240, 0.82),
-        new Point2D.Double(280, 0.83)
-    };
-    private static Point2D[] m_shotTimes = 
-        new Point2D.Double[]{
-            //(dist,time)
-            new Point2D.Double(105,0.82), 
-            new Point2D.Double(135,0.82), 
-            new Point2D.Double(165,0.85),//
-            new Point2D.Double(195,0.85),
-            new Point2D.Double(250,1.05),
-            //
-        };
-
-    public static final LinearInterpolationTable kTimeTable = new LinearInterpolationTable(kShotTimes);
-    private static LinearInterpolationTable m_timeTable = new LinearInterpolationTable(m_shotTimes);
-
-  private static LinearInterpolationTable m_hoodTable = kHoodTable;
-  private static LinearInterpolationTable m_rpmTable = kRPMTable;
-  private final SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
-  // private final SubsystemCatzTurret     turret     = SubsystemCatzTurret.getInstance();
-  private DriverStation.Alliance alliance = null;
-
-  private static final double SPEAKER_COORD_MTRS_Y = Units.inchesToMeters(219.277);
-  private static final double FIELD_LENGTH_MTRS = Units.inchesToMeters(651.223);
   public static final double kAccelCompFactor = 0.100; // in units of seconds
-  private double hozDeg;
-  private double driveTrainOffset;
-
 
   public AutoAlignCmd() {
-    // addRequirements(turret);
+    addRequirements(turret, shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
-
+    //start the flywheel
+    shooter.startShooterFlywheel();
   }
 
   @Override 
   public void execute() {
-    double currentTime = m_timer.get();        
+    double currentTime = m_timer.get();
 
-    SmartDashboard.putNumber("Current Time", currentTime);
-
-    SmartDashboard.putBoolean("Shooter Running", true);
+    Logger.recordOutput("ShooterCalcs/Current Time", currentTime);
 
     FieldRelativeSpeed robotVel = drivetrain.getFieldRelativeSpeed();
     FieldRelativeAccel robotAccel = drivetrain.getFieldRelativeAccel();
 
-    Translation2d target = new Translation2d(5,5);
+    //translation of the blue alliance speaker
+    Translation2d target = new Translation2d(0.0, 5.55);
 
+    //take the distance to the speaker
     Translation2d robotToGoal = target.minus(drivetrain.getPose().getTranslation());
-    double dist = robotToGoal.getDistance(new Translation2d())*39.37;
 
-    SmartDashboard.putNumber("Calculated (in)", dist);
+    //convert the distance to inches
+    double dist = robotToGoal.getDistance(new Translation2d()) * 39.37;
 
-    double fixedShotTime = m_timeTable.getOutput(dist);
+    Logger.recordOutput("ShooterCalcs/Calculated (in)", dist);
 
-    double virtualGoalX = target.getX()-fixedShotTime*(robotVel.vx+robotAccel.ax*kAccelCompFactor);
-    double virtualGoalY = target.getY()-fixedShotTime*(robotVel.vy+robotAccel.ay*kAccelCompFactor);
+    //get the time it takes for note to reach the speaker in seconds? TBD
+    double shotTime = timeTable.get(dist);
 
-    SmartDashboard.putNumber("Goal X", virtualGoalX);
-    SmartDashboard.putNumber("Goal Y", virtualGoalY);
+    Logger.recordOutput("ShooterCalcs/Fixed Time", shotTime);
 
-    Translation2d movingGoalLocation = new Translation2d(virtualGoalX,virtualGoalY);
+    Translation2d movingGoalLocation = new Translation2d();
 
-    Translation2d toMovingGoal = movingGoalLocation.minus(drivetrain.getPose().getTranslation());
+    //run 5 iterations to test the goal location accuraccy
+    for(int i=0;i<5;i++){
+      //collect new shooting targets modifed by robot acceleration and velocity
+        double virtualGoalX = target.getX()
+                - shotTime * (robotVel.vx + robotAccel.ax * kAccelCompFactor);
+        double virtualGoalY = target.getY()
+                - shotTime * (robotVel.vy + robotAccel.ay * kAccelCompFactor);
 
-    double newDist = toMovingGoal.getDistance(new Translation2d())*39.37;
+        //Logger.recordOutput("ShooterCalcs/Goal X", virtualGoalX);
+        //Logger.recordOutput("ShooterCalcs/Goal Y", virtualGoalY);
 
-    // turret.aimAtGoal( movingGoalLocation, false);
-    
-        if(SmartDashboard.getBoolean("Adjust Shot?", false)){
-            //m_shooter.run(kRPMTable.getOutput(newDist)+SmartDashboard.getNumber("SetShotAdjust", 0));
-           // m_hood.run(m_hoodTable.getOutput(newDist)+SmartDashboard.getNumber("SetHoodAdjust", 0));
+        Translation2d testGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
+
+        Translation2d toTestGoal = testGoalLocation.minus(drivetrain.getPose().getTranslation());
+
+        //take the new time to reach target
+        double newShotTime = timeTable.get(toTestGoal.getDistance(new Translation2d()) * 39.37);
+
+        //if the difference between the two is low, skip the iterations 
+        if(Math.abs(newShotTime-shotTime) <= 0.010){
+            i=4;
         }
-        else{
-           // m_shooter.run(m_rpmTable.getOutput(newDist));
-            //.run(m_hoodTable.getOutput(newDist));
-            
+      
+        //create the new target for the shooter and shooter pivot
+        if(i == 4){
+            movingGoalLocation = testGoalLocation;
+            //Logger.recordOutput("ShooterCalcs/NewShotTime", newShotTime);
         }
+        else{ //continue attempting to close the gap
+            shotTime = newShotTime;
+        }
+
+    }
+
+    double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d()) * 39.37;
+
+    Logger.recordOutput("ShooterCalcs/NewDist", newDist);
+
+    //send the new target to the turret
+    turret.aimAtGoal(movingGoalLocation, false);
+
+    //send new target to the shooter
+    //shooter.updateShooterServo(shooterPivotTable.get(newDist + SmartDashboard.getNumber("SetHoodAdjust", 0)));
+    shooter.updateShooterServo(shooterPivotTable.get(newDist));
+
   }
 
 }

@@ -50,6 +50,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final int LOAD_OFF = 8;
   private static final int LOAD_OUT = 9;
 
+
+
+/*-----------------------------------------------------------------------------------------
+  * Constants for Shooter
+  *-----------------------------------------------------------------------------------------*/
+  public static double SERVO_OPTIMAL_HANDOFF_POS = 0.0;
+
   private double m_newServoPosition;
   private double m_servoPosError;
 
@@ -84,7 +91,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //XboxController for rumbling
   private XboxController xboxDrvRumble;
 
-  public SubsystemCatzShooter() {
+  private SubsystemCatzShooter() {
     
     //XboxController
     xboxDrvRumble = new XboxController(OIConstants.XBOX_DRV_PORT);
@@ -118,21 +125,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
 
-    //variable calculations
-    m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
-
-    if(currentShooterServoState == ShooterServoState.TUNNING) {
-      double servoPosition = servoPosTunning.get();
-      io.setServoPosition(servoPosition);
-    }
-
     
-
-    /*--------------------------------------------------------------------------------------------------------
-     * 
-     * Load motor Logic
-     * 
-     *-------------------------------------------------------------------------------------------------------*/
+    //load motor logic
     switch(currentLoaderMode) {
         case LOAD_IN:
           io.loadNote();
@@ -221,9 +215,14 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
     Logger.recordOutput("current load state", currentLoaderMode);
     
-  /*----------------------------------------------------------------------------------------
-   * Servo Logic
-   *---------------------------------------------------------------------------------------*/
+
+    //servo Logic
+    m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
+
+    if(currentShooterServoState == ShooterServoState.TUNNING) {
+      double servoPosition = servoPosTunning.get();
+      io.setServoPosition(servoPosition);
+    }
 
     if(currentShooterServoState == ShooterServoState.AUTO) {
       io.setServoPosition(m_newServoPosition);
@@ -233,9 +232,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
   }
 
-  /*----------------------------------------------------------------------------------------
-   * Access Methods
-   *---------------------------------------------------------------------------------------*/
+  //-------------------------------------------------------------------------------------
+  // Intake Calculation Methods
+  //-------------------------------------------------------------------------------------
   public void updateShooterTargetPosition(CatzMechanismPosition newPosition) {
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
@@ -243,12 +242,28 @@ public class SubsystemCatzShooter extends SubsystemBase {
       currentLoaderMode = LOAD_IN;
     }
   }
- 
+
+  public void updateShooterServo(double position) {
+    currentShooterServoState = ShooterServoState.AUTO;
+    m_newServoPosition = position;
+  }
+
+  public Command setPositionCmd(double position) {
+    currentShooterServoState = ShooterServoState.FULL_MANUAL;
+    return run(()->m_newServoPosition = position);
+  }
+
+  //-------------------------------------------------------------------------------------
+  // Calculation Methods 
+  //------------------------------------------------------------------------------------- 
   private double timer(double seconds){ // in seconds; converts time to iteration counter units
     System.out.println(Math.round(seconds/LOOP_CYCLE_MS) + 1);
     return Math.round(seconds/LOOP_CYCLE_MS) + 1;
   }
-  
+
+  //-------------------------------------------------------------------------------------
+  // Getter Methods 
+  //------------------------------------------------------------------------------------- 
   public ShooterServoState getShooterServoState() {
     return currentShooterServoState;
   }
@@ -256,10 +271,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return currentNoteState;
   }
   
-  //-------------------------------------------Flywheel Commands------------------------------------------
-
+  //-------------------------------------------------------------------------------------
+  // Flywheel Commands
+  //-------------------------------------------------------------------------------------
   public Command cmdShooterEnabled() {
-    return runOnce(()->currentLoaderMode = START_SHOOTER_FLYWHEEL);
+    return runOnce(()->startShooterFlywheel());
   }
 
   public void startShooterFlywheel() {
@@ -270,8 +286,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return runOnce(()->io.setShooterDisabled());
   }
 
-  //-------------------------------------------Load Commands------------------------------------------
-
+  //-------------------------------------------------------------------------------------
+  // Shooter Loading Methods 
+  //-------------------------------------------------------------------------------------
   public Command cmdShoot() {
       return runOnce(()->currentLoaderMode = SHOOTING);
   }
@@ -289,11 +306,4 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return runOnce(()->currentLoaderMode = LOAD_OFF);
   }
 
-//-------------------------------------------Servo Commands------------------------------------------
-
-  public Command setPosition(double position) {
-    currentShooterServoState = ShooterServoState.FULL_MANUAL;
-    System.out.println("aa");
-    return run(()->io.setServoPosition(position));
-  }
 }

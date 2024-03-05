@@ -7,9 +7,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 
-  import static edu.wpi.first.apriltag.AprilTagFields.k2024Crescendo;
+import static edu.wpi.first.apriltag.AprilTagFields.k2024Crescendo;
 
   import edu.wpi.first.apriltag.AprilTagFieldLayout;
   import edu.wpi.first.math.geometry.*;
@@ -159,18 +161,6 @@ public final class CatzConstants {
     }
   }
 
-  public static final class MtrConfigConstants {
-    //Falcon configuration constants
-    public static final int     FALCON_CURRENT_LIMIT_AMPS            = 55;
-    public static final int     FALCON_CURRENT_LIMIT_TRIGGER_AMPS    = 55;
-    public static final double  FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
-    public static final boolean FALCON_ENABLE_CURRENT_LIMIT          = true;
-
-    //Neo config constants
-    public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
-
-  }
-
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
     //sn2
@@ -249,44 +239,20 @@ public final class CatzConstants {
       autoTurnPIDController
     );
   }
-
-  //any type of Elevator Mtr Config Constnats/Logic Constants should go here 
-  public static final class ElevatorConstants {
-    public static final double ELEVATOR_POS_STOW_POSITION = 0.0;
-    public static final double ELEVATOR_POS_FULL_EXTEND   = -16.0;
-    public static final double ElEVATOR_POS_SCORE_AMP     = 12.0;//8;
-
-    public static int ELEVATOR_LT_MTR_ID = 50; //TBD ids are swapped for testing change back to 51
-    public static int ELEVATOR_RT_MTR_ID = 51;
-
-    public static double REV_SWITCH_POS = 0.0; //dummy
-    public static double FWD_SWITCH_POS = 5.0; //dummy
-
-    public static double MANUAL_PWR = 0.5; //dummy
-  }
   
 
-
-  //any type of Shooter Mtr Config Constnats/Logic Constants should go here 
-  public static final class ShooterConstants {
-    public static int SHOOTER_MTR_ID = 53;
-    public static int TURRET_MTR_ID = 54;
-    public static int ACCEPTABLE_VEL_ERROR = 20;
-
-  }
-
   public static final class CatzMechanismConstants {
-    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW, 0, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF_AMP_PREP = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW,0, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF_SPEAKER_PREP = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION , SubsystemCatzIntake.INTAKE_STOW, 0 , 0);
-    public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION,0,0,0);
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(ElevatorConstants.ElEVATOR_POS_SCORE_AMP, 0.0, 0,  0);
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_GROUND_PICKUP, 0, 0 );
-    public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition(ElevatorConstants.ElEVATOR_POS_SCORE_AMP, SubsystemCatzIntake.INTAKE_SCORE_AMP,0, 0);
+    public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW, SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 0);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF_AMP_PREP = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW, SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 0);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF_SPEAKER_PREP = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION , SubsystemCatzIntake.INTAKE_STOW, 0 , 0);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION,0,0,0);
+    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_SCORE_AMP, 0.0, 0,  0);
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_GROUND_PICKUP, 0, 0 );
+    public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_SCORE_AMP, SubsystemCatzIntake.INTAKE_SCORE_AMP,0, 0);
     public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition(0,0,0,0);
     public static final CatzMechanismPosition POS_CLIMB = new CatzMechanismPosition(0,0,0,0);
-    public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_FULL_EXTEND, SubsystemCatzIntake.INTAKE_SCORE_AMP,0,0);
-    public static final CatzMechanismPosition AUTO_ALIGN_WITH_SPEAKER = new CatzMechanismPosition(ElevatorConstants.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW, 0, 0);
+    public static final CatzMechanismPosition POS_CLIMB_SCORE_TRAP = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_FULL_EXTEND, SubsystemCatzIntake.INTAKE_SCORE_AMP,0,0);
+    public static final CatzMechanismPosition AUTO_ALIGN_WITH_SPEAKER = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW, 0, 0);
     
   }
 

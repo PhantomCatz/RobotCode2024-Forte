@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.CatzConstants.ElevatorConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.ElevatorIOInputsAutoLogged;
@@ -30,7 +29,16 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-  //elevator constants
+  //-------------------------------------------------------------------------------------
+  // Elevator Constants
+  //-------------------------------------------------------------------------------------
+  public static final double ELEVATOR_POS_STOW_POSITION = 0.0;
+  public static final double ELEVATOR_POS_FULL_EXTEND   = -16.0;
+  public static final double ElEVATOR_POS_SCORE_AMP     = 12.0;//8;
+
+  public static double REV_SWITCH_POS = 0.0; //dummy
+  public static double FWD_SWITCH_POS = 5.0; //dummy
+  
   private static final double ElEVATOR_REV_TO_INCHES = 0.0;
   private static final double ELEVATOR_GEAR_RATIO    = 16;
 
@@ -44,8 +52,9 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private static final double ELEVATOR_kG = 0.6;
   private static final double ELEVATOR_kV = 0.0;
 
-
-  //elevator variables
+  //-------------------------------------------------------------------------------------
+  // Elevator Variables
+  //-------------------------------------------------------------------------------------
   private double m_newPositionRev = 0.0;
   private double m_elevatorPercentOutput = 0.0;
   private double m_finalffVolts = 0.0;
@@ -58,8 +67,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private ElevatorFeedforward elevatorFeedforward;
   private CatzMechanismPosition m_targetPosition;
 
-  LoggedTunableNumber kgElevatorTunning = new LoggedTunableNumber("kgElevatorTunning", 0.0);
-
   private static ElevatorState currentElevatorState;
   private static enum ElevatorState {
     AUTO,
@@ -68,7 +75,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
     SEMI_MANUAL
   }
 
-  public SubsystemCatzElevator() {
+  private SubsystemCatzElevator() {
     switch (CatzConstants.currentMode) {
       case REAL: io = new ElevatorIOReal();
                  System.out.println("Elevator Configured for Real");
@@ -100,6 +107,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
       io.setSelectedSensorPosition(0.0);
     }
 
+    //elevator control calculations
     elevatorVelocityMTRRPS = (currentRotations - previousRotations)/0.02;
     m_finalffVolts = elevatorFeedforward.calculate(0.0);
 
@@ -130,6 +138,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
     Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
   }
 
+
+  //-------------------------------------------------------------------------------------
+  // Elevator Access Methods
+  //-------------------------------------------------------------------------------------
   public void updateElevatorTargetPosition(CatzMechanismPosition targetPosition) {
 
     //set new target position for elevator

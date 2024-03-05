@@ -19,7 +19,6 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController.AccelStrategy;
 
-import frc.robot.CatzConstants.MtrConfigConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 
 public class TurretIOReal implements TurretIO {
@@ -27,11 +26,14 @@ public class TurretIOReal implements TurretIO {
     private final CANSparkMax turretMtr;
     private final SparkPIDController smartMotionPID;
 
+    public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
+
+
     public TurretIOReal() {
        
         turretMtr = new CANSparkMax(60, MotorType.kBrushless);
         turretMtr.restoreFactoryDefaults();
-        turretMtr.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
+        turretMtr.setSmartCurrentLimit(NEO_CURRENT_LIMIT_AMPS);
         turretMtr.setIdleMode(IdleMode.kBrake);
         turretMtr.enableVoltageCompensation(12.0);
 

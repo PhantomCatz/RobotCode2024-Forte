@@ -75,7 +75,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private double m_desiredAngle = 0.0;
   
 
-  public SubsystemCatzTurret() {
+  private SubsystemCatzTurret() {
 
     switch (CatzConstants.currentMode) {
       case REAL: io = new TurretIOReal();
@@ -208,26 +208,28 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
 
   public void aimAtGoal(Translation2d goal, boolean aimAtVision) {
-    // Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
+    Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
 
-    // //take difference between goal and the curret robot translation
-    // Translation2d robotToGoal = goal.minus(robotPose.getTranslation());
-    // //calculate new turret angle based off current robot position
-    // double angle = Math.atan2(robotToGoal.getY(), robotToGoal.getX());
-    // //offset new turret angle based off current robot rotation
-    // angle = Math.PI + angle - robotPose.getRotation().getRadians();
+    //take difference between speaker and the curret robot translation
+    Translation2d robotToGoal = goal.minus(robotPose.getTranslation());
+    
+    //calculate new turret angle based off current robot position
+    double angle = Math.atan2(robotToGoal.getY(), robotToGoal.getX());
 
-    // angle = CatzMathUtils.toUnitCircAngle(angle);
+    //offset new turret angle based off current robot rotation
+    angle = Math.PI + angle - robotPose.getRotation().getRadians(); //TBD why add half a rotation
 
-    // //TBD add logic that will turn on a flag when the turret it currently tracking with info
+    angle = CatzMathUtils.toUnitCircAngle(angle);
 
-    // //if we purely just want to rely on apriltag for aiming
-    // if (aimAtVision && SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {
-    //   currentTurretState = TurretState.TRACKING_APRILTAG;
-    // } else {
-    //   m_turretTargetDegree = angle;
-    //   currentTurretState = TurretState.AUTO;
-    // }
+    //TBD add logic that will turn on a flag when the turret it currently tracking with info
+
+    //if we purely just want to rely on apriltag for aiming
+    if (aimAtVision && SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {
+      currentTurretState = TurretState.TRACKING_APRILTAG;
+    } else {
+      m_turretTargetDegree = angle;
+      currentTurretState = TurretState.AUTO;
+    }
   }
 
   public double getTurretAngle() {

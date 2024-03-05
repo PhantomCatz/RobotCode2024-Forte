@@ -96,7 +96,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double PID_FINE_GROSS_THRESHOLD_DEG = 20;
   private final double ERROR_INTAKE_THRESHOLD_DEG = 5.0;
 
-  //
+  //Intake positions
   public static final double INTAKE_GROUND_PICKUP             = -30.0;
   public static final double INTAKE_SCORE_AMP                 = 92.6; //90.43;
   public static final double INTAKE_STOW                      = 160.0;
@@ -140,7 +140,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
 
 
-  public SubsystemCatzIntake() {
+  private SubsystemCatzIntake() {
 
     switch (CatzConstants.currentMode) {
       case REAL: io = new IntakeIOReal();
@@ -201,9 +201,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     } else { 
       //robot enabled
 
-      // ----------------------------------------------------------------------------------
-      // Intake Rollers
-      // ----------------------------------------------------------------------------------
+      //---------------------------------------Intake Roller logic -------------------------------------------
       switch(m_rollerRunningMode) {
         case ROLLERS_STATE_IN:
             if(inputs.isIntakeBeamBrkBroken) {
@@ -236,9 +234,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
       }
 
 
-      // ----------------------------------------------------------------------------------
-      // IntakePivot
-      // ----------------------------------------------------------------------------------
+      //---------------------------------------Intake Pivot logic -------------------------------------------
       if(currentIntakeState == IntakeState.WAITING) { //when intake is waiting for elevator change state to auto to wait in holding position
           io.setIntakePivotEncOutput(m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts); //go to holding position
 
@@ -283,7 +279,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
           m_iterationCounter = 0; //resetcounter if intake hasn't leveled off
         }
         
-      } else { //we are current setting pwr through manual
+      } else { //currently setting pwr through manual
         io.setIntakePivotVoltage(kgtunning.get());
       }
     } 
@@ -299,9 +295,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
     Logger.recordOutput("intake/roller mode",m_rollerRunningMode);
 
 } 
-
-  //-------------------------------------Pivot methods--------------------------------
-  //auto update intake angle
+  //-------------------------------------------------------------------------------------
+  // Intake Access Methods
+  //-------------------------------------------------------------------------------------
   public void updateIntakeTargetPosition(CatzMechanismPosition targetPosition) {
     //set member variable
     this.m_targetPosition    = targetPosition;
@@ -337,6 +333,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   }
 
+
+  //-------------------------------------------------------------------------------------
+  // Intake Calculation Methods
+  //-------------------------------------------------------------------------------------
   private double calculatePivotFeedFoward(double positionRadians, double velocityRadPerSec, double accelRadPerSecSquared) {
       double finalFF = PIVOT_FF_kS * Math.signum(velocityRadPerSec)
                      + PIVOT_FF_kG * Math.cos(positionRadians)
@@ -354,7 +354,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
     return m_currentPositionDeg;
   }
 
-  //-------------------------------------Roller methods--------------------------------
+  //-------------------------------------------------------------------------------------
+  // Roller Methods
+  //-------------------------------------------------------------------------------------
   public Command cmdRollerIn() {
     return runOnce(()-> setRollerState(1));
   }

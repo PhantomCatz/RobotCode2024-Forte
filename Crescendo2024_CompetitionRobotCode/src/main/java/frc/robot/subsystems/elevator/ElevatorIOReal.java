@@ -11,10 +11,21 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.CatzConstants;
-import frc.robot.CatzConstants.ElevatorConstants;
-import frc.robot.CatzConstants.MtrConfigConstants;
 
 public class ElevatorIOReal implements ElevatorIO {
+
+    //elevator motor ids
+    public static int ELEVATOR_LT_MTR_ID = 50; //TBD ids are swapped for testing change back to 51
+    public static int ELEVATOR_RT_MTR_ID = 51;
+
+    //Kraken configuration constants
+    public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
+    public static final int     KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS    = 55;
+    public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
+    public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
+
+
+
                 //create new config objects
     private TalonFXConfiguration elevatorTalonConfigs = new TalonFXConfiguration();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
@@ -26,8 +37,8 @@ public class ElevatorIOReal implements ElevatorIO {
 
     public ElevatorIOReal() {
         //Elevator Motor setup
-        ElevatorMtrRT = new TalonFX(ElevatorConstants.ELEVATOR_RT_MTR_ID);
-        ElevatorMtrLT = new TalonFX(ElevatorConstants.ELEVATOR_LT_MTR_ID);
+        ElevatorMtrRT = new TalonFX(ELEVATOR_RT_MTR_ID);
+        ElevatorMtrLT = new TalonFX(ELEVATOR_LT_MTR_ID);
             //reset to factory defaults
         ElevatorMtrLT.getConfigurator().apply(new TalonFXConfiguration());
         ElevatorMtrRT.getConfigurator().apply(new TalonFXConfiguration());
@@ -42,10 +53,10 @@ public class ElevatorIOReal implements ElevatorIO {
         elevatorTalonConfigs.Slot0.kD = 0.0;
             //current limit
         elevatorTalonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        elevatorTalonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT;
-        elevatorTalonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
-        elevatorTalonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
-        elevatorTalonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
+        elevatorTalonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
+        elevatorTalonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+        elevatorTalonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
+        elevatorTalonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
         elevatorTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
@@ -59,7 +70,7 @@ public class ElevatorIOReal implements ElevatorIO {
         initializationStatus = ElevatorMtrRT.getConfigurator().apply(elevatorTalonConfigs);
         initializationStatus = ElevatorMtrLT.getConfigurator().apply(elevatorTalonConfigs);
         if(!initializationStatus.isOK()) {
-            System.out.println("Failed to Configure CAN ID" + CatzConstants.ElevatorConstants.ELEVATOR_RT_MTR_ID);
+            System.out.println("Failed to Configure Elevator Mtr Controller CAN ID" + ELEVATOR_RT_MTR_ID);
         }
             
     }

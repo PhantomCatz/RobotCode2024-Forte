@@ -26,13 +26,7 @@ public class MoveToNewPositionCmd extends Command {
 
   private CatzMechanismPosition m_newPosition;
   private ManipulatorMode       m_manipulatorMode;
-
-  private WaitState currentWaitState;
-  private enum WaitState {
-    WAIT_FOR_INTAKE,
-    WAIT_FOR_ELEVATOR,
-    NOT_WAITING
-  }
+  private ManipulatorMode       m_previousManipulatorMode;
 
   //logic variables
   private static int iterationCounter = 0;
@@ -47,21 +41,40 @@ public class MoveToNewPositionCmd extends Command {
 
   @Override
   public void initialize() {
-
-    
-    intake.updateIntakeTargetPosition(m_newPosition);
-    elevator.updateElevatorTargetPosition(m_newPosition);
-    shooter.updateShooterTargetPosition(m_newPosition);
-    turret.updateTurretTargetPosition(m_newPosition);
+    //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
+    if(m_manipulatorMode == ManipulatorMode.SPEAKER) {
+       
+      if(m_newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP) {
+        m_newPosition = CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP;
+      }
+    }
+    runMechanismSetpoints();
   }
 
   
   @Override
   public void execute() {
-    if(m_manipulatorMode == ManipulatorMode.SPEAKER); {
-      shooter.cmdShooterEnabled(); 
+    if(m_previousManipulatorMode != m_manipulatorMode) {
+      //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
+      if(m_manipulatorMode == ManipulatorMode.SPEAKER) {
+        
+        if(m_newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP) {
+          m_newPosition = CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP;
+        }
+      }
+      runMechanismSetpoints();
     }
 
+
+    m_previousManipulatorMode = m_manipulatorMode;
+  }
+
+  //factory for updating all mechanisms with the packaged target info associated with the new postion
+  public void runMechanismSetpoints() {
+    intake.updateIntakeTargetPosition(m_newPosition);
+    elevator.updateElevatorTargetPosition(m_newPosition);
+    shooter.updateShooterTargetPosition(m_newPosition);
+    turret.updateTurretTargetPosition(m_newPosition);
   }
 
   @Override
