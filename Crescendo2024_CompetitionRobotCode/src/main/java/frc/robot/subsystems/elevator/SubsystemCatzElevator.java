@@ -130,6 +130,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
       } else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
+        System.out.println("why");
 
       }
     }

@@ -58,7 +58,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double GEAR_REDUCTION     =  TURRET_GEARBOX_PINION * TURRET_GEARBOX_TURRET_GEAR;
   public static final double TURRET_REV_PER_DEG = GEAR_REDUCTION / 360;
   
-  private final double HOME_POSITION       = 0.0;
+  public static final double HOME_POSITION       = 0.0;
 
   public static double currentTurretDegree = 0.0; //0.0
 
@@ -131,8 +131,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
     } else { 
       if (currentTurretState == TurretState.AUTO) {
         io.turretSetPositionSM(m_turretTargetDegree);
-        // io.turretSetPwr(setPositionPower); //TBD replaced by smart motion
-        if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 1) {
+       //io.turretSetPwr(setPositionPower); //TBD replaced by smart motion
+        if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 3) {
           currentTurretState = TurretState.IN_POSITION;
         } 
 

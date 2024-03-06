@@ -16,7 +16,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
-import frc.robot.CatzConstants.ShooterConstants;
 import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.Utils.LinearInterpolationTable;

@@ -10,6 +10,7 @@ import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 import static edu.wpi.first.apriltag.AprilTagFields.k2024Crescendo;
 
@@ -164,15 +165,15 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
     //sn2
-    public static final double LT_FRNT_OFFSET = 0.23406623085+0.5;      //mag encoder 0
-    public static final double LT_BACK_OFFSET = 0.2372954059;           //mag encoder 1
-    public static final double RT_BACK_OFFSET = 0.60861531521+0.5;      //mag encoder 2
-    public static final double RT_FRNT_OFFSET = 0.838318270957+0.5;      //mag encoder 3
+    // public static final double LT_FRNT_OFFSET = 0.23406623085+0.5;      //mag encoder 0
+    // public static final double LT_BACK_OFFSET = 0.2372954059;           //mag encoder 1
+    // public static final double RT_BACK_OFFSET = 0.60861531521+0.5;      //mag encoder 2
+    // public static final double RT_FRNT_OFFSET = 0.838318270957+0.5;      //mag encoder 3
     //sn1
-    // public static final double LT_FRNT_OFFSET =  0.21317;
-    // public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
-    // public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
-    // public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
+    public static final double LT_FRNT_OFFSET =  0.21317;
+    public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
+    public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
+    public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
 
 
     public static final int LT_FRNT_DRIVE_ID = 1;
@@ -243,8 +244,8 @@ public final class CatzConstants {
 
   public static final class CatzMechanismConstants {
     public static final CatzMechanismPosition POS_STOW = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW, SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF_AMP_PREP = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_STOW, SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 0);
-    public static final CatzMechanismPosition NOTE_POS_HANDOFF_SPEAKER_PREP = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION , SubsystemCatzIntake.INTAKE_STOW, 0 , 0);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF_AMP_PREP = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_SCORE_AMP, SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, SubsystemCatzTurret.HOME_POSITION);
+    public static final CatzMechanismPosition NOTE_POS_HANDOFF_SPEAKER_PREP = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION , SubsystemCatzIntake.INTAKE_STOW, SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS , SubsystemCatzTurret.HOME_POSITION);
     public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION,0,0,0);
     public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_SCORE_AMP, 0.0, 0,  0);
     public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_GROUND_PICKUP, 0, 0 );

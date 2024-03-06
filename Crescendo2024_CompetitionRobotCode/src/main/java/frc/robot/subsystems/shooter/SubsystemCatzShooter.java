@@ -124,8 +124,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
-
-    
+        
     //load motor logic
     switch(currentLoaderMode) {
         case LOAD_IN:
@@ -148,7 +147,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
           if(inputs.shooterAdjustBeamBreakState == BEAM_IS_BROKEN) { //set off flag that determines adjust direction
             m_desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
             io.fineAdjustBck();
-            System.out.println("Back");
           } else {
             m_desiredBeamBreakState = BEAM_IS_BROKEN;
             io.fineAdjustFwd();
@@ -219,10 +217,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
     //servo Logic
     m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
 
-    if(currentShooterServoState == ShooterServoState.TUNNING) {
+    //if(currentShooterServoState == ShooterServoState.TUNNING) {
       double servoPosition = servoPosTunning.get();
       io.setServoPosition(servoPosition);
-    }
+    //}
 
     if(currentShooterServoState == ShooterServoState.AUTO) {
       io.setServoPosition(m_newServoPosition);
@@ -240,6 +238,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
     if(newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP) {
       currentLoaderMode = LOAD_IN;
+    } else if(newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP) {
+      currentLoaderMode = LOAD_OUT;
     }
   }
 
@@ -269,6 +269,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
   public ShooterNoteState getShooterNoteState() {
     return currentNoteState;
+  }
+
+  public boolean shooterLoadBeamBrkBroken() {
+    return inputs.shooterLoadBeamBreakState;
   }
   
   //-------------------------------------------------------------------------------------

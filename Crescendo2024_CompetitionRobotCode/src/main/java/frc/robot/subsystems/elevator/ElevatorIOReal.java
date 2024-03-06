@@ -15,7 +15,6 @@ import frc.robot.CatzConstants;
 public class ElevatorIOReal implements ElevatorIO {
 
     //elevator motor ids
-    public static int ELEVATOR_LT_MTR_ID = 50; //TBD ids are swapped for testing change back to 51
     public static int ELEVATOR_RT_MTR_ID = 51;
 
     //Kraken configuration constants
@@ -32,23 +31,20 @@ public class ElevatorIOReal implements ElevatorIO {
 
     private DigitalInput m_bottomLimit = new DigitalInput(10);
 
-    private final TalonFX ElevatorMtrRT;
-    private final TalonFX ElevatorMtrLT;
+    private final TalonFX ElevatorMtr;
 
     public ElevatorIOReal() {
         //Elevator Motor setup
-        ElevatorMtrRT = new TalonFX(ELEVATOR_RT_MTR_ID);
-        ElevatorMtrLT = new TalonFX(ELEVATOR_LT_MTR_ID);
+        ElevatorMtr = new TalonFX(ELEVATOR_RT_MTR_ID);
             //reset to factory defaults
-        ElevatorMtrLT.getConfigurator().apply(new TalonFXConfiguration());
-        ElevatorMtrRT.getConfigurator().apply(new TalonFXConfiguration());
+        ElevatorMtr.getConfigurator().apply(new TalonFXConfiguration());
 
         // set Motion Magic settings
         elevatorTalonConfigs.MotionMagic.MotionMagicCruiseVelocity = 30; // Target cruise velocity of 80 rps
         elevatorTalonConfigs.MotionMagic.MotionMagicAcceleration   = 160; // Target acceleration of 160 rps/s (0.5 seconds)
         elevatorTalonConfigs.MotionMagic.MotionMagicJerk           = 16000; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
-        elevatorTalonConfigs.Slot0.kP = 1.5;
+        elevatorTalonConfigs.Slot0.kP = 2.0;
         elevatorTalonConfigs.Slot0.kI = 0.0;
         elevatorTalonConfigs.Slot0.kD = 0.0;
             //current limit
@@ -61,14 +57,11 @@ public class ElevatorIOReal implements ElevatorIO {
         elevatorTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
 
-        ElevatorMtrLT.setPosition(0);
-        ElevatorMtrRT.setPosition(0);
+        ElevatorMtr.setPosition(0);
 
 
         //check if elevator motor is initialized correctly
-        ElevatorMtrLT.setControl(new Follower(ElevatorMtrRT.getDeviceID(), true));
-        initializationStatus = ElevatorMtrRT.getConfigurator().apply(elevatorTalonConfigs);
-        initializationStatus = ElevatorMtrLT.getConfigurator().apply(elevatorTalonConfigs);
+        initializationStatus = ElevatorMtr.getConfigurator().apply(elevatorTalonConfigs);
         if(!initializationStatus.isOK()) {
             System.out.println("Failed to Configure Elevator Mtr Controller CAN ID" + ELEVATOR_RT_MTR_ID);
         }
@@ -77,19 +70,19 @@ public class ElevatorIOReal implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.elevatorVoltage          = ElevatorMtrRT.getMotorVoltage().getValue();
-        inputs.elevatorDutyCycle        = ElevatorMtrRT.getDutyCycle().getValue();
-        inputs.elevatorTorqueCurrent    = ElevatorMtrRT.getTorqueCurrent().getValue();
-        inputs.elevatorVelocity         = ElevatorMtrRT.getVelocity().getValue();
-        inputs.elevatorPosRev           = ElevatorMtrRT.getPosition().getValue();
-        inputs.elevatorPositionError    = ElevatorMtrRT.getClosedLoopError().getValue();
+        inputs.elevatorVoltage          = ElevatorMtr.getMotorVoltage().getValue();
+        inputs.elevatorDutyCycle        = ElevatorMtr.getDutyCycle().getValue();
+        inputs.elevatorTorqueCurrent    = ElevatorMtr.getTorqueCurrent().getValue();
+        inputs.elevatorVelocity         = ElevatorMtr.getVelocity().getValue();
+        inputs.elevatorPosRev           = ElevatorMtr.getPosition().getValue();
+        inputs.elevatorPositionError    = ElevatorMtr.getClosedLoopError().getValue();
 
-        inputs.bottomSwitchTripped      = m_bottomLimit.get();
+        //inputs.bottomSwitchTripped      = m_bottomLimit.get();
     }
     
     @Override
     public void setElevatorPosition(double newPositionElevator, double elevatorFF) {
-        ElevatorMtrRT.setControl(new MotionMagicVoltage(newPositionElevator,
+        ElevatorMtr.setControl(new MotionMagicVoltage(newPositionElevator,
                                                         true, 
                                                         elevatorFF,
                                                         0, 
@@ -100,17 +93,17 @@ public class ElevatorIOReal implements ElevatorIO {
 
     @Override
     public void setElevatorVoltage(double volts) {
-        ElevatorMtrRT.setControl(new VoltageOut(volts));
+        ElevatorMtr.setControl(new VoltageOut(volts));
     }
 
     @Override
     public void setElevatorPercentOutput(double speed) {
-        ElevatorMtrRT.set(speed);
+        ElevatorMtr.set(speed);
     }
 
     @Override
     public void setSelectedSensorPosition(double setNewReadPosition) {
-        ElevatorMtrRT.setPosition(setNewReadPosition);
+        ElevatorMtr.setPosition(setNewReadPosition);
     }
 
 }

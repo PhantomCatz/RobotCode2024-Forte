@@ -12,7 +12,7 @@ public interface IntakeIO {
         public double rollerVoltage;
         public double rollerPercentOutput;
         public double rollerVelocity;
-        public boolean BeamBrkFrontBroken;
+        public boolean intakeBeamBrkBroken;
         public boolean isIntakeBeamBrkBroken;
         public double closedLoopPivotMtr;
     }

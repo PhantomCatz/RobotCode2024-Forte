@@ -43,30 +43,30 @@ public class MoveToNewPositionCmd extends Command {
   public void initialize() {
     //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
     if(m_manipulatorMode == ManipulatorMode.SPEAKER) {
-       
       if(m_newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP) {
         m_newPosition = CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP;
       }
     }
+    
     runMechanismSetpoints();
   }
 
   
   @Override
   public void execute() {
-    if(m_previousManipulatorMode != m_manipulatorMode) {
-      //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
-      if(m_manipulatorMode == ManipulatorMode.SPEAKER) {
+    // if(m_previousManipulatorMode != m_manipulatorMode) {
+    //   //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
+    //   if(m_manipulatorMode == ManipulatorMode.SPEAKER) {
         
-        if(m_newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP) {
-          m_newPosition = CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP;
-        }
-      }
-      runMechanismSetpoints();
-    }
+    //     if(m_newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP) {
+    //       m_newPosition = CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP;
+    //     }
+    //   }
+    //   runMechanismSetpoints();
+    // }
 
 
-    m_previousManipulatorMode = m_manipulatorMode;
+    // m_previousManipulatorMode = m_manipulatorMode;
   }
 
   //factory for updating all mechanisms with the packaged target info associated with the new postion
