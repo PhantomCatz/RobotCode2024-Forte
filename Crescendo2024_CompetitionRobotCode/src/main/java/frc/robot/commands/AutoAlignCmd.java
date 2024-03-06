@@ -44,7 +44,7 @@ public class AutoAlignCmd extends InstantCommand {
     shooterPivotTable.put(1.0, 2.0);
   }
 
-  /** Turret angle look up table key: meters, values: degrees */
+  /** Turret angle look up table key: ty angle, values: time */
   private static final InterpolatingDoubleTreeMap timeTable = new InterpolatingDoubleTreeMap();
       // (ty-angle,time)
   static { //TBD add values in through testing

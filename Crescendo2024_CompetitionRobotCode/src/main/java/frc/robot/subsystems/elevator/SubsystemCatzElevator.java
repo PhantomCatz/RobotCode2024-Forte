@@ -40,7 +40,11 @@ public class SubsystemCatzElevator extends SubsystemBase {
   public static double FWD_SWITCH_POS = 5.0; //dummy
   
   private static final double ElEVATOR_REV_TO_INCHES = 0.0;
-  private static final double ELEVATOR_GEAR_RATIO    = 16;
+
+  private static final double ElEVATOR_DRIVEN_GEAR = 42;
+  private static final double ELEVATOR_DRIVING_GEAR = 10;
+
+  private static final double ELEVATOR_GEAR_RATIO    = ElEVATOR_DRIVEN_GEAR/ELEVATOR_DRIVING_GEAR;
 
   private static final double ELEVATOR_NULL_POSITION = -999.0;
 
@@ -68,11 +72,12 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private CatzMechanismPosition m_targetPosition;
 
   private static ElevatorState currentElevatorState;
-  private static enum ElevatorState {
+  public static enum ElevatorState {
     AUTO,
     FULL_MANUAL,
     WAITING,
-    SEMI_MANUAL
+    SEMI_MANUAL,
+    IN_POSITION
   }
 
   private SubsystemCatzElevator() {
@@ -125,13 +130,15 @@ public class SubsystemCatzElevator extends SubsystemBase {
           } 
       } else if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
                 (currentElevatorState == ElevatorState.AUTO  ||
-                 currentElevatorState == ElevatorState.SEMI_MANUAL)) {
+                 currentElevatorState == ElevatorState.SEMI_MANUAL ||
+                 currentElevatorState == ElevatorState.IN_POSITION)) {
             io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
 
+            if(inputs.elevatorPositionError < 5) {
+              currentElevatorState = ElevatorState.IN_POSITION;
+            } 
       } else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
-        System.out.println("why");
-
       }
     }
 
@@ -174,6 +181,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // ----------------------------------------------------------------------------------
   public double getElevatorRevPos() {
     return inputs.elevatorPosRev;
+  }
+
+  public ElevatorState getElevatorState() {
+    return currentElevatorState;
   }
 
  }

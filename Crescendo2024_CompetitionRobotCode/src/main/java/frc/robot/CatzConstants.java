@@ -247,7 +247,7 @@ public final class CatzConstants {
     public static final CatzMechanismPosition NOTE_POS_HANDOFF_AMP_PREP = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_SCORE_AMP, SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, SubsystemCatzTurret.HOME_POSITION);
     public static final CatzMechanismPosition NOTE_POS_HANDOFF_SPEAKER_PREP = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION , SubsystemCatzIntake.INTAKE_STOW, SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS , SubsystemCatzTurret.HOME_POSITION);
     public static final CatzMechanismPosition NOTE_POS_SCORING_SPEAKER = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION,0,0,0);
-    public static final CatzMechanismPosition NOTE_POS_SCORING_AMP = new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_SCORE_AMP, 0.0, 0,  0);
+    public static final CatzMechanismPosition NOTE_SCORING_AMP = new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_SCORE_AMP, SubsystemCatzIntake.INTAKE_SCORE_AMP, 0,  0);
     public static final CatzMechanismPosition NOTE_POS_INTAKE_GROUND = new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW_POSITION, SubsystemCatzIntake.INTAKE_GROUND_PICKUP, 0, 0 );
     public static final CatzMechanismPosition NOTE_POS_INTAKE_SOURCE = new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_SCORE_AMP, SubsystemCatzIntake.INTAKE_SCORE_AMP,0, 0);
     public static final CatzMechanismPosition POS_CLIMB_PREP = new CatzMechanismPosition(0,0,0,0);
@@ -257,13 +257,13 @@ public final class CatzConstants {
     
   }
 
-    public static ManipulatorMode currentManipulatorMode = ManipulatorMode.ALL;
+    public static ManipulatorMode currentManipulatorMode = ManipulatorMode.NULL;
     public static enum ManipulatorMode {
       SPEAKER,
       AMP,
       CLIMB,
       HOARD,
-      ALL
+      NULL
     }
   
 }

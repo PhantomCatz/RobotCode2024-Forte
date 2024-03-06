@@ -4,6 +4,8 @@
 
 package frc.robot.commands.mechanismCmds;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
@@ -11,9 +13,13 @@ import frc.robot.CatzConstants.ManipulatorMode;
 import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
- import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
 public class MoveToNewPositionCmd extends Command {
   
@@ -25,14 +31,15 @@ public class MoveToNewPositionCmd extends Command {
 
 
   private CatzMechanismPosition m_newPosition;
-  private ManipulatorMode       m_manipulatorMode;
+  private Supplier<ManipulatorMode> supplierManipulatorMode;
+  private ManipulatorMode m_manipulatorMode;
   private ManipulatorMode       m_previousManipulatorMode;
 
   //logic variables
   private static int iterationCounter = 0;
 
-  public MoveToNewPositionCmd(CatzMechanismPosition newPosition, ManipulatorMode newManipulatorMode) {
-    m_manipulatorMode = newManipulatorMode;
+  public MoveToNewPositionCmd(CatzMechanismPosition newPosition, Supplier<ManipulatorMode> newManipulatorMode) {
+    supplierManipulatorMode = newManipulatorMode;
     m_newPosition = newPosition;
 
 
@@ -42,35 +49,35 @@ public class MoveToNewPositionCmd extends Command {
   @Override
   public void initialize() {
     //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
-    if(m_manipulatorMode == ManipulatorMode.SPEAKER) {
-      if(m_newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP) {
-        m_newPosition = CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP;
+    if(supplierManipulatorMode.get() == ManipulatorMode.SPEAKER) {
+      if(m_newPosition == CatzMechanismConstants.NOTE_SCORING_AMP) {
+        m_newPosition = null;
       }
-    }
-    
+    } 
     runMechanismSetpoints();
   }
 
   
   @Override
   public void execute() {
-    // if(m_previousManipulatorMode != m_manipulatorMode) {
-    //   //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
-    //   if(m_manipulatorMode == ManipulatorMode.SPEAKER) {
-        
-    //     if(m_newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP) {
-    //       m_newPosition = CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP;
-    //     }
-    //   }
-    //   runMechanismSetpoints();
-    // }
+  m_manipulatorMode = supplierManipulatorMode.get();
+  
+    if(m_previousManipulatorMode != m_manipulatorMode) {
+      //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
+    if(supplierManipulatorMode.get() == ManipulatorMode.SPEAKER) {
+      if(m_newPosition == CatzMechanismConstants.NOTE_SCORING_AMP) {
+        m_newPosition = null;
+      }
+    } 
+      runMechanismSetpoints();
+    }
 
 
-    // m_previousManipulatorMode = m_manipulatorMode;
+    m_previousManipulatorMode = m_manipulatorMode;
   }
 
   //factory for updating all mechanisms with the packaged target info associated with the new postion
-  public void runMechanismSetpoints() {
+  private void runMechanismSetpoints() {
     intake.updateIntakeTargetPosition(m_newPosition);
     elevator.updateElevatorTargetPosition(m_newPosition);
     shooter.updateShooterTargetPosition(m_newPosition);
@@ -82,6 +89,9 @@ public class MoveToNewPositionCmd extends Command {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return (turret.getTurretState()        == TurretState.IN_POSITION &&
+            shooter.getShooterServoState() == ShooterServoState.IN_POSITION &&
+            elevator.getElevatorState()    == ElevatorState.IN_POSITION &&
+            intake.getIntakeState()        == IntakeState.IN_POSITION);
   }
 }

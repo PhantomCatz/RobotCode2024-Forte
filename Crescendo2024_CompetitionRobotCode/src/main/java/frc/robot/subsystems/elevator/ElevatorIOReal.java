@@ -23,8 +23,6 @@ public class ElevatorIOReal implements ElevatorIO {
     public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
     public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
 
-
-
                 //create new config objects
     private TalonFXConfiguration elevatorTalonConfigs = new TalonFXConfiguration();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
