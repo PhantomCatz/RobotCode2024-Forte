@@ -100,7 +100,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double ERROR_INTAKE_THRESHOLD_DEG = 5.0;
 
   //Intake positions
-  public static final double INTAKE_GROUND_PICKUP             = -30.0;
+  public static final double INTAKE_GROUND_PICKUP             = -27.0;
   public static final double INTAKE_SCORE_AMP                 = 92.6; //90.43;
   public static final double INTAKE_STOW                      = 160.0;
   public static final double INTAKE_OFFSET_FROM_ZERO          = 164.0;
@@ -117,7 +117,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   private final double GRAVITY_KG_OFFSET = 0.0;//9.0;
 
-  private final double ELEVATOR_THRESHOLD_FOR_INTAKE = 4;
+  private final double ELEVATOR_THRESHOLD_FOR_INTAKE = 10.0;
 
   //pivot variables
   private double m_pivotManualPwr = 0.0;
@@ -250,7 +250,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
             }        
             break;
         case ROLLERS_OUT:
-              currentRollerState = IntakeRollerState.ROLLERS_OFF;
+              io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT);
             break; 
         case ROLLERS_OFF:
             io.setRollerPercentOutput(0.0);

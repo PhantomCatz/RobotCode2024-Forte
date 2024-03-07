@@ -33,8 +33,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // Elevator Constants
   //-------------------------------------------------------------------------------------
   public static final double ELEVATOR_POS_STOW_POSITION = 0.0;
-  public static final double ELEVATOR_POS_FULL_EXTEND   = -16.0;
-  public static final double ElEVATOR_POS_SCORE_AMP     = 12.0;//8;
+  public static final double ELEVATOR_POS_FULL_EXTEND   = 50.0;
+  public static final double ElEVATOR_POS_SCORE_AMP     = 70.0;//8;
 
   public static double REV_SWITCH_POS = 0.0; //dummy
   public static double FWD_SWITCH_POS = 5.0; //dummy

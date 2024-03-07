@@ -51,7 +51,7 @@ public class MoveToNewPositionCmd extends Command {
     //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
     if(supplierManipulatorMode.get() == ManipulatorMode.SPEAKER) {
       if(m_newPosition == CatzMechanismConstants.NOTE_SCORING_AMP) {
-        m_newPosition = null;
+       // m_newPosition = null;
       }
     } 
     runMechanismSetpoints();
@@ -61,12 +61,11 @@ public class MoveToNewPositionCmd extends Command {
   @Override
   public void execute() {
   m_manipulatorMode = supplierManipulatorMode.get();
-  
     if(m_previousManipulatorMode != m_manipulatorMode) {
       //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
     if(supplierManipulatorMode.get() == ManipulatorMode.SPEAKER) {
       if(m_newPosition == CatzMechanismConstants.NOTE_SCORING_AMP) {
-        m_newPosition = null;
+        //m_newPosition = null;
       }
     } 
       runMechanismSetpoints();

@@ -30,16 +30,16 @@ public class ManualIntakeCmd extends Command {
 
   @Override
   public void execute() {
-    if(m_supplierLeftJoyStickPressed.get()) {
-      pressCounter = 1;
-    }
+    // if(m_supplierLeftJoyStickPressed.get()) {
+    //   pressCounter = 1;
+    // }
 
-    if(pressCounter == 1) {
+    // if(pressCounter == 1) {
       intake.pivotFullManual(m_supplierLeftJoyY.get());
-    } else {
-      intake.pivotSemiManual(m_supplierLeftJoyY.get());
+    // } else {
+    //   intake.pivotSemiManual(m_supplierLeftJoyY.get());
       
-    }
+    // }
   }
 
   @Override
