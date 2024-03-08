@@ -71,7 +71,7 @@ public class SwitchHandOffPositionsCmd extends Command {
       break;
 
       case INTAKE_SOURCE:
-        m_targetRobotPoseStart = CatzMechanismConstants.INTAKE_SOURCE;
+        m_targetRobotPoseStart = CatzMechanismConstants.POS_CLIMB;
         intake.setRollerState(IntakeRollerState.ROLLERS_IN);
       break;
 

@@ -18,6 +18,7 @@ import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.IntakeMoveToHandoffPoseCmd;
 import frc.robot.commands.mechanismCmds.ScoreSpeakerCmd;
+import frc.robot.commands.mechanismCmds.StowCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -101,10 +102,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxDrv.back().onTrue(driveTrain.resetGyro());
 
-    xboxDrv.start().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
-    xboxDrv.y().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
-    xboxDrv.x().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
-    xboxDrv.b().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
+    xboxDrv.start().onTrue(new StowCmd());
+    xboxDrv.y().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
+    xboxDrv.x().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));
+    //xboxDrv.b().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
 
     // xboxDrv.leftBumper().onTrue(shooter.cmdLoad());
     // xboxDrv.rightBumper().onTrue(shooter.loadBackward()).onFalse(shooter.loadDisabled());
@@ -204,15 +205,14 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     return auton.getCommand();
   }
 
-  public static NoteDestination targetNoteDestination = NoteDestination.AMP;
+  private static NoteDestination targetNoteDestination;
   public static enum NoteDestination {
     SPEAKER,
     AMP,
     TRAP,
     HOARD
   }
-
-  public static NoteSource targetNoteSource = NoteSource.INTAKE_GROUND;
+  private static NoteSource targetNoteSource;
   public static enum NoteSource {
     INTAKE_SOURCE,
     INTAKE_GROUND,

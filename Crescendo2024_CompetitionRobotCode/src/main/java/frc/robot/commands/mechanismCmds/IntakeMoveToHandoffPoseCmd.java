@@ -66,13 +66,13 @@ public class IntakeMoveToHandoffPoseCmd extends Command {
     }
 
     switch(m_noteSource) {
-      case FROM_SHOOTER:
-        m_targetRobotPoseStart = CatzMechanismConstants.POS_STOW;
+      case INTAKE_GROUND:
+        m_targetRobotPoseStart = CatzMechanismConstants.INTAKE_GROUND;
         intake.setRollerState(IntakeRollerState.ROLLERS_IN);
       break;
 
-      case FROM_INTAKE_AT_AMP_PREP:
-        m_targetRobotPoseStart = CatzMechanismConstants.POS_STOW;
+      case INTAKE_SOURCE:
+        m_targetRobotPoseStart = CatzMechanismConstants.INTAKE_SOURCE;
         intake.setRollerState(IntakeRollerState.ROLLERS_IN);
       break;
 
