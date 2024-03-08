@@ -132,7 +132,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
                 (currentElevatorState == ElevatorState.AUTO  ||
                  currentElevatorState == ElevatorState.SEMI_MANUAL ||
                  currentElevatorState == ElevatorState.IN_POSITION)) {
-            io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
+           // io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
 
             if(inputs.elevatorPositionError < 5) {
               currentElevatorState = ElevatorState.IN_POSITION;

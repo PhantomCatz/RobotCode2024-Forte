@@ -9,7 +9,8 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.CatzConstants.ManipulatorMode;
+import frc.robot.CatzConstants.NoteDestination;
+import frc.robot.CatzConstants.NoteSource;
 import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -30,17 +31,28 @@ public class MoveToNewPositionCmd extends Command {
   private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
 
 
-  private CatzMechanismPosition m_newPosition;
-  private Supplier<ManipulatorMode> supplierManipulatorMode;
-  private ManipulatorMode m_manipulatorMode;
-  private ManipulatorMode       m_previousManipulatorMode;
+  private CatzMechanismPosition m_targetRobotPose;
+  private Supplier<NoteDestination> m_supplierNoteDestination;
+  private NoteDestination m_manipulatorMode;
+  private NoteDestination       m_previousManipulatorMode;
+
+  private Supplier<NoteSource> m_noteSource;
+
+  private 
 
   //logic variables
   private static int iterationCounter = 0;
 
-  public MoveToNewPositionCmd(CatzMechanismPosition newPosition, Supplier<ManipulatorMode> newManipulatorMode) {
-    supplierManipulatorMode = newManipulatorMode;
-    m_newPosition = newPosition;
+  public MoveToNewPositionCmd(Supplier<NoteDestination> noteDestination) {
+    m_supplierNoteDestination = targetRobotPose;
+    m_targetRobotPose = targetRobotPose;
+
+
+    addRequirements(intake, elevator, turret, shooter);
+  }
+  public MoveToNewPositionCmd(Supplier<NoteSource> noteSource) {
+    m_noteSource = noteSource;
+    m_targetRobotPose = targetRobotPose;
 
 
     addRequirements(intake, elevator, turret, shooter);
@@ -49,22 +61,33 @@ public class MoveToNewPositionCmd extends Command {
   @Override
   public void initialize() {
     //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
-    if(supplierManipulatorMode.get() == ManipulatorMode.SPEAKER) {
-      if(m_newPosition == CatzMechanismConstants.NOTE_SCORING_AMP) {
-       // m_newPosition = null;
+    if(m_supplierNoteDestination.get() == NoteDestination.SPEAKER) {
+      if(m_targetRobotPose == CatzMechanismConstants.NOTE_SCORING_AMP) {
       }
     } 
+
+    switch(NoteDestination) {
+      case SPEAKER: 
+      m_targetRobotPoseEnd   = CatzMechanismConstants.NOTE_POS_SHOOTER_HANDOFF;
+      if(m_noteSource.get() == NoteSource.INTAKE_SOURCE) {
+        m_targetRobotPoseStart = CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE;
+      } else { //default to ground
+        m_targetRobotPoseStart = CatzMechanismConstants.NOTE_POS_INTAKE_GROUND;
+      }
+
+    }
+
     runMechanismSetpoints();
   }
 
   
   @Override
   public void execute() {
-  m_manipulatorMode = supplierManipulatorMode.get();
+  m_manipulatorMode = m_supplierNoteDestination.get();
     if(m_previousManipulatorMode != m_manipulatorMode) {
       //if in speaker mode...run all the transformations of the new catzposition into a speaker config if applicable
-    if(supplierManipulatorMode.get() == ManipulatorMode.SPEAKER) {
-      if(m_newPosition == CatzMechanismConstants.NOTE_SCORING_AMP) {
+    if(m_supplierNoteDestination.get() == NoteDestination.SPEAKER) {
+      if(m_targetRobotPose == CatzMechanismConstants.NOTE_SCORING_AMP) {
         //m_newPosition = null;
       }
     } 
@@ -77,10 +100,10 @@ public class MoveToNewPositionCmd extends Command {
 
   //factory for updating all mechanisms with the packaged target info associated with the new postion
   private void runMechanismSetpoints() {
-    intake.updateIntakeTargetPosition(m_newPosition);
-    elevator.updateElevatorTargetPosition(m_newPosition);
-    shooter.updateShooterTargetPosition(m_newPosition);
-    turret.updateTurretTargetPosition(m_newPosition);
+    intake.updateIntakeTargetPosition(m_targetRobotPose);
+    elevator.updateElevatorTargetPosition(m_targetRobotPose);
+    shooter.updateShooterTargetPosition(m_targetRobotPose);
+    turret.updateTurretTargetPosition(m_targetRobotPose);
   }
 
   @Override

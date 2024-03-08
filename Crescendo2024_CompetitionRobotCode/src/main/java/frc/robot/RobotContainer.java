@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.CatzConstants.ManipulatorMode;
+import frc.robot.CatzConstants.NoteDestination;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.AutoAlignCmd;
@@ -87,7 +87,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
    private void configureBindings() {    
     
-    xboxDrv.rightBumper().onTrue(intake.cmdRollerIn());
+    xboxDrv.rightBumper().onTrue(intake.cmdRollerIn()); //TBD add in logic to run rollers on deply
     xboxDrv.leftBumper().onTrue(intake.cmdRollerOut()); 
     //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
    Trigger rollersOffBinding = xboxDrv.leftBumper().and (xboxDrv.rightBumper());
@@ -102,11 +102,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxDrv.back().onTrue(driveTrain.resetGyro());
 
-    xboxDrv.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW, ()->CatzConstants.currentManipulatorMode));
-    xboxDrv.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP, ()->CatzConstants.currentManipulatorMode));
-    xboxDrv.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_SCORING_AMP, ()->CatzConstants.currentManipulatorMode));
-    xboxDrv.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE, ()->CatzConstants.currentManipulatorMode));
-    xboxDrv.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, ()->CatzConstants.currentManipulatorMode));
+    xboxDrv.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW, ()->CatzConstants.targetNoteDestination));
+    xboxDrv.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_SCORING_AMP, ()->CatzConstants.targetNoteDestination));
+    xboxDrv.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE, ()->CatzConstants.targetNoteSource));
+    xboxDrv.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, ()->CatzConstants.targetNoteSource));
 
     // xboxDrv.leftBumper().onTrue(shooter.cmdLoad());
     // xboxDrv.rightBumper().onTrue(shooter.loadBackward()).onFalse(shooter.loadDisabled());
@@ -175,15 +174,15 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //----------------------------------------------------------------------------------------
     //  State machine
     //---------------------------------------------------------------------------------------- 
-    xboxDrv.povRight().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.SPEAKER));
-    xboxDrv.povLeft().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.AMP));
-    xboxDrv.povUp().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.CLIMB)); //Climber
+    xboxDrv.povRight().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.SPEAKER));
+    xboxDrv.povLeft().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.AMP));
+    xboxDrv.povUp().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.TRAP)); //Climber
 
     //note state button mappings
-    xboxAux.povLeft().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.AMP)); //default state
-    xboxAux.povUp().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.CLIMB));
-    xboxAux.povDown().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.HOARD));
-    xboxAux.povRight().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.SPEAKER));
+    xboxAux.povLeft().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.AMP)); //default state
+    xboxAux.povUp().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.TRAP));
+    xboxAux.povDown().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.HOARD));
+    xboxAux.povRight().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.SPEAKER));
 
   }
 

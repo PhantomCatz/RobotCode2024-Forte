@@ -124,92 +124,95 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
-        
-    //load motor logic
-    switch(currentLoaderMode) {
-        case LOAD_IN:
-          io.loadNote();
-          currentLoaderMode = LOAD_IN_DONE;
-          currentNoteState = ShooterNoteState.NOTE_IN_ADJUST;
-        break;
+    if(DriverStation.isDisabled()) {
+      currentLoaderMode = LOAD_OFF;
+    } else {
+      //load motor logic
+      switch(currentLoaderMode) {
+          case LOAD_IN:
+            io.loadNote();
+            currentLoaderMode = LOAD_IN_DONE;
+            currentNoteState = ShooterNoteState.NOTE_IN_ADJUST;
+          break;
 
-        case LOAD_IN_DONE:
-          if(inputs.shooterLoadBeamBreakState == BEAM_IS_BROKEN) { 
-            io.loadDisabled();
-            m_iterationCounter = 0;
-            currentLoaderMode = WAIT_FOR_NOTE_TO_SETTLE;
+          case LOAD_IN_DONE:
+            if(inputs.shooterLoadBeamBreakState == BEAM_IS_BROKEN) { 
+              io.loadDisabled();
+              m_iterationCounter = 0;
+              currentLoaderMode = WAIT_FOR_NOTE_TO_SETTLE;
 
 
-          }
-        break;
+            }
+          break;
 
-        case WAIT_FOR_NOTE_TO_SETTLE:
-          if(inputs.shooterAdjustBeamBreakState == BEAM_IS_BROKEN) { //set off flag that determines adjust direction
-            m_desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
-            io.fineAdjustBck();
-          } else {
-            m_desiredBeamBreakState = BEAM_IS_BROKEN;
-            io.fineAdjustFwd();
-          }
-              currentLoaderMode = FINE_TUNE;
-        break;
-
-        case FINE_TUNE:
-          if(inputs.shooterAdjustBeamBreakState == m_desiredBeamBreakState) { //if front is still conncected adjust foward until it breaks
-            io.loadDisabled();
-            currentLoaderMode = LOAD_OFF;
-            currentNoteState = ShooterNoteState.NOTE_IN_POSTION;
-          }
-        break;
-        
-        case START_SHOOTER_FLYWHEEL:
-          io.setShooterEnabled();
-          currentLoaderMode = WAIT_FOR_MOTORS_TO_REV_UP;
-        break;
-        
-        
-        case WAIT_FOR_MOTORS_TO_REV_UP:
-        //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
-          if(-inputs.shooterVelocityLT >= inputs.velocityThresholdLT &&
-              inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
-
-            if(DriverStation.isAutonomous()) {
-              currentLoaderMode = SHOOTING;
+          case WAIT_FOR_NOTE_TO_SETTLE:
+            if(inputs.shooterAdjustBeamBreakState == BEAM_IS_BROKEN) { //set off flag that determines adjust direction
+              m_desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
+              io.fineAdjustBck();
             } else {
-              xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0.7);
-              
+              m_desiredBeamBreakState = BEAM_IS_BROKEN;
+              io.fineAdjustFwd();
+            }
+                currentLoaderMode = FINE_TUNE;
+          break;
+
+          case FINE_TUNE:
+            if(inputs.shooterAdjustBeamBreakState == m_desiredBeamBreakState) { //if front is still conncected adjust foward until it breaks
+              io.loadDisabled();
+              currentLoaderMode = LOAD_OFF;
+              currentNoteState = ShooterNoteState.NOTE_IN_POSTION;
+            }
+          break;
+          
+          case START_SHOOTER_FLYWHEEL:
+            io.setShooterEnabled();
+            currentLoaderMode = WAIT_FOR_MOTORS_TO_REV_UP;
+          break;
+          
+          
+          case WAIT_FOR_MOTORS_TO_REV_UP:
+          //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
+            if(-inputs.shooterVelocityLT >= inputs.velocityThresholdLT &&
+                inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
+
+              if(DriverStation.isAutonomous()) {
+                currentLoaderMode = SHOOTING;
+              } else {
+                xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0.7);
+                
+                m_iterationCounter = 0;
+              }
+            }
+          break;
+
+          case SHOOTING:
+            io.feedShooter();
+            if(DriverStation.isAutonomous() == false) {
+              xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0);
+            }
+            m_iterationCounter++;
+            if(m_iterationCounter >= timer(1)) {
+              io.setShooterDisabled();
+              currentLoaderMode = LOAD_OFF;
+              currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOOT;
+              SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
+            }
+          break;
+
+          case LOAD_OFF:
+            io.loadDisabled();
+          break;
+
+          case LOAD_OUT:
+            io.loadBackward();
+            m_iterationCounter++;
+            if(m_iterationCounter >= timer(0.5)) {
+              io.loadDisabled();
+              currentLoaderMode = LOAD_OFF;
               m_iterationCounter = 0;
             }
-          }
-        break;
-
-        case SHOOTING:
-          io.feedShooter();
-          if(DriverStation.isAutonomous() == false) {
-            xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0);
-          }
-          m_iterationCounter++;
-          if(m_iterationCounter >= timer(1)) {
-            io.setShooterDisabled();
-            currentLoaderMode = LOAD_OFF;
-            currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOOT;
-            SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
-          }
-        break;
-
-        case LOAD_OFF:
-          io.loadDisabled();
-        break;
-
-        case LOAD_OUT:
-          io.loadBackward();
-          m_iterationCounter++;
-          if(m_iterationCounter >= timer(0.5)) {
-            io.loadDisabled();
-            currentLoaderMode = LOAD_OFF;
-            m_iterationCounter = 0;
-          }
-        break;
+          break;
+      }
     }
     Logger.recordOutput("current load state", currentLoaderMode);
     
@@ -236,10 +239,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public void updateShooterTargetPosition(CatzMechanismPosition newPosition) {
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
-    if(newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP) {
+    if(newPosition == CatzMechanismConstants.NOTE_POS_SHOOTER_HANDOFF) {
       currentLoaderMode = LOAD_IN;
     } else if(newPosition == CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP) {
       currentLoaderMode = LOAD_OUT;
+    } else {
+      currentLoaderMode = LOAD_OFF;
     }
   }
 
@@ -257,7 +262,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Calculation Methods 
   //------------------------------------------------------------------------------------- 
   private double timer(double seconds){ // in seconds; converts time to iteration counter units
-    System.out.println(Math.round(seconds/LOOP_CYCLE_MS) + 1);
+    //System.out.println(Math.round(seconds/LOOP_CYCLE_MS) + 1);
     return Math.round(seconds/LOOP_CYCLE_MS) + 1;
   }
 
