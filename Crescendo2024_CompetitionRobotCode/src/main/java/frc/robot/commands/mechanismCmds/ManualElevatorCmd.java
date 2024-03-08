@@ -34,11 +34,11 @@ public class ManualElevatorCmd extends Command {
       pressCounter = 1;
     }
 
-    // if(pressCounter == 1) {
-    //   elevator.setElevatorSemiManualPwr(m_supplierRightY.get());
-    // } else {
+    if(pressCounter == 1) {
+      elevator.setElevatorSemiManualPwr(m_supplierRightY.get());
+    } else {
       elevator.setElevatorPercentOutput(m_supplierRightY.get());
-    // }  
+    }  
   }
 
   @Override

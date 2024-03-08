@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -16,18 +16,26 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import frc.robot.CatzConstants.CatzMechanismConstants;
+import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
-public class AutoAlignCmd extends InstantCommand {
+public class ScoreSpeakerCmd extends InstantCommand {
   //subsystem declaration
-  private static SubsystemCatzTurret turret   = SubsystemCatzTurret.getInstance();
-  private static SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
+  private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
+  private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
+  private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
+  private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
   private static SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
   //timer instatntiation
@@ -52,8 +60,8 @@ public class AutoAlignCmd extends InstantCommand {
 
   public static final double kAccelCompFactor = 0.100; // in units of seconds
 
-  public AutoAlignCmd() {
-    addRequirements(turret, shooter);
+  public ScoreSpeakerCmd() {
+    addRequirements(turret, shooter, intake, elevator);
   }
 
   // Called when the command is initially scheduled.
@@ -61,6 +69,8 @@ public class AutoAlignCmd extends InstantCommand {
   public void initialize() {
     //start the flywheel
     shooter.startShooterFlywheel();
+    intake.updateIntakeTargetPosition(CatzMechanismConstants.HANDOFF_AMP_PREP);
+    elevator.updateElevatorTargetPosition(CatzMechanismConstants.POS_STOW);
   }
 
   @Override 
@@ -121,15 +131,17 @@ public class AutoAlignCmd extends InstantCommand {
         else{ //continue attempting to close the gap
             shotTime = newShotTime;
         }
-
     }
 
     double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d()) * 39.37;
 
     Logger.recordOutput("ShooterCalcs/NewDist", newDist);
 
-    //send the new target to the turret
-    turret.aimAtGoal(movingGoalLocation, false);
+    if(intake.getIntakeState() == IntakeState.IN_POSITION &&
+       elevator.getElevatorState() == ElevatorState.IN_POSITION) {
+      //send the new target to the turret
+      turret.aimAtGoal(movingGoalLocation, false);
+    }
 
     //send new target to the shooter
     //shooter.updateShooterServo(shooterPivotTable.get(newDist + SmartDashboard.getNumber("SetHoodAdjust", 0)));

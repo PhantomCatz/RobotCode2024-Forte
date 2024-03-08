@@ -58,6 +58,10 @@ public class SubsystemCatzClimb extends SubsystemBase {
 
   }
 
+  public static SubsystemCatzClimb getInstance() {
+    return instance;
+  }
+
 
   @Override
   public void periodic() {
@@ -91,7 +95,7 @@ public class SubsystemCatzClimb extends SubsystemBase {
     currentClimbState = ClimbState.MANUAL;
   }
 
-  public void setRightClimbPercentOutpu(double output) {
+  public void setRightClimbPercentOutput(double output) {
     climbPercentOutputRT = output;
     currentClimbState = ClimbState.MANUAL;
   }

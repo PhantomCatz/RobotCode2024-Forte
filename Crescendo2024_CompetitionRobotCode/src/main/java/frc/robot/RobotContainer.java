@@ -13,12 +13,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.CatzConstants.NoteDestination;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.commands.AutoAlignCmd;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
+import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
+import frc.robot.commands.mechanismCmds.ScoreSpeakerCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -102,10 +101,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxDrv.back().onTrue(driveTrain.resetGyro());
 
-    xboxDrv.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW, ()->CatzConstants.targetNoteDestination));
-    xboxDrv.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_SCORING_AMP, ()->CatzConstants.targetNoteDestination));
-    xboxDrv.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE, ()->CatzConstants.targetNoteSource));
-    xboxDrv.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, ()->CatzConstants.targetNoteSource));
+    xboxDrv.start().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
+    xboxDrv.y().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
+    xboxDrv.x().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
+    xboxDrv.b().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
 
     // xboxDrv.leftBumper().onTrue(shooter.cmdLoad());
     // xboxDrv.rightBumper().onTrue(shooter.loadBackward()).onFalse(shooter.loadDisabled());
@@ -174,15 +173,15 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //----------------------------------------------------------------------------------------
     //  State machine
     //---------------------------------------------------------------------------------------- 
-    xboxDrv.povRight().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.SPEAKER));
-    xboxDrv.povLeft().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.AMP));
-    xboxDrv.povUp().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.TRAP)); //Climber
+    xboxDrv.povRight().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.SPEAKER));
+    xboxDrv.povLeft().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.AMP));
+    xboxDrv.povUp().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.TRAP)); //Climber
 
     //note state button mappings
-    xboxAux.povLeft().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.AMP)); //default state
-    xboxAux.povUp().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.TRAP));
-    xboxAux.povDown().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.HOARD));
-    xboxAux.povRight().onTrue(Commands.runOnce(()->CatzConstants.targetNoteDestination = NoteDestination.SPEAKER));
+    xboxAux.povLeft().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.AMP)); //default state
+    xboxAux.povUp().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.TRAP));
+    xboxAux.povDown().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.HOARD));
+    xboxAux.povRight().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.SPEAKER));
 
   }
 
@@ -203,5 +202,21 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     */
   public Command getAutonomousCommand() {
     return auton.getCommand();
+  }
+
+  public static NoteDestination targetNoteDestination = NoteDestination.AMP;
+  public static enum NoteDestination {
+    SPEAKER,
+    AMP,
+    TRAP,
+    HOARD
+  }
+
+  public static NoteSource targetNoteSource = NoteSource.INTAKE_GROUND;
+  public static enum NoteSource {
+    INTAKE_SOURCE,
+    INTAKE_GROUND,
+    FROM_SHOOTER,
+    FROM_INTAKE_AT_AMP_PREP
   }
 }
