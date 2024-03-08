@@ -16,7 +16,7 @@ import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
+import frc.robot.commands.mechanismCmds.IntakeMoveToHandoffPoseCmd;
 import frc.robot.commands.mechanismCmds.ScoreSpeakerCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
@@ -101,10 +101,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxDrv.back().onTrue(driveTrain.resetGyro());
 
-    xboxDrv.start().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
-    xboxDrv.y().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
-    xboxDrv.x().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
-    xboxDrv.b().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
+    xboxDrv.start().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
+    xboxDrv.y().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
+    xboxDrv.x().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
+    xboxDrv.b().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
 
     // xboxDrv.leftBumper().onTrue(shooter.cmdLoad());
     // xboxDrv.rightBumper().onTrue(shooter.loadBackward()).onFalse(shooter.loadDisabled());
@@ -217,6 +217,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     INTAKE_SOURCE,
     INTAKE_GROUND,
     FROM_SHOOTER,
-    FROM_INTAKE_AT_AMP_PREP
+    FROM_INTAKE_AT_AMP_PREP,
+    INVALID
   }
 }

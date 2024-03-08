@@ -1,17 +1,13 @@
-// // Copyright (c) FIRST and other WPILib contributors.
-// // Open Source Software; you can modify and/or share it under the terms of
-// // the WPILib BSD license file in the root directory of this project.
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.mechanismCmds;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.RobotContainer.NoteDestination;
 import frc.robot.RobotContainer.NoteSource;
-import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
@@ -25,8 +21,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
-public class MoveToHandoffPoseCmd extends Command {
-  
+public class SwitchHandOffPositionsCmd extends Command {
   //subsystem declaration
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
@@ -40,17 +35,21 @@ public class MoveToHandoffPoseCmd extends Command {
   //destination targets
   private NoteDestination m_noteDestination;
   private NoteSource m_noteSource;
-
-
-  public MoveToHandoffPoseCmd(NoteDestination noteDestination, NoteSource noteSource) {
+  /** This cmd should not be used for intake then move to new positions */
+  public SwitchHandOffPositionsCmd(NoteDestination noteDestination) {
     this.m_noteDestination = noteDestination;
-    this.m_noteSource = noteSource;
 
     addRequirements(intake, elevator, turret, shooter);
   }
 
+  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    if(intake.getIntakeBeamBreakBroken()) {
+      m_noteSource = NoteSource.FROM_INTAKE_AT_AMP_PREP;
+    } else if(shooter.shooterLoadBeamBrkBroken()) {
+      m_noteSource = NoteSource.FROM_SHOOTER;
+    }
 
     switch(m_noteDestination) {
       case SPEAKER: 
@@ -58,13 +57,8 @@ public class MoveToHandoffPoseCmd extends Command {
       break;
 
       case HOARD:
-        m_targetRobotPoseEnd = CatzMechanismConstants.HANDOFF_AMP_PREP;
-      break;
-
       case TRAP:
-        m_targetRobotPoseEnd = CatzMechanismConstants.HANDOFF_AMP_PREP;
-      break;
-
+      case AMP:
       default: //amp
         m_targetRobotPoseEnd = CatzMechanismConstants.HANDOFF_AMP_PREP;
       break;
@@ -81,35 +75,44 @@ public class MoveToHandoffPoseCmd extends Command {
         intake.setRollerState(IntakeRollerState.ROLLERS_IN);
       break;
 
-      case FROM_INTAKE_AT_AMP_PREP:
-      case FROM_SHOOTER:
-        m_targetRobotPoseStart = CatzMechanismConstants.POS_STOW;
-      break;
-
       default: 
+        //invalid command...should've used Intake and Move to handoff positions cmd
         m_targetRobotPoseStart = CatzMechanismConstants.POS_STOW;
       break;
     }
     //run setpoint 1
     runMechanismSetpoints(m_targetRobotPoseStart);
   }
+
+  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //if the note logic flows from intake to shooter
-    if(m_noteSource == NoteSource.INTAKE_GROUND ||
-       m_noteSource == NoteSource.INTAKE_SOURCE || 
-       m_noteSource == NoteSource.FROM_INTAKE_AT_AMP_PREP) {
-      //when the the rollers stop intaking due to drive control or due to beambreak
+   //if the logic flows from the shooter
+    if(m_noteSource == NoteSource.FROM_SHOOTER) {
+      if(areMechanismsInPosition()) {
+        //transfer note to intake
+        intake.setRollerState(IntakeRollerState.ROLLERS_IN);
+        shooter.setShooterLoadState(ShooterLoadState.LOAD_OUT);
+      } 
+
+      //run intake to set position after recieving note
+      if(intake.getIntakeBeamBreakBroken()) {
+        intake.setRollerState(IntakeRollerState.ROLLERS_OFF);
+        shooter.setShooterLoadState(ShooterLoadState.LOAD_OFF);
+        runMechanismSetpoints(m_targetRobotPoseEnd);
+      }
+    } else { //logic flows from the intake
+      //when the the rollers stop intaking due to beambreak
       if(intake.getIntakeBeamBreakBroken()) {
         runMechanismSetpoints(m_targetRobotPoseEnd);
         //run load motors in when the note destination is speaker
         if(m_noteDestination == NoteDestination.SPEAKER) {
           shooter.setShooterLoadState(ShooterLoadState.LOAD_IN);
         } else {
-          //keep note in intake
+          //keep note in intake if destination is anything else
         }
       }
-      //when the mechanisms have all reached their end position
+      //when the mechanisms have all reached their end position after collecting 
       if(areMechanismsInPosition()) {
         if(m_noteDestination == NoteDestination.SPEAKER) {
           //set intake rollers to eject to handoff
@@ -122,22 +125,18 @@ public class MoveToHandoffPoseCmd extends Command {
           //keep note in intake
         }
       }
-    } else if(m_noteSource == NoteSource.FROM_SHOOTER) {
-        if(areMechanismsInPosition()) {
-          //transfer note to intake
-          intake.setRollerState(IntakeRollerState.ROLLERS_IN);
-          shooter.setShooterLoadState(ShooterLoadState.LOAD_OUT);
-        } 
-
-        //run intake to set position after recieving note
-        if(intake.getIntakeBeamBreakBroken()) {
-          intake.setRollerState(IntakeRollerState.ROLLERS_OFF);
-          shooter.setShooterLoadState(ShooterLoadState.LOAD_OFF);
-          runMechanismSetpoints(m_targetRobotPoseEnd);
-        }
     }
   }
 
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {}
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
   //factory for updating all mechanisms with the packaged target info associated with the new postion
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
     intake.updateIntakeTargetPosition(pose);
@@ -151,13 +150,5 @@ public class MoveToHandoffPoseCmd extends Command {
             turret.getTurretState() == TurretState.IN_POSITION &&
             shooter.getShooterServoState() == ShooterServoState.IN_POSITION &&
             elevator.getElevatorState() == ElevatorState.IN_POSITION);
-  }
-
-  @Override
-  public void end(boolean interrupted) {}
-
-  @Override
-  public boolean isFinished() {
-    return false;
   }
 }

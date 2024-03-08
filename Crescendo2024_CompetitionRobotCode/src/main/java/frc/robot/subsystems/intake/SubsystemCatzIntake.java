@@ -22,7 +22,7 @@ import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
-import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
+import frc.robot.commands.mechanismCmds.IntakeMoveToHandoffPoseCmd;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;

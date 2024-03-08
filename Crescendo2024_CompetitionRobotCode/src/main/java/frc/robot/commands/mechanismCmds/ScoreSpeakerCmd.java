@@ -16,6 +16,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
+import frc.robot.CatzAutonomous;
+import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.FieldRelativeAccel;
@@ -38,9 +40,6 @@ public class ScoreSpeakerCmd extends InstantCommand {
   private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
   private static SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
-  //timer instatntiation
-  private final Timer m_timer = new Timer();
-
   //--------------------------------------------------------------
   // Interpolation tables
   //--------------------------------------------------------------
@@ -51,7 +50,7 @@ public class ScoreSpeakerCmd extends InstantCommand {
     shooterPivotTable.put(1.0, 2.0);
   }
 
-  /** Turret angle look up table key: ty angle, values: time */
+  /** angle to time look up table key: ty angle, values: time */
   private static final InterpolatingDoubleTreeMap timeTable = new InterpolatingDoubleTreeMap();
       // (ty-angle,time)
   static { //TBD add values in through testing
@@ -75,15 +74,17 @@ public class ScoreSpeakerCmd extends InstantCommand {
 
   @Override 
   public void execute() {
-    double currentTime = m_timer.get();
-
-    Logger.recordOutput("ShooterCalcs/Current Time", currentTime);
-
     FieldRelativeSpeed robotVel = drivetrain.getFieldRelativeSpeed();
     FieldRelativeAccel robotAccel = drivetrain.getFieldRelativeAccel();
 
-    //translation of the blue alliance speaker
-    Translation2d target = new Translation2d(0.0, 5.55);
+    Translation2d target;
+    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+        //translation of the blue alliance speaker
+      target = new Translation2d(0.0, 5.55);
+    } else {
+      //translation of the blue alliance speaker
+      target = new Translation2d(0.0, 10 + 5.55);
+    }
 
     //take the distance to the speaker
     Translation2d robotToGoal = target.minus(drivetrain.getPose().getTranslation());
@@ -91,12 +92,8 @@ public class ScoreSpeakerCmd extends InstantCommand {
     //convert the distance to inches
     double dist = robotToGoal.getDistance(new Translation2d()) * 39.37;
 
-    Logger.recordOutput("ShooterCalcs/Calculated (in)", dist);
-
     //get the time it takes for note to reach the speaker in seconds? TBD
     double shotTime = timeTable.get(dist);
-
-    Logger.recordOutput("ShooterCalcs/Fixed Time", shotTime);
 
     Translation2d movingGoalLocation = new Translation2d();
 
@@ -135,8 +132,6 @@ public class ScoreSpeakerCmd extends InstantCommand {
 
     double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d()) * 39.37;
 
-    Logger.recordOutput("ShooterCalcs/NewDist", newDist);
-
     if(intake.getIntakeState() == IntakeState.IN_POSITION &&
        elevator.getElevatorState() == ElevatorState.IN_POSITION) {
       //send the new target to the turret
@@ -146,6 +141,11 @@ public class ScoreSpeakerCmd extends InstantCommand {
     //send new target to the shooter
     //shooter.updateShooterServo(shooterPivotTable.get(newDist + SmartDashboard.getNumber("SetHoodAdjust", 0)));
     shooter.updateShooterServo(shooterPivotTable.get(newDist));
+
+    Logger.recordOutput("ShooterCalcs/Fixed Time", shotTime);
+    Logger.recordOutput("ShooterCalcs/NewDist", newDist);
+    Logger.recordOutput("ShooterCalcs/Calculated (in)", dist);
+
 
   }
 
