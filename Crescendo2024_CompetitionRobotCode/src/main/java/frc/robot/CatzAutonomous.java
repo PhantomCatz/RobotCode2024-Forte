@@ -19,15 +19,27 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.CatzConstants.AllianceColor;
+import frc.robot.RobotContainer.NoteDestination;
+import frc.robot.RobotContainer.NoteSource;
 import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
-import frc.robot.commands.mechanismCmds.IntakeCmd;
+import frc.robot.commands.mechanismCmds.AimAtSpeakerCmd;
+import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
 import frc.robot.commands.mechanismCmds.ShootCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class CatzAutonomous {
     private static CatzAutonomous Instance;
     
-    private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
+    //subsystem declaration
+    private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
+    private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
+    private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
+    private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
+    private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
     public static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
@@ -66,23 +78,28 @@ public class CatzAutonomous {
 
     }
 
+    public static CatzAutonomous getInstance(){
+        if(Instance == null){
+            Instance = new CatzAutonomous();
+        }
+        return Instance;
+    }
+
     //-------------------------------------------Auton Paths--------------------------------------------
     private Command driveStraightPickup(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
-            new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND),
-            new HandoffCmd()
-        )
+            new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            new AimAtSpeakerCmd(),
+            shooter.cmdShoot());
     }
 
     private Command bulldozerAuto() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
-            Commands.waitSeconds(0.5),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-2")),
-            Commands.waitSeconds(0.5),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-3"))
         );
 
@@ -92,28 +109,42 @@ public class CatzAutonomous {
     private Command speaker4PieceWing(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("S4PW1")),
-            new ShootCmd(true, true),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW1")),
-            new IntakeCmd(), new ShootCmd(true, true),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW2")),
-            new IntakeCmd(), new ShootCmd(true, true),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW3")),
-            new IntakeCmd(), new ShootCmd(true, true)
+            new AimAtSpeakerCmd().withTimeout(2.0),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW1"))),
+            new AimAtSpeakerCmd().withTimeout(2.0),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW2"))),
+            new AimAtSpeakerCmd().withTimeout(2.0),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW3")))
         );
     }
 
     private Command speaker4PieceCSWing(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("S4PCSW1")),
-            new ShootCmd(true, true),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW1")),
-            new IntakeCmd(), new ShootCmd(true, true),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW2")),
-            new IntakeCmd(), new ShootCmd(true, true),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW3")),
-            new IntakeCmd(), new ShootCmd(true, true),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW4")),
-            new IntakeCmd()
+            new AimAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW1"))),
+            new AimAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW2"))),
+            new AimAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW3"))),
+            new AimAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW4"))),
+            new AimAtSpeakerCmd(),
+            shooter.cmdShoot()
         );
     }
 
@@ -376,11 +407,11 @@ public class CatzAutonomous {
             path = startPath.flipPath();
         }
 
-        m_driveTrain.resetPosition(path.getPreviewStartingHolonomicPose());
+        drivetrain.resetPosition(path.getPreviewStartingHolonomicPose());
         allianceColor = chosenAllianceColor.get();
 
         if(allianceColor == CatzConstants.AllianceColor.Red) {
-            m_driveTrain.flipGyro();
+            drivetrain.flipGyro();
         }
     });
     }
@@ -389,10 +420,4 @@ public class CatzAutonomous {
         return allianceColor;
     }
 
-    public static CatzAutonomous getInstance(){
-        if(Instance == null){
-            Instance = new CatzAutonomous();
-        }
-        return Instance;
-    }
 }

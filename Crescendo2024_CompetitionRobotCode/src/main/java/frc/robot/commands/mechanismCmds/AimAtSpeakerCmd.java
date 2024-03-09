@@ -38,7 +38,7 @@ public class AimAtSpeakerCmd extends InstantCommand {
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
   private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
-  private static SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
+  private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
   //--------------------------------------------------------------
   // Interpolation tables
