@@ -104,4 +104,7 @@ public class ElevatorIOReal implements ElevatorIO {
         ElevatorMtr.setPosition(setNewReadPosition);
     }
 
+    public double getElevatorError(){
+        return ElevatorMtr.getClosedLoopError().getValue();
+    }
 }
