@@ -34,10 +34,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //intake instance
   private static SubsystemCatzTurret instance = new SubsystemCatzTurret();
 
-  //turret constants
+  //------------------------------------------------------------------------
+  //      turret constants
+  //------------------------------------------------------------------------
   private final double TURRET_POWER     = 0.6;
   private final double TURRET_DECEL_PWR = 0.3;
  
+  //pid values
   private static final double TURRET_kP = 0.02;
   private static final double TURRET_kI = 0.0;
   private static final double TURRET_kD = 0.0;
@@ -46,8 +49,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double LIMELIGHT_kI = 0.0;
   private static final double LIMELIGHT_kD = 0.0001;
 
-  private final double TURRET_POSITIVE_MAX_RANGE = 120.0; //120
-  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0; //-120
+  private final double TURRET_POSITIVE_MAX_RANGE = 120.0; 
+  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0;
 
   private final double NEGATIVE_DECEL_THRESHOLD  =  -15.0;
   private final double POS_DECEL_THRESHOLD       =   15.0;
@@ -72,7 +75,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private PIDController m_trackingApriltagPID;
   private double manualTurretPwr;
   private boolean m_trackTarget = false;
-  private double m_desiredAngle = 0.0;
   
 
   private SubsystemCatzTurret() {
@@ -106,7 +108,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
   
   private static TurretState currentTurretState;
-
   public static enum TurretState {
     AUTO,
     TRACKING_APRILTAG,
@@ -121,7 +122,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     
     //obtain calculation values
     apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0);
-    setPositionPower      = m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
+    //setPositionPower      = m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
     //offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
     
 
@@ -131,7 +132,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
     } else { 
       if (currentTurretState == TurretState.AUTO) {
         io.turretSetPositionSM(m_turretTargetDegree);
-       //io.turretSetPwr(setPositionPower); //TBD replaced by smart motion
         if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 3) {
           currentTurretState = TurretState.IN_POSITION;
         } 
@@ -161,15 +161,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     Logger.recordOutput("turret/m_TurretTargetDegree", m_turretTargetDegree);
   }
 
-  //------------------------------------Turret Methods---------------------------------------------------------
-  
-  public void setTurretTargetDegree(double turretTargetDegree) {
-    currentTurretState = TurretState.AUTO;
-    m_turretTargetDegree = turretTargetDegree;
-  }
-  
-  // *********** code for turning turret towards static target (Apriltag tX is static + an offset) ************* //
-
+  //-------------------------------------------------------------------------------------------------
+  //    Manual Rotate Methods
+  //-------------------------------------------------------------------------------------------------
   public void rotateLeft(){
     currentTurretState = TurretState.FULL_MANUAL;
     
@@ -207,6 +201,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     }          
   }
 
+  //-------------------------------------------------------------------------------------------------
+  //    Automated Methods
+  //-------------------------------------------------------------------------------------------------
   public void aimAtGoal(Translation2d goal, boolean aimAtVision) {
     Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
 
@@ -231,7 +228,15 @@ public class SubsystemCatzTurret extends SubsystemBase {
       currentTurretState = TurretState.AUTO;
     }
   }
+  
+  public void setTurretTargetDegree(double turretTargetDegree) {
+    currentTurretState = TurretState.AUTO;
+    m_turretTargetDegree = turretTargetDegree;
+  }
 
+  //-------------------------------------------------------------------------------------------------
+  //    Turret getters
+  //-------------------------------------------------------------------------------------------------
   public double getTurretAngle() {
     return currentTurretDegree;
   }
@@ -240,7 +245,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return currentTurretState;
   }
   
-  //-------------------------------------Manual methods--------------------------------
+  //-------------------------------------------------------------------------------------------------
+  //    Manual Methods
+  //-------------------------------------------------------------------------------------------------
   public Command cmdTurretLT() {
     return run(() -> rotateLeft());
   }
@@ -266,7 +273,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return run(() -> aimAtGoal(new Translation2d(), true));
   }
   
-    public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {
+  public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {
     currentTurretState = TurretState.AUTO;
     m_turretTargetDegree = newPosition.getTurretTargetAngle();
   }
