@@ -13,12 +13,14 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
-import frc.robot.CatzConstants.MtrConfigConstants;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.turret.TurretIOReal;
 
 public class ShooterIOReal implements ShooterIO {
-
+  //any type of Shooter Mtr Config Constnats/Logic Constants should go here 
+    public static int SHOOTER_MTR_ID = 53;
+    public static int TURRET_MTR_ID = 54;
+    public static int ACCEPTABLE_VEL_ERROR = 20;
 /*-----------------------------------------------------------------------------------------
  * 
  * Shooter Motors
@@ -32,6 +34,12 @@ public class ShooterIOReal implements ShooterIO {
     private final int SHOOTER_MOTOR_RT_CAN_ID = 20;
 
     private final double FLYWHEEL_THRESHOLD_OFFSET = 4;
+
+    //Kraken configuration constants
+    public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
+    public static final int     KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS    = 55;
+    public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
+    public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
 /*-----------------------------------------------------------------------------------------
  *
  * Load Motors
@@ -43,8 +51,10 @@ public class ShooterIOReal implements ShooterIO {
     //Load motor speeds 
     private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
     private final double LOAD_MOTOR_LOADING_SPEED    = 0.4; //was 0.4
-    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.4;
+    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.2;
     private final double LOAD_MOTOR_ADJUST_SPEED     = 0.04;
+
+    public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
 
 /*---------------------------------------------------------------------------------------
  * Beam Breaks
@@ -102,7 +112,7 @@ public class ShooterIOReal implements ShooterIO {
         //Neo Load motor config
         LOAD_MOTOR = new CANSparkMax(LOAD_MOTOR_CAN_ID, MotorType.kBrushless);
         LOAD_MOTOR.restoreFactoryDefaults();
-        LOAD_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
+        LOAD_MOTOR.setSmartCurrentLimit(NEO_CURRENT_LIMIT_AMPS);
         LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.enableVoltageCompensation(12.0); //TBD is this the default value?
         
@@ -117,10 +127,10 @@ public class ShooterIOReal implements ShooterIO {
         
         //Current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT; //Make seperate current limits
-        talonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
-        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
-        talonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
+        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT; //Make seperate current limits
+        talonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
+        talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
 
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 

@@ -24,6 +24,7 @@ import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
 import frc.robot.Utils.LEDs.CatzRGB;
 import frc.robot.Utils.LEDs.ColorMethod;
+import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -114,9 +115,9 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousExit() {
-    // if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-    //   SubsystemCatzDrivetrain.getInstance().flipGyro();
-    // }
+    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+      SubsystemCatzDrivetrain.getInstance().flipGyro();
+    }
   }
 
   @Override

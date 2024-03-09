@@ -38,6 +38,7 @@ public class ManualIntakeCmd extends Command {
       intake.pivotFullManual(m_supplierLeftJoyY.get());
     } else {
       intake.pivotSemiManual(m_supplierLeftJoyY.get());
+      
     }
   }
 

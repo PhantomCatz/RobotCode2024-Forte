@@ -12,10 +12,10 @@ public class CatzMechanismPosition {
     private double m_shooterVerticalTargetAngle;
     private double m_turretTargetAngle;
 
-    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetAngle, double shooterTargetHorizontalAngle, double turretTargetAngle) {
+    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetAngle, double shooterTargetHorizontalPosition, double turretTargetAngle) {
         this.m_elevatorTargetEncPos = elevatorTargetEncPos;
         this.m_intakePivotTargetAngle = intakePivotTargetAngle;
-        this.m_shooterVerticalTargetAngle = shooterTargetHorizontalAngle;
+        this.m_shooterVerticalTargetAngle = shooterTargetHorizontalPosition;
         this.m_turretTargetAngle = turretTargetAngle;
     }
 

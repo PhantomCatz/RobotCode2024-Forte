@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.CatzConstants.ElevatorConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.ElevatorIOInputsAutoLogged;
@@ -30,9 +29,22 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-  //elevator constants
+  //-------------------------------------------------------------------------------------
+  // Elevator Constants
+  //-------------------------------------------------------------------------------------
+  public static final double ELEVATOR_POS_STOW_POSITION = 0.0;
+  public static final double ElEVATOR_POS_AMP_SCORE    = 70.0;//8;
+  public static final double ELEVATOR_POS_AMP_TRANSITION = 30.0;
+
+  public static double REV_SWITCH_POS = 0.0; //dummy
+  public static double FWD_SWITCH_POS = 5.0; //dummy
+  
   private static final double ElEVATOR_REV_TO_INCHES = 0.0;
-  private static final double ELEVATOR_GEAR_RATIO    = 16;
+
+  private static final double ElEVATOR_DRIVEN_GEAR = 42;
+  private static final double ELEVATOR_DRIVING_GEAR = 10;
+
+  private static final double ELEVATOR_GEAR_RATIO    = ElEVATOR_DRIVEN_GEAR/ELEVATOR_DRIVING_GEAR;
 
   private static final double ELEVATOR_NULL_POSITION = -999.0;
 
@@ -44,8 +56,9 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private static final double ELEVATOR_kG = 0.6;
   private static final double ELEVATOR_kV = 0.0;
 
-
-  //elevator variables
+  //-------------------------------------------------------------------------------------
+  // Elevator Variables
+  //-------------------------------------------------------------------------------------
   private double m_newPositionRev = 0.0;
   private double m_elevatorPercentOutput = 0.0;
   private double m_finalffVolts = 0.0;
@@ -58,17 +71,16 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private ElevatorFeedforward elevatorFeedforward;
   private CatzMechanismPosition m_targetPosition;
 
-  LoggedTunableNumber kgElevatorTunning = new LoggedTunableNumber("kgElevatorTunning", 0.0);
-
   private static ElevatorState currentElevatorState;
-  private static enum ElevatorState {
+  public static enum ElevatorState {
     AUTO,
     FULL_MANUAL,
     WAITING,
-    SEMI_MANUAL
+    SEMI_MANUAL,
+    IN_POSITION
   }
 
-  public SubsystemCatzElevator() {
+  private SubsystemCatzElevator() {
     switch (CatzConstants.currentMode) {
       case REAL: io = new ElevatorIOReal();
                  System.out.println("Elevator Configured for Real");
@@ -100,6 +112,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
       io.setSelectedSensorPosition(0.0);
     }
 
+    //elevator control calculations
     elevatorVelocityMTRRPS = (currentRotations - previousRotations)/0.02;
     m_finalffVolts = elevatorFeedforward.calculate(0.0);
 
@@ -117,12 +130,15 @@ public class SubsystemCatzElevator extends SubsystemBase {
           } 
       } else if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
                 (currentElevatorState == ElevatorState.AUTO  ||
-                 currentElevatorState == ElevatorState.SEMI_MANUAL)) {
-            io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
+                 currentElevatorState == ElevatorState.SEMI_MANUAL ||
+                 currentElevatorState == ElevatorState.IN_POSITION)) {
+           // io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
 
+            if(inputs.elevatorPositionError < 5) {
+              currentElevatorState = ElevatorState.IN_POSITION;
+            } 
       } else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
-
       }
     }
 
@@ -130,7 +146,11 @@ public class SubsystemCatzElevator extends SubsystemBase {
     Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
   }
 
-  public void updateElevatorTargetPosition(CatzMechanismPosition targetPosition) {
+
+  //-------------------------------------------------------------------------------------
+  // Elevator Access Methods
+  //-------------------------------------------------------------------------------------
+  public void updateTargetPositionElevator(CatzMechanismPosition targetPosition) {
 
     //set new target position for elevator
     m_newPositionRev = targetPosition.getElevatorTargetRev();
@@ -161,6 +181,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // ----------------------------------------------------------------------------------
   public double getElevatorRevPos() {
     return inputs.elevatorPosRev;
+  }
+
+  public ElevatorState getElevatorState() {
+    return currentElevatorState;
   }
 
  }

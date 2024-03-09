@@ -7,14 +7,18 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.CatzConstants.ManipulatorMode;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.commands.mechanismCmds.MoveToNewPositionCmd;
+import frc.robot.commands.mechanismCmds.IntakeMoveToHandoffPoseCmd;
+import frc.robot.commands.mechanismCmds.ScoreSpeakerCmd;
+import frc.robot.commands.mechanismCmds.StowCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -83,63 +87,80 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
    private void configureBindings() {    
     
-    xboxDrv.rightBumper().onTrue(intake.cmdRollerIn());
-    //xboxDrv.leftBumper().onTrue(intake.cmdRollerOut()); 
+    xboxDrv.rightBumper().onTrue(intake.cmdRollerIn()); //TBD add in logic to run rollers on deply
+    xboxDrv.leftBumper().onTrue(intake.cmdRollerOut()); 
     //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
-   // Trigger rollersOffBinding = xboxDrv.leftBumper().and (xboxDrv.rightBumper());
-    //rollersOffBinding.onTrue(intake.cmdRollerOff());
+   Trigger rollersOffBinding = xboxDrv.leftBumper().and (xboxDrv.rightBumper());
+    rollersOffBinding.onTrue(intake.cmdRollerOff());
 
    // Trigger manualTrigger = new Trigger(()-> Math.abs(xboxDrv.getLeftY()) > 0.1);
     xboxDrv.leftStick().onTrue(new ManualIntakeCmd(()->xboxDrv.getLeftY(), ()->xboxDrv.leftStick().getAsBoolean()));
     
-    xboxDrv.rightStick().onTrue(new ManualElevatorCmd(()->xboxDrv.getRightY()));
+    xboxDrv.rightStick().onTrue(new ManualElevatorCmd(()->xboxDrv.getRightY(), ()->xboxDrv.rightStick().getAsBoolean()));
 
     xboxDrv.back().onTrue(shooter.cmdShoot());
 
-    xboxDrv.start().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.POS_STOW, CatzConstants.currentManipulatorMode));
-    xboxDrv.a().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP, CatzConstants.currentManipulatorMode));
-    xboxDrv.y().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_SCORING_AMP, CatzConstants.currentManipulatorMode));
-    xboxDrv.x().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_SOURCE, CatzConstants.currentManipulatorMode));
-    xboxDrv.b().onTrue(new MoveToNewPositionCmd(CatzConstants.CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, CatzConstants.currentManipulatorMode));
+    xboxDrv.back().onTrue(driveTrain.resetGyro());
 
-    xboxDrv.leftBumper().onTrue(shooter.cmdLoad());
-    xboxDrv.rightBumper().onTrue(shooter.loadBackward()).onFalse(shooter.loadDisabled());
+    xboxDrv.start().onTrue(new StowCmd());
+    xboxDrv.y().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
+    xboxDrv.x().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
+    xboxDrv.b().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
 
+    //xboxDrv.b().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
 
-    // //----------------------------------------------------------------------------------------
-    // //  DriveControls
-    // //----------------------------------------------------------------------------------------
-    // xboxDrv.start().onTrue(driveTrain.resetGyro());
-
-    // xboxDrv.leftStick().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, CatzConstants.currentManipulatorMode));
-    // xboxDrv.leftStick().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.POS_STOW, CatzConstants.currentManipulatorMode)); //TBD fix 
-
-    // xboxDrv.rightBumper().onTrue(intake.cmdRollerIn());
-    // xboxDrv.leftBumper().onTrue(intake.cmdRollerOut());
-    // //xboxDrv.
-
-    // Trigger driveLeftJoyYTrigger = new Trigger(()->Math.abs(xboxDrv.getLeftY()) > 0.1);
-    // driveLeftJoyYTrigger.onTrue(new SequentialCommandGroup()); // need climb subsystem and command to send in xbox values TBD\
-
-    // Trigger driveRightJoyYTrigger = new Trigger(()->Math.abs(xboxDrv.getRightY()) > 0.1);
-    // driveRightJoyYTrigger.onTrue(new SequentialCommandGroup()); // need climb subsystem and command to send in xbox values TBD\
+    // xboxDrv.leftBumper().onTrue(shooter.cmdLoad());
+    // xboxDrv.rightBumper().onTrue(shooter.loadBackward()).onFalse(shooter.loadDisabled());
 
 
-    // //----------------------------------------------------------------------------------------
+    // xboxDrv.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());
+    // xboxDrv.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
+
+  //   //----------------------------------------------------------------------------------------
+  //   //  DriveControls
+  //  //----------------------------------------------------------------------------------------
+  //   xboxDrv.start().onTrue(driveTrain.resetGyro());
+
+  //   xboxDrv.leftStick().onTrue(new ParallelCommandGroup(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, ()->CatzConstants.currentManipulatorMode),
+  //                                                       intake.cmdRollerIn()));
+  //   xboxDrv.leftStick().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.POS_STOW, ()->CatzConstants.currentManipulatorMode)); //TBD fix 
+
+  //   xboxDrv.rightBumper().onTrue(intake.cmdRollerIn());
+  //   xboxDrv.leftBumper().onTrue(intake.cmdRollerOut());
+  //  Trigger rollersOffBindingDrv = xboxDrv.leftBumper().and (xboxDrv.rightBumper());
+  //   rollersOffBindingDrv.onTrue(intake.cmdRollerOff());
+
+
+  //   //xboxDrv.
+
+  //   Trigger driveLeftJoyYTrigger = new Trigger(()->Math.abs(xboxDrv.getLeftY()) > 0.1);
+  //   driveLeftJoyYTrigger.onTrue(new SequentialCommandGroup()); // need climb subsystem and command to send in xbox values TBD\
+
+  //   Trigger driveRightJoyYTrigger = new Trigger(()->Math.abs(xboxDrv.getRightY()) > 0.1);
+  //   driveRightJoyYTrigger.onTrue(new SequentialCommandGroup()); // need climb subsystem and command to send in xbox values TBD\
+
+
+    // // ----------------------------------------------------------------------------------------
     // //  AuxControls
-    // //----------------------------------------------------------------------------------------    
-  
-    // //note state button mappings
-    // xboxAux.povLeft().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.AMP)); //default state
-    // xboxAux.povUp().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.CLIMB));
-    // xboxAux.povDown().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.HOARD));
-    // xboxAux.povRight().onTrue(Commands.runOnce(()->CatzConstants.currentManipulatorMode = ManipulatorMode.SPEAKER));
+    // // ----------------------------------------------------------------------------------------    
 
     // //all buttons are configured to the AMP mode
     // //command will use current manipulator mode to switch states within the command
-    // xboxAux.b().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_POS_SCORING_AMP, CatzConstants.currentManipulatorMode));
-    // xboxAux.y().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_POS_HANDOFF, CatzConstants.currentManipulatorMode));
-    // xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.AUTO_ALIGN_WITH_SPEAKER, CatzConstants.currentManipulatorMode));
+    // xboxAux.b().onTrue(new ParallelCommandGroup(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_SCORING_AMP,()-> CatzConstants.currentManipulatorMode),
+    //                                             shooter.cmdShoot()));
+    // xboxAux.y().onTrue(new ParallelCommandGroup(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP, ()->CatzConstants.currentManipulatorMode),
+    //                                             new AutoAlignCmd()));
+                                                
+    // xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP, ()->CatzConstants.currentManipulatorMode));
+    // xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.AUTO_ALIGN_WITH_SPEAKER, ()->CatzConstants.currentManipulatorMode));
+
+    // xboxAux.start().onTrue(new SequentialCommandGroup()); ///signify amp leds
+
+    // xboxAux.rightTrigger().onTrue(intake.cmdRollerIn());
+    // xboxAux.leftTrigger().onTrue(intake.cmdRollerOut()); 
+    // //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
+    // Trigger rollersOffBinding = xboxAux.leftTrigger().and (xboxDrv.rightTrigger());
+    // rollersOffBinding.onTrue(intake.cmdRollerOff());
 
     // //roller commands
     // xboxAux.leftTrigger().onTrue(intake.cmdRollerIn());
@@ -147,22 +168,30 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     
     // //semi manual elevator/intake commands
     // Trigger auxLeftJoyYTrigger = new Trigger(()->Math.abs(xboxAux.getLeftY()) > 0.1);
-    // auxLeftJoyYTrigger.onTrue(new ManualElevatorCmd(()->xboxAux.getLeftY()));
+    // auxLeftJoyYTrigger.onTrue(new ManualElevatorCmd(()->xboxAux.getLeftY(), ()->xboxAux.leftStick().getAsBoolean()));
 
     // Trigger auxRightJoyYTrigger = new Trigger(()->Math.abs(xboxAux.getRightY()) > 0.1);
-    // auxRightJoyYTrigger.onTrue(new ManualIntakeCmd(()->xboxAux.getRightY()));
+    // auxRightJoyYTrigger.onTrue(new ManualIntakeCmd(()->xboxAux.getRightY(), ()->xboxAux.rightStick().getAsBoolean()));
 
-    //xboxAux.povRight().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.))
+    //----------------------------------------------------------------------------------------
+    //  State machine
+    //----------------------------------------------------------------------------------------  
+
+    //note state button mappings
+    xboxAux.povLeft ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.AMP)); //default state
+    xboxAux.povRight().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.SPEAKER));
+    xboxAux.povUp   ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.TRAP));
+    xboxAux.povDown ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.HOARD));
 
   }
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
-      driveTrain
-      .setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-                                            ()-> xboxDrv.getLeftY(),
-                                            ()-> xboxDrv.getRightX(),
-                                            ()-> xboxDrv.b().getAsBoolean()));
+      // driveTrain
+      // .setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+      //                                       ()-> xboxDrv.getLeftY(),
+      //                                       ()-> xboxDrv.getRightX(),
+      //                                       ()-> xboxDrv.b().getAsBoolean()));
     
   }
 
@@ -173,5 +202,21 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     */
   public Command getAutonomousCommand() {
     return auton.getCommand();
+  }
+
+  private static NoteDestination targetNoteDestination;
+  public static enum NoteDestination {
+    SPEAKER,
+    AMP,
+    TRAP,
+    HOARD
+  }
+  private static NoteSource targetNoteSource;
+  public static enum NoteSource {
+    INTAKE_SOURCE,
+    INTAKE_GROUND,
+    FROM_SHOOTER,
+    FROM_INTAKE,
+    NULL
   }
 }
