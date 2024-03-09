@@ -266,7 +266,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return run(() -> aimAtGoal(new Translation2d(), true));
   }
   
-    public void updateTurretTargetPosition(CatzMechanismPosition newPosition) {
+    public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {
     currentTurretState = TurretState.AUTO;
     m_turretTargetDegree = newPosition.getTurretTargetAngle();
   }

@@ -68,8 +68,8 @@ public class ScoreSpeakerCmd extends InstantCommand {
   public void initialize() {
     //start the flywheel
     shooter.startShooterFlywheel();
-    intake.updateIntakeTargetPosition(CatzMechanismConstants.HANDOFF_AMP_PREP);
-    elevator.updateElevatorTargetPosition(CatzMechanismConstants.POS_STOW);
+    intake.updateTargetPositionIntake(CatzMechanismConstants.POS_AMP_TRANSITION);
+    elevator.updateTargetPositionElevator(CatzMechanismConstants.POS_STOW);
   }
 
   @Override 

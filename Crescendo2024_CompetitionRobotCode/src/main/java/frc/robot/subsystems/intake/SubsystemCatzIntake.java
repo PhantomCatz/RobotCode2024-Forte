@@ -48,16 +48,18 @@ public class SubsystemCatzIntake extends SubsystemBase {
   * rollers
   *
   ************************************************************************************************************************/
-  private final double ROLLERS_MTR_PWR_IN  = 0.25;//0.6;// 0.25;//0.4;
-  private final double ROLLERS_MTR_PWR_OUT_FULL_EJECT = -0.7; //Make different output powers for //-0.4 for handoff //-0.7 for amp vertical scoring
-    private final double ROLLERS_MTR_PWR_OUT_HANDOFF = -0.4; //Make different output powers for //-0.4 for handoff 
+  private final double ROLLERS_MTR_PWR_IN_GROUND      =  0.25;//0.6;
+  private final double ROLLERS_MTR_PWR_IN_SOURCE      =  0.25;
+  private final double ROLLERS_MTR_PWR_OUT_EJECT      = -1.0; 
+  private final double ROLLERS_MTR_PWR_OUT_HANDOFF    = -0.4; 
 
 
   private IntakeRollerState currentRollerState;
   public static enum IntakeRollerState {
-    ROLLERS_IN,
+    ROLLERS_IN_SOURCE,
+    ROLLERS_IN_GROUND,
     ROLLERS_OUT_FULL_EJECT,
-    ROLLERS_OUT_HANDOFF_EJECT,
+    ROLLERS_OUT_SHOOTER_HANDOFF,
     ROLLERS_OFF
   }
 
@@ -105,8 +107,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //Intake positions
   public static final double INTAKE_GROUND_PICKUP             = -22.0;
   public static final double INTAKE_SCORE_AMP                 = 125;//92.6; //90.43; //97 with drivetrain inner rail to the bottom inner rail 7 1/4 inches
-  public static final double INTAKE_STOW                      = 160.0;
-  public static final double INTAKE_OFFSET_FROM_ZERO          = 164.0;
+  public static final double INTAKE_STOW                      = 163.0;
+  public static final double INTAKE_OFFSET_FROM_ZERO          = 160.0;
 
   private final double STOW_CUTOFF = INTAKE_OFFSET_FROM_ZERO - 4; //TBD need to dial in
   private final double GROUND_CUTTOFF = 200;
@@ -133,7 +135,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double m_currentPositionDeg = 0.0;
   private double m_previousCurrentDeg = 0.0;
 
-  private double m_iterationCounter;
+  private int m_iterationCounter;
   private boolean m_intakeInPosition;
 
   private double positionError = 0.0;
@@ -209,17 +211,24 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
       //---------------------------------------Intake Roller logic -------------------------------------------
       switch(currentRollerState) {
-        case ROLLERS_IN:
+        case ROLLERS_IN_SOURCE:
             if(inputs.isIntakeBeamBrkBroken) {
               currentRollerState = IntakeRollerState.ROLLERS_OFF;
             } else {
-              io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN);
+              io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_SOURCE);
+            }        
+            break;
+        case ROLLERS_IN_GROUND:
+            if(inputs.isIntakeBeamBrkBroken) {
+              currentRollerState = IntakeRollerState.ROLLERS_OFF;
+            } else {
+              io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
             }        
             break;
         case ROLLERS_OUT_FULL_EJECT:
-              io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT_FULL_EJECT);
+              io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT_EJECT);
             break; 
-        case ROLLERS_OUT_HANDOFF_EJECT:
+        case ROLLERS_OUT_SHOOTER_HANDOFF:
               io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT_HANDOFF);
             break; 
         case ROLLERS_OFF:
@@ -281,7 +290,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //-------------------------------------------------------------------------------------
 
   //auto
-  public void updateIntakeTargetPosition(CatzMechanismPosition targetPosition) {
+  public void updateTargetPositionIntake(CatzMechanismPosition targetPosition) {
     m_iterationCounter = 0; //reset counter for intake in position
     this.m_targetPosition = targetPosition;
 
@@ -351,14 +360,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   public boolean getIntakeBeamBreakBroken() {
-    return inputs.intakeBeamBrkBroken;
+    return inputs.isIntakeBeamBrkBroken;
   }
 
   //-------------------------------------------------------------------------------------
   // Roller Methods
   //-------------------------------------------------------------------------------------
   public Command cmdRollerIn() {
-    return runOnce(()-> setRollerState(IntakeRollerState.ROLLERS_IN));
+    return runOnce(()-> setRollerState(IntakeRollerState.ROLLERS_IN_SOURCE));
   }
 
   public Command cmdRollerOut() {

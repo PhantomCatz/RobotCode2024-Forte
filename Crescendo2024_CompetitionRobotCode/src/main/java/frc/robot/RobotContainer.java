@@ -104,7 +104,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxDrv.start().onTrue(new StowCmd());
     xboxDrv.y().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
-    xboxDrv.x().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));
+    xboxDrv.x().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
+    xboxDrv.b().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
+
     //xboxDrv.b().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
 
     // xboxDrv.leftBumper().onTrue(shooter.cmdLoad());
@@ -173,16 +175,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     //----------------------------------------------------------------------------------------
     //  State machine
-    //---------------------------------------------------------------------------------------- 
-    xboxDrv.povRight().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.SPEAKER));
-    xboxDrv.povLeft().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.AMP));
-    xboxDrv.povUp().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.TRAP)); //Climber
+    //----------------------------------------------------------------------------------------  
 
     //note state button mappings
-    xboxAux.povLeft().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.AMP)); //default state
-    xboxAux.povUp().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.TRAP));
-    xboxAux.povDown().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.HOARD));
+    xboxAux.povLeft ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.AMP)); //default state
     xboxAux.povRight().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.SPEAKER));
+    xboxAux.povUp   ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.TRAP));
+    xboxAux.povDown ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.HOARD));
 
   }
 
@@ -217,7 +216,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     INTAKE_SOURCE,
     INTAKE_GROUND,
     FROM_SHOOTER,
-    FROM_INTAKE_AT_AMP_PREP,
-    INVALID
+    FROM_INTAKE,
+    NULL
   }
 }

@@ -62,10 +62,10 @@ public class ScoreAmpCmd extends Command {
 
   //factory for updating all mechanisms with the packaged target info associated with the new postion
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
-    intake.updateIntakeTargetPosition(pose);
-    elevator.updateElevatorTargetPosition(pose);
-    shooter.updateShooterTargetPosition(pose);
-    turret.updateTurretTargetPosition(pose);
+    intake.updateTargetPositionIntake(pose);
+    elevator.updateTargetPositionElevator(pose);
+    shooter.updateTargetPositionShooter(pose);
+    turret.updateTargetPositionTurret(pose);
   }
 
   private boolean areMechanismsInPosition() {

@@ -31,6 +31,7 @@ public class StowCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    System.out.println("work");
     runMechanismSetpoints(CatzMechanismConstants.POS_STOW);
   }
 
@@ -49,10 +50,10 @@ public class StowCmd extends Command {
   }
   //factory for updating all mechanisms with the packaged target info associated with the new postion
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
-    intake.updateIntakeTargetPosition(pose);
-    elevator.updateElevatorTargetPosition(pose);
-    shooter.updateShooterTargetPosition(pose);
-    turret.updateTurretTargetPosition(pose);
+    intake.updateTargetPositionIntake(pose);
+    elevator.updateTargetPositionElevator(pose);
+    shooter.updateTargetPositionShooter(pose);
+    turret.updateTargetPositionTurret(pose);
   }
 
   private boolean areMechanismsInPosition() {

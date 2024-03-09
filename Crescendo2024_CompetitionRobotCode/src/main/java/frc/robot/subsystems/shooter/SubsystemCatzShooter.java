@@ -235,7 +235,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   // Intake Calculation Methods
   //-------------------------------------------------------------------------------------
-  public void updateShooterTargetPosition(CatzMechanismPosition newPosition) {
+  public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
   }

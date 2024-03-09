@@ -33,8 +33,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // Elevator Constants
   //-------------------------------------------------------------------------------------
   public static final double ELEVATOR_POS_STOW_POSITION = 0.0;
-  public static final double ELEVATOR_POS_FULL_EXTEND   = 50.0;
-  public static final double ElEVATOR_POS_SCORE_AMP     = 70.0;//8;
+  public static final double ElEVATOR_POS_AMP_SCORE    = 70.0;//8;
+  public static final double ELEVATOR_POS_AMP_TRANSITION = 30.0;
 
   public static double REV_SWITCH_POS = 0.0; //dummy
   public static double FWD_SWITCH_POS = 5.0; //dummy
@@ -150,7 +150,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   // Elevator Access Methods
   //-------------------------------------------------------------------------------------
-  public void updateElevatorTargetPosition(CatzMechanismPosition targetPosition) {
+  public void updateTargetPositionElevator(CatzMechanismPosition targetPosition) {
 
     //set new target position for elevator
     m_newPositionRev = targetPosition.getElevatorTargetRev();
