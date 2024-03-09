@@ -26,6 +26,7 @@ public class ManualElevatorCmd extends Command {
 
   @Override
   public void initialize() {
+    pressCounter = 0;
   }
 
   @Override

@@ -22,7 +22,7 @@ import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
-import frc.robot.commands.mechanismCmds.IntakeMoveToHandoffPoseCmd;
+import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
@@ -106,9 +106,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //Intake positions
   public static final double INTAKE_GROUND_PICKUP             = -22.0;
-  public static final double INTAKE_SCORE_AMP                 = 125;//92.6; //90.43; //97 with drivetrain inner rail to the bottom inner rail 7 1/4 inches
+  public static final double INTAKE_POS_UPRIGHT               = 125;//92.6; //90.43; //97 with drivetrain inner rail to the bottom inner rail 7 1/4 inches
   public static final double INTAKE_STOW                      = 163.0;
   public static final double INTAKE_OFFSET_FROM_ZERO          = 160.0;
+  public static final double INTAKE_POSE_DOWNRIGHT            = -90;
 
   private final double STOW_CUTOFF = INTAKE_OFFSET_FROM_ZERO - 4; //TBD need to dial in
   private final double GROUND_CUTTOFF = 200;
@@ -298,7 +299,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE &&
        targetPosition.getIntakePivotTargetAngle() > 100) {
       currentIntakeState = IntakeState.WAITING_FOR_ELEVATOR;
-      this.m_targetPositionDeg = SubsystemCatzIntake.INTAKE_SCORE_AMP; //set the target to a holding position
+      this.m_targetPositionDeg = SubsystemCatzIntake.INTAKE_POS_UPRIGHT; //set the target to a holding position
 
     } else { //intake is free to move
       this.m_targetPositionDeg = targetPosition.getIntakePivotTargetAngle();

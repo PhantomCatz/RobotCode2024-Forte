@@ -54,7 +54,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 /*-----------------------------------------------------------------------------------------
   * Constants for Shooter
   *-----------------------------------------------------------------------------------------*/
-  public static double SERVO_OPTIMAL_HANDOFF_POS = 0.0;
+  public static final double SERVO_OPTIMAL_HANDOFF_POS = 0.0;
 
   private double m_newServoPosition;
   private double m_servoPosError;
@@ -240,6 +240,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
   }
 
+  public Command cmdServoPosition(double value) {
+    return runOnce(()-> updateShooterServo(value));
+  }
+
   public void updateShooterServo(double position) {
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = position;
@@ -275,7 +279,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   // Flywheel Commands
   //-------------------------------------------------------------------------------------
-  public Command cmdShooterEnabled() {
+  public Command cmdShooterRamp() {
     return runOnce(()->startShooterFlywheel());
   }
 

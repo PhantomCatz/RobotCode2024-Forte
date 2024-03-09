@@ -27,6 +27,9 @@ public class ScoreAmpCmd extends Command {
 
   private static Timer intakeNoteTimer = new Timer();
 
+  private boolean m_targetMechPoseStartReached = false;
+  private boolean m_targetMechPoseEndReached   = false;
+
   public ScoreAmpCmd() {
     addRequirements(intake, elevator, shooter, turret);
   }
@@ -40,13 +43,17 @@ public class ScoreAmpCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(areMechanismsInPosition()) {
+    if(areMechanismsInPosition() && m_targetMechPoseStartReached == false) {
       intake.setRollerState(IntakeRollerState.ROLLERS_OUT_FULL_EJECT);
       intakeNoteTimer.start();
+      m_targetMechPoseStartReached = true;
     }
 
-    if(intakeNoteTimer.hasElapsed(2) && intake.getIntakeBeamBreakBroken()) {
+    if(intakeNoteTimer.hasElapsed(2) && 
+       intake.getIntakeBeamBreakBroken() && 
+       m_targetMechPoseEndReached == false) {
       runMechanismSetpoints(CatzMechanismConstants.POS_STOW);
+      m_targetMechPoseEndReached = true;
     }
   }
 
