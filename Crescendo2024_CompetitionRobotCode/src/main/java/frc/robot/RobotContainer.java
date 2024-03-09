@@ -90,27 +90,14 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
    private void configureBindings() {    
     
-  //   xboxDrv.rightBumper().onTrue(intake.cmdRollerIn()); //TBD add in logic to run rollers on deply
-  //   xboxDrv.leftBumper().onTrue(intake.cmdRollerOut()); 
-  //   //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
-
-  //  // Trigger manualTrigger = new Trigger(()-> Math.abs(xboxDrv.getLeftY()) > 0.1);
-  //   xboxDrv.leftStick().onTrue(new ManualIntakeCmd(()->xboxDrv.getLeftY(), ()->xboxDrv.leftStick().getAsBoolean()));
-    
-  //   xboxDrv.rightStick().onTrue(new ManualElevatorCmd(()->xboxDrv.getRightY(), ()->xboxDrv.rightStick().getAsBoolean()));
-
-  //   xboxDrv.back().onTrue(shooter.cmdShoot());
-
-  //   xboxDrv.start().onTrue(new StowCmd());
-  //   xboxDrv.y().onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
-  //   xboxDrv.x().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
-  //   xboxDrv.b().onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
-
     //------------------------------------------------------------------------------------
     //  Drive commands
     //------------------------------------------------------------------------------------
-    xboxDrv.leftStick().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, NoteSource.INTAKE_GROUND)); //intake pivot to ground
-    xboxDrv.rightStick().onTrue(new StowCmd()); //intake pivot stow
+    xboxDrv.b().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, NoteSource.INTAKE_GROUND)); //intake pivot to ground
+    xboxDrv.a().onTrue(new StowCmd()); //intake pivot stow
+    xboxDrv.x().onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
+    //Shooter to intake handoff
+    xboxDrv.y().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
 
     xboxDrv.start().onTrue(driveTrain.resetGyro());
     xboxDrv.povCenter().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, NoteSource.INTAKE_SOURCE));
@@ -122,10 +109,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     rollersOffBinding.onTrue(intake.cmdRollerOff());
 
     //Those commands should only work when the button is held
-    xboxDrv.povUp().whileTrue(/*Both Climb hooks up*/null);
-    xboxDrv.povDown().whileTrue(/*Both Climb hooks down*/null);
-    xboxDrv.povRight().whileTrue(/*Raise Right hook*/null);
-    xboxDrv.povLeft().whileTrue(/*Raise Left hook*/null);
+    // xboxDrv.povUp().whileTrue(/*Both Climb hooks up*/null);
+    // xboxDrv.povDown().whileTrue(/*Both Climb hooks down*/null);
+    // xboxDrv.povRight().whileTrue(/*Raise Right hook*/null);
+    // xboxDrv.povLeft().whileTrue(/*Raise Left hook*/null);
 
     /*************************************************************
     * All Mode Buttons
@@ -147,11 +134,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.a().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, NoteSource.FROM_SHOOTER));
 
     xboxAux.a().and(xboxAux.b()).onTrue(new ScoreTrapCmd(()->xboxAux.povUp().getAsBoolean(), 
-                                                         ()->xboxDrv.povDown().getAsBoolean(), 
+                                                         ()->xboxAux.povDown().getAsBoolean(), 
                                                          ()->xboxAux.povLeft().getAsBoolean(), 
                                                          ()->xboxAux.povRight().getAsBoolean()));
 
-    xboxAux.back().onTrue(/*Signify Amp LEDs*/null);
+    // xboxAux.back().onTrue(/*Signify Amp LEDs*/null);
     // turn middle lights to red
 
     //shooter
@@ -177,11 +164,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
-      driveTrain
-      .setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-                                            ()-> xboxDrv.getLeftY(),
-                                            ()-> xboxDrv.getRightX(),
-                                            ()-> xboxDrv.b().getAsBoolean()));
+      // driveTrain
+      // .setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+      //                                       ()-> xboxDrv.getLeftY(),
+      //                                       ()-> xboxDrv.getRightX(),
+      //                                       ()-> xboxDrv.b().getAsBoolean()));
     
   }
 
@@ -194,7 +181,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     return auton.getCommand();
   }
 
-  private static NoteDestination targetNoteDestination;
+  public static NoteDestination getTargetNoteDestination() {
+    return targetNoteDestination;
+  }
+
+  private static NoteDestination targetNoteDestination = NoteDestination.SPEAKER;
   public static enum NoteDestination {
     SPEAKER,
     AMP,

@@ -283,7 +283,7 @@ public final class CatzConstants {
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW, 
                                                         SubsystemCatzIntake.INTAKE_GROUND_PICKUP, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
-                                                        SubsystemCatzTurret.HOME_POSITION );
+                                                        SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition INTAKE_SOURCE = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_AMP_SCORE_AMP, 

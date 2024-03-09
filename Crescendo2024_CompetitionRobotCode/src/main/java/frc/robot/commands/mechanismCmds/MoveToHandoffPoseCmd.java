@@ -104,7 +104,7 @@ public class MoveToHandoffPoseCmd extends Command {
         m_targetMechPoseStart = CatzMechanismConstants.HANDOFF_SHOOTER;
 
         if(m_noteDestination == NoteDestination.AMP) {
-            m_targetMechPoseEnd = CatzMechanismConstants.POS_AMP_TRANSITION;
+            m_targetMechPoseEnd = CatzMechanismConstants.POS_AMP_HOLD;
         } 
      
       break;
