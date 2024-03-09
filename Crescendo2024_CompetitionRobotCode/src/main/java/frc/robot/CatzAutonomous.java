@@ -67,7 +67,6 @@ public class CatzAutonomous {
     }
 
     //-------------------------------------------Auton Paths--------------------------------------------
-<<<<<<< Updated upstream
     private Command driveStraightPickup(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
@@ -89,9 +88,7 @@ public class CatzAutonomous {
 
     }
 
-=======
     //https://docs.google.com/presentation/d/19F_5L03n90t7GhtzQhD4mYNEMkdFsUGoDSb4tT9HqNI/edit#slide=id.g268da342b19_1_0
->>>>>>> Stashed changes
     private Command speaker4PieceWing(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("S4PW1")),

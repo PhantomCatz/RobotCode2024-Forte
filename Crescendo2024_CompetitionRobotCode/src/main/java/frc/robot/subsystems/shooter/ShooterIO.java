@@ -25,8 +25,8 @@ public interface ShooterIO {
         public double loadMotorVelocity;
         public double loadMotorOutputCurrent;
 
-        public double servoLeft;
-        public double servoRight;
+        public double servoLeftPosition;
+        public double servoRightPosition;
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}
@@ -54,5 +54,11 @@ public interface ShooterIO {
     public default void setServoAngle(double angle) {}
     
     public default void setServoSpeed(double speed) {}
+
+    public default void handoffProcedure() {}
+
+    public default void updateTurretState(){}
+
+    public default void updateShooterState(){}
 
 }

@@ -1,10 +1,12 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// // Copyright (c) FIRST and other WPILib contributors.
+// // Open Source Software; you can modify and/or share it under the terms of
+// // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -15,10 +17,20 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
+import frc.robot.RobotContainer;
+import frc.robot.CatzConstants.CatzMechanismConstants;
+import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
+import frc.robot.commands.mechanismCmds.IntakeMoveToHandoffPoseCmd;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
+
 
 public class SubsystemCatzIntake extends SubsystemBase {
   //intake io block
@@ -28,21 +40,28 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //intake instance
   private static SubsystemCatzIntake instance = new SubsystemCatzIntake();
 
+  LoggedTunableNumber speednumber = new LoggedTunableNumber("roller speed out", 0.0);
 
+  private CatzMechanismPosition m_targetPosition = null;
  /************************************************************************************************************************
   * 
   * rollers
   *
   ************************************************************************************************************************/
-  private final double ROLLERS_MTR_PWR_IN  =  0.6;
-  private final double ROLLERS_MTR_PWR_OUT = -0.4;
+  private final double ROLLERS_MTR_PWR_IN_GROUND      =  0.25;//0.6;
+  private final double ROLLERS_MTR_PWR_IN_SOURCE      =  0.25;
+  private final double ROLLERS_MTR_PWR_OUT_EJECT      = -1.0; 
+  private final double ROLLERS_MTR_PWR_OUT_HANDOFF    = -0.4; 
 
-  private static final int ROLLERS_STATE_OFF = 0;
-  private static final int ROLLERS_STATE_IN  = 1;
-  private static final int ROLLERS_STATE_OUT = 2;
 
-  //intake roller variables
-  private int    m_rollerRunningMode;
+  private IntakeRollerState currentRollerState;
+  public static enum IntakeRollerState {
+    ROLLERS_IN_SOURCE,
+    ROLLERS_IN_GROUND,
+    ROLLERS_OUT_FULL_EJECT,
+    ROLLERS_OUT_SHOOTER_HANDOFF,
+    ROLLERS_OFF
+  }
 
    /************************************************************************************************************************
   * 
@@ -67,10 +86,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   public static final double INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV = INTAKE_PIVOT_MTR_POS_OFFSET_IN_DEG * INTAKE_PIVOT_MTR_REV_PER_DEG;
 
-  public static final double INTAKE_VOLT_LIMIT = 4.0;
+  public static final double INTAKE_VOLT_LIMIT = 3.5;
 
   public final double PIVOT_FF_kS = 0.00;
-  public final double PIVOT_FF_kG = 0.437;//0.428; //0.435
+  public final double PIVOT_FF_kG = 0.437;
   public final double PIVOT_FF_kV = 0.00;
   public final double PIVOT_FF_kA = 0.0;
 
@@ -78,14 +97,20 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private PIDController pivotPID;
   private ArmFeedforward pivotFeedFoward;
 
-  private static final double PIVOT_PID_kP = 0.043;
-  private static final double PIVOT_PID_kI = 0.005; 
+  private static final double PIVOT_PID_kP = 0.05; //0.044
+  private static final double PIVOT_PID_kI = 0.000; //0.005 
   private static final double PIVOT_PID_kD = 0.000; 
 
   private final double PID_FINE_GROSS_THRESHOLD_DEG = 20;
   private final double ERROR_INTAKE_THRESHOLD_DEG = 5.0;
 
-  private final double STOW_CUTOFF = 150; //TBD need to dial in
+  //Intake positions
+  public static final double INTAKE_GROUND_PICKUP             = -22.0;
+  public static final double INTAKE_SCORE_AMP                 = 125;//92.6; //90.43; //97 with drivetrain inner rail to the bottom inner rail 7 1/4 inches
+  public static final double INTAKE_STOW                      = 163.0;
+  public static final double INTAKE_OFFSET_FROM_ZERO          = 160.0;
+
+  private final double STOW_CUTOFF = INTAKE_OFFSET_FROM_ZERO - 4; //TBD need to dial in
   private final double GROUND_CUTTOFF = 200;
 
   private final double MANUAL_HOLD_STEP_COEFFICIENT = 2.0;
@@ -97,9 +122,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   private final double GRAVITY_KG_OFFSET = 0.0;//9.0;
 
-  private final double ELEVATOR_THRESHOLD_FOR_INTAKE = 10;
-
-  private final int NUM_CONSEC_THRESHOLD = 5;
+  private final double ELEVATOR_THRESHOLD_FOR_INTAKE = 10.0;
 
   //pivot variables
   private double m_pivotManualPwr = 0.0;
@@ -112,12 +135,20 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double m_currentPositionDeg = 0.0;
   private double m_previousCurrentDeg = 0.0;
 
-  private double m_numConsectSamples;
+  private int m_iterationCounter;
   private boolean m_intakeInPosition;
 
   private double positionError = 0.0;
   private double pivotVelRadPerSec = 0.0;
 
+  private static IntakeState currentIntakeState = IntakeState.IN_POSITION;
+  public static enum IntakeState {
+    AUTO,
+    SEMI_MANUAL,
+    FULL_MANUAL,
+    WAITING_FOR_ELEVATOR,
+    IN_POSITION
+  }
 
 
   LoggedTunableNumber kgtunning = new LoggedTunableNumber("kgtunningVolts",0.0);
@@ -125,7 +156,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
 
 
-  public SubsystemCatzIntake() {
+  private SubsystemCatzIntake() {
 
     switch (CatzConstants.currentMode) {
       case REAL: io = new IntakeIOReal();
@@ -143,8 +174,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
     }
 
     pivotPID = new PIDController(PIVOT_PID_kP, 
-                            PIVOT_PID_kI, 
-                            PIVOT_PID_kD);
+                                 PIVOT_PID_kI, 
+                                 PIVOT_PID_kD);
 
     pivotFeedFoward = new ArmFeedforward(PIVOT_FF_kS,
                                          PIVOT_FF_kG,
@@ -156,14 +187,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
       return instance;
   }
 
-  private static IntakeState currentIntakeState;
-  public static enum IntakeState {
-    AUTO,
-    SEMI_MANUAL,
-    FULL_MANUAL,
-    WAITING
-  }
-
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -173,76 +196,79 @@ public class SubsystemCatzIntake extends SubsystemBase {
     m_currentPositionDeg = calcWristAngleDeg();
     positionError = m_currentPositionDeg - m_targetPositionDeg;
     pivotVelRadPerSec = Math.toRadians(m_currentPositionDeg - m_previousCurrentDeg)/0.02;
-    
+
+    //voltage control calculation
+    m_ffVolts    = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg + GRAVITY_KG_OFFSET), pivotVelRadPerSec, 0);
+
     if(DriverStation.isDisabled()) {
       io.setRollerPercentOutput(0.0);
-      m_rollerRunningMode = 0;
+      currentRollerState = IntakeRollerState.ROLLERS_OFF;
       io.setIntakePivotPercentOutput(0.0);
       m_targetPositionDeg = NULL_INTAKE_POSITION;
+      m_targetPosition = null;
     } else { 
       //robot enabled
 
-        if(m_rollerRunningMode == ROLLERS_STATE_OUT) {
-            io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT); 
-        } else if(m_rollerRunningMode == ROLLERS_STATE_IN) {
-              if(inputs.IntakeBeamBrkBroken) {
-                io.setRollerPercentOutput(0.0);
-                m_rollerRunningMode = ROLLERS_STATE_OFF;
-              } else {
-                io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN);
-              }
-        } else {
-          io.setRollerPercentOutput(0.0);
-        }
+      //---------------------------------------Intake Roller logic -------------------------------------------
+      switch(currentRollerState) {
+        case ROLLERS_IN_SOURCE:
+            if(inputs.isIntakeBeamBrkBroken) {
+              currentRollerState = IntakeRollerState.ROLLERS_OFF;
+            } else {
+              io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_SOURCE);
+            }        
+            break;
+        case ROLLERS_IN_GROUND:
+            if(inputs.isIntakeBeamBrkBroken) {
+              currentRollerState = IntakeRollerState.ROLLERS_OFF;
+            } else {
+              io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
+            }        
+            break;
+        case ROLLERS_OUT_FULL_EJECT:
+              io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT_EJECT);
+            break; 
+        case ROLLERS_OUT_SHOOTER_HANDOFF:
+              io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT_HANDOFF);
+            break; 
+        case ROLLERS_OFF:
+            io.setRollerPercentOutput(0.0);
+            break;
+      }
 
-      // ----------------------------------------------------------------------------------
-      // IntakePivot
-      // ----------------------------------------------------------------------------------
-      if(currentIntakeState == IntakeState.WAITING){
+      //---------------------------------------Intake Pivot logic -------------------------------------------
+      if(currentIntakeState == IntakeState.WAITING_FOR_ELEVATOR) { //when intake is waiting for elevator change state to auto to wait in holding position
+          io.setIntakePivotEncOutput(m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts); //go to holding position
+
         if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < ELEVATOR_THRESHOLD_FOR_INTAKE) {
+          this.m_targetPositionDeg = m_targetPosition.getIntakePivotTargetAngle();
           currentIntakeState = IntakeState.AUTO;
         }
 
       } else if ((currentIntakeState == IntakeState.AUTO || 
-           currentIntakeState == IntakeState.SEMI_MANUAL) && 
-           m_targetPositionDeg != NULL_INTAKE_POSITION) { 
-            System.out.println("in auto");
-        //check if at final position using counter
-        if ((Math.abs(positionError) <= ERROR_INTAKE_THRESHOLD_DEG)) {
-          m_numConsectSamples++;
-          if (m_numConsectSamples >= NUM_CONSEC_THRESHOLD) {
-              m_intakeInPosition = true;
+                  currentIntakeState == IntakeState.SEMI_MANUAL ||
+                  currentIntakeState == IntakeState.IN_POSITION) && 
+                  m_targetPositionDeg != NULL_INTAKE_POSITION) { 
+        //in position checker
+        if(Math.abs(positionError) < 5.0) { //for normal positions
+          //stow cut off
+          if(m_targetPositionDeg == INTAKE_STOW) {
+            io.setIntakePivotVoltage(0.0);
           }
+          
+          //bounce checker
+          m_iterationCounter++;
+          if (m_iterationCounter >= 5) {
+            currentIntakeState = IntakeState.IN_POSITION;  
+          }
+
         } else {
-          m_numConsectSamples = 0; //resetcounter if intake hasn't leveled off
+          io.setIntakePivotEncOutput(m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts);
+          m_iterationCounter = 0; //resetcounter if intake hasn't leveled off
         }
         
-        
-        m_ffVolts = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg + GRAVITY_KG_OFFSET), pivotVelRadPerSec, 0);
-        m_pidVolts = -pivotPID.calculate(m_targetPositionDeg, m_currentPositionDeg);
-        m_finalVolts = m_pidVolts + m_ffVolts;
-        
-
-        //pwr limiting
-        if(Math.abs(m_finalVolts) >  INTAKE_VOLT_LIMIT) {
-          m_finalVolts = Math.signum(m_finalVolts) * INTAKE_VOLT_LIMIT;
-        }
-
-
-        // // ----------------------------------------------------------------------------------
-        // // If we are going to Stow Position & have passed the power cutoff angle, set
-        // // power to 0, otherwise calculate new motor power based on position error and
-        // // current angle
-        // // ----------------------------------------------------------------------------------
-        // if (m_targetPositionDeg == STOW_ENC_POS && currentPositionDeg > STOW_CUTOFF) {
-        //   io.setIntakePivotPercentOutput(0.0);
-        // } else {
-        // //set final mtr pwr
-        // }
-        io.setIntakePivotVoltage(m_finalVolts);
-        
-      } else { //we are current setting pwr through manual
-        io.setIntakePivotVoltage(kgtunning.get());
+      } else { //currently setting pwr through manual
+        io.setIntakePivotVoltage(m_pivotManualPwr);
       }
     } 
     m_previousCurrentDeg = m_currentPositionDeg;
@@ -254,24 +280,31 @@ public class SubsystemCatzIntake extends SubsystemBase {
     Logger.recordOutput("intake/position error", positionError);
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
     Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
-    //Logger.recordOutput("intake/roller target",m_rollerRunningMode);
+    Logger.recordOutput("intake/roller mode", currentRollerState.toString());
+    Logger.recordOutput("intake/intake mode", currentIntakeState.toString());
 
-  }
 
-  public boolean inPosition(){
-    return m_intakeInPosition;
-  }
+} 
+  //-------------------------------------------------------------------------------------
+  // Intake Access Methods
+  //-------------------------------------------------------------------------------------
 
-  //-------------------------------------Pivot methods--------------------------------
-  //auto update intake angle
-  public void updateTargetPosition(CatzMechanismPosition targetPosition) {
-    m_intakeInPosition = false;
-    this.m_targetPositionDeg = targetPosition.getIntakePivotTargetAngle();
-    if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE) {
-      currentIntakeState = IntakeState.WAITING;
-    } else {
+  //auto
+  public void updateTargetPositionIntake(CatzMechanismPosition targetPosition) {
+    m_iterationCounter = 0; //reset counter for intake in position
+    this.m_targetPosition = targetPosition;
+
+    //elevator intake crash zone checks
+    if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE &&
+       targetPosition.getIntakePivotTargetAngle() > 100) {
+      currentIntakeState = IntakeState.WAITING_FOR_ELEVATOR;
+      this.m_targetPositionDeg = SubsystemCatzIntake.INTAKE_SCORE_AMP; //set the target to a holding position
+
+    } else { //intake is free to move
+      this.m_targetPositionDeg = targetPosition.getIntakePivotTargetAngle();
       currentIntakeState = IntakeState.AUTO;
     }
+
   }
 
   //semi manual
@@ -285,16 +318,19 @@ public class SubsystemCatzIntake extends SubsystemBase {
     }
 
     currentIntakeState = IntakeState.SEMI_MANUAL;
-
   }
 
   //full manual
   public void pivotFullManual(double fullManualPwr) {
-    m_pivotManualPwr = 0.4*fullManualPwr;
+    m_pivotManualPwr = 0.4 * fullManualPwr;
     currentIntakeState = IntakeState.FULL_MANUAL;
 
   }
 
+
+  //-------------------------------------------------------------------------------------
+  // Intake Calculation Methods
+  //-------------------------------------------------------------------------------------
   private double calculatePivotFeedFoward(double positionRadians, double velocityRadPerSec, double accelRadPerSecSquared) {
       double finalFF = PIVOT_FF_kS * Math.signum(velocityRadPerSec)
                      + PIVOT_FF_kG * Math.cos(positionRadians)
@@ -308,25 +344,42 @@ public class SubsystemCatzIntake extends SubsystemBase {
     return wristAngle;
   }
 
+  //-------------------------------------------------------------------------------------
+  // Intake getters
+  //-------------------------------------------------------------------------------------
   public double getWristAngle() {
     return m_currentPositionDeg;
   }
 
-  //-------------------------------------Roller methods--------------------------------
+  public IntakeState getIntakeState() {
+    return currentIntakeState;
+  }
+
+  public IntakeRollerState getIntakeRollerState() {
+    return currentRollerState;
+  }
+
+  public boolean getIntakeBeamBreakBroken() {
+    return inputs.isIntakeBeamBrkBroken;
+  }
+
+  //-------------------------------------------------------------------------------------
+  // Roller Methods
+  //-------------------------------------------------------------------------------------
   public Command cmdRollerIn() {
-    return runOnce(()-> setRollerState(1));
+    return runOnce(()-> setRollerState(IntakeRollerState.ROLLERS_IN_SOURCE));
   }
 
   public Command cmdRollerOut() {
-    return runOnce(()-> setRollerState(2));
+    return runOnce(()-> setRollerState(IntakeRollerState.ROLLERS_OUT_FULL_EJECT));
   }
 
   public Command cmdRollerOff() {
-    return runOnce(()->  setRollerState(0));
+    return runOnce(()->  setRollerState(IntakeRollerState.ROLLERS_OFF));
   }
 
-  public void setRollerState(int rollerRunningMode) {
-    m_rollerRunningMode = rollerRunningMode;
+  public void setRollerState(IntakeRollerState rollerRunningMode) {
+    currentRollerState = rollerRunningMode;
   }
 
 }

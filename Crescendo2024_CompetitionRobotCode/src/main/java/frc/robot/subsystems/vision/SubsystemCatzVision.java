@@ -85,8 +85,8 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight", VisionConstants.LIMELIGHT_OFFSET)
-                // new VisionIOLimeLight("limelight-turret", VisionConstants.LIMELIGHT_OFFSET_2)
+                new VisionIOLimeLight("limelight", VisionConstants.LIMELIGHT_OFFSET),
+                new VisionIOLimeLight("limelight-turret", VisionConstants.LIMELIGHT_OFFSET_2)
             });
         }
         return instance;
@@ -99,7 +99,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         // clear results from last periodic
         results.clear();
         
-        //for every limlight camera process vision with according logic
+        // for every limlight camera process vision with according logic
         for (int i = 0; i < inputs.length; i++) {
             // update and process new inputs[cameraNum] for camera
             cameras[i].updateInputs(inputs[i]);
@@ -127,9 +127,9 @@ public class SubsystemCatzVision extends SubsystemBase {
         }
 
 
-        // limelightRangeFinder(1);
+        limelightRangeFinder(1);
      
-        //Logging
+        // Logging
         Logger.recordOutput("Vision/ResultCount", results.size());
 
         //log data
@@ -151,16 +151,6 @@ public class SubsystemCatzVision extends SubsystemBase {
         camNum = cameraNum;
 
     }
-
-    // public void processVision() {
-    //     // create a new pose based off the new inputs
-    //     Pose2d currentPose = new Pose2d(inputs.x, 
-    //                                     inputs.y, 
-    //                                     new Rotation2d(inputs.rotation));
-
-    //     // add the new pose to a list
-    //     results.add(new PoseAndTimestamp(currentPose, inputs.timestamp));
-    // }
 
     //Returns the last recorded pose in a list
     public List<SubsystemCatzVision.PoseAndTimestamp> getVisionOdometry() {
@@ -209,111 +199,111 @@ public class SubsystemCatzVision extends SubsystemBase {
   
     //----------------------------------Calculation methods-------------------------------------------
 
-    // public void limelightRangeFinder(int cameraNum) {
-    //     if(inputs[cameraNum].primaryApriltagID == 1 || 
-    //        inputs[cameraNum].primaryApriltagID == 2 || 
-    //        inputs[cameraNum].primaryApriltagID == 9 || 
-    //        inputs[cameraNum].primaryApriltagID == 10) 
-    //     {
-    //         //Source
-    //         primaryAprilTag = "Source";
+    public void limelightRangeFinder(int cameraNum) {
+        if(inputs[cameraNum].primaryApriltagID == 1 || 
+           inputs[cameraNum].primaryApriltagID == 2 || 
+           inputs[cameraNum].primaryApriltagID == 9 || 
+           inputs[cameraNum].primaryApriltagID == 10) 
+        {
+            //Source
+            primaryAprilTag = "Source";
 
-    //         //vertical distance to target
-    //         distanceToAprilTag = (SOURCE_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.sin(inputs[cameraNum].ty);
-    //         aprilTagDistanceToWall = (SOURCE_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.tan(inputs[cameraNum].ty);
+            //vertical distance to target
+            distanceToAprilTag = (SOURCE_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (SOURCE_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.tan(inputs[cameraNum].ty);
 
-    //         //horizontal distance to target
-    //         horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
+            //horizontal distance to target
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
             
 
-    //         if(Math.abs(horizontalTargetOffset) < 5) //Distance Target %
-    //         {
-    //             System.out.println("Alligned with Target");
-    //             horizontallyAllignedWithAprilTag = true;
+            if(Math.abs(horizontalTargetOffset) < 5) //Distance Target %
+            {
+                System.out.println("Alligned with Target");
+                horizontallyAllignedWithAprilTag = true;
 
-    //             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
 
-    //         } else {
-    //             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
-    //         }
-    //     } 
-    //     else if (inputs[cameraNum].primaryApriltagID == 3 || 
-    //              inputs[cameraNum].primaryApriltagID == 4 || 
-    //              inputs[cameraNum].primaryApriltagID == 7 || 
-    //              inputs[cameraNum].primaryApriltagID == 8)  
-    //     {
-    //         //Speaker
-    //         primaryAprilTag = "Speaker";
+            } else {
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+            }
+        } 
+        else if (inputs[cameraNum].primaryApriltagID == 3 || 
+                 inputs[cameraNum].primaryApriltagID == 4 || 
+                 inputs[cameraNum].primaryApriltagID == 7 || 
+                 inputs[cameraNum].primaryApriltagID == 8)  
+        {
+            //Speaker
+            primaryAprilTag = "Speaker";
 
-    //         //vertical distance to target
-    //         distanceToAprilTag = (SPEAKER_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.sin(inputs[cameraNum].ty);
-    //         aprilTagDistanceToWall = (SPEAKER_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.tan(inputs[cameraNum].ty);
+            //vertical distance to target
+            distanceToAprilTag = (SPEAKER_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (SPEAKER_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.tan(inputs[cameraNum].ty);
         
-    //         //horizontal distance to target
-    //         horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
+            //horizontal distance to target
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
 
-    //         if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
-    //         {
-    //             System.out.println("Alligned with Target");
-    //             horizontallyAllignedWithAprilTag = true;
+            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
+            {
+                System.out.println("Alligned with Target");
+                horizontallyAllignedWithAprilTag = true;
 
-    //             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
 
-    //         } else {
-    //             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
-    //         }
-    //     } 
-    //     else if (inputs[cameraNum].primaryApriltagID == 11 || 
-    //              inputs[cameraNum].primaryApriltagID == 12 || 
-    //              inputs[cameraNum].primaryApriltagID == 13 || 
-    //              inputs[cameraNum].primaryApriltagID == 14 || 
-    //              inputs[cameraNum].primaryApriltagID == 15 || 
-    //              inputs[cameraNum].primaryApriltagID == 16) 
-    //     {
-    //         //Trap
-    //         primaryAprilTag = "Trap";
+            } else {
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+            }
+        } 
+        else if (inputs[cameraNum].primaryApriltagID == 11 || 
+                 inputs[cameraNum].primaryApriltagID == 12 || 
+                 inputs[cameraNum].primaryApriltagID == 13 || 
+                 inputs[cameraNum].primaryApriltagID == 14 || 
+                 inputs[cameraNum].primaryApriltagID == 15 || 
+                 inputs[cameraNum].primaryApriltagID == 16) 
+        {
+            //Trap
+            primaryAprilTag = "Trap";
 
-    //         //vertical distance to target
-    //         distanceToAprilTag = (STAGE_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.sin(inputs[cameraNum].ty);
-    //         aprilTagDistanceToWall = (STAGE_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.tan(inputs[cameraNum].ty);
+            //vertical distance to target
+            distanceToAprilTag = (STAGE_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (STAGE_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.tan(inputs[cameraNum].ty);
             
-    //         //horizontal distance to target
-    //         horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);  
-    //         if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
-    //         {
-    //             System.out.println("Alligned with Target");
-    //             horizontallyAllignedWithAprilTag = true;
+            //horizontal distance to target
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);  
+            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
+            {
+                System.out.println("Alligned with Target");
+                horizontallyAllignedWithAprilTag = true;
 
-    //             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
 
-    //         } else {
-    //             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
-    //         }       
-    //     } 
-    //     else if (inputs[cameraNum].primaryApriltagID == 5 || 
-    //              inputs[cameraNum].primaryApriltagID == 6) 
-    //     {
-    //         //Amp
-    //         primaryAprilTag = "Amp";
+            } else {
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+            }       
+        } 
+        else if (inputs[cameraNum].primaryApriltagID == 5 || 
+                 inputs[cameraNum].primaryApriltagID == 6) 
+        {
+            //Amp
+            primaryAprilTag = "Amp";
 
-    //         //vertical distance to target
-    //         distanceToAprilTag = (AMP_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.sin(inputs[cameraNum].ty);
-    //         aprilTagDistanceToWall = (AMP_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.tan(inputs[cameraNum].ty);
+            //vertical distance to target
+            distanceToAprilTag = (AMP_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.sin(inputs[cameraNum].ty);
+            aprilTagDistanceToWall = (AMP_APRILTAG_HEIGHT_METERS - LIMELIGHT_PLACEMENT_HEIGHT_METERS) / Math.tan(inputs[cameraNum].ty);
 
-    //         //horizontal distance to target
-    //         horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
-    //         if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
-    //         {
-    //             System.out.println("Alligned with Target");
-    //             horizontallyAllignedWithAprilTag = true;
+            //horizontal distance to target
+            horizontalTargetOffset = (aprilTagDistanceToWall) * Math.tan(inputs[cameraNum].tx);
+            if(horizontalTargetOffset > 5 && horizontalTargetOffset < 5) 
+            {
+                System.out.println("Alligned with Target");
+                horizontallyAllignedWithAprilTag = true;
 
-    //             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(2);
 
-    //         } else {
-    //             NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
-    //         }
-    //     }   
-    // } 
+            } else {
+                NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+            }
+        }   
+    } 
 
 
 }

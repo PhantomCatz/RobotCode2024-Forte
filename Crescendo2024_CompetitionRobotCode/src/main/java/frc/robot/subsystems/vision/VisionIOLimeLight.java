@@ -2,6 +2,8 @@ package frc.robot.subsystems.vision;
 
 import org.littletonrobotics.junction.Logger;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,6 +12,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 
@@ -60,9 +63,9 @@ public class VisionIOLimeLight implements VisionIO {
 
         if(isAllianceBlue){
             botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"); //TBD test how different alliance and forms of botpose affect vision pose
-        }else if(isAllianceRed){
+        } else if(isAllianceRed){
             botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpired"); //TBD test how different alliance and forms of botpose affect vision pose
-        }else{
+        } else{
             botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose"); //TBD test how different alliance and forms of botpose affect vision pose
         }
 
@@ -97,7 +100,7 @@ public class VisionIOLimeLight implements VisionIO {
         //shoves in new pose2d from pose3d object estimate depending on if new apriltag detected
         if (inputs.hasTarget) {
             // sets input timestamp
-            inputs.timestamp = Logger.getRealTimestamp() - latency;
+            inputs.timestamp = Timer.getFPGATimestamp() - latency;
 
             inputs.isNewVisionPose = true;
 
