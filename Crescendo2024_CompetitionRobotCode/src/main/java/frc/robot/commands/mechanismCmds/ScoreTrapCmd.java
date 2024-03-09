@@ -54,6 +54,9 @@ public class ScoreTrapCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    
+
+
     if(m_supplierPovUP.get()) {
       climb.setLeftClimbPercentOutput(0.2);
       climb.setRightClimbPercentOutput(0.2);

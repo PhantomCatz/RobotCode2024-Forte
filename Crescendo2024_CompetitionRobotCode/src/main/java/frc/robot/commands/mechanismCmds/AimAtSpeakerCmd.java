@@ -32,7 +32,7 @@ import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
-public class ScoreSpeakerCmd extends InstantCommand {
+public class AimAtSpeakerCmd extends InstantCommand {
   //subsystem declaration
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
@@ -59,7 +59,7 @@ public class ScoreSpeakerCmd extends InstantCommand {
 
   public static final double kAccelCompFactor = 0.100; // in units of seconds
 
-  public ScoreSpeakerCmd() {
+  public AimAtSpeakerCmd() {
     addRequirements(turret, shooter, intake, elevator);
   }
 
@@ -83,7 +83,7 @@ public class ScoreSpeakerCmd extends InstantCommand {
       target = new Translation2d(0.0, 5.55);
     } else {
       //translation of the blue alliance speaker
-      target = new Translation2d(0.0, 10 + 5.55);
+      target = new Translation2d(16, 5.55);
     }
 
     //take the distance to the speaker
@@ -145,6 +145,8 @@ public class ScoreSpeakerCmd extends InstantCommand {
     Logger.recordOutput("ShooterCalcs/Fixed Time", shotTime);
     Logger.recordOutput("ShooterCalcs/NewDist", newDist);
     Logger.recordOutput("ShooterCalcs/Calculated (in)", dist);
+
+
 
 
   }

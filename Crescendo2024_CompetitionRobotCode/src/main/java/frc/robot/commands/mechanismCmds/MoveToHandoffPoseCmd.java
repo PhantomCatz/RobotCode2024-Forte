@@ -25,7 +25,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
-public class IntakeMoveToHandoffPoseCmd extends Command {
+public class MoveToHandoffPoseCmd extends Command {
   
   //subsystem declaration
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
@@ -47,7 +47,7 @@ public class IntakeMoveToHandoffPoseCmd extends Command {
 
 
   /** This cmd should not be used for transfering handoff positions */
-  public IntakeMoveToHandoffPoseCmd(NoteDestination noteDestination, NoteSource noteSource) {
+  public MoveToHandoffPoseCmd(NoteDestination noteDestination, NoteSource noteSource) {
     this.m_noteDestination = noteDestination;
     this.m_noteSource = noteSource;
 
@@ -166,7 +166,6 @@ public class IntakeMoveToHandoffPoseCmd extends Command {
           intake.setRollerState(IntakeRollerState.ROLLERS_IN_SOURCE);
           shooter.setShooterLoadState(ShooterLoadState.LOAD_OUT);
           m_targetMechPoseStartReached = true;
-                        System.out.println("A");
         }
       }
 
