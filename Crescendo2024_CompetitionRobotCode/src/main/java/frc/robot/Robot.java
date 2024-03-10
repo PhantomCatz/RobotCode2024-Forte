@@ -24,6 +24,7 @@ import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
 import frc.robot.Utils.LEDs.CatzRGB;
 import frc.robot.Utils.LEDs.ColorMethod;
+import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class Robot extends LoggedRobot {
@@ -90,7 +91,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); //YALL BETTER NOT DELETE THIS :D
-    Logger.recordOutput("statemachine/note destination", RobotContainer.getTargetNoteDestination().toString());
+    Logger.recordOutput("statemachine/note destination", CatzStateMachine.getInstance().getTargetNoteDestination());
   }
 
   @Override
@@ -104,7 +105,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+   m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

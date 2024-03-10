@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.shooter;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -241,8 +243,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
   }
 
-  public Command cmdServoPosition(double value) {
-    return runOnce(()-> updateShooterServo(value));
+  public Command cmdServoPosition(Supplier<Double> value) {
+    return run(()-> updateShooterServo(value.get()));
   }
 
   public void updateShooterServo(double position) {

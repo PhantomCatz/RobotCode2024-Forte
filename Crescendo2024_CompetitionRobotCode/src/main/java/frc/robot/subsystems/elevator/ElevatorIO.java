@@ -17,7 +17,7 @@ public interface ElevatorIO {
 
     public default void updateInputs(ElevatorIOInputs inputs) {}
 
-    public default void setElevatorPosition(double newRevPosition, double elevatorFF) {}
+    public default void setElevatorPosition(double newRevPosition, double elevatorFF, boolean limitSwtichPressed) {}
 
     public default void setElevatorPercentOutput(double speed) {}
 

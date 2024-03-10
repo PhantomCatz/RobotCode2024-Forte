@@ -50,7 +50,9 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
   private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
 
+  //crash check constants
   private static final double INTAKE_WAIT_THRESHOLD_ANGLE = 60;
+  private static final double ELEVATOR_THRESHOLD_REV      = 20;
 
   private static final double ELEVATOR_kS = 0.0;
   private static final double ELEVATOR_kG = 0.8;
@@ -127,13 +129,16 @@ public class SubsystemCatzElevator extends SubsystemBase {
       
       if(currentElevatorState == ElevatorState.WAITING) {
           if(SubsystemCatzIntake.getInstance().getWristAngle() < INTAKE_WAIT_THRESHOLD_ANGLE) {
-            currentElevatorState = ElevatorState.AUTO;
+            updateTargetPositionElevator(m_targetPosition);
           } 
       } else if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
                 (currentElevatorState == ElevatorState.AUTO  ||
                  currentElevatorState == ElevatorState.SEMI_MANUAL ||
                  currentElevatorState == ElevatorState.IN_POSITION)) {
-            io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
+
+            io.setElevatorPosition(m_newPositionRev, 
+                                   m_finalffVolts, 
+                                   inputs.bottomSwitchTripped);
             if(inputs.elevatorPositionError < 5) {
               currentElevatorState = ElevatorState.IN_POSITION;
             } 
@@ -151,13 +156,14 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // Elevator Access Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionElevator(CatzMechanismPosition targetPosition) {
+    this.m_targetPosition = targetPosition;
 
     //set new target position for elevator
-    m_newPositionRev = targetPosition.getElevatorTargetRev();
+    m_newPositionRev = m_targetPosition.getElevatorTargetRev();
 
     //checks the package for if the intake is trying to get into a position that may collide with the elevator
     if(targetPosition.getIntakePivotTargetAngle() > INTAKE_WAIT_THRESHOLD_ANGLE &&
-       getElevatorRevPos() > 10) {
+       getElevatorRevPos() > ELEVATOR_THRESHOLD_REV) {
       currentElevatorState = ElevatorState.WAITING;
       
     } else {

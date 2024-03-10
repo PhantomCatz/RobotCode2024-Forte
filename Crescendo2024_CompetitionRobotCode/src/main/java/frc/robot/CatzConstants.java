@@ -261,12 +261,6 @@ public final class CatzConstants {
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
 
-    public static final CatzMechanismPosition HANDOFF_SHOOTER = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW , 
-                                                        SubsystemCatzIntake.INTAKE_STOW, 
-                                                        SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
-                                                        SubsystemCatzTurret.HOME_POSITION);
-
     public static final CatzMechanismPosition SCORING_SPEAKER = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW,
                                                         SubsystemCatzIntake.INTAKE_POS_UPRIGHT,
@@ -300,22 +294,4 @@ public final class CatzConstants {
     
   }
 
-  public enum NoteDestination {
-    SPEAKER,
-    AMP,
-    TRAP,
-    HOARD
-  }
-  public enum NoteSource {
-    INTAKE_SOURCE,
-    INTAKE_GROUND,
-    FROM_SHOOTER,
-    FROM_INTAKE,
-    NULL
-  }
-
-    public static NoteDestination targetNoteDestination = NoteDestination.SPEAKER;
-
-
-  
 }

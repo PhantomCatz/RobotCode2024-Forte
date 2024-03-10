@@ -206,7 +206,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     pivotVelRadPerSec = Math.toRadians(m_currentPositionDeg - m_previousCurrentDeg)/0.02;
 
     //voltage control calculation
-    m_ffVolts    = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg + GRAVITY_KG_OFFSET), pivotVelRadPerSec, 0);
+    m_ffVolts    = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg), pivotVelRadPerSec, 0);
 
     if(DriverStation.isDisabled()) {
       io.setRollerPercentOutput(0.0);
@@ -312,9 +312,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
     m_iterationCounter = 0; //reset counter for intake in position
     this.m_targetPosition = targetPosition;
 
-    System.out.println("elev threshold check evaluates: " + (SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE));
-    System.out.println("Turret threshold check evaluates: " + (Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle())  > TURRET_THRESHOLD_FOR_INTAKE));
-    System.out.println("Pivot targ angle" +     (targetPosition.getIntakePivotTargetAngle() > 100));
+    // System.out.println("elev threshold check evaluates: " + (SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE));
+    // System.out.println("Turret threshold check evaluates: " + (Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle())  > TURRET_THRESHOLD_FOR_INTAKE));
+    // System.out.println("Pivot targ angle" +     (targetPosition.getIntakePivotTargetAngle() > 100));
 
     //elevator intake crash zone checks
     if((SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE ||
@@ -358,10 +358,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   }
 
+  //set modified current lmit for amp scoring
   public void setSquishyMode(boolean set) {
     io.setSquishyMode(set);
   }
-
 
   //-------------------------------------------------------------------------------------
   // Intake Calculation Methods

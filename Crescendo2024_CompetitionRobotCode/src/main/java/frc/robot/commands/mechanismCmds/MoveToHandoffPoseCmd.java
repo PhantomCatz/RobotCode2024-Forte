@@ -9,10 +9,10 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.RobotContainer.NoteDestination;
-import frc.robot.RobotContainer.NoteSource;
 import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.subsystems.CatzStateMachine.NoteDestination;
+import frc.robot.subsystems.CatzStateMachine.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -46,9 +46,14 @@ public class MoveToHandoffPoseCmd extends Command {
   private boolean m_targetMechPoseEndReached   = false;
 
 
-  /** This cmd should not be used for transfering handoff positions */
   public MoveToHandoffPoseCmd(NoteDestination noteDestination, NoteSource noteSource) {
     this.m_noteDestination = noteDestination;
+    this.m_noteSource = noteSource;
+
+    addRequirements(intake, elevator, turret, shooter);
+  }
+  public MoveToHandoffPoseCmd(NoteSource noteSource) {
+    this.m_noteDestination = null;
     this.m_noteSource = noteSource;
 
     addRequirements(intake, elevator, turret, shooter);
@@ -68,7 +73,7 @@ public class MoveToHandoffPoseCmd extends Command {
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
 
-            m_targetMechPoseEnd = CatzMechanismConstants.HANDOFF_SHOOTER;
+            m_targetMechPoseEnd = CatzMechanismConstants.POS_STOW;
             intake.setRollerState(IntakeRollerState.ROLLERS_IN_GROUND);
             System.out.println("Ground speaker");
         } else if(m_noteDestination == NoteDestination.AMP)  {
@@ -84,7 +89,7 @@ public class MoveToHandoffPoseCmd extends Command {
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
 
-            m_targetMechPoseEnd = CatzMechanismConstants.HANDOFF_SHOOTER;
+            m_targetMechPoseEnd = CatzMechanismConstants.POS_STOW;
             intake.setRollerState(IntakeRollerState.ROLLERS_IN_SOURCE);
                         System.out.println(" Source Speaker");
         } else if(m_noteDestination == NoteDestination.AMP) {
@@ -94,13 +99,13 @@ public class MoveToHandoffPoseCmd extends Command {
       break;
 
       case FROM_INTAKE:
-        m_targetMechPoseStart = CatzMechanismConstants.HANDOFF_SHOOTER;
+        m_targetMechPoseStart = CatzMechanismConstants.POS_STOW;
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
             System.out.println("Intake Speaker");
 
-          m_targetMechPoseEnd = CatzMechanismConstants.HANDOFF_SHOOTER;
+          m_targetMechPoseEnd = CatzMechanismConstants.POS_STOW;
         } else if(m_noteDestination == NoteDestination.AMP) {
             System.out.println("Intake Amp");
           m_targetMechPoseEnd = CatzMechanismConstants.POS_AMP_TRANSITION;
@@ -109,7 +114,7 @@ public class MoveToHandoffPoseCmd extends Command {
       break;
 
       case FROM_SHOOTER:
-        m_targetMechPoseStart = CatzMechanismConstants.HANDOFF_SHOOTER;
+        m_targetMechPoseStart = CatzMechanismConstants.POS_STOW;
 
         if(m_noteDestination == NoteDestination.AMP) {
             m_targetMechPoseEnd = CatzMechanismConstants.POS_AMP_HOLD;

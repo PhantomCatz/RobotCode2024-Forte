@@ -79,7 +79,7 @@ public class ElevatorIOReal implements ElevatorIO {
     }
     
     @Override
-    public void setElevatorPosition(double newPositionElevator, double elevatorFF) {
+    public void setElevatorPosition(double newPositionElevator, double elevatorFF, boolean limitSwtichPressed) {
         ElevatorMtr.setControl(new MotionMagicVoltage(newPositionElevator,
                                                         true, 
                                                         elevatorFF,

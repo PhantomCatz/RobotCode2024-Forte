@@ -23,6 +23,7 @@ import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMathUtils;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
@@ -225,8 +226,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
     angle = Math.PI + angle - robotPose.getRotation().getRadians(); //TBD why add half a rotation
 
     angle = CatzMathUtils.toUnitCircAngle(angle);
-
-    //TBD add logic that will turn on a flag when the turret it currently tracking with info
 
     //if we purely just want to rely on apriltag for aiming
     if (aimAtVision && SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {
