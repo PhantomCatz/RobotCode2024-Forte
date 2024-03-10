@@ -48,6 +48,22 @@ public class AimAtSpeakerCmd extends InstantCommand {
 
   static { //TBD add values in through testing
     shooterPivotTable.put(1.0, 2.0);
+    shooterPivotTable.put(1.5, 3.5);
+    shooterPivotTable.put(2.0, 5.0);
+    shooterPivotTable.put(2.5, 7.5);
+    shooterPivotTable.put(3.0, 10.0);
+    shooterPivotTable.put(3.5, 12.5);
+    shooterPivotTable.put(4.0, 15.0);
+    shooterPivotTable.put(4.5, 17.5);
+    shooterPivotTable.put(5.0, 20.0);
+    shooterPivotTable.put(5.5, 22.5);
+    shooterPivotTable.put(6.0, 25.0);
+    shooterPivotTable.put(6.5, 28.0);
+    shooterPivotTable.put(7.0, 31.0);
+    shooterPivotTable.put(7.5, 34.0);
+    shooterPivotTable.put(8.0, 37.0);
+    shooterPivotTable.put(9.0, 41.0);
+    shooterPivotTable.put(10.0, 45.0);
   }
 
   /** angle to time look up table key: ty angle, values: time */
@@ -55,6 +71,7 @@ public class AimAtSpeakerCmd extends InstantCommand {
       // (ty-angle,time)
   static { //TBD add values in through testing
     timeTable.put(80.0, 2.0);
+
   }
 
   public static final double kAccelCompFactor = 0.100; // in units of seconds
