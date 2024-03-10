@@ -90,14 +90,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   
   //XboxController for rumbling
-  private XboxController xboxDrvRumble;
+  private XboxController xboxAuxRumble;
 
   private SubsystemCatzShooter() {
     
     //XboxController
-    xboxDrvRumble = new XboxController(OIConstants.XBOX_DRV_PORT);
-    //XboxController
-    xboxDrvRumble = new XboxController(OIConstants.XBOX_DRV_PORT);
+    xboxAuxRumble = new XboxController(OIConstants.XBOX_AUX_PORT);
 
     switch (CatzConstants.currentMode) {
       case REAL: io = new ShooterIOReal();
@@ -180,7 +178,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
               if(DriverStation.isAutonomous()) {
                 currentShooterLoadState = ShooterLoadState.SHOOTING;
               } else {
-                xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0.7);
+                xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
                 
                 m_iterationCounter = 0;
               }
@@ -190,7 +188,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
           case SHOOTING:
             io.feedShooter();
             if(DriverStation.isAutonomous() == false) {
-              xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0);
+              xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
             }
             m_iterationCounter++;
             if(m_iterationCounter >= timer(1)) {
