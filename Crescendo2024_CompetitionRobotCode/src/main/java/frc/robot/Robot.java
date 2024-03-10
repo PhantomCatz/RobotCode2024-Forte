@@ -90,7 +90,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); //YALL BETTER NOT DELETE THIS :D
-    Logger.recordOutput("statemachine/note destination", RobotContainer.getTargetNoteDestination());
+    Logger.recordOutput("statemachine/note destination", RobotContainer.getTargetNoteDestination().toString());
   }
 
   @Override

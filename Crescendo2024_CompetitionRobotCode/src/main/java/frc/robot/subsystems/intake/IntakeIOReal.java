@@ -133,6 +133,15 @@ public class IntakeIOReal implements IntakeIO {
     }
 
     @Override
+    public void setSquishyMode(boolean enable) {
+        if(enable) {
+            talonConfigsPivot.CurrentLimits.SupplyCurrentLimit = 10; 
+        } else {
+            talonConfigsPivot.CurrentLimits.SupplyCurrentLimit = KRAKEN_CURRENT_LIMIT_AMPS;
+        }
+    }
+
+    @Override
     public void setIntakePivotEncOutput(double encOutput, double ffVoltage) {
         pivotMtr.setControl(new MotionMagicVoltage(encOutput, 
                                                      true, 

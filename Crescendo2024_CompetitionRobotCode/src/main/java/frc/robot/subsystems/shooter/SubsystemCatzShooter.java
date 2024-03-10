@@ -125,6 +125,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     Logger.processInputs("Shooter/shooterinputs", inputs);
     if(DriverStation.isDisabled()) {
       currentShooterLoadState = ShooterLoadState.LOAD_OFF;
+      io.setShooterDisabled();
     } else {
       //load motor logic
       switch(currentShooterLoadState) {

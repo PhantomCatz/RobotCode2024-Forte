@@ -33,8 +33,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // Elevator Constants
   //-------------------------------------------------------------------------------------
   public static final double ELEVATOR_POS_STOW = 0.0;
-  public static final double ElEVATOR_POS_AMP_SCORE_AMP    = 70.0;//8;
-  public static final double ELEVATOR_POS_AMP_TRANSITION = 30.0;
+  public static final double ElEVATOR_POS_AMP_SCORE_AMP    = 60.0;//8;
+  public static final double ELEVATOR_POS_AMP_TRANSITION = 35.0;
 
   public static double REV_SWITCH_POS = 0.0; //dummy
   public static double FWD_SWITCH_POS = 5.0; //dummy
@@ -53,7 +53,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private static final double INTAKE_WAIT_THRESHOLD_ANGLE = 60;
 
   private static final double ELEVATOR_kS = 0.0;
-  private static final double ELEVATOR_kG = 0.6;
+  private static final double ELEVATOR_kG = 0.8;
   private static final double ELEVATOR_kV = 0.0;
 
   //-------------------------------------------------------------------------------------
@@ -96,7 +96,9 @@ public class SubsystemCatzElevator extends SubsystemBase {
       break;
     }
 
-    elevatorFeedforward = new ElevatorFeedforward(ELEVATOR_kS, ELEVATOR_kG, ELEVATOR_kV);
+    elevatorFeedforward = new ElevatorFeedforward(ELEVATOR_kS, 
+                                                  ELEVATOR_kG, 
+                                                  ELEVATOR_kV);
   }
 
   // Get the singleton instance of the elevator Subsystem
@@ -116,7 +118,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
     elevatorVelocityMTRRPS = (currentRotations - previousRotations)/0.02;
     m_finalffVolts = elevatorFeedforward.calculate(0.0);
 
-
     if(DriverStation.isDisabled()) {
       io.setElevatorPercentOutput(0);
       currentElevatorState = ElevatorState.FULL_MANUAL;
@@ -132,8 +133,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
                 (currentElevatorState == ElevatorState.AUTO  ||
                  currentElevatorState == ElevatorState.SEMI_MANUAL ||
                  currentElevatorState == ElevatorState.IN_POSITION)) {
-           // io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
-
+            io.setElevatorPosition(m_newPositionRev, m_finalffVolts);
             if(inputs.elevatorPositionError < 5) {
               currentElevatorState = ElevatorState.IN_POSITION;
             } 
@@ -172,6 +172,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
    }
 
   public void setElevatorPercentOutput(double percentOutput) {
+    System.out.println("in manual");
     currentElevatorState = ElevatorState.FULL_MANUAL;
     this.m_elevatorPercentOutput = percentOutput/5;
   }
