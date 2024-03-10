@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.83,
-        "y": 5.77
+        "x": 5.85,
+        "y": 1.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.560474404828979,
-        "y": 6.241875878901544
+        "x": 5.949999999999999,
+        "y": 1.5
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.73,
-        "y": 6.6
+        "x": 7.97,
+        "y": 2.5
       },
       "prevControl": {
-        "x": 6.232570981547098,
-        "y": 6.405827590542485
+        "x": 7.87,
+        "y": 2.5
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,10 +32,10 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "6 Note Auton 5940",
+  "folder": "BottomMidClear",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

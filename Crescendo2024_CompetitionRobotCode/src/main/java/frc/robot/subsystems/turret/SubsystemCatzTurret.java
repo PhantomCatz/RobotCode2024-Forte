@@ -23,6 +23,7 @@ import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMathUtils;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
@@ -34,10 +35,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //intake instance
   private static SubsystemCatzTurret instance = new SubsystemCatzTurret();
 
-  //turret constants
-  private final double TURRET_POWER     = 0.6;
+  //------------------------------------------------------------------------
+  //      turret constants
+  //------------------------------------------------------------------------
+  private final double TURRET_POWER     = 0.4;
   private final double TURRET_DECEL_PWR = 0.3;
  
+  //pid values
   private static final double TURRET_kP = 0.02;
   private static final double TURRET_kI = 0.0;
   private static final double TURRET_kD = 0.0;
@@ -46,8 +50,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double LIMELIGHT_kI = 0.0;
   private static final double LIMELIGHT_kD = 0.0001;
 
-  private final double TURRET_POSITIVE_MAX_RANGE = 120.0; //120
-  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0; //-120
+  private final double TURRET_POSITIVE_MAX_RANGE =  120.0; 
+  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0;
 
   private final double NEGATIVE_DECEL_THRESHOLD  =  -15.0;
   private final double POS_DECEL_THRESHOLD       =   15.0;
@@ -55,7 +59,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double TURRET_GEARBOX_PINION      = 9.0/1.0;
   private static final double TURRET_GEARBOX_TURRET_GEAR = 140.0/10.0;
  
-  private static final double GEAR_REDUCTION     =  TURRET_GEARBOX_PINION * TURRET_GEARBOX_TURRET_GEAR;
+  public static final double GEAR_REDUCTION     =  TURRET_GEARBOX_PINION * TURRET_GEARBOX_TURRET_GEAR;
   public static final double TURRET_REV_PER_DEG = GEAR_REDUCTION / 360;
   
   public static final double HOME_POSITION       = 0.0;
@@ -65,6 +69,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //turret variables
   private double m_turretTargetDegree;
   private double apriltagTrackingPower;
+  private double m_closedLoopError;
   private double setPositionPower;
   private double offsetAprilTagX;
 
@@ -72,7 +77,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private PIDController m_trackingApriltagPID;
   private double manualTurretPwr;
   private boolean m_trackTarget = false;
-  private double m_desiredAngle = 0.0;
   
 
   private SubsystemCatzTurret() {
@@ -106,7 +110,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
   
   private static TurretState currentTurretState;
-
   public static enum TurretState {
     AUTO,
     TRACKING_APRILTAG,
@@ -117,21 +120,26 @@ public class SubsystemCatzTurret extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    currentTurretDegree = inputs.turretEncValue / TURRET_REV_PER_DEG; 
+    Logger.processInputs("turret", inputs);
+
+    currentTurretDegree = inputs.turretEncValue;// / TURRET_REV_PER_DEG; 
     
     //obtain calculation values
     apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0);
-    setPositionPower      = m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
+    setPositionPower      =  m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
     //offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
-    
+    m_closedLoopError = ((currentTurretDegree - m_turretTargetDegree)  * TURRET_REV_PER_DEG);
+
 
     if(DriverStation.isDisabled()) {
       io.turretSetPwr(0.0);
       manualTurretPwr = 0;
+      currentTurretState = TurretState.FULL_MANUAL;
     } else { 
-      if (currentTurretState == TurretState.AUTO) {
-        io.turretSetPositionSM(m_turretTargetDegree);
-       //io.turretSetPwr(setPositionPower); //TBD replaced by smart motion
+      if (currentTurretState == TurretState.AUTO ||
+          currentTurretState == TurretState.IN_POSITION) {
+            //io.turretSetPositionSM(m_turretTargetDegree);
+            io.turretSetPwr(setPositionPower);
         if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 3) {
           currentTurretState = TurretState.IN_POSITION;
         } 
@@ -157,19 +165,14 @@ public class SubsystemCatzTurret extends SubsystemBase {
     // whc 01Mar24 need to fix.  Do we need to install a limelight? TBD
    //Logger.recordOutput("turret/PwrPID", apriltagTrackingPower);
    // Logger.recordOutput("turret/currentTurretState", currentTurretState);
-    Logger.recordOutput("turret/currentTurretDeg", currentTurretDegree);
+    Logger.recordOutput("turret/currentTurretDegee", currentTurretDegree);
+    Logger.recordOutput("turret/closedlooperror", m_closedLoopError);
     Logger.recordOutput("turret/m_TurretTargetDegree", m_turretTargetDegree);
   }
 
-  //------------------------------------Turret Methods---------------------------------------------------------
-  
-  public void setTurretTargetDegree(double turretTargetDegree) {
-    currentTurretState = TurretState.AUTO;
-    m_turretTargetDegree = turretTargetDegree;
-  }
-  
-  // *********** code for turning turret towards static target (Apriltag tX is static + an offset) ************* //
-
+  //-------------------------------------------------------------------------------------------------
+  //    Manual Rotate Methods
+  //-------------------------------------------------------------------------------------------------
   public void rotateLeft(){
     currentTurretState = TurretState.FULL_MANUAL;
     
@@ -207,6 +210,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     }          
   }
 
+  //-------------------------------------------------------------------------------------------------
+  //    Automated Methods
+  //-------------------------------------------------------------------------------------------------
   public void aimAtGoal(Translation2d goal, boolean aimAtVision) {
     Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
 
@@ -221,8 +227,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
     angle = CatzMathUtils.toUnitCircAngle(angle);
 
-    //TBD add logic that will turn on a flag when the turret it currently tracking with info
-
     //if we purely just want to rely on apriltag for aiming
     if (aimAtVision && SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {
       currentTurretState = TurretState.TRACKING_APRILTAG;
@@ -231,7 +235,15 @@ public class SubsystemCatzTurret extends SubsystemBase {
       currentTurretState = TurretState.AUTO;
     }
   }
+  
+  public void setTurretTargetDegree(double turretTargetDegree) {
+    currentTurretState = TurretState.AUTO;
+    m_turretTargetDegree = turretTargetDegree;
+  }
 
+  //-------------------------------------------------------------------------------------------------
+  //    Turret getters
+  //-------------------------------------------------------------------------------------------------
   public double getTurretAngle() {
     return currentTurretDegree;
   }
@@ -240,7 +252,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return currentTurretState;
   }
   
-  //-------------------------------------Manual methods--------------------------------
+  //-------------------------------------------------------------------------------------------------
+  //    Manual Methods
+  //-------------------------------------------------------------------------------------------------
   public Command cmdTurretLT() {
     return run(() -> rotateLeft());
   }
@@ -266,7 +280,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return run(() -> aimAtGoal(new Translation2d(), true));
   }
   
-    public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {
+  public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {
     currentTurretState = TurretState.AUTO;
     m_turretTargetDegree = newPosition.getTurretTargetAngle();
   }

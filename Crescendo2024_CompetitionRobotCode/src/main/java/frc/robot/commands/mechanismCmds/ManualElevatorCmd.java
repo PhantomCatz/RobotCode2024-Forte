@@ -11,34 +11,35 @@ import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 
 public class ManualElevatorCmd extends Command {
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
-  Supplier<Double> m_supplierRightY;
+  Supplier<Double> m_supplierLeftY;
   Supplier<Boolean> m_supplierLeftJoyStickPressed;
 
 
   private double pressCounter;
 
-  public ManualElevatorCmd(Supplier<Double> supplierRightY, Supplier<Boolean> supplierLeftJoyStickPressed) {
+  public ManualElevatorCmd(Supplier<Double> supplierLeftY, Supplier<Boolean> supplierLeftJoyStickPressed) {
     addRequirements(elevator);
 
-    this.m_supplierRightY = supplierRightY;
+    this.m_supplierLeftY = supplierLeftY;
     this.m_supplierLeftJoyStickPressed = supplierLeftJoyStickPressed;
   }
 
   @Override
   public void initialize() {
+    pressCounter = 0;
   }
 
   @Override
   public void execute() {
-    if(m_supplierLeftJoyStickPressed.get()) {
-      pressCounter = 1;
-    }
-
-    if(pressCounter == 1) {
-      elevator.setElevatorSemiManualPwr(m_supplierRightY.get());
-    } else {
-      elevator.setElevatorPercentOutput(m_supplierRightY.get());
-    }  
+    // if(m_supplierLeftJoyStickPressed.get()) {
+    //   pressCounter = 1;
+    // }
+    // if(pressCounter == 1) {
+    //   elevator.setElevatorSemiManualPwr(m_supplierLeftY.get());
+    // } else {
+     // System.out.println(m_supplierLeftY.get());
+      elevator.setElevatorPercentOutput(m_supplierLeftY.get());
+    //}  
   }
 
   @Override

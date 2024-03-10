@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.2977299021645106,
-        "y": 5.960815801802787
+        "x": 2.4,
+        "y": 5.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.421970210559535,
-        "y": 5.984237474894352
+        "x": 2.4,
+        "y": 5.6
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.866981999299233,
-        "y": 5.960815801802787
+        "x": 2.4,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 3.0940667872776535,
-        "y": 5.972526638348569
+        "x": 2.4,
+        "y": 6.9
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,11 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "test",
+  "folder": "S4PCSW",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

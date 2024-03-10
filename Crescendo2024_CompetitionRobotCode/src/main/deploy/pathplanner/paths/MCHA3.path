@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.250522654891466,
-        "y": 4.1638498661612715
+        "x": 5.76,
+        "y": 3.78
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.4414333444051515,
-        "y": 4.213184580215315
+        "x": 5.86,
+        "y": 3.78
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.5568472675406895,
-        "y": 4.736132549188175
+        "x": 8.25,
+        "y": 4.16
       },
       "prevControl": {
-        "x": 6.237666321486491,
-        "y": 4.519059807350385
+        "x": 8.15,
+        "y": 4.16
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Mid Clear + Hoard Amp",
+  "folder": "MCHA",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

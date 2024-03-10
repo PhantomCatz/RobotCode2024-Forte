@@ -1,26 +1,20 @@
 package frc.robot;
 
-import com.ctre.phoenix6.mechanisms.MechanismState;
-import com.pathplanner.lib.auto.NamedCommands;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
-import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.commands.mechanismCmds.IntakeMoveToHandoffPoseCmd;
-import frc.robot.commands.mechanismCmds.ScoreSpeakerCmd;
+import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
+import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
+import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.commands.mechanismCmds.StowCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
+import frc.robot.subsystems.CatzStateMachine;
+import frc.robot.subsystems.CatzStateMachine.NoteDestination;
+import frc.robot.subsystems.CatzStateMachine.NoteSource;
+import frc.robot.subsystems.climb.SubsystemCatzClimb;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -28,41 +22,26 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
-/**
- * RobotContainer
- * @version 1.0
- * @author Kynam Lenghiem
- * 
- * This class is how the command scheduler(robot.java replacment) is configured
- * Configures:
- * -xbox controller triggers
- * -default commands
- * -instanciated mechanisms using singleton implementation
- * -sets up autonomous from CatzAtutonomouschooser
- */
  public class RobotContainer {
     
-    //subsystems
-    private SubsystemCatzDrivetrain driveTrain; 
-    //private SubsystemCatzVision vision;
-    private SubsystemCatzIntake     intake;
-    private SubsystemCatzShooter  shooter;
-    //private SubsystemCatzClimb    climb;
-    private SubsystemCatzElevator   elevator;
-    private SubsystemCatzTurret     turret;
+  //subsystems
+  private SubsystemCatzDrivetrain driveTrain; 
+  //private SubsystemCatzVision vision;
+  private SubsystemCatzIntake     intake;
+  private SubsystemCatzShooter  shooter;
+  private SubsystemCatzClimb    climb;
+  private SubsystemCatzElevator   elevator;
+  private SubsystemCatzTurret     turret;
 
-    private CatzAutonomous auton = new CatzAutonomous();
+  private CatzStateMachine stateMachine;
 
-    //xbox controller
-    public static CommandXboxController xboxDrv;
-    private CommandXboxController       xboxAux;
- 
-       
-   /** The container for the robot. Contains subsystems, OI devices, and commands. 
-    *    -since multiple classes are referencing these mechansims, 
-    *     mechanisms are instantiated inside mechanism class(singleton)
-    */
-   public RobotContainer() {
+  private CatzAutonomous auton = new CatzAutonomous();
+
+  //xbox controller
+  private CommandXboxController xboxDrv;
+  private CommandXboxController xboxAux;
+
+  public RobotContainer() {
     //instantiate subsystems
     elevator   = SubsystemCatzElevator.getInstance();
     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
@@ -70,153 +49,86 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     intake     = SubsystemCatzIntake.getInstance();
     turret     = SubsystemCatzTurret.getInstance();
     shooter    = SubsystemCatzShooter.getInstance();
-    //  climb      = SubsystemCatzClimb.getInstance();
-    //  arm        = SubsystemCatzElevator.getInstance();
+    climb      = SubsystemCatzClimb.getInstance();
+
+    stateMachine = CatzStateMachine.getInstance();
     
 
-     xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
-     xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
+    xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
+    xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
 
- 
-     // Configure the trigger bindings and default cmds
-     defaultCommands();
-     configureBindings();
-   }
+
+      // Configure the trigger bindings and default cmds
+    defaultCommands();
+    configureBindings();
+  }
  
   
    
-   private void configureBindings() {    
-    
-    xboxDrv.rightBumper().onTrue(intake.cmdRollerIn()); //TBD add in logic to run rollers on deply
-    xboxDrv.leftBumper().onTrue(intake.cmdRollerOut()); 
-    //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
-   Trigger rollersOffBinding = xboxDrv.leftBumper().and (xboxDrv.rightBumper());
-    rollersOffBinding.onTrue(intake.cmdRollerOff());
+  private void configureBindings() {    
+    //------------------------------------------------------------------------------------
+    //  Drive commands
+    //------------------------------------------------------------------------------------
+    xboxDrv.leftStick().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)); //intake pivot to ground
+    xboxDrv.start().onTrue(driveTrain.resetGyro());
+    xboxDrv.rightStick().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_SOURCE));
 
-   // Trigger manualTrigger = new Trigger(()-> Math.abs(xboxDrv.getLeftY()) > 0.1);
-    xboxDrv.leftStick().onTrue(new ManualIntakeCmd(()->xboxDrv.getLeftY(), ()->xboxDrv.leftStick().getAsBoolean()));
-    
-    xboxDrv.rightStick().onTrue(new ManualElevatorCmd(()->xboxDrv.getRightY(), ()->xboxDrv.rightStick().getAsBoolean()));
+    //intake to shooter handoff and vice versa
+    xboxDrv.y().onTrue(stateMachine.cmdDetermineHandOffTransition());
 
-    xboxDrv.back().onTrue(shooter.cmdShoot());
-
-    xboxDrv.back().onTrue(driveTrain.resetGyro());
-
-    xboxDrv.start().onTrue(new StowCmd());
-    xboxDrv.y().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
-    xboxDrv.x().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
-    xboxDrv.b().onTrue(new IntakeMoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
-
-    //xboxDrv.b().onTrue(new IntakeMoveToHandoffPoseCmd(targetNoteDestination, targetNoteSource));
-
-    // xboxDrv.leftBumper().onTrue(shooter.cmdLoad());
-    // xboxDrv.rightBumper().onTrue(shooter.loadBackward()).onFalse(shooter.loadDisabled());
-
-
-    // xboxDrv.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());
-    // xboxDrv.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
-
-  //   //----------------------------------------------------------------------------------------
-  //   //  DriveControls
-  //  //----------------------------------------------------------------------------------------
-  //   xboxDrv.start().onTrue(driveTrain.resetGyro());
-
-  //   xboxDrv.leftStick().onTrue(new ParallelCommandGroup(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_POS_INTAKE_GROUND, ()->CatzConstants.currentManipulatorMode),
-  //                                                       intake.cmdRollerIn()));
-  //   xboxDrv.leftStick().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.POS_STOW, ()->CatzConstants.currentManipulatorMode)); //TBD fix 
-
-  //   xboxDrv.rightBumper().onTrue(intake.cmdRollerIn());
-  //   xboxDrv.leftBumper().onTrue(intake.cmdRollerOut());
-  //  Trigger rollersOffBindingDrv = xboxDrv.leftBumper().and (xboxDrv.rightBumper());
-  //   rollersOffBindingDrv.onTrue(intake.cmdRollerOff());
-
-
-  //   //xboxDrv.
-
-  //   Trigger driveLeftJoyYTrigger = new Trigger(()->Math.abs(xboxDrv.getLeftY()) > 0.1);
-  //   driveLeftJoyYTrigger.onTrue(new SequentialCommandGroup()); // need climb subsystem and command to send in xbox values TBD\
-
-  //   Trigger driveRightJoyYTrigger = new Trigger(()->Math.abs(xboxDrv.getRightY()) > 0.1);
-  //   driveRightJoyYTrigger.onTrue(new SequentialCommandGroup()); // need climb subsystem and command to send in xbox values TBD\
-
-
-    // // ----------------------------------------------------------------------------------------
-    // //  AuxControls
-    // // ----------------------------------------------------------------------------------------    
-
-    // //all buttons are configured to the AMP mode
-    // //command will use current manipulator mode to switch states within the command
-    // xboxAux.b().onTrue(new ParallelCommandGroup(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_SCORING_AMP,()-> CatzConstants.currentManipulatorMode),
-    //                                             shooter.cmdShoot()));
-    // xboxAux.y().onTrue(new ParallelCommandGroup(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_POS_HANDOFF_SPEAKER_PREP, ()->CatzConstants.currentManipulatorMode),
-    //                                             new AutoAlignCmd()));
-                                                
-    // xboxAux.a().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.NOTE_POS_HANDOFF_AMP_PREP, ()->CatzConstants.currentManipulatorMode));
-    // xboxAux.x().onTrue(new MoveToNewPositionCmd(CatzMechanismConstants.AUTO_ALIGN_WITH_SPEAKER, ()->CatzConstants.currentManipulatorMode));
-
-    // xboxAux.start().onTrue(new SequentialCommandGroup()); ///signify amp leds
-
-    // xboxAux.rightTrigger().onTrue(intake.cmdRollerIn());
-    // xboxAux.leftTrigger().onTrue(intake.cmdRollerOut()); 
-    // //trigger object to store both buttons. If both buttons aren't pressed, stop rollers
-    // Trigger rollersOffBinding = xboxAux.leftTrigger().and (xboxDrv.rightTrigger());
-    // rollersOffBinding.onTrue(intake.cmdRollerOff());
-
-    // //roller commands
-    // xboxAux.leftTrigger().onTrue(intake.cmdRollerIn());
-    // xboxAux.rightTrigger().onTrue(intake.cmdRollerOut());
-    
-    // //semi manual elevator/intake commands
-    // Trigger auxLeftJoyYTrigger = new Trigger(()->Math.abs(xboxAux.getLeftY()) > 0.1);
-    // auxLeftJoyYTrigger.onTrue(new ManualElevatorCmd(()->xboxAux.getLeftY(), ()->xboxAux.leftStick().getAsBoolean()));
-
-    // Trigger auxRightJoyYTrigger = new Trigger(()->Math.abs(xboxAux.getRightY()) > 0.1);
-    // auxRightJoyYTrigger.onTrue(new ManualIntakeCmd(()->xboxAux.getRightY(), ()->xboxAux.rightStick().getAsBoolean()));
+    //climb
+    xboxDrv.b().and(xboxAux.a()).onTrue(new ScoreTrapCmd(()->xboxAux.povUp().getAsBoolean(),      //both climb hooks up
+                                                          ()->xboxAux.povDown().getAsBoolean(),    //both climb hooks down
+                                                          ()->xboxAux.povLeft().getAsBoolean(),    //raise right climb hook
+                                                          ()->xboxAux.povRight().getAsBoolean())); //raise left climb hook
 
     //----------------------------------------------------------------------------------------
-    //  State machine
-    //----------------------------------------------------------------------------------------  
+    //  Aux Commands
+    //---------------------------------------------------------------------------------------- 
+    //pov state machine commands 
+    xboxAux.povRight().onTrue(stateMachine.cmdNewNoteDestintation(NoteDestination.SPEAKER));
+    xboxAux.povLeft ().onTrue(stateMachine.cmdNewNoteDestintation(NoteDestination.AMP));
+    xboxAux.povUp   ().onTrue(stateMachine.cmdNewNoteDestintation(NoteDestination.TRAP));
+    xboxAux.povDown ().onTrue(stateMachine.cmdNewNoteDestintation(NoteDestination.HOARD));
 
-    //note state button mappings
-    xboxAux.povLeft ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.AMP)); //default state
-    xboxAux.povRight().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.SPEAKER));
-    xboxAux.povUp   ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.TRAP));
-    xboxAux.povDown ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.HOARD));
+
+    //Shooter to intake handoff
+    xboxAux.y().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
+    xboxAux.x().onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
+    xboxAux.b().onTrue(stateMachine.cmdDetermineButtonBCommand(()->xboxAux.b().getAsBoolean()));
+    xboxAux.a().onTrue(new StowCmd()); //intake pivot stow
+
+    // xboxAux.back().onTrue(/*Signify Amp LEDs*/null);
+    // turn middle lights to red
+
+    //statmachine shooter vs intake elevator manual control dependant on state
+    xboxAux.leftStick().onTrue(stateMachine.cmdDetermineAuxLeftSick  (()->xboxAux.getLeftY(), 
+                                                                      ()->xboxAux.leftStick().getAsBoolean()));
+    xboxAux.rightStick().onTrue(stateMachine.cmdDetermineAuxRightSick(()->xboxAux.getRightY(), 
+                                                                      ()->xboxAux.rightStick().getAsBoolean()));
+
+    //turret
+    xboxAux.leftTrigger().onTrue(turret.cmdTurretLT());
+    xboxAux.rightTrigger().onTrue(turret.cmdTurretRT());
+
+    //intake
+    xboxAux.leftBumper().onTrue(intake.cmdRollerIn());
+    xboxAux.rightBumper().onTrue(intake.cmdRollerOut());
+    Trigger rollersOffBindingAux = xboxAux.leftBumper().and(xboxAux.rightBumper());
+    rollersOffBindingAux.onTrue(intake.cmdRollerOff());
+  }
+
+  //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
+  private void defaultCommands() {  
+    driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+                                                    ()-> xboxDrv.getLeftY(),
+                                                    ()-> xboxDrv.getRightX(),
+                                                    ()-> xboxDrv.b().getAsBoolean()));
 
   }
 
-   //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
-   private void defaultCommands() {  
-      // driveTrain
-      // .setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-      //                                       ()-> xboxDrv.getLeftY(),
-      //                                       ()-> xboxDrv.getRightX(),
-      //                                       ()-> xboxDrv.b().getAsBoolean()));
-    
-  }
-
-   /**
-    * Use this to pass the autonomous command to the main {@link Robot} class.
-    *
-    * @return the command to run in autonomous
-    */
   public Command getAutonomousCommand() {
     return auton.getCommand();
   }
 
-  private static NoteDestination targetNoteDestination;
-  public static enum NoteDestination {
-    SPEAKER,
-    AMP,
-    TRAP,
-    HOARD
-  }
-  private static NoteSource targetNoteSource;
-  public static enum NoteSource {
-    INTAKE_SOURCE,
-    INTAKE_GROUND,
-    FROM_SHOOTER,
-    FROM_INTAKE,
-    NULL
-  }
 }

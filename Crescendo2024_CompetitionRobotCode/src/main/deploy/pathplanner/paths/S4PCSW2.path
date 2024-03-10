@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.538408505392653,
-        "y": 5.658550745668707
+        "x": 2.4,
+        "y": 4.15
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9227112739981904,
-        "y": 5.746507493010773
+        "x": 2.4,
+        "y": 4.25
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.670343626405752,
-        "y": 6.875285750567288
+        "x": 2.4,
+        "y": 5.5
       },
       "prevControl": {
-        "x": 1.8200950687657798,
-        "y": 6.244929061282481
+        "x": 2.4,
+        "y": 5.4
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,10 +32,10 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "5 gp path",
+  "folder": "S4PCSW",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

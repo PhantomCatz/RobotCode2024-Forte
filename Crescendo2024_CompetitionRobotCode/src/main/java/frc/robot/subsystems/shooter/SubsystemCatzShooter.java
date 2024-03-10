@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.shooter;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -54,7 +56,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 /*-----------------------------------------------------------------------------------------
   * Constants for Shooter
   *-----------------------------------------------------------------------------------------*/
-  public static double SERVO_OPTIMAL_HANDOFF_POS = 0.0;
+  public static final double SERVO_OPTIMAL_HANDOFF_POS = 0.0;
 
   private double m_newServoPosition;
   private double m_servoPosError;
@@ -88,14 +90,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   
   //XboxController for rumbling
-  private XboxController xboxDrvRumble;
+  private XboxController xboxAuxRumble;
 
   private SubsystemCatzShooter() {
     
     //XboxController
-    xboxDrvRumble = new XboxController(OIConstants.XBOX_DRV_PORT);
-    //XboxController
-    xboxDrvRumble = new XboxController(OIConstants.XBOX_DRV_PORT);
+    xboxAuxRumble = new XboxController(OIConstants.XBOX_AUX_PORT);
 
     switch (CatzConstants.currentMode) {
       case REAL: io = new ShooterIOReal();
@@ -125,6 +125,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     Logger.processInputs("Shooter/shooterinputs", inputs);
     if(DriverStation.isDisabled()) {
       currentShooterLoadState = ShooterLoadState.LOAD_OFF;
+      io.setShooterDisabled();
     } else {
       //load motor logic
       switch(currentShooterLoadState) {
@@ -177,7 +178,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
               if(DriverStation.isAutonomous()) {
                 currentShooterLoadState = ShooterLoadState.SHOOTING;
               } else {
-                xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0.7);
+                xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
                 
                 m_iterationCounter = 0;
               }
@@ -187,7 +188,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
           case SHOOTING:
             io.feedShooter();
             if(DriverStation.isAutonomous() == false) {
-              xboxDrvRumble.setRumble(RumbleType.kBothRumble, 0);
+              xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
             }
             m_iterationCounter++;
             if(m_iterationCounter >= timer(1)) {
@@ -240,6 +241,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
   }
 
+  public Command cmdServoPosition(Supplier<Double> value) {
+    return run(()-> updateShooterServo(value.get()));
+  }
+
   public void updateShooterServo(double position) {
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = position;
@@ -275,7 +280,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   // Flywheel Commands
   //-------------------------------------------------------------------------------------
-  public Command cmdShooterEnabled() {
+  public Command cmdShooterRamp() {
     return runOnce(()->startShooterFlywheel());
   }
 

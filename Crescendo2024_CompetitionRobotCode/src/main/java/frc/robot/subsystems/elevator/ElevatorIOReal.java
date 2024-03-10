@@ -27,7 +27,7 @@ public class ElevatorIOReal implements ElevatorIO {
     private TalonFXConfiguration elevatorTalonConfigs = new TalonFXConfiguration();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
-    private DigitalInput m_bottomLimit = new DigitalInput(10);
+    private DigitalInput m_bottomLimit = new DigitalInput(3);
 
     private final TalonFX ElevatorMtr;
 
@@ -38,11 +38,11 @@ public class ElevatorIOReal implements ElevatorIO {
         ElevatorMtr.getConfigurator().apply(new TalonFXConfiguration());
 
         // set Motion Magic settings
-        elevatorTalonConfigs.MotionMagic.MotionMagicCruiseVelocity = 30; // Target cruise velocity of 80 rps
-        elevatorTalonConfigs.MotionMagic.MotionMagicAcceleration   = 160; // Target acceleration of 160 rps/s (0.5 seconds)
+        elevatorTalonConfigs.MotionMagic.MotionMagicCruiseVelocity = 130; // Target cruise velocity of 80 rps
+        elevatorTalonConfigs.MotionMagic.MotionMagicAcceleration   = 240; // Target acceleration of 160 rps/s (0.5 seconds)
         elevatorTalonConfigs.MotionMagic.MotionMagicJerk           = 16000; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
-        elevatorTalonConfigs.Slot0.kP = 2.0;
+        elevatorTalonConfigs.Slot0.kP = 7.0;
         elevatorTalonConfigs.Slot0.kI = 0.0;
         elevatorTalonConfigs.Slot0.kD = 0.0;
             //current limit
@@ -75,11 +75,11 @@ public class ElevatorIOReal implements ElevatorIO {
         inputs.elevatorPosRev           = ElevatorMtr.getPosition().getValue();
         inputs.elevatorPositionError    = ElevatorMtr.getClosedLoopError().getValue();
 
-        //inputs.bottomSwitchTripped      = m_bottomLimit.get();
+        inputs.bottomSwitchTripped      = m_bottomLimit.get();
     }
     
     @Override
-    public void setElevatorPosition(double newPositionElevator, double elevatorFF) {
+    public void setElevatorPosition(double newPositionElevator, double elevatorFF, boolean limitSwtichPressed) {
         ElevatorMtr.setControl(new MotionMagicVoltage(newPositionElevator,
                                                         true, 
                                                         elevatorFF,
@@ -104,4 +104,7 @@ public class ElevatorIOReal implements ElevatorIO {
         ElevatorMtr.setPosition(setNewReadPosition);
     }
 
+    public double getElevatorError(){
+        return ElevatorMtr.getClosedLoopError().getValue();
+    }
 }

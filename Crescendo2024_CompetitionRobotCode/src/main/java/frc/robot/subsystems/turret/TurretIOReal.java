@@ -2,16 +2,6 @@ package frc.robot.subsystems.turret;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.Slot1Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
@@ -36,22 +26,26 @@ public class TurretIOReal implements TurretIO {
         turretMtr.setSmartCurrentLimit(NEO_CURRENT_LIMIT_AMPS);
         turretMtr.setIdleMode(IdleMode.kBrake);
         turretMtr.enableVoltageCompensation(12.0);
+        turretMtr.getEncoder().setPositionConversionFactor(1.0/SubsystemCatzTurret.TURRET_REV_PER_DEG);
 
         smartMotionPID = turretMtr.getPIDController();
-        smartMotionPID.setP(0.02);
-        smartMotionPID.setI(0);
-        smartMotionPID.setD(0);
+        smartMotionPID.setP(0.01);
+        smartMotionPID.setI(0.0);
+        smartMotionPID.setD(0.0);
 
         smartMotionPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
-        smartMotionPID.setSmartMotionAllowedClosedLoopError(5, 0);
-        smartMotionPID.setSmartMotionMaxVelocity(2000, 0);
+        smartMotionPID.setSmartMotionAllowedClosedLoopError(3.0, 0);
+        smartMotionPID.setSmartMotionMaxVelocity(2, 0);
+        smartMotionPID.setSmartMotionMaxAccel(5.0, 0);
         smartMotionPID.setSmartMotionMinOutputVelocity(0,0);
+        smartMotionPID.setOutputRange(-1, 1);
     }
     @Override
     public void updateInputs(TurretIOInputs inputs) {
-        inputs.turretMtrPercentOutput = turretMtr.get();
+        inputs.turretMtrPercentOutput = turretMtr.getAppliedOutput();
         inputs.turretMtrOutputCurrent = turretMtr.getOutputCurrent();
         inputs.turretEncValue         = turretMtr.getEncoder().getPosition();
+
     }
 
     @Override
@@ -65,8 +59,8 @@ public class TurretIOReal implements TurretIO {
     }
 
     @Override
-    public void turretSetPositionSM(double angle) {
-        smartMotionPID.setReference(angle * SubsystemCatzTurret.TURRET_REV_PER_DEG, ControlType.kSmartMotion);
+    public void turretSetPositionSM(double reference) {
+        smartMotionPID.setReference(reference, ControlType.kSmartMotion);
     }
 
 

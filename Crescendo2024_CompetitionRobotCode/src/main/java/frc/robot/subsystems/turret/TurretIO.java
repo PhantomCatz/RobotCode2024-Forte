@@ -11,6 +11,7 @@ public interface TurretIO {
         public double turretMtrStatorCurrent;
         public double turretMtrOutputCurrent;
         public double turretEncValue;
+        public double closedLoopError;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {}
