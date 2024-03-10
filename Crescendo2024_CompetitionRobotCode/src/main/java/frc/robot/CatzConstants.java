@@ -250,14 +250,14 @@ public final class CatzConstants {
                                                         SubsystemCatzTurret.HOME_POSITION);
                                                         
     public static final CatzMechanismPosition POS_AMP_TRANSITION = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_AMP_SCORE_AMP, 
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_AMP_TRANSITION, 
                                                         SubsystemCatzIntake.INTAKE_POSE_DOWNRIGHT, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
                                                         
     public static final CatzMechanismPosition POS_AMP_HOLD = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW, 
-                                                        SubsystemCatzIntake.INTAKE_POS_UPRIGHT, 
+                                                        SubsystemCatzIntake.INTAKE_STOW_UPRIGHT_AMP, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
 
@@ -275,7 +275,7 @@ public final class CatzConstants {
 
     public static final CatzMechanismPosition SCORING_AMP = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_AMP_SCORE_AMP, 
-                                                        SubsystemCatzIntake.INTAKE_POS_UPRIGHT, 
+                                                        SubsystemCatzIntake.INTAKE_GROUND_PICKUP, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS,  
                                                         SubsystemCatzTurret.HOME_POSITION);
 
@@ -286,7 +286,7 @@ public final class CatzConstants {
                                                         SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition INTAKE_SOURCE = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_AMP_SCORE_AMP, 
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW, 
                                                         SubsystemCatzIntake.INTAKE_POS_UPRIGHT,
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
@@ -300,6 +300,21 @@ public final class CatzConstants {
     
   }
 
+  public enum NoteDestination {
+    SPEAKER,
+    AMP,
+    TRAP,
+    HOARD
+  }
+  public enum NoteSource {
+    INTAKE_SOURCE,
+    INTAKE_GROUND,
+    FROM_SHOOTER,
+    FROM_INTAKE,
+    NULL
+  }
+
+    public static NoteDestination targetNoteDestination = NoteDestination.SPEAKER;
 
 
   

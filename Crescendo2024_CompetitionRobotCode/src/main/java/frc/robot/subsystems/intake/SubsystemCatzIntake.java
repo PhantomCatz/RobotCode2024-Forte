@@ -50,7 +50,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   ************************************************************************************************************************/
   private final double ROLLERS_MTR_PWR_IN_GROUND      =  0.25;//0.6;
   private final double ROLLERS_MTR_PWR_IN_SOURCE      =  0.25;
-  private final double ROLLERS_MTR_PWR_OUT_EJECT      = -1.0; 
+  private final double ROLLERS_MTR_PWR_OUT_EJECT      = -0.6; 
   private final double ROLLERS_MTR_PWR_OUT_HANDOFF    = -0.4; 
 
 
@@ -106,10 +106,12 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   //Intake positions
   public static final double INTAKE_GROUND_PICKUP             = -22.0;
+  public static final double INTAKE_AMP_SCORE                 = -22.0;
   public static final double INTAKE_POS_UPRIGHT               = 125;//92.6; //90.43; //97 with drivetrain inner rail to the bottom inner rail 7 1/4 inches
   public static final double INTAKE_STOW                      = 163.0;
+  public static final double INTAKE_STOW_UPRIGHT_AMP          = 92.6;
   public static final double INTAKE_OFFSET_FROM_ZERO          = 160.0;
-  public static final double INTAKE_POSE_DOWNRIGHT            = -90;
+  public static final double INTAKE_POSE_DOWNRIGHT            = -60;
 
   private final double STOW_CUTOFF = INTAKE_OFFSET_FROM_ZERO - 4; //TBD need to dial in
   private final double GROUND_CUTTOFF = 200;
@@ -124,6 +126,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double GRAVITY_KG_OFFSET = 0.0;//9.0;
 
   private final double ELEVATOR_THRESHOLD_FOR_INTAKE = 10.0;
+  private final double TURRET_THRESHOLD_FOR_INTAKE   = 17.0;
+  private final double ELEVATOR_THRESHOLD_FOR_INTAKE_TRANSITION   = 32.0;
+
+
 
   //pivot variables
   private double m_pivotManualPwr = 0.0;
@@ -147,7 +153,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
     AUTO,
     SEMI_MANUAL,
     FULL_MANUAL,
-    WAITING_FOR_ELEVATOR,
+    WAITING_FOR_ELEVATOR_AND_TURRET,
+    WAITING_FOR_ELEVATOR_RAISE,
     IN_POSITION
   }
 
@@ -238,12 +245,22 @@ public class SubsystemCatzIntake extends SubsystemBase {
       }
 
       //---------------------------------------Intake Pivot logic -------------------------------------------
-      if(currentIntakeState == IntakeState.WAITING_FOR_ELEVATOR) { //when intake is waiting for elevator change state to auto to wait in holding position
+      if(currentIntakeState == IntakeState.WAITING_FOR_ELEVATOR_AND_TURRET) { //when intake is waiting for elevator change state to auto to wait in holding position
           io.setIntakePivotEncOutput(m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts); //go to holding position
 
-        if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < ELEVATOR_THRESHOLD_FOR_INTAKE) {
-          this.m_targetPositionDeg = m_targetPosition.getIntakePivotTargetAngle();
-          currentIntakeState = IntakeState.AUTO;
+        if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < ELEVATOR_THRESHOLD_FOR_INTAKE &&
+           SubsystemCatzTurret.getInstance().getTurretAngle()      < TURRET_THRESHOLD_FOR_INTAKE) {
+
+          updateTargetPositionIntake(m_targetPosition); //try to move the intake again
+        }
+
+      } else if (currentIntakeState == IntakeState.WAITING_FOR_ELEVATOR_RAISE) {
+
+        io.setIntakePivotEncOutput(m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts); //go to holding position
+
+        if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE_TRANSITION) {
+
+          updateTargetPositionIntake(m_targetPosition); //Try again
         }
 
       } else if ((currentIntakeState == IntakeState.AUTO || 
@@ -295,11 +312,24 @@ public class SubsystemCatzIntake extends SubsystemBase {
     m_iterationCounter = 0; //reset counter for intake in position
     this.m_targetPosition = targetPosition;
 
+    System.out.println("elev threshold check evaluates: " + (SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE));
+    System.out.println("Turret threshold check evaluates: " + (Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle())  > TURRET_THRESHOLD_FOR_INTAKE));
+    System.out.println("Pivot targ angle" +     (targetPosition.getIntakePivotTargetAngle() > 100));
+
     //elevator intake crash zone checks
-    if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE &&
+    if((SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_INTAKE ||
+       Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle())  > TURRET_THRESHOLD_FOR_INTAKE) && 
        targetPosition.getIntakePivotTargetAngle() > 100) {
-      currentIntakeState = IntakeState.WAITING_FOR_ELEVATOR;
-      this.m_targetPositionDeg = SubsystemCatzIntake.INTAKE_POS_UPRIGHT; //set the target to a holding position
+
+      currentIntakeState = IntakeState.WAITING_FOR_ELEVATOR_AND_TURRET;
+      this.m_targetPositionDeg = SubsystemCatzIntake.INTAKE_STOW_UPRIGHT_AMP; //set the target to a holding position
+
+    } else if(targetPosition.getIntakePivotTargetAngle() < -40 && 
+              SubsystemCatzElevator.getInstance().getElevatorRevPos() < ELEVATOR_THRESHOLD_FOR_INTAKE_TRANSITION) {
+
+      System.out.println("intake in wait for elevator raise");
+      currentIntakeState = IntakeState.WAITING_FOR_ELEVATOR_RAISE;
+      this.m_targetPositionDeg = SubsystemCatzIntake.INTAKE_STOW_UPRIGHT_AMP;
 
     } else { //intake is free to move
       this.m_targetPositionDeg = targetPosition.getIntakePivotTargetAngle();
@@ -326,6 +356,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
     m_pivotManualPwr = 0.4 * fullManualPwr;
     currentIntakeState = IntakeState.FULL_MANUAL;
 
+  }
+
+  public void setSquishyMode(boolean set) {
+    io.setSquishyMode(set);
   }
 
 

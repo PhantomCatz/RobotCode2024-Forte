@@ -19,6 +19,7 @@ import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
+import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
 import frc.robot.commands.mechanismCmds.AimAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.commands.mechanismCmds.StowCmd;
@@ -61,7 +62,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     public static CommandXboxController xboxDrv;
     private CommandXboxController       xboxAux;
  
-       
+    public static NoteDestination targetNoteDestination = NoteDestination.SPEAKER;
+
    /** The container for the robot. Contains subsystems, OI devices, and commands. 
     *    -since multiple classes are referencing these mechansims, 
     *     mechanisms are instantiated inside mechanism class(singleton)
@@ -89,23 +91,34 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   
    
    private void configureBindings() {    
+    //----------------------------------------------------------------------------------------
+    //  State machine
+    //----------------------------------------------------------------------------------------  
+    xboxAux.povRight().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.SPEAKER));
+    xboxAux.povLeft ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.AMP));
+    xboxAux.povUp   ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.TRAP));
+    xboxAux.povDown ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.HOARD));
     
     //------------------------------------------------------------------------------------
     //  Drive commands
     //------------------------------------------------------------------------------------
-    xboxDrv.b().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, NoteSource.INTAKE_GROUND)); //intake pivot to ground
-    xboxDrv.a().onTrue(new StowCmd()); //intake pivot stow
-    xboxDrv.x().onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
+    xboxDrv.leftStick().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)); //intake pivot to ground
+    xboxAux.a().onTrue(new StowCmd()); //intake pivot stow
+    xboxAux.x().onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
     //Shooter to intake handoff
-    xboxDrv.y().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
+    xboxAux.y().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
+
+
+
+    xboxAux.b().onTrue(new ScoreAmpCmd());
 
     xboxDrv.start().onTrue(driveTrain.resetGyro());
-    xboxDrv.povCenter().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, NoteSource.INTAKE_SOURCE));
+    xboxAux.back().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_SOURCE));
     //upload button doesnt exist but its for source intake position
 
-    xboxDrv.rightBumper().onTrue(intake.cmdRollerIn());
-    xboxDrv.leftBumper().onTrue(intake.cmdRollerOut());
-    Trigger rollersOffBinding = xboxDrv.leftBumper().and (xboxDrv.rightBumper());
+    xboxAux.rightBumper().onTrue(intake.cmdRollerIn());
+    xboxAux.leftBumper().onTrue(intake.cmdRollerOut());
+    Trigger rollersOffBinding = xboxAux.leftBumper().and (xboxAux.rightBumper());
     rollersOffBinding.onTrue(intake.cmdRollerOff());
 
     //Those commands should only work when the button is held
@@ -116,36 +129,29 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     /*************************************************************
     * All Mode Buttons
-    **************************************************************/
+    ******************************************
+    ********************/
     //Default mode will be speaker mode when booting up
-
-    //----------------------------------------------------------------------------------------
-    //  State machine
-    //----------------------------------------------------------------------------------------  
-    xboxAux.povRight().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.SPEAKER));
-    xboxAux.povLeft ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.AMP));
-    xboxAux.povUp   ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.TRAP));
-    xboxAux.povDown ().onTrue(Commands.runOnce(()->targetNoteDestination = NoteDestination.HOARD));
-    
     
     //intake to shooter handoff
-    xboxAux.y().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, NoteSource.FROM_INTAKE));
+    xboxDrv.y().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, NoteSource.FROM_INTAKE));
     //Shooter to intake handoff
-    xboxAux.a().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, NoteSource.FROM_SHOOTER));
+    xboxDrv.a().onTrue(new MoveToHandoffPoseCmd(targetNoteDestination, NoteSource.FROM_SHOOTER));
 
-    xboxAux.a().and(xboxAux.b()).onTrue(new ScoreTrapCmd(()->xboxAux.povUp().getAsBoolean(), 
-                                                         ()->xboxAux.povDown().getAsBoolean(), 
-                                                         ()->xboxAux.povLeft().getAsBoolean(), 
-                                                         ()->xboxAux.povRight().getAsBoolean()));
+    // xboxAux.a().and(xboxAux.b()).onTrue(new ScoreTrapCmd(()->xboxAux.povUp().getAsBoolean(), 
+    //                                                      ()->xboxAux.povDown().getAsBoolean(), 
+    //                                                      ()->xboxAux.povLeft().getAsBoolean(), 
+    //                                                      ()->xboxAux.povRight().getAsBoolean()));
 
     // xboxAux.back().onTrue(/*Signify Amp LEDs*/null);
     // turn middle lights to red
 
     //shooter
-    xboxAux.b().onTrue(shooter.cmdShoot());
-    xboxAux.x().onTrue(new AimAtSpeakerCmd());
-    xboxAux.leftStick().onTrue(shooter.cmdServoPosition(xboxAux.getLeftY()));
-    xboxAux.rightStick().onTrue(shooter.cmdShooterRamp());
+    xboxAux.povDown().onTrue(shooter.cmdShoot());
+    xboxAux.povUp().onTrue(new AimAtSpeakerCmd());
+    //xboxAux.leftStick().onTrue(shooter.cmdServoPosition(xboxAux.getLeftY()));
+    //xboxAux.rightStick().onTrue(shooter.cmdShooterRamp());
+
 
     //turret
     xboxAux.leftTrigger().onTrue(turret.cmdTurretLT());
@@ -164,11 +170,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
    //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
    private void defaultCommands() {  
-      // driveTrain
-      // .setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-      //                                       ()-> xboxDrv.getLeftY(),
-      //                                       ()-> xboxDrv.getRightX(),
-      //                                       ()-> xboxDrv.b().getAsBoolean()));
+      driveTrain
+      .setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+                                            ()-> xboxDrv.getLeftY(),
+                                            ()-> xboxDrv.getRightX(),
+                                            ()-> xboxDrv.b().getAsBoolean()));
     
   }
 
@@ -185,7 +191,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     return targetNoteDestination;
   }
 
-  private static NoteDestination targetNoteDestination = NoteDestination.SPEAKER;
   public static enum NoteDestination {
     SPEAKER,
     AMP,

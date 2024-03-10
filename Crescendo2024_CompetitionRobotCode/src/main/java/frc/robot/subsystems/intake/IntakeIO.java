@@ -29,6 +29,8 @@ public interface IntakeIO {
 
     public default void rollerDisable() {}
 
+    public default void setSquishyMode(boolean enable) {} 
+
     public default void resetPivotEncPos(double defaultEncoderPosition) {}
 
     public default void setIntakePivotVoltage(double volts) {}

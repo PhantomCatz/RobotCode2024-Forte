@@ -37,7 +37,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //------------------------------------------------------------------------
   //      turret constants
   //------------------------------------------------------------------------
-  private final double TURRET_POWER     = 0.6;
+  private final double TURRET_POWER     = 0.4;
   private final double TURRET_DECEL_PWR = 0.3;
  
   //pid values
@@ -49,7 +49,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double LIMELIGHT_kI = 0.0;
   private static final double LIMELIGHT_kD = 0.0001;
 
-  private final double TURRET_POSITIVE_MAX_RANGE = 120.0; 
+  private final double TURRET_POSITIVE_MAX_RANGE =  120.0; 
   private final double TURRET_NEGATIVE_MAX_RANGE = -120.0;
 
   private final double NEGATIVE_DECEL_THRESHOLD  =  -15.0;
@@ -58,7 +58,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double TURRET_GEARBOX_PINION      = 9.0/1.0;
   private static final double TURRET_GEARBOX_TURRET_GEAR = 140.0/10.0;
  
-  private static final double GEAR_REDUCTION     =  TURRET_GEARBOX_PINION * TURRET_GEARBOX_TURRET_GEAR;
+  public static final double GEAR_REDUCTION     =  TURRET_GEARBOX_PINION * TURRET_GEARBOX_TURRET_GEAR;
   public static final double TURRET_REV_PER_DEG = GEAR_REDUCTION / 360;
   
   public static final double HOME_POSITION       = 0.0;
@@ -68,6 +68,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //turret variables
   private double m_turretTargetDegree;
   private double apriltagTrackingPower;
+  private double m_closedLoopError;
   private double setPositionPower;
   private double offsetAprilTagX;
 
@@ -118,20 +119,26 @@ public class SubsystemCatzTurret extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    currentTurretDegree = inputs.turretEncValue / TURRET_REV_PER_DEG; 
+    Logger.processInputs("turret", inputs);
+
+    currentTurretDegree = inputs.turretEncValue;// / TURRET_REV_PER_DEG; 
     
     //obtain calculation values
     apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0);
-    //setPositionPower      = m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
+    setPositionPower      =  m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
     //offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
-    
+    m_closedLoopError = ((currentTurretDegree - m_turretTargetDegree)  * TURRET_REV_PER_DEG);
+
 
     if(DriverStation.isDisabled()) {
       io.turretSetPwr(0.0);
       manualTurretPwr = 0;
+      currentTurretState = TurretState.FULL_MANUAL;
     } else { 
-      if (currentTurretState == TurretState.AUTO) {
-        io.turretSetPositionSM(m_turretTargetDegree);
+      if (currentTurretState == TurretState.AUTO ||
+          currentTurretState == TurretState.IN_POSITION) {
+            //io.turretSetPositionSM(m_turretTargetDegree);
+            io.turretSetPwr(setPositionPower);
         if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 3) {
           currentTurretState = TurretState.IN_POSITION;
         } 
@@ -157,7 +164,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
     // whc 01Mar24 need to fix.  Do we need to install a limelight? TBD
    //Logger.recordOutput("turret/PwrPID", apriltagTrackingPower);
    // Logger.recordOutput("turret/currentTurretState", currentTurretState);
-    Logger.recordOutput("turret/currentTurretDeg", currentTurretDegree);
+    Logger.recordOutput("turret/currentTurretDegee", currentTurretDegree);
+    Logger.recordOutput("turret/closedlooperror", m_closedLoopError);
     Logger.recordOutput("turret/m_TurretTargetDegree", m_turretTargetDegree);
   }
 
