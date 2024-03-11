@@ -31,15 +31,8 @@ public class ManualElevatorCmd extends Command {
 
   @Override
   public void execute() {
-    // if(m_supplierLeftJoyStickPressed.get()) {
-    //   pressCounter = 1;
-    // }
-    // if(pressCounter == 1) {
-    //   elevator.setElevatorSemiManualPwr(m_supplierLeftY.get());
-    // } else {
-     // System.out.println(m_supplierLeftY.get());
+
       elevator.setElevatorPercentOutput(m_supplierLeftY.get());
-    //}  
   }
 
   @Override

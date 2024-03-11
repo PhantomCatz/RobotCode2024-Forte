@@ -18,6 +18,7 @@ import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
+import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeMechanismWaitStates;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterLoadState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
@@ -236,7 +237,7 @@ public class MoveToHandoffPoseCmd extends Command {
   }
 
   private boolean areMechanismsInPosition() {
-    boolean intakeState   = intake.getIntakeState()        == IntakeControlState.IN_POSITION; 
+    boolean intakeState   = intake.getIstIntakeInPosition()== IntakeMechanismWaitStates.IN_POSITION; 
     boolean turretState   = turret.getTurretState()        == TurretState.IN_POSITION;
     boolean shooterState  = shooter.getShooterServoState() == ShooterServoState.IN_POSITION;
     boolean elevatorState = elevator.getElevatorState()    == ElevatorState.IN_POSITION;

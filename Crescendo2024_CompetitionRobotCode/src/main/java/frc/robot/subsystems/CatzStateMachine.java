@@ -10,7 +10,6 @@ import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.IntakeManualCmd;
 import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
 import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
-import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;

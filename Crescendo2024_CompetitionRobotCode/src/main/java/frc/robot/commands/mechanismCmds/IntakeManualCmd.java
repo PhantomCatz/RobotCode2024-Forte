@@ -7,8 +7,6 @@ package frc.robot.commands.mechanismCmds;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 
 public class IntakeManualCmd extends Command {

@@ -7,12 +7,12 @@ package frc.robot.subsystems.intake;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.Utils.CatzMathUtils;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -130,17 +130,19 @@ public class SubsystemCatzIntake extends SubsystemBase {
     FULL_MANUAL
   }
 
-  private static enum IntakeMechanismWaitStates {
+  public static enum IntakeMechanismWaitStates {
     IN_POSITION,
     NOT_IN_POSITION
   }
-
-  private static IntakeMechanismWaitStates m_intakeTurretInPosition   = IntakeMechanismWaitStates.NOT_IN_POSITION;
-  private static IntakeMechanismWaitStates m_intakeElevatorInPosition = IntakeMechanismWaitStates.NOT_IN_POSITION;
   private static IntakeMechanismWaitStates m_intakeInPosition         = IntakeMechanismWaitStates.NOT_IN_POSITION;
 
+  private boolean hasElevatorPassedClearanceCheck = false;
+  private boolean isTurretInIntakeStowRange = false;
+  private boolean hasElevatorPassedDrivetrainClearanceCheck = false;
 
-  //hello
+  private Timer rollerTimer = new Timer();
+
+  //tunning numbers
   LoggedTunableNumber speednumber = new LoggedTunableNumber("roller speed out", 0.0);
   LoggedTunableNumber kgtunning = new LoggedTunableNumber("kgtunningVolts",0.0);
   LoggedTunableNumber kftunning = new LoggedTunableNumber("kFtunningVolts",0.0);
@@ -201,43 +203,59 @@ public class SubsystemCatzIntake extends SubsystemBase {
       //---------------------------------------Intake Roller logic -------------------------------------------
       switch(m_currentRollerState) {
         case ROLLERS_IN_SOURCE:
-            if(inputs.isIntakeBeamBrkBroken) {
+            if(inputs.isIntakeBeamBrkBroken || rollerTimer.hasElapsed(4.0)) {
               setRollersOff();
             }       
             break;
         case ROLLERS_IN_GROUND:
-            if(inputs.isIntakeBeamBrkBroken) {
+            if(inputs.isIntakeBeamBrkBroken || rollerTimer.hasElapsed(4.0)) {
               setRollersOff();
             }       
             break;
         case ROLLERS_OUT_EJECT:
-            //if() //TBD add timeout codecuz we don't to run forever
+
+            if(rollerTimer.hasElapsed(2.0)) {
+              setRollersOff();
+            }
             break; 
         case ROLLERS_OUT_SHOOTER_HANDOFF:
-            //if() //TBD add timeout code if shooter never detects note 
+
+            if(rollerTimer.hasElapsed(2.0)) {
+              setRollersOff();
+            }            
             break;
       }
 
       //---------------------------------------Intake Pivot logic -------------------------------------------
-      if(m_intakeTurretInPosition == IntakeMechanismWaitStates.NOT_IN_POSITION) { //when intake is waiting for elevator change state to auto to wait in holding position
-        
+      if(isTurretInIntakeStowRange == false) { //when intake is waiting for elevator change state to auto to wait in holding position
+
+        io.setIntakePivotPostionRev(SubsystemCatzIntake.INTAKE_STOW_UPRIGHT_AMP * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts);
         if(SubsystemCatzTurret.getInstance().getTurretAngle() < TURRET_THRESHOLD_FOR_INTAKE_DEG) {
-          m_intakeTurretInPosition = IntakeMechanismWaitStates.IN_POSITION;
+          isTurretInIntakeStowRange = true;
+        }
+      } 
+
+      if(hasElevatorPassedClearanceCheck == false) {
+
+        io.setIntakePivotPostionRev(SubsystemCatzIntake.INTAKE_STOW_UPRIGHT_AMP * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts);
+        if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < ELEVATOR_THRESHOLD_FOR_INTAKE_REV) {
+          hasElevatorPassedClearanceCheck = true;
         }
 
       } 
 
-      if(m_intakeElevatorInPosition == IntakeMechanismWaitStates.NOT_IN_POSITION) {
-
-        if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < elevatorThresholdRev) {
-          m_intakeElevatorInPosition = IntakeMechanismWaitStates.IN_POSITION;
+      if(hasElevatorPassedDrivetrainClearanceCheck == false) {
+        
+        io.setIntakePivotPostionRev(SubsystemCatzIntake.INTAKE_STOW_UPRIGHT_AMP * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts);
+        if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > ELEVATOR_THRESHOLD_FOR_AMP_TRANSITION_REV) {
+          hasElevatorPassedClearanceCheck = true;
         }
-
-      } 
+      }
                 
-      if(m_intakeTurretInPosition   == IntakeMechanismWaitStates.IN_POSITION &&
-         m_intakeElevatorInPosition == IntakeMechanismWaitStates.IN_POSITION) { 
-            //Intake and elevator in position
+      if(isTurretInIntakeStowRange && 
+         hasElevatorPassedClearanceCheck &&
+         hasElevatorPassedDrivetrainClearanceCheck) { 
+            //IntakTurret and elevator in position
 
           //If in manual mode set pwr through percent output, otherwise set pwr through pid
           if(m_currentIntakeControlState == IntakeControlState.FULL_MANUAL) { 
@@ -289,35 +307,41 @@ public class SubsystemCatzIntake extends SubsystemBase {
     m_iterationCounter = 0; //reset counter for intake in position
     this.m_targetPosition = targetPosition;
 
-    m_intakeTurretInPosition      = IntakeMechanismWaitStates.NOT_IN_POSITION;
-    m_intakeElevatorInPosition    = IntakeMechanismWaitStates.NOT_IN_POSITION;
-    m_intakeInPosition            = IntakeMechanismWaitStates.NOT_IN_POSITION;
-
     //if intake target position is between upright and the ground
     if(targetPosition.getIntakePivotTargetAngle() < 100 && 
        targetPosition.getIntakePivotTargetAngle() > -30) {
 
-      if(m_currentPositionDeg < 100) { //intake currently is out
-        m_intakeElevatorInPosition = IntakeMechanismWaitStates.IN_POSITION;
-        m_intakeTurretInPosition   = IntakeMechanismWaitStates.IN_POSITION;
-      } else { //intake is currently in stow
-
-        elevatorThresholdRev = ELEVATOR_THRESHOLD_FOR_INTAKE_REV;
-      }
+        hasElevatorPassedClearanceCheck = true;
+        hasElevatorPassedDrivetrainClearanceCheck = true;
+        isTurretInIntakeStowRange = true;
+    
       //if the intake is attempting to reach Amp transition
-    } else if(targetPosition == CatzMechanismConstants.POS_AMP_TRANSITION) {
+    } else if(targetPosition.getIntakePivotTargetAngle() < -30) {
       if(m_currentPositionDeg > 100) { //if the current position is towards stow
-        m_targetPositionDeg = CatzMechanismConstants.POS_INTERMEDIATE_STATE.getIntakePivotTargetAngle();
-      } else {
-
+        hasElevatorPassedClearanceCheck = false;
+        hasElevatorPassedDrivetrainClearanceCheck = false;
+        isTurretInIntakeStowRange = false;
+      } else { //intake is fully out
+        hasElevatorPassedClearanceCheck = true;
+        hasElevatorPassedDrivetrainClearanceCheck = false;
+        isTurretInIntakeStowRange = true;
       }
 
     } else if(targetPosition.getIntakePivotTargetAngle() > 100) {  //stow type angles
 
-      if(m_currentPositionDeg < 100) {
-       elevatorThresholdRev = ELEVATOR_THRESHOLD_FOR_INTAKE_REV;
-      } else {
-
+      if(m_currentPositionDeg < 100 && //if intake is deployed
+         m_currentPositionDeg > -30) {
+        hasElevatorPassedClearanceCheck = false;
+        hasElevatorPassedDrivetrainClearanceCheck = true;
+        isTurretInIntakeStowRange = false;
+      } else if(m_currentPositionDeg >= 100) { //if intake in stow
+        hasElevatorPassedClearanceCheck = true;
+        hasElevatorPassedDrivetrainClearanceCheck = true;
+        isTurretInIntakeStowRange = true;
+      } else { //if intake is in amp transition
+        hasElevatorPassedClearanceCheck = false;
+        hasElevatorPassedDrivetrainClearanceCheck = false;
+        isTurretInIntakeStowRange = false;
       }
     } 
 
@@ -376,8 +400,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
     return m_currentPositionDeg;
   }
 
-  public IntakeControlState getIntakeState() {
-    return m_currentIntakeControlState;
+  public IntakeMechanismWaitStates getIstIntakeInPosition() {
+    return m_intakeInPosition;
   }
 
   public IntakeRollerState getIntakeRollerState() {
@@ -392,11 +416,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
   // Roller Methods
   //-------------------------------------------------------------------------------------
   public Command cmdRollerIn() {
-    return runOnce(()-> setRollerState(IntakeRollerState.ROLLERS_IN_SOURCE));
+    return runOnce(()-> setRollersGround());
   }
 
   public Command cmdRollerOut() {
-    return runOnce(()-> setRollerState(IntakeRollerState.ROLLERS_OUT_EJECT));
+    return runOnce(()-> setRollersOutakeShoot());
   }
 
   public Command cmdRollerOff() {
@@ -408,21 +432,25 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   public void setRollersGround() {
+    rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
     m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
   }
 
   public void setRollersIntakeSource() {
+    rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
     m_currentRollerState = IntakeRollerState.ROLLERS_IN_SOURCE;
   }
 
   public void setRollersOutakeHandoff() {
+    rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT_HANDOFF);
     m_currentRollerState = IntakeRollerState.ROLLERS_OUT_SHOOTER_HANDOFF;
   }
 
   public void setRollersOutakeShoot() {
+    rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_OUT_EJECT);
     m_currentRollerState = IntakeRollerState.ROLLERS_OUT_EJECT;
   }

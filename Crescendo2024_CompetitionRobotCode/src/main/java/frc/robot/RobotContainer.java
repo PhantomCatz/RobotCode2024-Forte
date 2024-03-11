@@ -93,8 +93,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
     //Shooter to intake handoff
-    xboxAux.y().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
-    xboxAux.x().onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
+    xboxAux.y().onTrue(stateMachine.cmdDetermineHandOffTransition());
     xboxAux.b().onTrue(stateMachine.cmdDetermineButtonBCommand(()->xboxAux.b().getAsBoolean()));
     xboxAux.a().onTrue(new StowCmd()); //intake pivot stow
 
