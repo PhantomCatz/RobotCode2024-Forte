@@ -75,7 +75,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public enum ShooterNoteState {
     NOTE_IN_POSTION,
     NOTE_IN_ADJUST,
-    NOTE_HAS_BEEN_SHOOT,
+    NOTE_HAS_BEEN_SHOT,
     NULL
   }
 
@@ -172,7 +172,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
           
           case WAIT_FOR_MOTORS_TO_REV_UP:
           //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
-            if(-inputs.shooterVelocityLT >= inputs.velocityThresholdLT &&
+            if(-inputs.shooterVelocityLT <= inputs.velocityThresholdLT && // was -inputs.shooterVelocityLT >= inputs.velocityThresholdLT
                 inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
 
               if(DriverStation.isAutonomous()) {
@@ -194,7 +194,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
             if(m_iterationCounter >= timer(1)) {
               io.setShooterDisabled();
               currentShooterLoadState = ShooterLoadState.LOAD_OFF;
-              currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOOT;
+              currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
             }
           break;

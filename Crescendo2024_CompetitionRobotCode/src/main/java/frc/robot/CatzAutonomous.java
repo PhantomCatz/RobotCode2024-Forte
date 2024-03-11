@@ -66,7 +66,7 @@ public class CatzAutonomous {
         pathChooser.addOption("Hoard Lower Mid", HoardLowerMid());
         pathChooser.addOption("Bottom Mid Clear", BottomMidClear());
 
-        pathChooser.addOption("Center Rush MId", CenterRushMid());
+        // pathChooser.addOption("Center Rush MId", CenterRushMid());
 
         pathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
         pathChooser.addOption("Curve", curveAuto());
@@ -210,22 +210,22 @@ public class CatzAutonomous {
         );
     }
 
-    private Command CenterRushMid() {
-    return new SequentialCommandGroup(
-        setAutonStartPose(PathPlannerPath.fromPathFile("CenterRushMid-1")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("CenterRushMid-2"))),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("CenterRushMid-3")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C5-3_3"))),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot()
-        );
-    }
+    // private Command CenterRushMid() {
+    // return new SequentialCommandGroup(
+    //     setAutonStartPose(PathPlannerPath.fromPathFile("CenterRushMid-1")),
+    //     new AimAndOrFireAtSpeakerCmd(),
+    //     shooter.cmdShoot(),
+    //     new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+    //                                  new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("CenterRushMid-2"))),
+    //     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("CenterRushMid-3")),
+    //     new AimAndOrFireAtSpeakerCmd(),
+    //     shooter.cmdShoot(),
+    //     new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+    //                                  new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C5-3_3"))),
+    //     new AimAndOrFireAtSpeakerCmd(),
+    //     shooter.cmdShoot()
+    //     );
+    // }
 
     private Command BottomMidClear() {
     return new SequentialCommandGroup(

@@ -10,7 +10,7 @@ import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
 import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.commands.mechanismCmds.StowCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
-import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
+import frc.robot.commands.mechanismCmds.IntakeManualCmd;
 import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.CatzStateMachine.NoteSource;

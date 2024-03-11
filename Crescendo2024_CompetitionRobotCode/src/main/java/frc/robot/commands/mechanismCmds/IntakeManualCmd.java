@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 
-public class ManualIntakeCmd extends Command {
+public class IntakeManualCmd extends Command {
   SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   Supplier<Double> m_supplierLeftJoyY;
   Supplier<Boolean> m_supplierLeftJoyStickPressed;
 
-  public ManualIntakeCmd(Supplier<Double> supplierLeftJoyY, Supplier<Boolean> supplierLeftJoyStickPressed) {
+  public IntakeManualCmd(Supplier<Double> supplierLeftJoyY, Supplier<Boolean> supplierLeftJoyStickPressed) {
     this.m_supplierLeftJoyY = supplierLeftJoyY;
     this.m_supplierLeftJoyStickPressed = supplierLeftJoyStickPressed;
     addRequirements(intake);
