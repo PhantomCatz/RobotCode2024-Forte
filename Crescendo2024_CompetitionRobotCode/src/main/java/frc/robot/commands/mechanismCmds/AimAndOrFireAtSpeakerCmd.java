@@ -27,7 +27,7 @@ import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeState;
+import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
@@ -178,7 +178,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
 
     double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d()) * 39.37;
 
-    if(intake.getIntakeState() == IntakeState.IN_POSITION &&
+    if(intake.getIntakeState() == IntakeControlState.IN_POSITION &&
        elevator.getElevatorState() == ElevatorState.IN_POSITION) {
       //send the new target to the turret
       turret.aimAtGoal(movingGoalLocation, false);

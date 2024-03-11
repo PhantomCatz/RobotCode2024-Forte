@@ -59,9 +59,9 @@ public class IntakeIOReal implements IntakeIO {
         talonConfigsPivot.MotionMagic.MotionMagicJerk           = 160; // Target jerk of 160 rps/s/s (0.1 seconds)
 
 
-        talonConfigsPivot.Slot0.kP = 9.0;
-        talonConfigsPivot.Slot0.kI = 0.00;
-        talonConfigsPivot.Slot0.kD = 0.27;
+        talonConfigsPivot.Slot0.kP = SubsystemCatzIntake.PIVOT_PID_kP;
+        talonConfigsPivot.Slot0.kI = SubsystemCatzIntake.PIVOT_PID_kD;
+        talonConfigsPivot.Slot0.kD = SubsystemCatzIntake.PIVOT_PID_kD;
         
             //current limit
         talonConfigsPivot.CurrentLimits = new CurrentLimitsConfigs();
@@ -144,7 +144,7 @@ public class IntakeIOReal implements IntakeIO {
     }
 
     @Override
-    public void setIntakePivotEncOutput(double encOutput, double ffVoltage) {
+    public void setIntakePivotPostionRev(double encOutput, double ffVoltage) {
         pivotMtr.setControl(new MotionMagicVoltage(encOutput, 
                                                      true, 
                                                      ffVoltage, 

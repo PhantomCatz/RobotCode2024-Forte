@@ -13,7 +13,7 @@ import frc.robot.subsystems.climb.SubsystemCatzClimb;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeState;
+import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
@@ -87,7 +87,7 @@ public class ScoreTrapCmd extends Command {
   }
 
   private boolean areMechanismsInPosition() {
-    return (intake.getIntakeState() == IntakeState.IN_POSITION && 
+    return (intake.getIntakeState() == IntakeControlState.IN_POSITION && 
             turret.getTurretState() == TurretState.IN_POSITION &&
             shooter.getShooterServoState() == ShooterServoState.IN_POSITION &&
             elevator.getElevatorState() == ElevatorState.IN_POSITION);

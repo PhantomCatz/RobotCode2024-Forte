@@ -17,7 +17,7 @@ import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeState;
+import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterLoadState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
@@ -69,16 +69,16 @@ public class MoveToHandoffPoseCmd extends Command {
     switch(m_noteSource) {
       case INTAKE_GROUND:
         m_targetMechPoseStart = CatzMechanismConstants.INTAKE_GROUND;
+        intake.setRollerState(IntakeRollerState.ROLLERS_IN_GROUND);
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
 
             m_targetMechPoseEnd = CatzMechanismConstants.POS_STOW;
-            intake.setRollerState(IntakeRollerState.ROLLERS_IN_GROUND);
             System.out.println("Ground speaker");
         } else if(m_noteDestination == NoteDestination.AMP)  {
+
             m_targetMechPoseEnd = CatzMechanismConstants.POS_AMP_TRANSITION;
-            intake.setRollerState(IntakeRollerState.ROLLERS_IN_GROUND);
             System.out.println("Ground AMP");
         }
       break;
@@ -117,7 +117,7 @@ public class MoveToHandoffPoseCmd extends Command {
         m_targetMechPoseStart = CatzMechanismConstants.POS_STOW;
 
         if(m_noteDestination == NoteDestination.AMP) {
-            m_targetMechPoseEnd = CatzMechanismConstants.POS_AMP_HOLD;
+            m_targetMechPoseEnd = CatzMechanismConstants.POS_INTERMEDIATE_STATE;
             System.out.println("Shooter Amp");
 
         } 
@@ -163,10 +163,10 @@ public class MoveToHandoffPoseCmd extends Command {
         if(mechInPos) {
 
           if(m_noteDestination == NoteDestination.SPEAKER) {
-             intake.setRollerState(IntakeRollerState.ROLLERS_OUT_SHOOTER_HANDOFF);
+             intake.setRollersOutakeHandoff();
 
             if(shooter.getShooterNoteState() == ShooterNoteState.NOTE_IN_POSTION) {
-              intake.setRollerState(IntakeRollerState.ROLLERS_OFF);
+              intake.setRollersOff();
               m_targetMechPoseEndReached = true;
             } 
           } else {
@@ -236,7 +236,7 @@ public class MoveToHandoffPoseCmd extends Command {
   }
 
   private boolean areMechanismsInPosition() {
-    boolean intakeState   = intake.getIntakeState()        == IntakeState.IN_POSITION; 
+    boolean intakeState   = intake.getIntakeState()        == IntakeControlState.IN_POSITION; 
     boolean turretState   = turret.getTurretState()        == TurretState.IN_POSITION;
     boolean shooterState  = shooter.getShooterServoState() == ShooterServoState.IN_POSITION;
     boolean elevatorState = elevator.getElevatorState()    == ElevatorState.IN_POSITION;

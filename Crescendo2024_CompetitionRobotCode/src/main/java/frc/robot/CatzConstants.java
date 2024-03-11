@@ -255,7 +255,7 @@ public final class CatzConstants {
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
                                                         
-    public static final CatzMechanismPosition POS_AMP_HOLD = 
+    public static final CatzMechanismPosition POS_INTERMEDIATE_STATE = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW, 
                                                         SubsystemCatzIntake.INTAKE_STOW_UPRIGHT_AMP, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
