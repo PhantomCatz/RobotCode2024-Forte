@@ -71,7 +71,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   //time table look up for calculating how long it takes to get note into speaker
   /** angle to time look up table key: ty angle, values: time */
   private static final InterpolatingDoubleTreeMap timeTable = new InterpolatingDoubleTreeMap();
-      // (ty-angle,time)
+      // (distance, time)
   static { //TBD add values in through testing
     timeTable.put(80.0, 2.0);
   
@@ -90,7 +90,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   private Translation2d toTestGoal;
 
   //number variables
-  private double distanceToSpeakerInches;
+  private double distanceToSpeakerMeters;
   private double shotTime;
   private double newShotTime;
 
@@ -128,8 +128,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
 
   @Override 
   public void execute() {
-    if(m_bSupplier != null &&
-       m_bSupplier.get() == true) {
+    if(m_bSupplier != null && m_bSupplier.get() == true) {
         shooter.cmdShoot();
     }
 
@@ -141,10 +140,10 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     robotToGoalXY = m_targetXY.minus(drivetrain.getPose().getTranslation());
 
     //convert the distance to inches
-    distanceToSpeakerInches = robotToGoalXY.getDistance(new Translation2d()) * 39.37;
+    distanceToSpeakerMeters = robotToGoalXY.getDistance(new Translation2d());
 
     //get the time it takes for note to reach the speaker in seconds? TBD
-    shotTime = timeTable.get(distanceToSpeakerInches);
+    shotTime = timeTable.get(distanceToSpeakerMeters); //TBD is this even necessary the note is moving pretty fast
 
     movingGoalLocation = new Translation2d();
 
@@ -161,7 +160,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
         toTestGoal = testGoalLocation.minus(drivetrain.getPose().getTranslation());
 
         //take the new time to reach target
-        newShotTime = timeTable.get(toTestGoal.getDistance(new Translation2d()) * 39.37);
+        newShotTime = timeTable.get(toTestGoal.getDistance(new Translation2d()));
 
         //if the difference between the two is low, skip the iterations 
         if(Math.abs(newShotTime-shotTime) <= 0.010){
@@ -177,12 +176,12 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
         }
     }
 
-    double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d());// * 39.37;
-
+    double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d());
+    
     if(intake.getIntakeInPos() &&
        elevator.getElevatorInPos()) {
       //send the new target to the turret
-     // turret.aimAtGoal(movingGoalLocation, false);
+      turret.aimAtGoal(movingGoalLocation, false);
     }
 
     double servoPos = shooterPivotTable.get(newDist);
@@ -192,7 +191,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     Logger.recordOutput("servoCmdPos", servoPos);
     Logger.recordOutput("ShooterCalcs/Fixed Time", shotTime);
     Logger.recordOutput("ShooterCalcs/NewDist", newDist);
-    Logger.recordOutput("ShooterCalcs/Calculated (in)", distanceToSpeakerInches);
+    Logger.recordOutput("ShooterCalcs/Calculated (mtrs)", distanceToSpeakerMeters);
     Logger.recordOutput("ShooterCalcs/Goal X", m_virtualGoalX);
     Logger.recordOutput("ShooterCalcs/Goal Y", m_virtualGoalY);
     Logger.recordOutput("ShooterCalcs/NewShotTime", newShotTime);
