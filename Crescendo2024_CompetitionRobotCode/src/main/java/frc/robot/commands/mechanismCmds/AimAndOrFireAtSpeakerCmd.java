@@ -28,7 +28,6 @@ import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeMechanismWaitStates;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
@@ -114,7 +113,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   public void initialize() {
     //start the flywheel
     //shooter.startShooterFlywheel();
-    intake.updateTargetPositionIntake(CatzMechanismConstants.POS_AMP_TRANSITION);
+    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.POS_AMP_TRANSITION.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.POS_STOW);
 
     if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {
@@ -180,8 +179,8 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
 
     double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d());// * 39.37;
 
-    if(intake.getIstIntakeInPosition() == IntakeMechanismWaitStates.IN_POSITION &&
-       elevator.getElevatorState() == ElevatorState.IN_POSITION) {
+    if(intake.getIntakeInPos() &&
+       elevator.getElevatorInPos()) {
       //send the new target to the turret
      // turret.aimAtGoal(movingGoalLocation, false);
     }

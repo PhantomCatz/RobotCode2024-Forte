@@ -70,6 +70,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private double currentRotations = 0.0;
   private double previousRotations = 0.0;
 
+  private boolean m_elevatorInPos = false;
+
   private ElevatorFeedforward elevatorFeedforward;
   private CatzMechanismPosition m_targetPosition;
 
@@ -78,8 +80,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
     AUTO,
     FULL_MANUAL,
     WAITING,
-    SEMI_MANUAL,
-    IN_POSITION
+    SEMI_MANUAL
   }
 
   private SubsystemCatzElevator() {
@@ -117,7 +118,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
     }
 
     //elevator control calculations
-    elevatorVelocityMTRRPS = (currentRotations - previousRotations)/0.02;
+    //elevatorVelocityMTRRPS = (currentRotations - previousRotations)/0.02;
     m_finalffVolts = elevatorFeedforward.calculate(0.0);
 
     if(DriverStation.isDisabled()) {
@@ -133,14 +134,13 @@ public class SubsystemCatzElevator extends SubsystemBase {
           } 
       } else if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
                 (currentElevatorState == ElevatorState.AUTO  ||
-                 currentElevatorState == ElevatorState.SEMI_MANUAL ||
-                 currentElevatorState == ElevatorState.IN_POSITION)) {
+                 currentElevatorState == ElevatorState.SEMI_MANUAL)) {
 
             io.setElevatorPosition(m_newPositionRev, 
                                    m_finalffVolts, 
                                    inputs.bottomSwitchTripped);
             if(inputs.elevatorPositionError < 5) {
-              currentElevatorState = ElevatorState.IN_POSITION;
+              m_elevatorInPos = true;
             } 
       } else {
         io.setElevatorPercentOutput(m_elevatorPercentOutput);
@@ -157,6 +157,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionElevator(CatzMechanismPosition targetPosition) {
     this.m_targetPosition = targetPosition;
+    m_elevatorInPos = false;
 
     //set new target position for elevator
     m_newPositionRev = m_targetPosition.getElevatorTargetRev();
@@ -173,11 +174,13 @@ public class SubsystemCatzElevator extends SubsystemBase {
   }
 
   public void setElevatorSemiManualPwr(double output) {
+    m_elevatorInPos = false;
     currentElevatorState = ElevatorState.SEMI_MANUAL;
     m_newPositionRev = inputs.elevatorPosRev * (output * ELEVATOR_MANUAL_STEP_SIZE);
    }
 
   public void setElevatorPercentOutput(double percentOutput) {
+    m_elevatorInPos = false;
     System.out.println("in manual");
     currentElevatorState = ElevatorState.FULL_MANUAL;
     this.m_elevatorPercentOutput = percentOutput/5;
@@ -190,8 +193,12 @@ public class SubsystemCatzElevator extends SubsystemBase {
     return inputs.elevatorPosRev;
   }
 
-  public ElevatorState getElevatorState() {
+  private ElevatorState getElevatorState() {
     return currentElevatorState;
+  }
+
+  public boolean getElevatorInPos() {
+    return m_elevatorInPos;
   }
 
  }

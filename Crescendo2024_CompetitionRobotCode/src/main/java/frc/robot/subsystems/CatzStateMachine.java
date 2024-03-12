@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,24 +35,49 @@ public class CatzStateMachine extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
+    Logger.recordOutput("statemachine/note destination", targetNoteDestination);
+
     }
 
     //-----------------------------------------------
     // setter methods
     //----------------------------------------------
     public Command cmdNewNoteDestintation(NoteDestination newDestination) {
-        return run(()->setNewNoteDestination(newDestination));
+        return runOnce(()->setNewNoteDestination(newDestination));
     }
 
     private void setNewNoteDestination(NoteDestination newDestination) {
         targetNoteDestination = newDestination;
     }
 
+    public Command cmdIntakeToHandOff(NoteSource source) {
+        if(targetNoteDestination == NoteDestination.AMP ||
+           targetNoteDestination == NoteDestination.TRAP) {
+            System.out.println("transfer to intake");
+
+            if(source == NoteSource.INTAKE_SOURCE) {
+                System.out.println("A");
+                return new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_SOURCE);
+            } else {
+                System.out.println("B");
+                return new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND);
+            }
+        } else {
+            System.out.println("transfer to shooter");
+            if(source == NoteSource.INTAKE_SOURCE) {
+                System.out.println("C");
+                return new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_SOURCE);
+            } else {
+                System.out.println("D");
+                return new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND);
+            }
+        }
+    }
+
     public Command cmdDetermineHandOffTransition() {
         if(targetNoteDestination == NoteDestination.AMP ||
            targetNoteDestination == NoteDestination.TRAP) {
-            System.out.println("transfer to shooter");
+            System.out.println("transfer to intake");
             return new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER);
         } else {
             System.out.println("transfer to shooter");
@@ -104,9 +131,6 @@ public class CatzStateMachine extends SubsystemBase {
     //-----------------------------------------------
     // getter methods
     //----------------------------------------------
-    public NoteDestination getTargetNoteDestination() {
-        return targetNoteDestination;
-    }
 
     public enum NoteDestination {
         SPEAKER,

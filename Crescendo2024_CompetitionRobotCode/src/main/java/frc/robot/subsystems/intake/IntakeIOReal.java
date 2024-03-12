@@ -56,7 +56,7 @@ public class IntakeIOReal implements IntakeIO {
         // set Motion Magic settings
         talonConfigsPivot.MotionMagic.MotionMagicCruiseVelocity = 25; // Target cruise velocity of 80 rps
         talonConfigsPivot.MotionMagic.MotionMagicAcceleration   = 160; // Target acceleration of 160 rps/s (0.5 seconds)
-        talonConfigsPivot.MotionMagic.MotionMagicJerk           = 160; // Target jerk of 160 rps/s/s (0.1 seconds)
+        talonConfigsPivot.MotionMagic.MotionMagicJerk           = 1600; // Target jerk of 160 rps/s/s (0.1 seconds)
 
 
         talonConfigsPivot.Slot0.kP = SubsystemCatzIntake.PIVOT_PID_kP;

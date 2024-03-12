@@ -77,6 +77,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private PIDController m_trackingApriltagPID;
   private double manualTurretPwr;
   private boolean m_trackTarget = false;
+
+  private boolean m_turretIntPos;
   
 
   private SubsystemCatzTurret() {
@@ -113,8 +115,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public static enum TurretState {
     AUTO,
     TRACKING_APRILTAG,
-    FULL_MANUAL,
-    IN_POSITION
+    FULL_MANUAL
   }
 
   @Override
@@ -136,12 +137,10 @@ public class SubsystemCatzTurret extends SubsystemBase {
       manualTurretPwr = 0;
       currentTurretState = TurretState.FULL_MANUAL;
     } else { 
-      if (currentTurretState == TurretState.AUTO ||
-          currentTurretState == TurretState.IN_POSITION) {
+      if (currentTurretState == TurretState.AUTO) {
             //io.turretSetPositionSM(m_turretTargetDegree);
             io.turretSetPwr(setPositionPower);
         if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 3) {
-          currentTurretState = TurretState.IN_POSITION;
         } 
 
       } else if (currentTurretState == TurretState.TRACKING_APRILTAG) {
@@ -248,8 +247,12 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return currentTurretDegree;
   }
 
-  public TurretState getTurretState() {
+  private TurretState getTurretState() {
     return currentTurretState;
+  }
+
+  public boolean getTurretInPos() {
+    return m_turretIntPos;
   }
   
   //-------------------------------------------------------------------------------------------------

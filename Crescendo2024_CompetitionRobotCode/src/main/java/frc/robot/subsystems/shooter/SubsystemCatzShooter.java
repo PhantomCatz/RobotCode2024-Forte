@@ -66,8 +66,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public enum ShooterServoState {
     FULL_MANUAL,
     AUTO,
-    TUNNING,
-    IN_POSITION
+    TUNNING
   }
  
   //shooter note state for determining when other mechanism should turn off
@@ -86,6 +85,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   private boolean m_desiredBeamBreakState;
   private int     m_iterationCounter;
+
+  private boolean m_shooterServoInPos = false;
 
 
   
@@ -228,7 +229,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
     if(currentShooterServoState == ShooterServoState.AUTO) {
       io.setServoPosition(m_newServoPosition);
-
+      if(Math.abs(m_servoPosError) < 0.1) {
+        m_shooterServoInPos = true;
+      }
     }
   }
 
@@ -236,6 +239,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Intake Calculation Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
+    m_shooterServoInPos = false;
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
   }
@@ -245,6 +249,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public void updateShooterServo(double position) {
+    m_shooterServoInPos = false;
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = position;
   }
@@ -265,8 +270,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   // Getter Methods 
   //------------------------------------------------------------------------------------- 
-  public ShooterServoState getShooterServoState() {
+  private ShooterServoState getShooterServoState() {
     return currentShooterServoState;
+  }
+
+  public boolean getShooterServoInPos() {
+    return m_shooterServoInPos;
   }
   public ShooterNoteState getShooterNoteState() {
     return currentNoteState;

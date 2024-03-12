@@ -14,7 +14,6 @@ import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeMechanismWaitStates;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
@@ -81,16 +80,16 @@ public class ScoreTrapCmd extends Command {
 
   //factory for updating all mechanisms with the packaged target info associated with the new postion
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
-    intake.updateTargetPositionIntake(pose);
+    intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(pose);
     shooter.updateTargetPositionShooter(pose);
     turret.updateTargetPositionTurret(pose);
   }
 
   private boolean areMechanismsInPosition() {
-    return (intake.getIstIntakeInPosition() == IntakeMechanismWaitStates.CHECK_OFF && 
-            turret.getTurretState() == TurretState.IN_POSITION &&
-            shooter.getShooterServoState() == ShooterServoState.IN_POSITION &&
-            elevator.getElevatorState() == ElevatorState.IN_POSITION);
+    return (intake.getIntakeInPos() && 
+            turret.getTurretInPos() &&
+            shooter.getShooterServoInPos() &&
+            elevator.getElevatorInPos());
   }
 }

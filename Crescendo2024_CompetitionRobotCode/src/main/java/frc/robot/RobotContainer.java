@@ -77,9 +77,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //------------------------------------------------------------------------------------
     //  Drive commands
     //------------------------------------------------------------------------------------
-    xboxDrv.leftStick().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)); //intake pivot to ground
+    xboxDrv.leftStick().onTrue(stateMachine.cmdIntakeToHandOff(NoteSource.INTAKE_GROUND)); //intake pivot to ground
     xboxDrv.start().onTrue(driveTrain.resetGyro());
-    xboxDrv.rightStick().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_SOURCE));
+    xboxDrv.rightStick().onTrue(stateMachine.cmdIntakeToHandOff(NoteSource.INTAKE_SOURCE));
 
     //intake to shooter handoff and vice versa
     xboxDrv.y().onTrue(stateMachine.cmdDetermineHandOffTransition());
@@ -109,8 +109,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // turn middle lights to red
 
     //statmachine shooter vs intake elevator manual control dependant on state
-    xboxAux.leftStick().onTrue(stateMachine.cmdDetermineAuxLeftSick  (()->xboxAux.getLeftY(), 
-                                                                      ()->xboxAux.leftStick().getAsBoolean()));
+    xboxAux.leftStick().onTrue(new ManualElevatorCmd(()->xboxAux.getLeftY(), ()->xboxAux.leftStick().getAsBoolean()));
+      //stateMachine.cmdDetermineAuxLeftSick  (()->xboxAux.getLeftY(), 
+        //                                                              ()->xboxAux.leftStick().getAsBoolean()));
     xboxAux.rightStick().onTrue(stateMachine.cmdDetermineAuxRightSick(()->xboxAux.getRightY(), 
                                                                       ()->xboxAux.rightStick().getAsBoolean()));
 
@@ -127,10 +128,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
   //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
   private void defaultCommands() {  
-    driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxTest.getLeftX(),
-                                                    ()-> xboxTest.getLeftY(),
-                                                    ()-> xboxTest.getRightX(),
-                                                    ()-> xboxTest.b().getAsBoolean()));
+    // driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxTest.getLeftX(),
+    //                                                 ()-> xboxTest.getLeftY(),
+    //                                                 ()-> xboxTest.getRightX(),
+    //                                                 ()-> xboxTest.b().getAsBoolean()));
 
   }
 

@@ -18,7 +18,6 @@ import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeMechanismWaitStates;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterLoadState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
@@ -70,7 +69,7 @@ public class MoveToHandoffPoseCmd extends Command {
     switch(m_noteSource) {
       case INTAKE_GROUND:
         m_targetMechPoseStart = CatzMechanismConstants.INTAKE_GROUND;
-        intake.setRollerState(IntakeRollerState.ROLLERS_IN_GROUND);
+        intake.setRollersGround();
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
@@ -91,8 +90,8 @@ public class MoveToHandoffPoseCmd extends Command {
            m_noteDestination == NoteDestination.SPEAKER) {
 
             m_targetMechPoseEnd = CatzMechanismConstants.POS_STOW;
-            intake.setRollerState(IntakeRollerState.ROLLERS_IN_SOURCE);
-                        System.out.println(" Source Speaker");
+            intake.setRollersIntakeSource();
+            System.out.println(" Source Speaker");
         } else if(m_noteDestination == NoteDestination.AMP) {
           m_targetMechPoseEnd = m_targetMechPoseStart;
                         System.out.println("Source Amp");
@@ -179,7 +178,7 @@ public class MoveToHandoffPoseCmd extends Command {
       //when the the rollers stop intaking due to beambreak
       if(m_targetMechPoseStartReached == false) {
         if(areMechanismsInPosition()) {
-          intake.setRollerState(IntakeRollerState.ROLLERS_IN_SOURCE);
+          intake.setRollersIntakeSource();
           shooter.setShooterLoadState(ShooterLoadState.LOAD_OUT);
           m_targetMechPoseStartReached = true;
         }
@@ -191,7 +190,7 @@ public class MoveToHandoffPoseCmd extends Command {
 
         if(intake.getIntakeBeamBreakBroken()) { 
 
-          intake.setRollerState(IntakeRollerState.ROLLERS_OFF);   
+          intake.setRollersOff(); 
 
           if(m_noteDestination == NoteDestination.AMP) {
             runMechanismSetpoints(m_targetMechPoseEnd);
@@ -205,7 +204,7 @@ public class MoveToHandoffPoseCmd extends Command {
       //when the the rollers stop intaking due to beambreak
       if(m_targetMechPoseStartReached == false) {
         if(areMechanismsInPosition()) {
-          intake.setRollerState(IntakeRollerState.ROLLERS_OUT_SHOOTER_HANDOFF);
+          intake.setRollersOutakeHandoff();
           shooter.setShooterLoadState(ShooterLoadState.LOAD_IN);
           m_targetMechPoseStartReached = true;
         }
@@ -216,32 +215,29 @@ public class MoveToHandoffPoseCmd extends Command {
          m_targetMechPoseEndReached == false) {
 
         if(shooter.shooterLoadBeamBrkBroken()) { 
-          intake.setRollerState(IntakeRollerState.ROLLERS_OFF);   
+          intake.setRollersOff();  
         }
       } 
     }
 
 
-  }//ground to amp transition
-  //amp transition to amp
-
-  //
+  }
 
   //factory for updating all mechanisms with the packaged target info associated with the new postion
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
 
-    intake  .updateTargetPositionIntake  (pose);
+    intake  .updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(pose);
     shooter .updateTargetPositionShooter (pose);
     turret  .updateTargetPositionTurret  (pose);
   }
 
   private boolean areMechanismsInPosition() {
-    boolean intakeState   = intake.getIstIntakeInPosition()== IntakeMechanismWaitStates.IN_POSITION; 
-    boolean turretState   = turret.getTurretState()        == TurretState.IN_POSITION;
-    boolean shooterState  = shooter.getShooterServoState() == ShooterServoState.IN_POSITION;
-    boolean elevatorState = elevator.getElevatorState()    == ElevatorState.IN_POSITION;
-    //System.out.println("i " + intakeState + "t " + turretState + "s " + shooterState + "e " +elevatorState);
+    boolean intakeState   = intake.getIntakeInPos(); 
+    boolean turretState   = turret.getTurretInPos();
+    boolean shooterState  = shooter.getShooterServoInPos();
+    boolean elevatorState = elevator.getElevatorInPos();
+    System.out.println("i " + intakeState + "t " + turretState + "s " + shooterState + "e " +elevatorState);
     return(intakeState && turretState && shooterState && elevatorState);
   }
 

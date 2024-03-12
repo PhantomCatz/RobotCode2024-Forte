@@ -40,7 +40,7 @@ public class ElevatorIOReal implements ElevatorIO {
         // set Motion Magic settings
         elevatorTalonConfigs.MotionMagic.MotionMagicCruiseVelocity = 130; // Target cruise velocity of 80 rps
         elevatorTalonConfigs.MotionMagic.MotionMagicAcceleration   = 240; // Target acceleration of 160 rps/s (0.5 seconds)
-        elevatorTalonConfigs.MotionMagic.MotionMagicJerk           = 16000; // Target jerk of 1600 rps/s/s (0.1 seconds)
+        elevatorTalonConfigs.MotionMagic.MotionMagicJerk           = 160; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
         elevatorTalonConfigs.Slot0.kP = 7.0;
         elevatorTalonConfigs.Slot0.kI = 0.0;

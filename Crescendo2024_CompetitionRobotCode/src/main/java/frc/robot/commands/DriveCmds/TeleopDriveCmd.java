@@ -39,8 +39,8 @@ public class TeleopDriveCmd extends Command {
   @Override
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
-    double xSpeed = -m_supplierLeftJoyY.get();
-    double ySpeed = -m_supplierLeftJoyX.get(); 
+    double xSpeed =       -m_supplierLeftJoyY.get();
+    double ySpeed =       -m_supplierLeftJoyX.get(); 
     double turningSpeed = -m_supplierRightJoyX.get();
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
