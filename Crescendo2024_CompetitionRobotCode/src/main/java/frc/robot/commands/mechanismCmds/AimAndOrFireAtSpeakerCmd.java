@@ -49,23 +49,24 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   private static final InterpolatingDoubleTreeMap shooterPivotTable = new InterpolatingDoubleTreeMap();
 
   static { //TBD add values in through testing
-    shooterPivotTable.put(1.0, 2.0);
-    shooterPivotTable.put(1.5, 3.5);
-    shooterPivotTable.put(2.0, 5.0);
-    shooterPivotTable.put(2.5, 7.5);
-    shooterPivotTable.put(3.0, 10.0);
-    shooterPivotTable.put(3.5, 12.5);
-    shooterPivotTable.put(4.0, 15.0);
-    shooterPivotTable.put(4.5, 17.5);
-    shooterPivotTable.put(5.0, 20.0);
-    shooterPivotTable.put(5.5, 22.5);
-    shooterPivotTable.put(6.0, 25.0);
-    shooterPivotTable.put(6.5, 28.0);
-    shooterPivotTable.put(7.0, 31.0);
-    shooterPivotTable.put(7.5, 34.0);
-    shooterPivotTable.put(8.0, 37.0);
-    shooterPivotTable.put(9.0, 41.0);
-    shooterPivotTable.put(10.0, 45.0);
+    shooterPivotTable.put(1.37, 0.6);
+    shooterPivotTable.put(1.37, 0.7);
+    shooterPivotTable.put(1.87, 0.65);
+    shooterPivotTable.put(1.87, 0.5);
+    shooterPivotTable.put(2.37, 0.35);
+    shooterPivotTable.put(2.37, 0.3);
+    shooterPivotTable.put(2.87, 0.3);
+    shooterPivotTable.put(2.87, 0.28); //bOUNCEDD OFF INSIDE ON 0.25
+    shooterPivotTable.put(3.37, 0.25);
+    shooterPivotTable.put(3.37, 0.20);
+    shooterPivotTable.put(3.87, 0.125); //bounced off on 0.15
+    shooterPivotTable.put(3.87, 0.1);
+    shooterPivotTable.put(4.87, 0.1);
+    shooterPivotTable.put(4.87, 0.05);
+    shooterPivotTable.put(4.87, 0.1);
+    shooterPivotTable.put(5.87, 0.0);
+
+
   }
 
   //time table look up for calculating how long it takes to get note into speaker
@@ -74,7 +75,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
       // (ty-angle,time)
   static { //TBD add values in through testing
     timeTable.put(80.0, 2.0);
-
+  
   }
 
   public static final double k_ACCEL_COMP_FACTOR = 0.100; // in units of seconds
@@ -112,15 +113,15 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   @Override
   public void initialize() {
     //start the flywheel
-    shooter.startShooterFlywheel();
+    //shooter.startShooterFlywheel();
     intake.updateTargetPositionIntake(CatzMechanismConstants.POS_AMP_TRANSITION);
     elevator.updateTargetPositionElevator(CatzMechanismConstants.POS_STOW);
 
-    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {
         //translation of the blue alliance speaker
-      m_targetXY = new Translation2d(0.0, 5.55);
+      m_targetXY = new Translation2d(0.0, 5.5);
     } else {
-      //translation of the blue alliance speaker
+      //translation of the Red alliance speaker
       m_targetXY = new Translation2d(16, 5.55);
     }
 
@@ -177,17 +178,19 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
         }
     }
 
-    double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d()) * 39.37;
+    double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d());// * 39.37;
 
     if(intake.getIstIntakeInPosition() == IntakeMechanismWaitStates.IN_POSITION &&
        elevator.getElevatorState() == ElevatorState.IN_POSITION) {
       //send the new target to the turret
-      turret.aimAtGoal(movingGoalLocation, false);
+     // turret.aimAtGoal(movingGoalLocation, false);
     }
 
+    double servoPos = shooterPivotTable.get(newDist);
     //send new target to the shooter
-    shooter.updateShooterServo(shooterPivotTable.get(newDist));
+    shooter.updateShooterServo(servoPos);
 
+    Logger.recordOutput("servoCmdPos", servoPos);
     Logger.recordOutput("ShooterCalcs/Fixed Time", shotTime);
     Logger.recordOutput("ShooterCalcs/NewDist", newDist);
     Logger.recordOutput("ShooterCalcs/Calculated (in)", distanceToSpeakerInches);

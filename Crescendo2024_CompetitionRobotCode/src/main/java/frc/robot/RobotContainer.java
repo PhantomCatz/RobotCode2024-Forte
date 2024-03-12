@@ -10,6 +10,7 @@ import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
 import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.commands.mechanismCmds.StowCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
+import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.IntakeManualCmd;
 import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
@@ -40,6 +41,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   //xbox controller
   private CommandXboxController xboxDrv;
   private CommandXboxController xboxAux;
+  private CommandXboxController xboxTest;
 
   public RobotContainer() {
     //instantiate subsystems
@@ -56,6 +58,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
     xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
+    xboxTest = new CommandXboxController(3);
 
 
       // Configure the trigger bindings and default cmds
@@ -66,6 +69,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   
    
   private void configureBindings() {    
+    xboxTest.rightTrigger().onTrue(shooter.cmdLoad());
+    xboxTest.b().onTrue(shooter.cmdShooterRamp());
+    xboxTest.x().onTrue(shooter.cmdShoot());
+    xboxTest.y().onTrue(new AimAndOrFireAtSpeakerCmd());
+    
     //------------------------------------------------------------------------------------
     //  Drive commands
     //------------------------------------------------------------------------------------
@@ -119,10 +127,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
   //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
   private void defaultCommands() {  
-    driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
-                                                    ()-> xboxDrv.getLeftY(),
-                                                    ()-> xboxDrv.getRightX(),
-                                                    ()-> xboxDrv.b().getAsBoolean()));
+    driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxTest.getLeftX(),
+                                                    ()-> xboxTest.getLeftY(),
+                                                    ()-> xboxTest.getRightX(),
+                                                    ()-> xboxTest.b().getAsBoolean()));
 
   }
 
