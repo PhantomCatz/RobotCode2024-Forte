@@ -244,50 +244,45 @@ public final class CatzConstants {
 
   public static final class CatzMechanismConstants {
     public static final CatzMechanismPosition POS_STOW = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW, 
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
                                                         SubsystemCatzIntake.INTAKE_STOW_DEG, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
                                                         
     public static final CatzMechanismPosition POS_AMP_TRANSITION = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_AMP_TRANSITION, 
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_AMP_TRANSITION, 
                                                         SubsystemCatzIntake.INTAKE_AMP_TRANSITION_DEG, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
-                                                        
-    public static final CatzMechanismPosition POS_INTERMEDIATE_STATE = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW, 
-                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_UP_DEG, 
-                                                        SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
-                                                        SubsystemCatzTurret.HOME_POSITION);
+                                                      
 
     public static final CatzMechanismPosition SCORING_SPEAKER = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW,
-                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_DN_DEG,
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW,
+                                                        SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS,  
                                                         SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition SCORING_AMP = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ElEVATOR_POS_AMP_SCORE_AMP, 
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_SCORE_AMP, 
                                                         SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS,  
                                                         SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition INTAKE_GROUND = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW, 
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
                                                         SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition INTAKE_SOURCE = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_STOW, 
-                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_DN_DEG,
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
+                                                        SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition CLIMB_SCORING_TRAP = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_POS_AMP_TRANSITION, 
-                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_DN_DEG,
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_AMP_TRANSITION, 
+                                                        SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS,
                                                         SubsystemCatzTurret.HOME_POSITION);
     //-10

@@ -118,10 +118,10 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
 
     if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {
         //translation of the blue alliance speaker
-      m_targetXY = new Translation2d(0.0, 5.5);
+      m_targetXY = new Translation2d(0.0, 5.55);
     } else {
       //translation of the Red alliance speaker
-      m_targetXY = new Translation2d(16, 5.55);
+      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , 5.55);
     }
 
   }

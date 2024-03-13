@@ -5,8 +5,11 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.CatzConstants.CatzMechanismConstants;
+import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.IntakeManualCmd;
@@ -20,6 +23,8 @@ import frc.robot.subsystems.turret.SubsystemCatzTurret;
 public class CatzStateMachine extends SubsystemBase {
     
     private NoteDestination targetNoteDestination = NoteDestination.SPEAKER;
+
+    private static CatzMechanismPosition previousPose = CatzMechanismConstants.POS_STOW;
     
     private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
     private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
@@ -35,7 +40,7 @@ public class CatzStateMachine extends SubsystemBase {
 
     @Override
     public void periodic() {
-    Logger.recordOutput("statemachine/note destination", targetNoteDestination);
+        Logger.recordOutput("statemachine/note destination", targetNoteDestination);
 
     }
 
@@ -50,88 +55,22 @@ public class CatzStateMachine extends SubsystemBase {
         targetNoteDestination = newDestination;
     }
 
-    public Command cmdIntakeToHandOff(NoteSource source) {
-        if(targetNoteDestination == NoteDestination.AMP ||
-           targetNoteDestination == NoteDestination.TRAP) {
-            System.out.println("transfer to intake");
-
-            if(source == NoteSource.INTAKE_SOURCE) {
-                System.out.println("A");
-                return new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_SOURCE);
-            } else {
-                System.out.println("B");
-                return new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND);
-            }
-        } else {
-            System.out.println("transfer to shooter");
-            if(source == NoteSource.INTAKE_SOURCE) {
-                System.out.println("C");
-                return new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_SOURCE);
-            } else {
-                System.out.println("D");
-                return new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND);
-            }
-        }
+    public static void setPreviousPose(CatzMechanismPosition pose) {
+        previousPose = pose;
     }
 
-    public Command cmdDetermineHandOffTransition() {
-        if(targetNoteDestination == NoteDestination.AMP ||
-           targetNoteDestination == NoteDestination.TRAP) {
-            System.out.println("transfer to intake");
-            return new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER);
-        } else {
-            System.out.println("transfer to shooter");
-            return new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE);
-
-        }
-    }
-
-    public Command cmdDetermineButtonBCommand(Supplier<Boolean> supplierB) {
-        switch(targetNoteDestination) {
-            case SPEAKER:
-            case HOARD:
-                System.out.println("Speaker B cmd");
-                return new AimAndOrFireAtSpeakerCmd(()->supplierB.get());
-            case TRAP:
-                System.out.println("Trap B cmd");
-                return new SequentialCommandGroup();
-            default:
-                System.out.println("Amp B cmd");
-                return new ScoreAmpCmd();
-        }
-    }
-
-    public Command cmdDetermineAuxLeftSick(Supplier<Double> supplierLeftY, Supplier<Boolean> supplierLeftStickPressed) {
-        switch(targetNoteDestination) {
-            case SPEAKER:
-            case HOARD:
-                System.out.println("spkr ltst cmd");
-                return shooter.cmdServoPosition(supplierLeftY);
-            case AMP:
-            case TRAP:
-            default:
-                System.out.println("Amp ltst cmd");
-                return new ManualElevatorCmd(supplierLeftY, supplierLeftStickPressed);
-        }
-    }
-    public Command cmdDetermineAuxRightSick(Supplier<Double> supplierRightY, Supplier<Boolean> supplierRightStickPressed) {
-        switch(targetNoteDestination) {
-            case SPEAKER:
-            case HOARD:
-                System.out.println("spkr rtst cmd");
-                return shooter.cmdShooterRamp();
-            case AMP:
-            case TRAP:
-            default:
-                System.out.println("Amp rtst cmd");
-                return new IntakeManualCmd(supplierRightY, supplierRightStickPressed);
-        }
-    }
 
     //-----------------------------------------------
     // getter methods
     //----------------------------------------------
+    public CatzMechanismPosition getPreviousPose() {
+     return previousPose;   
+    }
 
+
+    public NoteDestination getNoteDestination() {
+        return targetNoteDestination;
+    }
     public enum NoteDestination {
         SPEAKER,
         AMP,

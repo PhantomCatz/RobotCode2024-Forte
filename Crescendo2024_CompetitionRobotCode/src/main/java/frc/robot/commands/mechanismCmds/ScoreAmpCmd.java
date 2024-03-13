@@ -36,6 +36,7 @@ public class ScoreAmpCmd extends Command {
 
   @Override
   public void initialize() {
+    intake.setSquishyMode(true);
     runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP);
     intakeNoteTimer.reset();
 
@@ -44,19 +45,8 @@ public class ScoreAmpCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.setSquishyMode(true);
-    if((areMechanismsInPosition())&& m_targetMechPoseStartReached == false) {
-      //intake.setRollerState(IntakeRollerState.ROLLERS_OUT_FULL_EJECT);
-      intakeNoteTimer.start();
-      m_targetMechPoseStartReached = true;
-    }
 
-    if(intakeNoteTimer.hasElapsed(5) && 
-       !intake.getIntakeBeamBreakBroken() && 
-       m_targetMechPoseEndReached == false) {
-      runMechanismSetpoints(CatzMechanismConstants.POS_STOW);
-      m_targetMechPoseEndReached = true;
-    }
+
   }
 
   // Called once the command ends or is interrupted.

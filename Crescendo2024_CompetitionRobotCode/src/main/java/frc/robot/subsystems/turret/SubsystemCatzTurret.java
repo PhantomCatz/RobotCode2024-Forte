@@ -141,6 +141,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
             //io.turretSetPositionSM(m_turretTargetDegree);
             io.turretSetPwr(setPositionPower);
         if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 3) {
+          m_turretIntPos = true;
         } 
 
       } else if (currentTurretState == TurretState.TRACKING_APRILTAG) {
@@ -187,7 +188,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
     }  
     else {
       manualTurretPwr = 0.0;
-    }          
+    }       
+      m_turretIntPos = false;   
   }
   
   
@@ -207,6 +209,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     else {
       manualTurretPwr = 0.0;
     }          
+      m_turretIntPos = false;
   }
 
   //-------------------------------------------------------------------------------------------------
@@ -233,9 +236,11 @@ public class SubsystemCatzTurret extends SubsystemBase {
       m_turretTargetDegree = angle;
       currentTurretState = TurretState.AUTO;
     }
+      m_turretIntPos = false;
   }
   
   public void setTurretTargetDegree(double turretTargetDegree) {
+    m_turretIntPos = false;
     currentTurretState = TurretState.AUTO;
     m_turretTargetDegree = turretTargetDegree;
   }

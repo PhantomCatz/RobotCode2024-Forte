@@ -52,16 +52,10 @@ public class MoveToHandoffPoseCmd extends Command {
 
     addRequirements(intake, elevator, turret, shooter);
   }
-  public MoveToHandoffPoseCmd(NoteSource noteSource) {
-    this.m_noteDestination = null;
-    this.m_noteSource = noteSource;
-
-    addRequirements(intake, elevator, turret, shooter);
-  }
 
   @Override
   public void initialize() {
-    System.out.println(m_noteDestination.toString());
+    System.out.println("Handoff " + m_noteDestination.toString());
     System.out.println(m_noteSource.toString());
     m_targetMechPoseStartReached = false;
     m_targetMechPoseEndReached   = false;
@@ -117,7 +111,7 @@ public class MoveToHandoffPoseCmd extends Command {
         m_targetMechPoseStart = CatzMechanismConstants.POS_STOW;
 
         if(m_noteDestination == NoteDestination.AMP) {
-            m_targetMechPoseEnd = CatzMechanismConstants.POS_INTERMEDIATE_STATE;
+            m_targetMechPoseEnd = CatzMechanismConstants.POS_AMP_TRANSITION;
             System.out.println("Shooter Amp");
 
         } 

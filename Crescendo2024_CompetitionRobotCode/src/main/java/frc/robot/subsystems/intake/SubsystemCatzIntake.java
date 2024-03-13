@@ -102,7 +102,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double positionErrorDeg     = 0.0;      
   private double pivotVelRadPerSec = 0.0;
 
-
   //-----------------------------------------------------------------------------------------------
   //  Control Mode Defs
   //-----------------------------------------------------------------------------------------------
@@ -123,7 +122,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //  Intake position defs & variables
   //-----------------------------------------------------------------------------------------------
   public static final double INTAKE_STOW_DEG                  = 163.0;    
-  public static final double INTAKE_SOURCE_LOAD_DN_DEG        = 125.0;    //92.6; //90.43; //97 with drivetrain inner rail to the bottom inner rail 7 1/4 inches
+  public static final double INTAKE_AMP_SCORE_DN_DEG        = 125.0;    //92.6; //90.43; //97 with drivetrain inner rail to the bottom inner rail 7 1/4 inches
   public static final double INTAKE_SOURCE_LOAD_UP_DEG        =  92.6; 
   public static final double INTAKE_GROUND_PICKUP_DEG         = -22.0;
   public static final double INTAKE_AMP_SCORE_DEG             = -22.0;    
@@ -132,7 +131,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private static final double INTAKE_NULL_DEG                 = -999.0;   
 
   private final static double INTAKE_TURRET_MAX_ANGLE_FOR_HANDOFF_DEG    = 17.0;  
-  private final static double INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV = 10.0;
+  public final static double INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV = 10.0;
   private final static double INTAKE_ELEV_MIN_HEIGHT_FOR_AMP_TRANS_REV   = 32.0;
 
 
@@ -183,7 +182,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static SubsystemCatzIntake getInstance() {
       return instance;
   }
-
+ boolean isTransferingToHighPosition = false;
   //-------------------------------------------------------------------------------------
   //
   //  periodic()
@@ -264,9 +263,20 @@ public class SubsystemCatzIntake extends SubsystemBase {
           //----------------------------------------------------------------------------------- 
           if(SubsystemCatzElevator.getInstance().getElevatorRevPos() < elevatorThresholdRev) {
             m_intakeElevatorInSafetyZone = true;
+          if(m_targetPositionDeg == INTAKE_SOURCE_LOAD_UP_DEG && 
+             m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
+              isTransferingToHighPosition = true;
+            }
           }
         }
       }
+
+      if(m_targetPositionDeg == INTAKE_SOURCE_LOAD_UP_DEG && 
+         m_nextTargetPositionDeg == INTAKE_STOW_DEG &&
+         isTransferingToHighPosition == false) {
+          io.setIntakePivotPostionRev(INTAKE_SOURCE_LOAD_UP_DEG * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts);
+
+        }
 
       
       if(m_intakeTurretInSafetyZone && m_intakeElevatorInSafetyZone) { 
@@ -274,7 +284,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
           //  Turret & Elevator are in a safe position for Intake to proceed to target position
           //---------------------------------------------------------------------------------------
           if(m_currentIntakeControlState == IntakeControlState.FULL_MANUAL) {   //TBD - Where does FULL MANUAL get set?
-
             //-------------------------------------------------------------------------------------
             //  Manual Control Mode - Use operator input to change intake angle
             //-------------------------------------------------------------------------------------
@@ -300,7 +309,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
               if(m_targetPositionDeg == INTAKE_STOW_DEG) {
                 io.setIntakePivotVoltage(0.0);
               }
-              
               m_iterationCounter++;
               if (m_iterationCounter >= 5) {
                 m_intakeInPosition = true;  
@@ -310,7 +318,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
               //  Chk if we were commanded to AMP_TRANS position.  If that was the case, then
               //  update target position to original commanded position
               //-----------------------------------------------------------------------------------
-              if(m_nextTargetPositionDeg == INTAKE_AMP_TRANSITION_DEG) {
+              if(m_nextTargetPositionDeg == INTAKE_AMP_TRANSITION_DEG ||
+                  m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
                 updateAutoTargetPositionIntake(m_nextTargetPositionDeg);
               }
             } else {
@@ -345,7 +354,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //
   //-----------------------------------------------------------------------------------------------
   public void updateAutoTargetPositionIntake(double targetPosition) {
-
+    isTransferingToHighPosition = false;
+    m_currentIntakeControlState = IntakeControlState.AUTO;
     //-------------------------------------------------------------------------------------
     //  Initialize Variables 
     //-------------------------------------------------------------------------------------
@@ -364,7 +374,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     //  Based on target destination, we need to determine safe elevator position.  For
     //  Turret, the safe position is always the same and will aways be checked in periodic()
     //-------------------------------------------------------------------------------------
-    if(m_targetPositionDeg > 90) {
+    if(m_targetPositionDeg > 90) { 
         //-------------------------------------------------------------------------------------
         //  If intake is already behind the elevator then elevator is already in a safe
         //  position.  If the intake is NOT behind the elevator then we need to make sure the
@@ -373,9 +383,20 @@ public class SubsystemCatzIntake extends SubsystemBase {
         //  STOW position
         //-------------------------------------------------------------------------------------
         if (m_currentPositionDeg > INTAKE_STOW_ELEV_CLEARED_DEG) {
-          m_intakeElevatorInSafetyZone = true;        
+          m_intakeElevatorInSafetyZone = true;     
+          System.out.println("Int clear to stow");   
         } else {
-          elevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;  
+
+            //bound for when the intake is in amp transitition 
+            if(m_currentPositionDeg < INTAKE_GROUND_PICKUP_DEG -5) {
+              m_nextTargetPositionDeg = INTAKE_STOW_DEG;
+              m_targetPositionDeg     = INTAKE_SOURCE_LOAD_UP_DEG;
+            } else {
+
+            }
+              elevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
+              System.out.println("Int not clear to stow");   
+          
         }
     } else if(m_targetPositionDeg == INTAKE_AMP_TRANSITION_DEG) {
         //-------------------------------------------------------------------------------------
@@ -399,7 +420,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         //  (elev periodic will be waiting for intake to clear before starting to move up)
         //-------------------------------------------------------------------------------------
         if (m_currentPositionDeg < INTAKE_STOW_ELEV_CLEARED_DEG) {
-
+           System.out.println("Int to Amp Trnas");   
             //-----------------------------------------------------------------------------------
             //  Source/ground
             //----------------------------------------------------------------------------------- 
@@ -407,6 +428,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
           nextElevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;  
 
         } else {
+          System.out.println("Int stow to transition");   
+
           //-----------------------------------------------------------------------------------
           //  Coming from handoff position (stow)
           //-----------------------------------------------------------------------------------
@@ -416,7 +439,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
           m_nextTargetPositionDeg = INTAKE_AMP_TRANSITION_DEG;
               m_targetPositionDeg = INTAKE_SOURCE_LOAD_UP_DEG;
         }
-      } else if(m_targetPositionDeg <= 90) {
+       } else if(m_targetPositionDeg >= 90){//m_targetPositionDeg == INTAKE_GROUND_PICKUP_DEG ||
+      //           m_targetPositionDeg == INTAKE_AMP_SCORE_DN_DEG||
+      //           m_targetPositionDeg == INTAKE_SOURCE_LOAD_UP_DEG||
+      //           m_targetPositionDeg == INTAKE_AMP_SCORE_DEG) {
          //-------------------------------------------------------------------------------------
         //  If intake is already in front of the elevator then elevator is already in a safe
         //  position.  If the intake is NOT in front of the elevator then we need to make sure
@@ -425,9 +451,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
         //  STOW position
         //-------------------------------------------------------------------------------------
         if (m_currentPositionDeg < INTAKE_STOW_ELEV_CLEARED_DEG) {
-            m_intakeElevatorInSafetyZone = true;        
+            m_intakeElevatorInSafetyZone = true;
+                    
+            System.out.println("Int clear to deploy");   
+
           } else {
             elevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
+           System.out.println("Int wait for deploy");   
+
           }
       }
 

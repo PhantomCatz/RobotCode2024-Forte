@@ -11,15 +11,11 @@ import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.climb.SubsystemCatzClimb;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
-import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
-public class ScoreTrapCmd extends Command {
+public class ClimbCmd extends Command {
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
@@ -33,7 +29,7 @@ public class ScoreTrapCmd extends Command {
   Supplier<Boolean> m_supplierPovRT;
 
   
-  public ScoreTrapCmd(Supplier<Boolean> PovUp, 
+  public ClimbCmd(Supplier<Boolean> PovUp, 
                       Supplier<Boolean> PovDn, 
                       Supplier<Boolean> PovLt, 
                       Supplier<Boolean> PovRt) {
@@ -48,7 +44,6 @@ public class ScoreTrapCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    runMechanismSetpoints(CatzMechanismConstants.POS_STOW);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
