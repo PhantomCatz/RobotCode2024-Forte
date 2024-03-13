@@ -122,8 +122,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //  Intake position defs & variables
   //-----------------------------------------------------------------------------------------------
   public static final double INTAKE_STOW_DEG                  = 163.0;    
-  public static final double INTAKE_AMP_SCORE_DN_DEG        = 125.0;    //92.6; //90.43; //97 with drivetrain inner rail to the bottom inner rail 7 1/4 inches
-  public static final double INTAKE_SOURCE_LOAD_UP_DEG        =  92.6; 
+  public static final double INTAKE_AMP_SCORE_DN_DEG          = 92.6;    //92.6; //90.43; //97 with drivetrain inner rail to the bottom inner rail 7 1/4 inches
+  public static final double INTAKE_SOURCE_LOAD_UP_DEG        = 125.0; 
   public static final double INTAKE_GROUND_PICKUP_DEG         = -22.0;
   public static final double INTAKE_AMP_SCORE_DEG             = -22.0;    
   public static final double INTAKE_AMP_TRANSITION_DEG        = -60.0;    
@@ -387,8 +387,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
           System.out.println("Int clear to stow");   
         } else {
 
-            //bound for when the intake is in amp transitition 
-            if(m_currentPositionDeg < INTAKE_GROUND_PICKUP_DEG -5) {
+            //bound for when the intake is in amp transitition or amp scoring
+            if(m_currentPositionDeg < 80 &&
+               m_targetPositionDeg != INTAKE_GROUND_PICKUP_DEG) {
               m_nextTargetPositionDeg = INTAKE_STOW_DEG;
               m_targetPositionDeg     = INTAKE_SOURCE_LOAD_UP_DEG;
             } else {
@@ -543,10 +544,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   public Command cmdRollerOff() {
     return runOnce(()->  setRollersOff());
-  }
-
-  private void setRollerState(IntakeRollerState rollerRunningMode) {
-    m_currentRollerState = rollerRunningMode;
   }
 
   public void setRollersGround() {

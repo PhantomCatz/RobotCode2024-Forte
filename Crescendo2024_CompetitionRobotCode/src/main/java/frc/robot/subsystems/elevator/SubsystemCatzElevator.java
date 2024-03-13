@@ -55,13 +55,13 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private static final double ELEVATOR_kV = 0.0;
 
  //-----------------------------------------------------------------------------------------------
-  //  Intake position defs & variables
+  //  Elevator position defs & variables
   //-----------------------------------------------------------------------------------------------
   public static final double ELEVATOR_STOW           = 0.0;
   public static final double ELEVATOR_AMP_TRANSITION = 35.0;
-  public static final double ElEVATOR_SOURCE_PICKUP  = 40.0;//8;
-  public static final double ELEVATOR_SCORE_AMP      = 60.0;//8;
-  public static final double ELEVATOR_SCORE_TRAP     = 60.0;
+  public static final double ElEVATOR_SOURCE_PICKUP  = 40.0;
+  public static final double ELEVATOR_SCORE_AMP      = 60.0;
+  public static final double ELEVATOR_SCORE_TRAP     = 66.0;
 
   //-------------------------------------------------------------------------------------
   // Elevator Variables
@@ -69,17 +69,11 @@ public class SubsystemCatzElevator extends SubsystemBase {
   private double m_newPositionRev = 0.0;
   private double m_elevatorPercentOutput = 0.0;
   private double m_finalffVolts = 0.0;
-  private double m_finalPIDVolts = 0.0;
-  private double m_finalVoltage = 0.0;
   private double elevatorVelocityMTRRPS = 0.0;
-  private double currentRotations = 0.0;
-  private double previousRotations = 0.0;
 
   private boolean m_elevatorInPos = false;
 
   private ElevatorFeedforward elevatorFeedforward;
-  private CatzMechanismPosition m_targetPosition;
-  private CatzMechanismPosition m_previousTargetPosition;
 
   private static ElevatorState currentElevatorState;
   public static enum ElevatorState {

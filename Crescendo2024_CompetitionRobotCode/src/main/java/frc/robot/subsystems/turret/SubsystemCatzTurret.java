@@ -14,6 +14,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -79,6 +81,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private boolean m_trackTarget = false;
 
   private boolean m_turretIntPos;
+
+  private XboxController driveRumbleController;
   
 
   private SubsystemCatzTurret() {
@@ -96,6 +100,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
       default: io = null;
       break;
     }
+
+    driveRumbleController = new XboxController(CatzConstants.OIConstants.XBOX_DRV_PORT);
 
     m_setPositionPID = new PIDController(TURRET_kP, 
                                          TURRET_kI, 
@@ -138,8 +144,14 @@ public class SubsystemCatzTurret extends SubsystemBase {
       currentTurretState = TurretState.FULL_MANUAL;
     } else { 
       if (currentTurretState == TurretState.AUTO) {
-            //io.turretSetPositionSM(m_turretTargetDegree);
-            io.turretSetPwr(setPositionPower);
+
+        if(Math.abs(currentTurretDegree) > 120) {
+          driveRumbleController.setRumble(RumbleType.kBothRumble, 0.3);
+        } else {
+          io.turretSetPwr(setPositionPower);
+          driveRumbleController.setRumble(RumbleType.kBothRumble, 0.0);
+        } 
+
         if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 3) {
           m_turretIntPos = true;
         } 
@@ -175,7 +187,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //-------------------------------------------------------------------------------------------------
   public void rotateLeft(){
     currentTurretState = TurretState.FULL_MANUAL;
-    
+
     if (currentTurretDegree > (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) {
       manualTurretPwr = -TURRET_POWER;
     }

@@ -5,34 +5,28 @@
 package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterLoadState;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
-import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
-public class StowCmd extends Command {
+public class HomePoseCmd extends Command {
   //subsystem declaration
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
   private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();  
   
-  public StowCmd() {
+  public HomePoseCmd() {
     addRequirements(elevator, intake, shooter, turret);
   }
 
   @Override
   public void initialize() {
-      runMechanismSetpoints(CatzMechanismConstants.POS_STOW);
+      runMechanismSetpoints(CatzMechanismConstants.HOME);
       intake.setRollersOff();
       shooter.setShooterLoadState(ShooterLoadState.LOAD_OFF);
   }

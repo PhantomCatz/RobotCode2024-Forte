@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.subsystems.CatzStateMachine;
+import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -19,7 +21,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
-public class ScoreAmpCmd extends Command {
+public class ScoreAmpOrTrapCmd extends Command {
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
@@ -30,14 +32,18 @@ public class ScoreAmpCmd extends Command {
   private boolean m_targetMechPoseStartReached = false;
   private boolean m_targetMechPoseEndReached   = false;
 
-  public ScoreAmpCmd() {
+  public ScoreAmpOrTrapCmd() {
     addRequirements(intake, elevator, shooter, turret);
   }
 
   @Override
   public void initialize() {
     intake.setSquishyMode(true);
-    runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP);
+    if(CatzStateMachine.getInstance().getNoteDestination() == NoteDestination.TRAP) {
+      runMechanismSetpoints(CatzMechanismConstants.SCORING_TRAP);
+    } else {
+      runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP);
+    }
     intakeNoteTimer.reset();
 
   }

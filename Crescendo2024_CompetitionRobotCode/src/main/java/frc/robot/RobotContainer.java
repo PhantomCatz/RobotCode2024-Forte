@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
-import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
+import frc.robot.commands.mechanismCmds.ScoreAmpOrTrapCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
-import frc.robot.commands.mechanismCmds.StowCmd;
+import frc.robot.commands.mechanismCmds.HomePoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.IntakeManualCmd;
@@ -63,7 +63,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
     xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
 
-      // Configure the trigger bindings and default cmds
+    // Configure the trigger bindings and default cmds
     defaultCommands();
     configureBindings();
   }
@@ -78,14 +78,15 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxDrv.leftStick().onTrue(Commands.either(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND), 
                                                new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND),
                                                ()-> stateMachine.getNoteDestination() == NoteDestination.SPEAKER)); //intake pivot to ground
+                                               
     xboxDrv.rightStick().onTrue(Commands.either(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_SOURCE), 
                                                 new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_SOURCE),
                                                 ()-> stateMachine.getNoteDestination() == NoteDestination.SPEAKER));
+
     xboxDrv.start().onTrue(driveTrain.resetGyro());
 
-    //ensure that the robot is shooter facing the speaker
+    //ensure that the robot is shooter facing the speaker when reseting position
     xboxDrv.start().and(xboxDrv.leftTrigger()).onTrue(Commands.runOnce(()->driveTrain.resetPosition(new Pose2d(2.97,4.11, Rotation2d.fromDegrees(0)))));
-    //intake to shooter handoff and vice vers
 
     //climb
     xboxDrv.b().and(xboxAux.a()).onTrue(new ParallelCommandGroup(new ClimbCmd(()->xboxAux.povUp().getAsBoolean(),      //both climb hooks up
@@ -110,9 +111,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
         
 
      xboxAux.b().onTrue(Commands.either(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()),
-                                       new ScoreAmpCmd(),
-                                       ()-> (stateMachine.getNoteDestination() == NoteDestination.SPEAKER)));
-    xboxAux.a().onTrue(new StowCmd()); //intake pivot stow
+                                        new ScoreAmpOrTrapCmd(),
+                                        ()-> (stateMachine.getNoteDestination() == NoteDestination.SPEAKER)));
+    xboxAux.a().onTrue(new HomePoseCmd()); //intake pivot stow
 
     // xboxAux.back().onTrue(/*Signify Amp LEDs*/null);
     // turn middle lights to red
@@ -137,10 +138,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
   //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
   private void defaultCommands() {  
-    // driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxTest.getLeftX(),
-    //                                                 ()-> xboxTest.getLeftY(),
-    //                                                 ()-> xboxTest.getRightX(),
-    //                                                 ()-> xboxTest.b().getAsBoolean()));
+    driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxTest.getLeftX(),
+                                                    ()-> xboxTest.getLeftY(),
+                                                    ()-> xboxTest.getRightX(),
+                                                    ()-> xboxTest.b().getAsBoolean()));
 
   }
 

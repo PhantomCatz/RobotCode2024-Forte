@@ -71,9 +71,15 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   //time table look up for calculating how long it takes to get note into speaker
   /** angle to time look up table key: ty angle, values: time */
   private static final InterpolatingDoubleTreeMap timeTable = new InterpolatingDoubleTreeMap();
-      // (distance, time)
-  static { //TBD add values in through testing
-    timeTable.put(80.0, 2.0);
+      // (distance, time seconds)
+  static { 
+        // (ty-angle,time)
+        timeTable.put(1.37, 0.78);
+        timeTable.put(2.37, 0.80);
+        timeTable.put(2.87, 0.81);
+        timeTable.put(3.37, 0.82);
+        timeTable.put(4.87, 0.825);
+        timeTable.put(5.87, 0.83);
   
   }
 
@@ -113,8 +119,8 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   public void initialize() {
     //start the flywheel
     //shooter.startShooterFlywheel();
-    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.POS_AMP_TRANSITION.getIntakePivotTargetAngle());
-    elevator.updateTargetPositionElevator(CatzMechanismConstants.POS_STOW);
+    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AMP_TRANSITION.getIntakePivotTargetAngle());
+    elevator.updateTargetPositionElevator(CatzMechanismConstants.STOW);
 
     if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {
         //translation of the blue alliance speaker
@@ -139,10 +145,10 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     //take the distance to the speaker
     robotToGoalXY = m_targetXY.minus(drivetrain.getPose().getTranslation());
 
-    //convert the distance to inches
+    //convert the distance to meters
     distanceToSpeakerMeters = robotToGoalXY.getDistance(new Translation2d());
 
-    //get the time it takes for note to reach the speaker in seconds? TBD
+    //get the time it takes for note to reach the speaker in seconds
     shotTime = timeTable.get(distanceToSpeakerMeters); //TBD is this even necessary the note is moving pretty fast
 
     movingGoalLocation = new Translation2d();
@@ -151,7 +157,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     for(int i=0;i<5;i++){
       //collect new shooting targets modifed by robot acceleration and velocity
         m_virtualGoalX = m_targetXY.getX()
-                - shotTime * (m_robotVel.vx + m_robotAccel.ax * k_ACCEL_COMP_FACTOR);
+               - shotTime * (m_robotVel.vx + m_robotAccel.ax * k_ACCEL_COMP_FACTOR);
         m_virtualGoalY = m_targetXY.getY()
                 - shotTime * (m_robotVel.vy + m_robotAccel.ay * k_ACCEL_COMP_FACTOR);
 

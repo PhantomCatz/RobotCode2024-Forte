@@ -14,7 +14,7 @@ import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.IntakeManualCmd;
 import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
-import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
+import frc.robot.commands.mechanismCmds.ScoreAmpOrTrapCmd;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
@@ -22,9 +22,9 @@ import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class CatzStateMachine extends SubsystemBase {
     
-    private NoteDestination targetNoteDestination = NoteDestination.SPEAKER;
+    private static NoteDestination targetNoteDestination = NoteDestination.SPEAKER;
 
-    private static CatzMechanismPosition previousPose = CatzMechanismConstants.POS_STOW;
+    private static CatzMechanismPosition previousPose = CatzMechanismConstants.STOW;
     
     private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
     private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();

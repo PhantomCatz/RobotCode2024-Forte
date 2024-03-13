@@ -50,15 +50,23 @@ public class ClimbCmd extends Command {
   @Override
   public void execute() {
 
+    //raise both hooks
     if(m_supplierPovUP.get()) {
+
       climb.setLeftClimbPercentOutput(0.2);
       climb.setRightClimbPercentOutput(0.2);
+    //lower both hook
     } else if(m_supplierPovDN.get()) {
+
       climb.setLeftClimbPercentOutput(-0.2);
       climb.setRightClimbPercentOutput(-0.2);
+      //raise one hook
     } else if(m_supplierPovLT.get()) {
+
       climb.setLeftClimbPercentOutput(0.2);
+      //raise one hook
     } else if(m_supplierPovRT.get()) {
+
       climb.setRightClimbPercentOutput(0.2);
     }
   }

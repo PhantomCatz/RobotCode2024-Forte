@@ -18,7 +18,6 @@ public class TurretIOReal implements TurretIO {
 
     public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
 
-
     public TurretIOReal() {
        
         turretMtr = new CANSparkMax(60, MotorType.kBrushless);

@@ -14,9 +14,6 @@ public class ManualElevatorCmd extends Command {
   Supplier<Double> m_supplierLeftY;
   Supplier<Boolean> m_supplierLeftJoyStickPressed;
 
-
-  private double pressCounter;
-
   public ManualElevatorCmd(Supplier<Double> supplierLeftY, Supplier<Boolean> supplierLeftJoyStickPressed) {
     addRequirements(elevator);
 
@@ -26,7 +23,6 @@ public class ManualElevatorCmd extends Command {
 
   @Override
   public void initialize() {
-    pressCounter = 0;
   }
 
   @Override

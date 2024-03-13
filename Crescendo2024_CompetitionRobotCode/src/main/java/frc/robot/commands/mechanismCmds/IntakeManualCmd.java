@@ -26,7 +26,7 @@ public class IntakeManualCmd extends Command {
 
   @Override
   public void execute() {
-      intake.pivotSemiManual(m_supplierLeftJoyY.get());
+      intake.pivotFullManual(m_supplierLeftJoyY.get());
     
   }
 

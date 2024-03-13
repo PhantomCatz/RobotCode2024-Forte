@@ -96,7 +96,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private SubsystemCatzShooter() {
     
     //XboxController
-    xboxAuxRumble = new XboxController(3); //OIConstants.XBOX_AUX_PORT
+    xboxAuxRumble = new XboxController(OIConstants.XBOX_AUX_PORT);
 
     switch (CatzConstants.currentMode) {
       case REAL: io = new ShooterIOReal();
