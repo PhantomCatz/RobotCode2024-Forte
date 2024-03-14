@@ -2,8 +2,6 @@ package frc.robot.subsystems.vision;
 
 import org.littletonrobotics.junction.Logger;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,11 +13,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
+import frc.robot.Utils.LimelightHelpers;
+import frc.robot.Utils.LimelightHelpers.LimelightResults;
 
 public class VisionIOLimeLight implements VisionIO {
     
     public String name;
-    private Transform3d cameraOffset;
+    public boolean getTarget;
     private double[] lastData = new double[6];
 
      /**
@@ -28,21 +28,23 @@ public class VisionIOLimeLight implements VisionIO {
      * @param name Name of the limelight used, and should be configured in limelight software first
      * @param cameraOffset Location of the camera on the robot (from center, positive x towards the arm, positive y to the left, and positive angle is counterclockwise.
      */
-    public VisionIOLimeLight(String name, Transform3d limelightOffset) {
+    public VisionIOLimeLight(String name) {
         NetworkTableInstance.getDefault().getTable(name).getEntry("ledMode").setNumber(1);
         this.name = name;
-        this.cameraOffset = limelightOffset;
         System.out.println(name);
         System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
         
-
         Logger.recordOutput("Obometry/VisionPose", new Pose2d());
 
     }
 
+    private Pose2d prevPos = null;
+    private boolean badData = false;
+
     @Override
     public void updateInputs(VisionIOInputs inputs) {
             //load up raw apriltag values for distance calculations
+        LimelightResults llresults = LimelightHelpers.getLatestResults(name);
 
         inputs.ty = NetworkTableInstance.getDefault().getTable(name).getEntry("ty").getDouble(0); //vertical offset from crosshair to target in degrees
         inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("tx").getDouble(0); //horizontal offset from crosshair to target
@@ -50,41 +52,10 @@ public class VisionIOLimeLight implements VisionIO {
         inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0); //target area of the limelight from 0%-100%...how much does the apirltage take up on the frame
         inputs.primaryApriltagID = NetworkTableInstance.getDefault().getTable(name).getEntry("tid").getDouble(0);
 
-        boolean isAllianceBlue = false;
-        boolean isAllianceRed = false;
-
-        if(CatzAutonomous.chosenAllianceColor.get() != null){
-            isAllianceBlue = (CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue); 
-            isAllianceRed = (CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red); 
-        }
-
-        // collects pose information based off network tables and orients itself depending on alliance side
-        NetworkTableEntry botposeEntry;
-
-        if(isAllianceBlue){
-            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"); //TBD test how different alliance and forms of botpose affect vision pose
-        } else if(isAllianceRed){
-            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpired"); //TBD test how different alliance and forms of botpose affect vision pose
-        } else{
-            botposeEntry = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose"); //TBD test how different alliance and forms of botpose affect vision pose
-        }
-
-        //logging
-        Logger.recordOutput("Vision/AllianceColorBlue", isAllianceBlue);
-        Logger.recordOutput("Vision/AllianceColorRed", isAllianceRed);
-        
+        // collects pose information based off network tables and orients itself depending on alliance sid
         //creating new pose3d object based of pose from network tables
-        double[] data = botposeEntry.getDoubleArray(new double[7]);
-        Pose3d pose = new Pose3d(
-                data[0], //x translational component
-                data[1], //y translational component
-                data[2], //z translational component
-                new Rotation3d(
-                        Math.toRadians(data[3]),   //apriltag roll component
-                        Math.toRadians(data[4]),   //apriltag pitch componenet
-                        Math.toRadians(data[5])));  //apriltag yaw component
-                                     //.transformBy(cameraOffset); //apply the camera offset           TBD this is breaking the limelight
-
+        Pose3d pose = llresults.targetingResults.getBotPose3d_wpiBlue();
+        inputs.tagCount = llresults.targetingResults.targets_Fiducials.length;
 
         // set if the Limelight has a target to loggable boolean
         if (inputs.tv == 1) {
@@ -95,8 +66,8 @@ public class VisionIOLimeLight implements VisionIO {
         }
 
         // calculates total latency using 7th table item in array //TBD be more explicit about what latency value gives
-        double latency = data[6] / 1000;
-
+        double latency = (llresults.targetingResults.latency_capture + llresults.targetingResults.latency_pipeline) / 1000; //data[6] or latency is recorded in ms; divide by 1000 to get s
+        inputs.latency = latency;
         //shoves in new pose2d from pose3d object estimate depending on if new apriltag detected
         if (inputs.hasTarget) {
             // sets input timestamp
@@ -104,21 +75,35 @@ public class VisionIOLimeLight implements VisionIO {
 
             inputs.isNewVisionPose = true;
 
+            
             Pose2d pose2d = pose.toPose2d();
+            
+            if(prevPos == null){
+                prevPos = pose.toPose2d();
+            }
+
+            if(pose2d.getTranslation().getDistance(prevPos.getTranslation()) > 0.3){
+                badData = true;
+                pose2d = new Pose2d(-1,-1,new Rotation2d());
+            }
+
+            if(!badData){
+                prevPos = pose2d;
+            }
+
+            badData = false;
 
             //data used for pose estimator
-            inputs.x = pose2d.getX();// + cameraOffset.getX();
-            inputs.y = pose2d.getY();// + cameraOffset.getY();
-            inputs.rotation = pose2d.getRotation().getRadians();// + cameraOffset.getRotation().getAngle();
-
+            inputs.x = pose2d.getX();
+            inputs.y = pose2d.getY();
+            inputs.rotation = pose2d.getRotation().getRadians();
             Logger.recordOutput("Obometry/VisionPose", new Pose2d(inputs.x,inputs.y,Rotation2d.fromRadians(inputs.rotation)));
         } 
         else {
             inputs.isNewVisionPose = false;
         }
 
-        lastData = data;
-    }
+    } 
 
     @Override
     public String getName() {

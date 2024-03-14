@@ -34,6 +34,9 @@ public interface VisionIO {
         public double tv; //whether the limelight has any vaild targets
         public double ta; //target area of the limelight from 0%-100%...how much does the apirltage take up on the frame
 
+        public int tagCount;
+        public double latency;
+
     }
 
     public default void updateInputs(VisionIOInputs inputs) {}
