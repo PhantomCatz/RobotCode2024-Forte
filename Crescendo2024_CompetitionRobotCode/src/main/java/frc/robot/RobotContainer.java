@@ -45,7 +45,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   //xbox controller
   private CommandXboxController xboxDrv;
   private CommandXboxController xboxAux;
-  private CommandXboxController xboxTest;
+ // private CommandXboxController xboxTest;
 
   public RobotContainer() {
     //instantiate subsystems
@@ -124,7 +124,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.rightStick().onTrue(Commands.either(shooter.cmdShooterRamp(), 
                                                 new IntakeManualCmd(()->xboxAux.getRightY(), ()->xboxAux.rightStick().getAsBoolean()),
                                                 ()->stateMachine.getNoteDestination() == NoteDestination.SPEAKER));
-
+    //xboxAux.x().onTrue(new ScoreAmpOrTrapCmd());
     //turret
     xboxAux.leftTrigger().onTrue(turret.cmdTurretLT());
     xboxAux.rightTrigger().onTrue(turret.cmdTurretRT());
@@ -138,10 +138,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
   //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
   private void defaultCommands() {  
-    driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxTest.getLeftX(),
-                                                    ()-> xboxTest.getLeftY(),
-                                                    ()-> xboxTest.getRightX(),
-                                                    ()-> xboxTest.b().getAsBoolean()));
+    driveTrain.setDefaultCommand(new TeleopDriveCmd(()-> xboxDrv.getLeftX(),
+                                                    ()-> xboxDrv.getLeftY(),
+                                                    ()-> xboxDrv.getRightX(),
+                                                    ()-> xboxDrv.b().getAsBoolean()));
 
   }
 

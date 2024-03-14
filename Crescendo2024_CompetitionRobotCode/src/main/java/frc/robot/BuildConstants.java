@@ -13,6 +13,7 @@ public final class BuildConstants {
   public static final String GIT_BRANCH = "feature-saveMe-aka-AutonCode";
   public static final String BUILD_DATE = "2024-03-14 16:01:09 EDT";
   public static final long BUILD_UNIX_TIME = 1710446469767L;
+
   public static final int DIRTY = 1;
 
   private BuildConstants(){}
