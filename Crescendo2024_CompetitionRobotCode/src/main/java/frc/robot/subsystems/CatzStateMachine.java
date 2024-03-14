@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
-import frc.robot.commands.mechanismCmds.ManualIntakeCmd;
+import frc.robot.commands.mechanismCmds.manualintakecmd;
 import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
 import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
 import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
@@ -98,7 +98,7 @@ public class CatzStateMachine extends SubsystemBase {
             case TRAP:
             default:
                 System.out.println("Amp rtst cmd");
-                return new ManualIntakeCmd(supplierRightY, supplierRightStickPressed);
+                return new manualintakecmd(supplierRightY, supplierRightStickPressed);
         }
     }
 
