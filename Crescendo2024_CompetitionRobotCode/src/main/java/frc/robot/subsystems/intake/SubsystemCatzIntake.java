@@ -277,7 +277,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
               // -----------------------------------------------------------------------------------
               if (SubsystemCatzElevator.getInstance().getElevatorRevPos() > elevatorThresholdRev) {
                 m_intakeElevatorInSafetyZone = true;
-                System.out.println("IZ");
+                System.out.println("reserve for intake amp transition");
               }
             } else {
               // -----------------------------------------------------------------------------------
@@ -286,7 +286,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
               if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < elevatorThresholdRev) {
                 m_intakeElevatorInSafetyZone = true;
 
-                System.out.println("Coming stow");
+                System.out.println("Coming from stow");
               }
             }
           }
@@ -325,7 +325,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
                 // -----------------------------------------------------------------------------------
                 if (m_nextTargetPositionDeg == INTAKE_AMP_TRANSITION_DEG ||
                     m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
-                      System.out.println(m_nextTargetPositionDeg);
+                      System.out.println("updating to transition" + m_nextTargetPositionDeg);
 
                   m_targetPositionDeg = m_nextTargetPositionDeg;
 
@@ -447,6 +447,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // -------------------------------------------------------------------------------------
       m_nextTargetPositionDeg = INTAKE_AMP_TRANSITION_DEG; // set intermediate destination
       if (m_intermediateStageReached) {
+      System.out.println("I-D");
         m_targetPositionDeg = INTAKE_AMP_TRANSITION_DEG;
       } else {
         m_targetPositionDeg = INTAKE_AMP_SCORE_DN_DEG;
@@ -454,7 +455,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
           elevatorThresholdRev = INTAKE_ELEV_MIN_HEIGHT_FOR_AMP_TRANS_REV;
       nextElevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
-      System.out.println("I-D");
       // -----------------------------------------------------------------------------------
       // Source/ground
       // -----------------------------------------------------------------------------------
