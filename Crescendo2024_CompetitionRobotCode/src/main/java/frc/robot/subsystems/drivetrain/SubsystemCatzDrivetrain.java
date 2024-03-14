@@ -124,8 +124,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             flipGyro();
         }
 
-        resetPosition(new Pose2d(1.26,5.53,new Rotation2d()));
-
     }
 
     // Get the singleton instance of the CatzDriveTrainSubsystem
