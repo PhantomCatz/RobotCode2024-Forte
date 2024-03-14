@@ -250,7 +250,7 @@ public final class CatzConstants {
                                                         SubsystemCatzTurret.HOME_POSITION);
     public static final CatzMechanismPosition HOME = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
-                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_UP_DEG, 
+                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_DN_DEG, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
                                                         
@@ -268,7 +268,7 @@ public final class CatzConstants {
                                                         SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition SCORING_AMP = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_SCORE_AMP, 
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_AMP_SCORE, 
                                                         SubsystemCatzIntake.INTAKE_AMP_SCORE_DEG, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS,  
                                                         SubsystemCatzTurret.HOME_POSITION);
@@ -281,7 +281,7 @@ public final class CatzConstants {
 
     public static final CatzMechanismPosition INTAKE_SOURCE = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
-                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_UP_DEG,
+                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_DN_DEG,
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
 

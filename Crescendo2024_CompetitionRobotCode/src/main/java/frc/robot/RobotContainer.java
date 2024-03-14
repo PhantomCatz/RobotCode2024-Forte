@@ -89,11 +89,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxDrv.start().and(xboxDrv.leftTrigger()).onTrue(Commands.runOnce(()->driveTrain.resetPosition(new Pose2d(2.97,4.11, Rotation2d.fromDegrees(0)))));
 
     //climb
-    xboxDrv.b().and(xboxAux.a()).onTrue(new ParallelCommandGroup(new ClimbCmd(()->xboxAux.povUp().getAsBoolean(),      //both climb hooks up
+    xboxDrv.b().and(xboxAux.a()).onTrue(new ClimbCmd(()->xboxAux.povUp().getAsBoolean(),                                //both climb hooks up
                                                                               ()->xboxAux.povDown().getAsBoolean(),    //both climb hooks down
                                                                               ()->xboxAux.povLeft().getAsBoolean(),    //raise right climb hook
-                                                                              ()->xboxAux.povRight().getAsBoolean()),  //raose left climb hook
-                                                                 new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER))); 
+                                                                              ()->xboxAux.povRight().getAsBoolean()));  //raose left climb hook 
 
     //----------------------------------------------------------------------------------------
     //  Aux Commands

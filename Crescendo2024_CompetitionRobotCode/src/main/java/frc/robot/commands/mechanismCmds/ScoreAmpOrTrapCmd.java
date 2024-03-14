@@ -12,7 +12,7 @@ import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorControlState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
