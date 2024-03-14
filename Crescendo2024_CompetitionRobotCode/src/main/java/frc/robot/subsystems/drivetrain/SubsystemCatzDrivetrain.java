@@ -26,6 +26,7 @@ import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.Utils.GeometryUtils;
 import frc.robot.Utils.LocalADStarAK;
 // import frc.robot.subsystems.vision.SubsystemCatzVision;;
+import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 // Drive train subsystem for swerve drive implementation
 public class SubsystemCatzDrivetrain extends SubsystemBase {
@@ -45,7 +46,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Swerve drive pose estimator for tracking robot pose
     private static SwerveDrivePoseEstimator m_poseEstimator;
-    private static SwerveDrivePoseEstimator m_poseEstimato;  //TODO remove later
+
+    private final SubsystemCatzVision vision = SubsystemCatzVision.getInstance();
 
     // Swerve modules representing each corner of the robot
     public final CatzSwerveModule LT_FRNT_MODULE;
@@ -101,11 +103,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 new Pose2d(), 
                 VecBuilder.fill(0.1, 0.1, 10),  //odometry standard devs
                 VecBuilder.fill(5, 5, 500)); //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
-
-
-        m_poseEstimato = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,   //TODO remove later
-                Rotation2d.fromDegrees(getGyroAngle()), getModulePositions(), new Pose2d());
-
         
         //Configure logging trajectories to advantage kit
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -131,7 +128,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         return instance;
     }
 
-    // Periodic update method for the drive train subsystem
+    private Pose2d prevPose = new Pose2d();
+    private double prevTime = Timer.getFPGATimestamp();
     @Override
     public void periodic() {
         // Update inputs (sensors/encoders) for code logic and advantage kit
@@ -144,25 +142,57 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         Logger.processInputs("Drive/gyroinputs ", gyroInputs);
 
         // Update pose estimator with module encoder values + gyro
-        m_poseEstimato.update(getRotation2d(), getModulePositions()); //TODO remove later
         m_poseEstimator.update(getRotation2d(), getModulePositions());
-      
-        m_poseEstimator.setVisionMeasurementStdDevs(
-            VecBuilder.fill(10, 
-                            10, 
-                            20));
-        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop        
-        // for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
-        //     //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less       
-        //     m_poseEstimator.addVisionMeasurement(
-        //         vision.getVisionOdometry().get(i).getPose(),
-        //         Timer.getFPGATimestamp()
-        //     );
-        // }
+        
+        double dt = Timer.getFPGATimestamp() - prevTime;
+        double dSpeed = m_poseEstimator.getEstimatedPosition().getTranslation().getDistance(prevPose.getTranslation()) / dt;
+        
+        prevPose = m_poseEstimator.getEstimatedPosition();
+        prevTime = Timer.getFPGATimestamp();
+        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop 
+        var visionOdometry = vision.getVisionOdometry();   
+        
+        for (int i = 0; i < visionOdometry.size(); i++) {
+            //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
+            double xyStdDev = 0;
+
+            if(visionOdometry.get(i).getPose().getX() == -1 && visionOdometry.get(i).getPose().getY() == -1){
+                break;
+            }
+
+            if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
+                xyStdDev = 3;
+            }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
+                xyStdDev = 5;
+            }else if(visionOdometry.get(i).getAvgArea() >= 0.12){
+                xyStdDev = 10;
+            }else{
+                xyStdDev = 40;
+            }
+
+            System.out.println(visionOdometry.get(i).getAvgArea());
+
+
+            dSpeed = Math.abs(dSpeed);
+            if (dSpeed > 10){
+                xyStdDev *= dSpeed / 3; //account for some shaking when suddenly moving fast.
+            }
+
+            Logger.recordOutput("XYStdDev", xyStdDev);
+            Logger.recordOutput("dSpeed", dSpeed);
+
+            m_poseEstimator.setVisionMeasurementStdDevs(
+            VecBuilder.fill(xyStdDev,xyStdDev,9)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
+        
+            m_poseEstimator.addVisionMeasurement(
+                new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
+                visionOdometry.get(i).getTimestamp()
+            );
+
+        }
 
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 
-        Logger.recordOutput("Obometry/estimato",m_poseEstimato.getEstimatedPosition());
         //Logger.recordOutput("Obometry/LimelightPose", vision.getVisionOdometry().get(0).getPose()); 
 
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
@@ -170,7 +200,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Update SmartDashboard with the gyro angle
         SmartDashboard.putNumber("gyroAngle", getGyroAngle());
-        
         m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
         m_fieldRelAccel = new FieldRelativeAccel(m_fieldRelVel, m_lastFieldRelVel, 0.02);
         m_lastFieldRelVel = m_fieldRelVel;
@@ -295,8 +324,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             angle += 180;
         }
         m_poseEstimator.resetPosition(Rotation2d.fromDegrees(angle),getModulePositions(),pose);
-        m_poseEstimato.resetPosition(Rotation2d.fromDegrees(angle),getModulePositions(),pose); //TODO remove later
-
+        
     }
  
     // Get the current pose of the robot
