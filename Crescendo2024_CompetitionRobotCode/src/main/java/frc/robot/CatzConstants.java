@@ -165,15 +165,15 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
     //sn2
-    public static final double LT_FRNT_OFFSET = 0.23406623085+0.5;      //mag encoder 0
-    public static final double LT_BACK_OFFSET = 0.2372954059;           //mag encoder 1
-    public static final double RT_BACK_OFFSET = 0.60861531521+0.5;      //mag encoder 2
-    public static final double RT_FRNT_OFFSET = 0.838318270957+0.5;      //mag encoder 3
+    // public static final double LT_FRNT_OFFSET = 0.23406623085+0.5;      //mag encoder 0
+    // public static final double LT_BACK_OFFSET = 0.2372954059;           //mag encoder 1
+    // public static final double RT_BACK_OFFSET = 0.60861531521+0.5;      //mag encoder 2
+    // public static final double RT_FRNT_OFFSET = 0.838318270957+0.5;      //mag encoder 3
     //sn1
-    // public static final double LT_FRNT_OFFSET =  0.21317;
-    // public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
-    // public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
-    // public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
+    public static final double LT_FRNT_OFFSET =  0.21317;
+    public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
+    public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
+    public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
 
 
     public static final int LT_FRNT_DRIVE_ID = 1;
@@ -187,9 +187,9 @@ public final class CatzConstants {
     public static final int RT_FRNT_STEER_ID = 8;
 
     public static final int LT_FRNT_ENC_PORT = 9;
-    public static final int LT_BACK_ENC_PORT = 6; 
+    public static final int LT_BACK_ENC_PORT = 8; 
     public static final int RT_BACK_ENC_PORT = 7;
-    public static final int RT_FRNT_ENC_PORT = 8; 
+    public static final int RT_FRNT_ENC_PORT = 6; 
 
     //--------------------------------------MTR CONFIGS------------------------------------
     public static final Rotation2d defaultRot = new Rotation2d(0.0);
@@ -250,7 +250,7 @@ public final class CatzConstants {
                                                         SubsystemCatzTurret.HOME_POSITION);
     public static final CatzMechanismPosition HOME = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
-                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_DN_DEG, 
+                                                        SubsystemCatzIntake.INTAKE_STOW_DEG, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
                                                         

@@ -66,10 +66,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
   public static final double ELEVATOR_STOW           = 0.0;
   public static final double ELEVATOR_GROUND_PICKUP  = 0.0;
   public static final double ELEVATOR_AMP_SCORE_DN   = 0.0;
-  public static final double ELEVATOR_AMP_TRANSITION = 35.0;
-  public static final double ELEVATOR_SOURCE_PICKUP  = 40.0;
-  public static final double ELEVATOR_AMP_SCORE      = 60.0;
-  public static final double ELEVATOR_SCORE_TRAP     = 66.0;
+  public static final double ELEVATOR_AMP_TRANSITION = 50.0;
+  public static final double ELEVATOR_SOURCE_PICKUP  = 60.0;
+  public static final double ELEVATOR_AMP_SCORE      = 90.0;
+  public static final double ELEVATOR_SCORE_TRAP     = 110.0;
 
   private static final double ELEVATOR_NULL_POSITION = -999.0;
 
@@ -95,7 +95,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
     UP,DOWN
   }
 
-  private static ElevatorDirection currentElevatorDirection;
+  private static ElevatorDirection currentElevatorDirection = ElevatorDirection.UP;
 
   private boolean m_elevatorIntakeInSafetyZone = false;
 
@@ -149,6 +149,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
           currentElevatorState == ElevatorControlState.SEMI_MANUAL)) {
 
         if((m_targetPositionRev != ELEVATOR_NULL_POSITION)) {
+        System.out.println("in setPosition");
 
           if(m_elevatorIntakeInSafetyZone == false) {
             if(currentElevatorDirection == ElevatorDirection.DOWN) {
@@ -167,7 +168,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
                                     m_ffVolts, 
                                     inputs.bottomSwitchTripped);
 
-            if(inputs.elevatorPositionError < 3.0) {
+            if(inputs.elevatorPositionError < 1.0) {
               m_elevatorInPos = true;
             } 
           }
@@ -181,6 +182,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
     Logger.recordOutput("elevator/targetRev", m_targetPositionRev);
     Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
     Logger.recordOutput("elevator/elevatorin safety", m_elevatorIntakeInSafetyZone);
+    Logger.recordOutput("elevator/GOing up", currentElevatorDirection.toString());
   }
 
 
@@ -188,7 +190,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // Elevator Access Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionElevator(CatzMechanismPosition targetPosition) {
-    System.out.println("eu");
+    System.out.println("EUP" + targetPosition.getElevatorTargetRev());
     m_elevatorInPos = false;
     currentElevatorState = ElevatorControlState.AUTO;
 
@@ -204,7 +206,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
       //----------------------------------------------------------------------------------
       currentElevatorDirection = ElevatorDirection.DOWN;
       intakeClearanceAngle = SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG;
+      System.out.println(SubsystemCatzIntake.getInstance().getWristAngle());
       if(SubsystemCatzIntake.getInstance().getWristAngle() > SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG) {
+        
+        System.out.println("in pickup elevator");
            //-------------------------------------------------------------------------------------
           //  intake is above bumpers
           //----------------------------------------------------------------------------------
