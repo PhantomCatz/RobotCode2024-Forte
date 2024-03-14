@@ -37,5 +37,5 @@ public interface IntakeIO {
 
     public default void setIntakePivotPercentOutput(double percentOutput) {}
 
-    public default void setIntakePivotEncOutput(double pivotEncOuput, double ffVolts) {}
+    public default void setIntakePivotPostionRev(double pivotEncOuput, double ffVolts) {}
 }

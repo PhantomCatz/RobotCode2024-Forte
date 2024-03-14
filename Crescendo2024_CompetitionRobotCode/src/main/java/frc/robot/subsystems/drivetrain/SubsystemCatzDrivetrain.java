@@ -100,8 +100,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 Rotation2d.fromDegrees(getGyroAngle()), 
                 getModulePositions(), 
-                new Pose2d(), 
-                VecBuilder.fill(0.1, 0.1, 10),  //odometry standard devs
+                new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180)), 
+                VecBuilder.fill(0.1, 0.1, 0.7),  //odometry standard devs
                 VecBuilder.fill(5, 5, 500)); //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
         
         //Configure logging trajectories to advantage kit

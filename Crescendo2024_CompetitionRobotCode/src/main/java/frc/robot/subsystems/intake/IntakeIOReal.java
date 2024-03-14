@@ -54,14 +54,14 @@ public class IntakeIOReal implements IntakeIO {
         pivotMtr.getConfigurator().apply(new TalonFXConfiguration()); //reset to factory defaults
 
         // set Motion Magic settings
-        talonConfigsPivot.MotionMagic.MotionMagicCruiseVelocity = 25; // Target cruise velocity of 80 rps
+        talonConfigsPivot.MotionMagic.MotionMagicCruiseVelocity = 40; // Target cruise velocity of 80 rps
         talonConfigsPivot.MotionMagic.MotionMagicAcceleration   = 160; // Target acceleration of 160 rps/s (0.5 seconds)
-        talonConfigsPivot.MotionMagic.MotionMagicJerk           = 160; // Target jerk of 160 rps/s/s (0.1 seconds)
+        talonConfigsPivot.MotionMagic.MotionMagicJerk           = 800; // Target jerk of 160 rps/s/s (0.1 seconds)
 
 
-        talonConfigsPivot.Slot0.kP = 9.0;
-        talonConfigsPivot.Slot0.kI = 0.00;
-        talonConfigsPivot.Slot0.kD = 0.27;
+        talonConfigsPivot.Slot0.kP = SubsystemCatzIntake.PIVOT_PID_kP;
+        talonConfigsPivot.Slot0.kI = SubsystemCatzIntake.PIVOT_PID_kD;
+        talonConfigsPivot.Slot0.kD = SubsystemCatzIntake.PIVOT_PID_kD;
         
             //current limit
         talonConfigsPivot.CurrentLimits = new CurrentLimitsConfigs();
@@ -144,7 +144,7 @@ public class IntakeIOReal implements IntakeIO {
     }
 
     @Override
-    public void setIntakePivotEncOutput(double encOutput, double ffVoltage) {
+    public void setIntakePivotPostionRev(double encOutput, double ffVoltage) {
         pivotMtr.setControl(new MotionMagicVoltage(encOutput, 
                                                      true, 
                                                      ffVoltage, 

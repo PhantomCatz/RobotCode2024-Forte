@@ -25,9 +25,9 @@ import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorState;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorControlState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeState;
+import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
@@ -48,32 +48,39 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   private static final InterpolatingDoubleTreeMap shooterPivotTable = new InterpolatingDoubleTreeMap();
 
   static { //TBD add values in through testing
-    shooterPivotTable.put(1.0, 2.0);
-    shooterPivotTable.put(1.5, 3.5);
-    shooterPivotTable.put(2.0, 5.0);
-    shooterPivotTable.put(2.5, 7.5);
-    shooterPivotTable.put(3.0, 10.0);
-    shooterPivotTable.put(3.5, 12.5);
-    shooterPivotTable.put(4.0, 15.0);
-    shooterPivotTable.put(4.5, 17.5);
-    shooterPivotTable.put(5.0, 20.0);
-    shooterPivotTable.put(5.5, 22.5);
-    shooterPivotTable.put(6.0, 25.0);
-    shooterPivotTable.put(6.5, 28.0);
-    shooterPivotTable.put(7.0, 31.0);
-    shooterPivotTable.put(7.5, 34.0);
-    shooterPivotTable.put(8.0, 37.0);
-    shooterPivotTable.put(9.0, 41.0);
-    shooterPivotTable.put(10.0, 45.0);
+    shooterPivotTable.put(1.37, 0.6);
+    shooterPivotTable.put(1.37, 0.7);
+    shooterPivotTable.put(1.87, 0.65);
+    shooterPivotTable.put(1.87, 0.5);
+    shooterPivotTable.put(2.37, 0.35);
+    shooterPivotTable.put(2.37, 0.3);
+    shooterPivotTable.put(2.87, 0.3);
+    shooterPivotTable.put(2.87, 0.28); //bOUNCEDD OFF INSIDE ON 0.25
+    shooterPivotTable.put(3.37, 0.25);
+    shooterPivotTable.put(3.37, 0.20);
+    shooterPivotTable.put(3.87, 0.125); //bounced off on 0.15
+    shooterPivotTable.put(3.87, 0.1);
+    shooterPivotTable.put(4.87, 0.1);
+    shooterPivotTable.put(4.87, 0.05);
+    shooterPivotTable.put(4.87, 0.1);
+    shooterPivotTable.put(5.87, 0.0);
+
+
   }
 
   //time table look up for calculating how long it takes to get note into speaker
   /** angle to time look up table key: ty angle, values: time */
   private static final InterpolatingDoubleTreeMap timeTable = new InterpolatingDoubleTreeMap();
-      // (ty-angle,time)
-  static { //TBD add values in through testing
-    timeTable.put(80.0, 2.0);
-
+      // (distance, time seconds)
+  static { 
+        // (ty-angle,time)
+        timeTable.put(1.37, 0.78);
+        timeTable.put(2.37, 0.80);
+        timeTable.put(2.87, 0.81);
+        timeTable.put(3.37, 0.82);
+        timeTable.put(4.87, 0.825);
+        timeTable.put(5.87, 0.83);
+  
   }
 
   public static final double k_ACCEL_COMP_FACTOR = 0.100; // in units of seconds
@@ -89,7 +96,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   private Translation2d toTestGoal;
 
   //number variables
-  private double distanceToSpeakerInches;
+  private double distanceToSpeakerMeters;
   private double shotTime;
   private double newShotTime;
 
@@ -111,24 +118,23 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   @Override
   public void initialize() {
     //start the flywheel
-    shooter.startShooterFlywheel();
-    intake.updateTargetPositionIntake(CatzMechanismConstants.POS_AMP_TRANSITION);
-    elevator.updateTargetPositionElevator(CatzMechanismConstants.POS_STOW);
+    //shooter.startShooterFlywheel();
+    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AMP_TRANSITION.getIntakePivotTargetAngle());
+    elevator.updateTargetPositionElevator(CatzMechanismConstants.STOW);
 
-    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {
         //translation of the blue alliance speaker
       m_targetXY = new Translation2d(0.0, 5.55);
     } else {
-      //translation of the blue alliance speaker
-      m_targetXY = new Translation2d(16, 5.55);
+      //translation of the Red alliance speaker
+      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , 5.55);
     }
 
   }
 
   @Override 
   public void execute() {
-    if(m_bSupplier != null &&
-       m_bSupplier.get() == true) {
+    if(m_bSupplier != null && m_bSupplier.get() == true) {
         shooter.cmdShoot();
     }
 
@@ -139,11 +145,11 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     //take the distance to the speaker
     robotToGoalXY = m_targetXY.minus(drivetrain.getPose().getTranslation());
 
-    //convert the distance to inches
-    distanceToSpeakerInches = robotToGoalXY.getDistance(new Translation2d()) * 39.37;
+    //convert the distance to meters
+    distanceToSpeakerMeters = robotToGoalXY.getDistance(new Translation2d());
 
-    //get the time it takes for note to reach the speaker in seconds? TBD
-    shotTime = timeTable.get(distanceToSpeakerInches);
+    //get the time it takes for note to reach the speaker in seconds
+    shotTime = timeTable.get(distanceToSpeakerMeters); //TBD is this even necessary the note is moving pretty fast
 
     movingGoalLocation = new Translation2d();
 
@@ -151,7 +157,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     for(int i=0;i<5;i++){
       //collect new shooting targets modifed by robot acceleration and velocity
         m_virtualGoalX = m_targetXY.getX()
-                - shotTime * (m_robotVel.vx + m_robotAccel.ax * k_ACCEL_COMP_FACTOR);
+               - shotTime * (m_robotVel.vx + m_robotAccel.ax * k_ACCEL_COMP_FACTOR);
         m_virtualGoalY = m_targetXY.getY()
                 - shotTime * (m_robotVel.vy + m_robotAccel.ay * k_ACCEL_COMP_FACTOR);
 
@@ -160,7 +166,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
         toTestGoal = testGoalLocation.minus(drivetrain.getPose().getTranslation());
 
         //take the new time to reach target
-        newShotTime = timeTable.get(toTestGoal.getDistance(new Translation2d()) * 39.37);
+        newShotTime = timeTable.get(toTestGoal.getDistance(new Translation2d()));
 
         //if the difference between the two is low, skip the iterations 
         if(Math.abs(newShotTime-shotTime) <= 0.010){
@@ -176,20 +182,22 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
         }
     }
 
-    double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d()) * 39.37;
-
-    if(intake.getIntakeState() == IntakeState.IN_POSITION &&
-       elevator.getElevatorState() == ElevatorState.IN_POSITION) {
+    double newDist = movingGoalLocation.minus(drivetrain.getPose().getTranslation()).getDistance(new Translation2d());
+    
+    if(intake.getIntakeInPos() &&
+       elevator.getElevatorInPos()) {
       //send the new target to the turret
       turret.aimAtGoal(movingGoalLocation, false);
     }
 
+    double servoPos = shooterPivotTable.get(newDist);
     //send new target to the shooter
-    shooter.updateShooterServo(shooterPivotTable.get(newDist));
+    shooter.updateShooterServo(servoPos);
 
+    Logger.recordOutput("servoCmdPos", servoPos);
     Logger.recordOutput("ShooterCalcs/Fixed Time", shotTime);
     Logger.recordOutput("ShooterCalcs/NewDist", newDist);
-    Logger.recordOutput("ShooterCalcs/Calculated (in)", distanceToSpeakerInches);
+    Logger.recordOutput("ShooterCalcs/Calculated (mtrs)", distanceToSpeakerMeters);
     Logger.recordOutput("ShooterCalcs/Goal X", m_virtualGoalX);
     Logger.recordOutput("ShooterCalcs/Goal Y", m_virtualGoalY);
     Logger.recordOutput("ShooterCalcs/NewShotTime", newShotTime);

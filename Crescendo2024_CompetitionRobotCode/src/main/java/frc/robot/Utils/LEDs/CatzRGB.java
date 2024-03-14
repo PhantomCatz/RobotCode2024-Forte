@@ -33,10 +33,12 @@ public class CatzRGB
         }
     } 
 
-    private final int LED_COUNT = 65; //54 
-    private final int LED_PWM_PORT = 9;
+    private final int LED_COUNT = 38; //54 //65
+    private final int LED_PWM_PORT = 2;
     private final double FLOW_PERIOD = 2.0;
     public final Color PHANTOM_SAPPHIRE = new Color(15, 25, 200); 
+
+    int iterationCounter = 0;
 
     private AddressableLED led;
     private AddressableLEDBuffer ledBuffer;
@@ -197,6 +199,130 @@ public class CatzRGB
         }
         else{
             return Color.kRed;
+        }
+    }
+
+
+    private double timer(double seconds){ // in seconds; converts time to iteration counter units
+        //System.out.println(Math.round(seconds/LOOP_CYCLE_MS) + 1);
+        return Math.round(seconds/0.02) + 1;
+    }
+    
+    private void ampModeWithNote() {
+        fillLEDBuffer(Color.kYellow);
+        led.setData(ledBuffer);
+    }
+
+    private void speakerModeWithNote() {
+        fillLEDBuffer(Color.kOrange);
+        led.setData(ledBuffer);
+    }
+
+    private void climbModeWithNote() {
+        fillLEDBuffer(Color.kBlue);
+        led.setData(ledBuffer);
+    }
+
+    private void hoardModeWithNote() {
+        fillLEDBuffer(Color.kWhite);
+        led.setData(ledBuffer);
+    }
+
+    private void ampModeWithoutNote() {
+        iterationCounter++;
+        if(iterationCounter <= timer(0.5)) {
+            if(ledBuffer.getLED(0) == Color.kYellow) {
+                fillLEDBuffer(Color.kWhite);
+            } else {
+                fillLEDBuffer(Color.kYellow);
+            }
+            led.setData(ledBuffer);
+            iterationCounter = 0;
+        }
+    }
+
+    private void autoAlignReadyToShoot() {
+        fillLEDBuffer(Color.kGreen);
+        led.setData(ledBuffer);
+    }
+
+    private void autoAlignGood_NotRampedUp() {
+        iterationCounter++;
+        if(iterationCounter <= timer(0.5)) {
+            if(ledBuffer.getLED(0) == Color.kGreen) {
+                fillLEDBuffer(Color.kBlack);
+            } else {
+                fillLEDBuffer(Color.kGreen);
+            }
+            led.setData(ledBuffer);
+            iterationCounter = 0;
+        }
+    }
+
+    private void autoAlignMisalign_Horizontal() {
+        fillLEDBuffer(Color.kPurple);
+        led.setData(ledBuffer);
+    }
+
+    private void autoAlignMisalign_HorizontalAndNotRampedUp() {
+        iterationCounter++;
+        if(iterationCounter <= timer(0.5)) {
+            if(ledBuffer.getLED(0) == Color.kPurple) {
+                fillLEDBuffer(Color.kBlack);
+            } else {
+                fillLEDBuffer(Color.kPurple);
+            }
+            led.setData(ledBuffer);
+            iterationCounter = 0;
+        }
+    }
+
+    private void autoAlignMisalign_Vertical() {
+        fillLEDBuffer(Color.kYellow);
+        led.setData(ledBuffer);
+    }
+    
+    private void autoAlignMisalign_VerticalAndNotRampedUp() {
+        iterationCounter++;
+        if(iterationCounter <= timer(0.5)) {
+            if(ledBuffer.getLED(0) == Color.kYellow) {
+                fillLEDBuffer(Color.kBlack);
+            } else {
+                fillLEDBuffer(Color.kYellow);
+            }
+            led.setData(ledBuffer);
+            iterationCounter = 0;
+        }
+    }
+
+    private void autoAlignTargetNotFound() {
+        fillLEDBuffer(Color.kBlue);
+        led.setData(ledBuffer);
+    }
+
+    private void signalHumanPlayerAmp() {
+        iterationCounter++;
+        if(iterationCounter <= timer(0.05)) {
+            if(ledBuffer.getLED(0) == Color.kRed) {
+                fillLEDBuffer(Color.kBlack);
+            } else {
+                fillLEDBuffer(Color.kRed);
+            }
+            led.setData(ledBuffer);
+            iterationCounter = 0;
+        }
+    }
+
+    private void inAutonomous() {
+        iterationCounter++;
+        if(iterationCounter <= timer(0.05)) {
+            if(ledBuffer.getLED(0) == Color.kYellow) {
+                fillLEDBuffer(Color.kBlack);
+            } else {
+                fillLEDBuffer(Color.kYellow);
+            }
+            led.setData(ledBuffer);
+            iterationCounter = 0;
         }
     }
 }

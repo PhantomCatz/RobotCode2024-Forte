@@ -14,9 +14,6 @@ public class ManualElevatorCmd extends Command {
   Supplier<Double> m_supplierLeftY;
   Supplier<Boolean> m_supplierLeftJoyStickPressed;
 
-
-  private double pressCounter;
-
   public ManualElevatorCmd(Supplier<Double> supplierLeftY, Supplier<Boolean> supplierLeftJoyStickPressed) {
     addRequirements(elevator);
 
@@ -26,20 +23,12 @@ public class ManualElevatorCmd extends Command {
 
   @Override
   public void initialize() {
-    pressCounter = 0;
   }
 
   @Override
   public void execute() {
-    // if(m_supplierLeftJoyStickPressed.get()) {
-    //   pressCounter = 1;
-    // }
-    // if(pressCounter == 1) {
-    //   elevator.setElevatorSemiManualPwr(m_supplierLeftY.get());
-    // } else {
-     // System.out.println(m_supplierLeftY.get());
+
       elevator.setElevatorPercentOutput(m_supplierLeftY.get());
-    //}  
   }
 
   @Override

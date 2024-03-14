@@ -7,16 +7,14 @@ package frc.robot.commands.mechanismCmds;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 
-public class manualintakecmd extends Command {
+public class IntakeManualCmd extends Command {
   SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   Supplier<Double> m_supplierLeftJoyY;
   Supplier<Boolean> m_supplierLeftJoyStickPressed;
 
-  public manualintakecmd(Supplier<Double> supplierLeftJoyY, Supplier<Boolean> supplierLeftJoyStickPressed) {
+  public IntakeManualCmd(Supplier<Double> supplierLeftJoyY, Supplier<Boolean> supplierLeftJoyStickPressed) {
     this.m_supplierLeftJoyY = supplierLeftJoyY;
     this.m_supplierLeftJoyStickPressed = supplierLeftJoyStickPressed;
     addRequirements(intake);
@@ -28,7 +26,7 @@ public class manualintakecmd extends Command {
 
   @Override
   public void execute() {
-      intake.pivotSemiManual(m_supplierLeftJoyY.get());
+      intake.pivotFullManual(m_supplierLeftJoyY.get());
     
   }
 

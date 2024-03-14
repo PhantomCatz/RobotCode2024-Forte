@@ -54,13 +54,13 @@ public class ShooterIOReal implements ShooterIO {
     private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.2;
     private final double LOAD_MOTOR_ADJUST_SPEED     = 0.04;
 
-    public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
+    public static final int NEO_CURRENT_LIMIT_AMPS      = 30;
 
 /*---------------------------------------------------------------------------------------
  * Beam Breaks
  *-------------------------------------------------------------------------------------*/
-    private final DigitalInput ADJUST_BEAM_BREAK   = new DigitalInput(0);
-    private final DigitalInput LOAD_BEAM_BREAK     = new DigitalInput(1);
+    private final DigitalInput ADJUST_BEAM_BREAK = new DigitalInput(0);
+    private final DigitalInput LOAD_BEAM_BREAK   = new DigitalInput(1);
 
 /*---------------------------------------------------------------------------------------
  * Linear Servos
@@ -69,7 +69,6 @@ public class ShooterIOReal implements ShooterIO {
     private Servo shooterServoRT;
 
     private final int SERVO_LEFT_PWM_ID  = 0;
-
     private final int SERVO_RIGHT_PWM_ID = 1;
 
     private final int SERVO_PW_US_MAX_POSITION          = 2000;
@@ -156,8 +155,8 @@ public class ShooterIOReal implements ShooterIO {
 
         inputs.shooterVelocityLT        = SHOOTER_MOTOR_LT.getVelocity().getValue();
         inputs.shooterVelocityRT        = SHOOTER_MOTOR_RT.getVelocity().getValue();
-        inputs.velocityThresholdLT      = shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET;
-        inputs.velocityThresholdRT      = shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
+        inputs.velocityThresholdLT      = -shooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET; //was shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET
+        inputs.velocityThresholdRT      =  shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
         inputs.shooterVelocityErrorLT   = SHOOTER_MOTOR_LT.getClosedLoopError().getValue();
         inputs.shooterVelocityErrorRT   = SHOOTER_MOTOR_RT.getClosedLoopError().getValue();
         inputs.shooterMotorVoltageLT    = SHOOTER_MOTOR_LT.getMotorVoltage().getValue();

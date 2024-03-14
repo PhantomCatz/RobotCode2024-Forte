@@ -66,8 +66,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public enum ShooterServoState {
     FULL_MANUAL,
     AUTO,
-    TUNNING,
-    IN_POSITION
+    TUNNING
   }
  
   //shooter note state for determining when other mechanism should turn off
@@ -75,7 +74,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public enum ShooterNoteState {
     NOTE_IN_POSTION,
     NOTE_IN_ADJUST,
-    NOTE_HAS_BEEN_SHOOT,
+    NOTE_HAS_BEEN_SHOT,
     NULL
   }
 
@@ -86,6 +85,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   private boolean m_desiredBeamBreakState;
   private int     m_iterationCounter;
+
+  private boolean m_shooterServoInPos = false;
 
 
   
@@ -172,29 +173,30 @@ public class SubsystemCatzShooter extends SubsystemBase {
           
           case WAIT_FOR_MOTORS_TO_REV_UP:
           //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
-            if(-inputs.shooterVelocityLT >= inputs.velocityThresholdLT &&
+            if(inputs.shooterVelocityLT <= inputs.velocityThresholdLT && // was -inputs.shooterVelocityLT >= inputs.velocityThresholdLT
                 inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
 
-              if(DriverStation.isAutonomous()) {
-                currentShooterLoadState = ShooterLoadState.SHOOTING;
-              } else {
+              //if(DriverStation.isAutonomous()) {
+              //  currentShooterLoadState = ShooterLoadState.SHOOTING;
+              //} else {
                 xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
                 
                 m_iterationCounter = 0;
-              }
+              //
+            //}
             }
           break;
 
           case SHOOTING:
             io.feedShooter();
-            if(DriverStation.isAutonomous() == false) {
+            //if(DriverStation.isAutonomous() == false) {
               xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
-            }
+            //}
             m_iterationCounter++;
             if(m_iterationCounter >= timer(1)) {
               io.setShooterDisabled();
               currentShooterLoadState = ShooterLoadState.LOAD_OFF;
-              currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOOT;
+              currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
             }
           break;
@@ -215,20 +217,20 @@ public class SubsystemCatzShooter extends SubsystemBase {
       }
     }
     Logger.recordOutput("shooter/current load state", currentShooterLoadState.toString());
-    
+    Logger.recordOutput("servopos", m_newServoPosition);
 
     //servo Logic
     m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
 
-    //if(currentShooterServoState == ShooterServoState.TUNNING) {
+    if(currentShooterServoState == ShooterServoState.TUNNING) {
       double servoPosition = servoPosTunning.get();
       io.setServoPosition(servoPosition);
-    //}
+    }
 
     if(currentShooterServoState == ShooterServoState.AUTO) {
       io.setServoPosition(m_newServoPosition);
       if(Math.abs(m_servoPosError) < 0.1) {
-        currentShooterServoState = ShooterServoState.IN_POSITION;
+        m_shooterServoInPos = true;
       }
     }
   }
@@ -237,6 +239,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Intake Calculation Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
+    m_shooterServoInPos = false;
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
   }
@@ -246,6 +249,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public void updateShooterServo(double position) {
+    m_shooterServoInPos = false;
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = position;
   }
@@ -266,8 +270,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   // Getter Methods 
   //------------------------------------------------------------------------------------- 
-  public ShooterServoState getShooterServoState() {
+  private ShooterServoState getShooterServoState() {
     return currentShooterServoState;
+  }
+
+  public boolean getShooterServoInPos() {
+    return m_shooterServoInPos;
   }
   public ShooterNoteState getShooterNoteState() {
     return currentNoteState;

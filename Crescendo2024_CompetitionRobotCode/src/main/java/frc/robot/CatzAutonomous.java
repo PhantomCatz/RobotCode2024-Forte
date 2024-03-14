@@ -66,7 +66,7 @@ public class CatzAutonomous {
         pathChooser.addOption("Hoard Lower Mid", HoardLowerMid());
         pathChooser.addOption("Bottom Mid Clear", BottomMidClear());
 
-        pathChooser.addOption("Center Rush MId", CenterRushMid());
+        // pathChooser.addOption("Center Rush MId", CenterRushMid());
 
         pathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
         pathChooser.addOption("Curve", curveAuto());
