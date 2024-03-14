@@ -320,7 +320,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return runOnce(()->setShooterLoadState(ShooterLoadState.LOAD_OFF));
   }
 
-  public Command perfect(){
+  public Command shootPreNote(){
     return runOnce(()->setShooterLoadState(ShooterLoadState.START_SHOOTER_FLYWHEEL));
   }
 

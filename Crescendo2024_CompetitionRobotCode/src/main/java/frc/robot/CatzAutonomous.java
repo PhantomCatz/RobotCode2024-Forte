@@ -90,9 +90,10 @@ public class CatzAutonomous {
     private Command driveStraightPickup(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraight")),
-            shooter.perfect(),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraight")),
-            new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
+            shooter.shootPreNote(),
+            new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraight")))
+            );
             // new AimAndOrFireAtSpeakerCmd(),
             // shooter.cmdShoot());
     }
