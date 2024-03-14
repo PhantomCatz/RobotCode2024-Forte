@@ -187,9 +187,9 @@ public final class CatzConstants {
     public static final int RT_FRNT_STEER_ID = 8;
 
     public static final int LT_FRNT_ENC_PORT = 9;
-    public static final int LT_BACK_ENC_PORT = 6; 
+    public static final int LT_BACK_ENC_PORT = 8; 
     public static final int RT_BACK_ENC_PORT = 7;
-    public static final int RT_FRNT_ENC_PORT = 8; 
+    public static final int RT_FRNT_ENC_PORT = 6; 
 
     //--------------------------------------MTR CONFIGS------------------------------------
     public static final Rotation2d defaultRot = new Rotation2d(0.0);

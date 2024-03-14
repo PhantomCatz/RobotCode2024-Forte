@@ -62,6 +62,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
     xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
+    xboxTest = new CommandXboxController(2);
 
     // Configure the trigger bindings and default cmds
     defaultCommands();
