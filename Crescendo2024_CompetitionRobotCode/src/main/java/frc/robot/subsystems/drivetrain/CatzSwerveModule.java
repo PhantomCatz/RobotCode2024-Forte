@@ -133,6 +133,7 @@ public class CatzSwerveModule {
 
         //calculate drive pwr
         double driveRPS = Conversions.MPSToRPS(unadjustedSpeedSetpoint);
+        
 
         //set drive velocity
         setDriveVelocity(driveRPS);
