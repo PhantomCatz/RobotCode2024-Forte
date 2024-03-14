@@ -6,6 +6,7 @@ package frc.robot.commands.mechanismCmds;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
@@ -44,6 +45,8 @@ public class MoveToHandoffPoseCmd extends Command {
 
   private boolean m_targetMechPoseStartReached = false;
   private boolean m_targetMechPoseEndReached   = false;
+
+  private Timer transferToShooter  = new Timer();
 
 
   public MoveToHandoffPoseCmd(NoteDestination noteDestination, NoteSource noteSource) {
@@ -198,7 +201,7 @@ public class MoveToHandoffPoseCmd extends Command {
       //when the the rollers stop intaking due to beambreak
       if(m_targetMechPoseStartReached == false) {
         if(areMechanismsInPosition()) {
-          intake.setRollersOutakeHandoff();
+            intake.setRollersOutakeHandoff();
           shooter.setShooterLoadState(ShooterLoadState.LOAD_IN);
           m_targetMechPoseStartReached = true;
         }
