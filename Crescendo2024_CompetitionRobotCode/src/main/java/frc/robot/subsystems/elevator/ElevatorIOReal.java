@@ -15,7 +15,7 @@ import frc.robot.CatzConstants;
 public class ElevatorIOReal implements ElevatorIO {
 
     //elevator motor ids
-    public static int ELEVATOR_RT_MTR_ID = 51;
+    public static int ELEVATOR_RT_MTR_ID = 50;
 
     //Kraken configuration constants
     public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;

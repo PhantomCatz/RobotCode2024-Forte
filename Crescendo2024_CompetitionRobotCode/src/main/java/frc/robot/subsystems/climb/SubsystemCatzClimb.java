@@ -31,13 +31,7 @@ public class SubsystemCatzClimb extends SubsystemBase {
   private double climbPercentOutputLT = 0.0;
   private double climbPercentOutputRT = 0.0;
 
-  private ClimbState currentClimbState;
-  public enum ClimbState {
-    MANUAL,
-    SET_POSITION_PREP,
-    SET_POSITION_CLIMBING,
-    IN_POSITION
-  }
+
 
 
   private SubsystemCatzClimb() {
@@ -75,27 +69,19 @@ public class SubsystemCatzClimb extends SubsystemBase {
       climbPercentOutputRT = 0.0;
 
     } else {
-      if(currentClimbState == ClimbState.MANUAL) {
         io.setClimbMtrPercentOutputLT(climbPercentOutputLT);
         io.setClimbMtrPercentOutputRT(climbPercentOutputRT);
-      } else {
-        io.setClimbMtrPercentOutputLT(0.0);
-        io.setClimbMtrPercentOutputRT(0.0);     
-      }
+
     }
   }
 
-  public void updateClimbTargetPosition(ClimbState newClimbState) {
-    currentClimbState = newClimbState;
-  }
+
 
   public void setLeftClimbPercentOutput(double output) {
     climbPercentOutputLT = output;
-    currentClimbState = ClimbState.MANUAL;
   }
 
   public void setRightClimbPercentOutput(double output) {
     climbPercentOutputRT = output;
-    currentClimbState = ClimbState.MANUAL;
   }
 }

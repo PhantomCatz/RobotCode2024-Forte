@@ -64,13 +64,13 @@ public class ClimbIOReal implements ClimbIO {
     @Override
     public void updateInputs(ClimbIOInputs inputs) {
         inputs.climbDutyCycleLT = climbMtrLT.getDutyCycle().getValue();
-        inputs.climbPositionErrorLT = climbMtrLT.getClosedLoopError().getValue();
+        //inputs.climbPositionErrorLT = climbMtrLT.getClosedLoopError().getValue();
         inputs.climbSpoolRevLT = climbMtrLT.getPosition().getValue();
         inputs.climbTorqueCurrentLT = climbMtrLT.getTorqueCurrent().getValue();
         inputs.climbVoltageLT = climbMtrLT.getMotorVoltage().getValue();
 
         inputs.climbDutyCycleRT = climbMtrRT.getDutyCycle().getValue();
-        inputs.climbPositionErrorRT = climbMtrRT.getClosedLoopError().getValue();
+        //inputs.climbPositionErrorRT = climbMtrRT.getClosedLoopError().getValue();
         inputs.climbSpoolRevRT = climbMtrRT.getPosition().getValue();
         inputs.climbTorqueCurrentRT = climbMtrRT.getTorqueCurrent().getValue();
         inputs.climbVoltageRT = climbMtrRT.getMotorVoltage().getValue();
