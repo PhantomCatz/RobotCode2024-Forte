@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController;
@@ -87,8 +88,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private int     m_iterationCounter;
 
   private boolean m_shooterServoInPos = false;
-
-
   
   //XboxController for rumbling
   private XboxController xboxAuxRumble;
@@ -176,22 +175,22 @@ public class SubsystemCatzShooter extends SubsystemBase {
             if(inputs.shooterVelocityLT <= inputs.velocityThresholdLT && // was -inputs.shooterVelocityLT >= inputs.velocityThresholdLT
                 inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
 
-              //if(DriverStation.isAutonomous()) {
-              //  currentShooterLoadState = ShooterLoadState.SHOOTING;
-              //} else {
+              if(DriverStation.isAutonomous()) {
+               currentShooterLoadState = ShooterLoadState.SHOOTING;
+              } else {
                 xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
                 
                 m_iterationCounter = 0;
-              //
-            //}
+              
+            }
             }
           break;
 
           case SHOOTING:
             io.feedShooter();
-            //if(DriverStation.isAutonomous() == false) {
+            if(DriverStation.isAutonomous() == false) {
               xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
-            //}
+            }
             m_iterationCounter++;
             if(m_iterationCounter >= timer(1)) {
               io.setShooterDisabled();
@@ -242,6 +241,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_shooterServoInPos = false;
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
+  }
+
+  public double getApproximateShootingSpeed(){
+    return ((((ShooterIOReal)io).shooterVelLT.get() + ((ShooterIOReal)io).shooterVelRT.get())/2+6) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink)
   }
 
   public Command cmdServoPosition(Supplier<Double> value) {
@@ -320,8 +323,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return runOnce(()->setShooterLoadState(ShooterLoadState.LOAD_OFF));
   }
 
+  public Command shootPreNote(){
+    return runOnce(()->setShooterLoadState(ShooterLoadState.START_SHOOTER_FLYWHEEL));
+  }
+
   public void setShooterLoadState(ShooterLoadState state) {
     currentShooterLoadState = state;
   }
+
 
 }

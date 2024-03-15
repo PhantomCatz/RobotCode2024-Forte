@@ -32,58 +32,72 @@ public class SubsystemCatzElevator extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   // Elevator Constants
   //-------------------------------------------------------------------------------------
-  public static double REV_SWITCH_POS = 0.0; //dummy
-  public static double FWD_SWITCH_POS = 5.0; //dummy
+  private static final double REV_SWITCH_POS = 0.0; 
   
   private static final double ElEVATOR_REV_TO_INCHES = 0.0;
 
-  private static final double ElEVATOR_DRIVEN_GEAR = 42;
-  private static final double ELEVATOR_DRIVING_GEAR = 10;
+  private static final double MAXPLANETARY_GEAR_RATIO = 4.0 * 4.0;
 
-  private static final double ELEVATOR_GEAR_RATIO    = ElEVATOR_DRIVEN_GEAR/ELEVATOR_DRIVING_GEAR;
+  private static final double ELEVATOR_SPOOL_DIA_PULL_UP_INCHES = 0.7; //TBD on the name of the variable
+  private static final double ELEVATOR_SPOOL_DIA_PULL_DN_INCHES = 1.4; //TBD on the name of the variable
 
-  private static final double ELEVATOR_NULL_POSITION = -999.0;
 
-  private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
+  private static final double ELEVATOR_GEAR_RATIO    = MAXPLANETARY_GEAR_RATIO;
 
-  //crash check constants
-  private static final double INTAKE_WAIT_THRESHOLD_ANGLE = 60;
-  private static final double ELEVATOR_THRESHOLD_REV      = 20;
+
+    private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
+
+ //-----------------------------------------------------------------------------------------------
+  //  Elevator CLOSED loop defs and variables
+  //-----------------------------------------------------------------------------------------------
 
   private static final double ELEVATOR_kS = 0.0;
   private static final double ELEVATOR_kG = 0.8;
   private static final double ELEVATOR_kV = 0.0;
+  private double m_ffVolts = 0.0;
 
+  private double m_targetPositionRev = 0.0;
+  private double m_elevatorPercentOutput = 0.0;
+  private double elevatorVelocityMtrRPS = 0.0;
+  
  //-----------------------------------------------------------------------------------------------
   //  Elevator position defs & variables
   //-----------------------------------------------------------------------------------------------
   public static final double ELEVATOR_STOW           = 0.0;
-  public static final double ELEVATOR_AMP_TRANSITION = 35.0;
-  public static final double ElEVATOR_SOURCE_PICKUP  = 40.0;
-  public static final double ELEVATOR_SCORE_AMP      = 60.0;
-  public static final double ELEVATOR_SCORE_TRAP     = 66.0;
+  public static final double ELEVATOR_GROUND_PICKUP  = 0.0;
+  public static final double ELEVATOR_AMP_SCORE_DN   = 0.0;
+  public static final double ELEVATOR_AMP_TRANSITION = 50.0;
+  public static final double ELEVATOR_SOURCE_PICKUP  = 60.0;
+  public static final double ELEVATOR_AMP_SCORE      = 90.0;
+  public static final double ELEVATOR_SCORE_TRAP     = 110.0;
+
+  private static final double ELEVATOR_NULL_POSITION = -999.0;
+
 
   //-------------------------------------------------------------------------------------
   // Elevator Variables
   //-------------------------------------------------------------------------------------
-  private double m_newPositionRev = 0.0;
-  private double m_elevatorPercentOutput = 0.0;
-  private double m_finalffVolts = 0.0;
-  private double elevatorVelocityMTRRPS = 0.0;
+
+  private double intakeClearanceAngle;
 
   private boolean m_elevatorInPos = false;
 
   private ElevatorFeedforward elevatorFeedforward;
 
-  private static ElevatorState currentElevatorState;
-  public static enum ElevatorState {
+  private static ElevatorControlState currentElevatorState;
+  public static enum ElevatorControlState {
     AUTO,
     FULL_MANUAL,
     SEMI_MANUAL
   }
 
-  private boolean m_elevatorIntakeInSafetyZone = false;
+  private static enum ElevatorDirection {
+    UP,DOWN
+  }
 
+  private static ElevatorDirection currentElevatorDirection = ElevatorDirection.UP;
+
+  private boolean m_elevatorIntakeInSafetyZone = false;
 
 
   private SubsystemCatzElevator() {
@@ -116,47 +130,62 @@ public class SubsystemCatzElevator extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Elevator/inputs", inputs);
-    if(inputs.bottomSwitchTripped) {
-      io.setSelectedSensorPosition(0.0);
-    }
+
 
     //elevator control calculations
-    //elevatorVelocityMTRRPS = (currentRotations - previousRotations)/0.02;
-    m_finalffVolts = elevatorFeedforward.calculate(0.0);
+    m_ffVolts = elevatorFeedforward.calculate(0.0); //calculating while disabled for advantage scope logging
 
     if(DriverStation.isDisabled()) {
       io.setElevatorPercentOutput(0);
-      currentElevatorState = ElevatorState.FULL_MANUAL;
+      currentElevatorState = ElevatorControlState.FULL_MANUAL;
       m_elevatorPercentOutput = 0.0;
     }
     else {
-      
-      if(m_elevatorIntakeInSafetyZone == false) {
-        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_STOW_ELEV_CLEARED_DEG) {
-          m_elevatorIntakeInSafetyZone = true;
-        } 
+      if(inputs.bottomSwitchTripped) {
+        io.setSelectedSensorPosition(0.0);
       }
 
-      if(m_elevatorIntakeInSafetyZone == true) {
-        if((m_newPositionRev != ELEVATOR_NULL_POSITION) && 
-                (currentElevatorState == ElevatorState.AUTO  ||
-                 currentElevatorState == ElevatorState.SEMI_MANUAL)) {
+      if((currentElevatorState == ElevatorControlState.AUTO  ||
+          currentElevatorState == ElevatorControlState.SEMI_MANUAL)) {
 
-            io.setElevatorPosition(m_newPositionRev, 
-                                   m_finalffVolts, 
-                                   inputs.bottomSwitchTripped);
-            if(inputs.elevatorPositionError < 5) {
+        if((m_targetPositionRev != ELEVATOR_NULL_POSITION)) {
+
+          if(m_elevatorIntakeInSafetyZone == false) {
+            if(currentElevatorDirection == ElevatorDirection.DOWN) {
+              if(SubsystemCatzIntake.getInstance().getWristAngle() > intakeClearanceAngle) {
+                m_elevatorIntakeInSafetyZone = true;
+                        System.out.println("E-G");
+
+              } 
+            } else {
+              if(SubsystemCatzIntake.getInstance().getWristAngle() < intakeClearanceAngle) {
+                m_elevatorIntakeInSafetyZone = true;
+                 System.out.println("E-F");
+
+              }     
+            }
+          }
+
+          if(m_elevatorIntakeInSafetyZone == true) {
+            io.setElevatorPosition(m_targetPositionRev, 
+                                    m_ffVolts, 
+                                    inputs.bottomSwitchTripped);
+
+            if(inputs.elevatorPositionError < 0.2) {
               m_elevatorInPos = true;
             } 
-        } else {
-          io.setElevatorPercentOutput(m_elevatorPercentOutput);
+          }
         }
+      } else {
+        io.setElevatorPercentOutput(m_elevatorPercentOutput);
       }
     }
+  
 
-    Logger.recordOutput("elevator/targetRev", m_newPositionRev);
+    Logger.recordOutput("elevator/targetRev", m_targetPositionRev);
     Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
     Logger.recordOutput("elevator/elevatorin safety", m_elevatorIntakeInSafetyZone);
+    Logger.recordOutput("elevator/GOing up", currentElevatorDirection.toString());
   }
 
 
@@ -164,47 +193,77 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // Elevator Access Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionElevator(CatzMechanismPosition targetPosition) {
+    System.out.println("EUP" + targetPosition.getElevatorTargetRev());
     m_elevatorInPos = false;
-    currentElevatorState = ElevatorState.AUTO;
-    m_elevatorIntakeInSafetyZone = false;
-    System.out.println("in update elevator");
-    m_newPositionRev = targetPosition.getElevatorTargetRev();
+    currentElevatorState = ElevatorControlState.AUTO;
 
-    if(m_newPositionRev < SubsystemCatzIntake.INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV) {
-      m_elevatorIntakeInSafetyZone = true;
+    m_elevatorIntakeInSafetyZone = false;
+    m_targetPositionRev = targetPosition.getElevatorTargetRev();
+
+    if(m_targetPositionRev == ELEVATOR_STOW ||
+       m_targetPositionRev == ELEVATOR_GROUND_PICKUP ||
+       m_targetPositionRev == ELEVATOR_AMP_SCORE_DN) {
+                System.out.println("E-Z");
       //-------------------------------------------------------------------------------------
       //  If elevator is below the stow clearance. No change
       //  If elevator is above the stow clearance. No change
       //----------------------------------------------------------------------------------
-
-     } else if(m_newPositionRev > SubsystemCatzIntake.INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV){//m_newPositionRev == ELEVATOR_SCORE_AMP ||
-    //           m_newPositionRev == ELEVATOR_AMP_TRANSITION ||
-    //           m_newPositionRev == ELEVATOR_SCORE_TRAP ||
-    //           m_newPositionRev == ElEVATOR_SOURCE_PICKUP ||
-    //           m_newPositionRev == ELEVATOR_SCORE_AMP) {
-                System.out.println("J");
-      //-------------------------------------------------------------------------------------
-      //  If elevator position is above the stow clearance. Assume intake is in position
-      //  If elevator position is below the stow clearance. intake is not is position
-      //----------------------------------------------------------------------------------
-
-      if(inputs.elevatorPosRev > SubsystemCatzIntake.INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV) {
+      currentElevatorDirection = ElevatorDirection.DOWN;
+      intakeClearanceAngle = SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG;
+      System.out.println(SubsystemCatzIntake.getInstance().getWristAngle());
+      if(SubsystemCatzIntake.getInstance().getWristAngle() > SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG) {
+        
+        System.out.println("E-A");
+           //-------------------------------------------------------------------------------------
+          //  intake is above bumpers
+          //----------------------------------------------------------------------------------
           m_elevatorIntakeInSafetyZone = true;
       }
+    } else if(m_targetPositionRev == ELEVATOR_SOURCE_PICKUP ||
+              m_targetPositionRev == ELEVATOR_AMP_TRANSITION) {        
+        System.out.println("E-B");
+
+      currentElevatorDirection = ElevatorDirection.UP;
+      intakeClearanceAngle = SubsystemCatzIntake.INTAKE_MIN_ELEV_CLEARANCE_DEG;
+      if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_MIN_ELEV_CLEARANCE_DEG) {
+        System.out.println("E-C");
+
+        //-------------------------------------------------------------------------------------
+        //  intake is in front of elevator
+        //----------------------------------------------------------------------------------
+        m_elevatorIntakeInSafetyZone = true;
+      }
+    } else if(m_targetPositionRev == ELEVATOR_AMP_SCORE) {
+        System.out.println("E-D");
+
+      currentElevatorDirection = ElevatorDirection.UP;
+      intakeClearanceAngle = SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG;
+      if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
+        //-------------------------------------------------------------------------------------
+        //  intake is in front of elevator
+        //----------------------------------------------------------------------------------
+        m_elevatorIntakeInSafetyZone = true;
+      } 
+    } else {
+      System.out.println("Invalid elevator target Angle");
     }
+
   }
 
   public void setElevatorSemiManualPwr(double output) {
     m_elevatorInPos = false;
-    currentElevatorState = ElevatorState.SEMI_MANUAL;
-    m_newPositionRev = inputs.elevatorPosRev * (output * ELEVATOR_MANUAL_STEP_SIZE);
+    currentElevatorState = ElevatorControlState.SEMI_MANUAL;
+    m_targetPositionRev = inputs.elevatorPosRev * (output * ELEVATOR_MANUAL_STEP_SIZE);
    }
 
   public void setElevatorPercentOutput(double percentOutput) {
     m_elevatorInPos = false;
-    System.out.println("in manual");
-    currentElevatorState = ElevatorState.FULL_MANUAL;
+    currentElevatorState = ElevatorControlState.FULL_MANUAL;
     this.m_elevatorPercentOutput = percentOutput/5;
+  }
+
+  public void setElevatorOff() {
+    
   }
 
   // ----------------------------------------------------------------------------------
@@ -214,7 +273,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
     return inputs.elevatorPosRev;
   }
 
-  private ElevatorState getElevatorState() {
+  private ElevatorControlState getElevatorState() {
     return currentElevatorState;
   }
 

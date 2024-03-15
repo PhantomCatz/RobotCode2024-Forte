@@ -53,6 +53,7 @@ public class CatzAutonomous {
         chosenAllianceColor.addDefaultOption("Blue Alliance", CatzConstants.AllianceColor.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  CatzConstants.AllianceColor.Red);
 
+        pathChooser.addOption("Drive Straight", driveStraightPickup());
         pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
         pathChooser.addOption("Speaker 4 Piece CS Wing", speaker4PieceCSWing());
 
@@ -88,11 +89,13 @@ public class CatzAutonomous {
     //-------------------------------------------Auton Paths--------------------------------------------
     private Command driveStraightPickup(){
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
-            new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot());
+            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraight")),
+            shooter.shootPreNote(),
+            new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraight")))
+            );
+            // new AimAndOrFireAtSpeakerCmd(),
+            // shooter.cmdShoot());
     }
 
     //https://docs.google.com/presentation/d/19F_5L03n90t7GhtzQhD4mYNEMkdFsUGoDSb4tT9HqNI/edit#slide=id.g268da342b19_1_0

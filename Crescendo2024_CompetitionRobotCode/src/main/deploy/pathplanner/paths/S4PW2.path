@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.45,
-        "y": 7.03
+        "x": 2.85962708962455,
+        "y": 7.05664564106906
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9815373154284097,
-        "y": 6.45267093672561
+        "x": 2.862655692903979,
+        "y": 6.506627531773582
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.45,
-        "y": 5.562647359246215
+        "x": 2.85962708962455,
+        "y": 5.602025301272826
       },
       "prevControl": {
-        "x": 2.332891634542185,
-        "y": 5.67975572470403
+        "x": 2.837595485376156,
+        "y": 6.101507304866462
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,8 +39,8 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
-    "rotateFast": false
+    "rotation": 90.0,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "S4PW",
