@@ -79,15 +79,16 @@ public class MoveToHandoffPoseCmd extends Command {
         m_targetMechPoseStart = CatzMechanismConstants.INTAKE_GROUND;
         intake.setRollersGround();
 
+
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
 
             m_targetMechPoseEnd = CatzMechanismConstants.STOW;
-            System.out.println("Ground speaker");
+            // System.out.println("Ground speaker");
         } else if(m_noteDestination == NoteDestination.AMP)  {
 
-            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
-            System.out.println("Ground AMP");
+            m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+            // System.out.println("Ground AMP");
         }
       break;
 
@@ -99,10 +100,10 @@ public class MoveToHandoffPoseCmd extends Command {
 
             m_targetMechPoseEnd = CatzMechanismConstants.STOW;
             intake.setRollersIntakeSource();
-            System.out.println(" Source Speaker");
+            // System.out.println(" Source Speaker");
         } else if(m_noteDestination == NoteDestination.AMP) {
           m_targetMechPoseEnd = m_targetMechPoseStart;
-                        System.out.println("Source Amp");
+                        // System.out.println("Source Amp");
         }      
       break;
 
@@ -111,12 +112,12 @@ public class MoveToHandoffPoseCmd extends Command {
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
-            System.out.println("Intake Speaker");
+            // System.out.println("Intake Speaker");
 
           m_targetMechPoseEnd = CatzMechanismConstants.STOW;
         } else if(m_noteDestination == NoteDestination.AMP) {
-            System.out.println("Intake Amp");
-          m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
+            // System.out.println("Intake Amp");
+          m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
         }
       
       break;
@@ -125,8 +126,8 @@ public class MoveToHandoffPoseCmd extends Command {
         m_targetMechPoseStart = CatzMechanismConstants.STOW;
 
         if(m_noteDestination == NoteDestination.AMP) {
-            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
-            System.out.println("Shooter Amp");
+            m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+            // System.out.println("Shooter Amp");
 
         } 
      
@@ -245,7 +246,7 @@ public class MoveToHandoffPoseCmd extends Command {
     boolean turretState   = turret.getTurretInPos();
     boolean shooterState  = shooter.getShooterServoInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-    System.out.println("i " + intakeState + "t " + turretState + "s " + shooterState + "e " +elevatorState);
+    // System.out.println("i " + intakeState + "t " + turretState + "s " + shooterState + "e " +elevatorState);
     return(intakeState && turretState && shooterState && elevatorState);
   }
 

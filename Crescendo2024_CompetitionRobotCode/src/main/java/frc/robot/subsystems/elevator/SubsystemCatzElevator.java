@@ -193,7 +193,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // Elevator Access Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionElevator(CatzMechanismPosition targetPosition) {
-    System.out.println("EUP" + targetPosition.getElevatorTargetRev());
+    // System.out.println("EUP" + targetPosition.getElevatorTargetRev());
     m_elevatorInPos = false;
     currentElevatorState = ElevatorControlState.AUTO;
 
@@ -203,17 +203,17 @@ public class SubsystemCatzElevator extends SubsystemBase {
     if(m_targetPositionRev == ELEVATOR_STOW ||
        m_targetPositionRev == ELEVATOR_GROUND_PICKUP ||
        m_targetPositionRev == ELEVATOR_AMP_SCORE_DN) {
-                System.out.println("E-Z");
+                // System.out.println("E-Z");
       //-------------------------------------------------------------------------------------
       //  If elevator is below the stow clearance. No change
       //  If elevator is above the stow clearance. No change
       //----------------------------------------------------------------------------------
       currentElevatorDirection = ElevatorDirection.DOWN;
       intakeClearanceAngle = SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG;
-      System.out.println(SubsystemCatzIntake.getInstance().getWristAngle());
+      // System.out.println(SubsystemCatzIntake.getInstance().getWristAngle());
       if(SubsystemCatzIntake.getInstance().getWristAngle() > SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG) {
         
-        System.out.println("E-A");
+        // System.out.println("E-A");
            //-------------------------------------------------------------------------------------
           //  intake is above bumpers
           //----------------------------------------------------------------------------------
@@ -221,12 +221,12 @@ public class SubsystemCatzElevator extends SubsystemBase {
       }
     } else if(m_targetPositionRev == ELEVATOR_SOURCE_PICKUP ||
               m_targetPositionRev == ELEVATOR_AMP_TRANSITION) {        
-        System.out.println("E-B");
+        // System.out.println("E-B");
 
       currentElevatorDirection = ElevatorDirection.UP;
       intakeClearanceAngle = SubsystemCatzIntake.INTAKE_MIN_ELEV_CLEARANCE_DEG;
       if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_MIN_ELEV_CLEARANCE_DEG) {
-        System.out.println("E-C");
+        // System.out.println("E-C");
 
         //-------------------------------------------------------------------------------------
         //  intake is in front of elevator
@@ -234,7 +234,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
         m_elevatorIntakeInSafetyZone = true;
       }
     } else if(m_targetPositionRev == ELEVATOR_AMP_SCORE) {
-        System.out.println("E-D");
+        // System.out.println("E-D");
 
       currentElevatorDirection = ElevatorDirection.UP;
       intakeClearanceAngle = SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG;

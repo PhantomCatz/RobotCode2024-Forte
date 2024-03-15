@@ -175,14 +175,14 @@ public class SubsystemCatzShooter extends SubsystemBase {
           //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
             if(inputs.shooterVelocityLT <= inputs.velocityThresholdLT && // was -inputs.shooterVelocityLT >= inputs.velocityThresholdLT
                 inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
-
               if(DriverStation.isAutonomous()) {
-               currentShooterLoadState = ShooterLoadState.SHOOTING;
+                m_iterationCounter = 0;
+                currentShooterLoadState = ShooterLoadState.SHOOTING;
               } else {
                 xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
                 
                 m_iterationCounter = 0;
-              
+                
             }
             }
           break;
@@ -192,7 +192,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
             if(DriverStation.isAutonomous() == false) {
               xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
             }
+
             m_iterationCounter++;
+            System.out.println(m_iterationCounter);
+
             if(m_iterationCounter >= timer(1)) {
               io.setShooterDisabled();
               currentShooterLoadState = ShooterLoadState.LOAD_OFF;
@@ -321,7 +324,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public Command shootPreNote(){
-    return runOnce(()->setShooterLoadState(ShooterLoadState.START_SHOOTER_FLYWHEEL));
+    return runOnce(()->startShooterFlywheel());
   }
 
   public void setShooterLoadState(ShooterLoadState state) {

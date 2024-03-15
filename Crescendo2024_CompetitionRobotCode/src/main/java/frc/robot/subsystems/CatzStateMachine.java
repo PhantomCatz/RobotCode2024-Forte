@@ -40,7 +40,7 @@ public class CatzStateMachine extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("statemachine/note destination", targetNoteDestination);
+        //Logger.recordOutput("statemachine/note destination", targetNoteDestination);
 
     }
 

@@ -53,7 +53,7 @@ public class CatzAutonomous {
         chosenAllianceColor.addDefaultOption("Blue Alliance", CatzConstants.AllianceColor.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  CatzConstants.AllianceColor.Red);
 
-        pathChooser.addOption("Drive Straight", driveStraightPickup());
+        pathChooser.addOption("2 Note Auton", driveStraightPickup());
         pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
         pathChooser.addOption("Speaker 4 Piece CS Wing", speaker4PieceCSWing());
 

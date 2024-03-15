@@ -375,7 +375,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //
   // -----------------------------------------------------------------------------------------------
   public void updateAutoTargetPositionIntake(double targetPosition) {
-    System.out.println("IUP" + targetPosition);
+    // System.out.println("IUP" + targetPosition);
     // -------------------------------------------------------------------------------------
     // Initialize Variables
     // -------------------------------------------------------------------------------------
@@ -427,7 +427,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         }
       }
     } else if (m_targetPositionDeg == INTAKE_AMP_TRANSITION_DEG) {
-      System.out.println("I-C");
+      // System.out.println("I-C");
       // -------------------------------------------------------------------------------------
       // There are two cases to consider based on where Note is coming from:
       // 1. SRC/Gnd Pickup
@@ -491,7 +491,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         System.out.println("I-G");
         m_intakeElevatorInSafetyZone = true;
       } else if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV) {
-          System.out.println("I-F");
+          // System.out.println("I-F");
           m_intakeElevatorInSafetyZone = true;
       }
     }

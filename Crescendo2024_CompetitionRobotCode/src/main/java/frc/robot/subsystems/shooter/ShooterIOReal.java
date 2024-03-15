@@ -52,7 +52,7 @@ public class ShooterIOReal implements ShooterIO {
     private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
     private final double LOAD_MOTOR_LOADING_SPEED    = 0.4; //was 0.4
     private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.2;
-    private final double LOAD_MOTOR_ADJUST_SPEED     = 0.04;
+    private final double LOAD_MOTOR_ADJUST_SPEED     = 0.02;
 
     public static final int NEO_CURRENT_LIMIT_AMPS      = 30;
 
@@ -78,8 +78,8 @@ public class ShooterIOReal implements ShooterIO {
     private final int SERVO_PW_US_MIN_POSITION          = 1000;
 
     //Tunable motor velocities
-    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 65); // was 65
-    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 85); // was 85
+    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 58); // was 65
+    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 80); // was 85
 
     TalonFX[] shooterArray = new TalonFX[2];
 

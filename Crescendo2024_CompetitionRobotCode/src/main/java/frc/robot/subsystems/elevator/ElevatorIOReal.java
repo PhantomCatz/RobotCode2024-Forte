@@ -75,7 +75,7 @@ public class ElevatorIOReal implements ElevatorIO {
         inputs.elevatorPosRev           = ElevatorMtr.getPosition().getValue();
         inputs.elevatorPositionError    = ElevatorMtr.getClosedLoopError().getValue();
 
-        inputs.bottomSwitchTripped      = m_bottomLimit.get();
+        // inputs.bottomSwitchTripped      = m_bottomLimit.get();
     }
     
     @Override

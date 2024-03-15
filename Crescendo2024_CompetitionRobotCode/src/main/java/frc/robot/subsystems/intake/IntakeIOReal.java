@@ -43,7 +43,7 @@ public class IntakeIOReal implements IntakeIO {
     private TalonFXConfiguration talonConfigsPivot  = new TalonFXConfiguration();
     private TalonFXConfiguration talonConfigsRoller = new TalonFXConfiguration();
 
-    private final DigitalInput intakeBeamBreak = new DigitalInput(4);
+    private final DigitalInput intakeBeamBreak = new DigitalInput(5);
 
 
     public IntakeIOReal() {
