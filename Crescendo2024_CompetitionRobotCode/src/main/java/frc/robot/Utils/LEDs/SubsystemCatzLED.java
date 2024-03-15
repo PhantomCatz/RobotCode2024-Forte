@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import frc.robot.Robot.gameModeLED;
 
 public class SubsystemCatzLED extends SubsystemBase {
-    private final int LED_PWM_PORT = 6;
+    private final int LED_PWM_PORT = 6; //2 soon on friday comp
     private final int LED_COUNT_HALF = 17; //half 18
     private final int LED_EDGE = 4; //4
 
