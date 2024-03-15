@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController;
@@ -87,8 +88,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private int     m_iterationCounter;
 
   private boolean m_shooterServoInPos = false;
-
-
   
   //XboxController for rumbling
   private XboxController xboxAuxRumble;
@@ -245,6 +244,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_shooterServoInPos = false;
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
+  }
+
+  public double getApproximateShootingSpeed(){
+    return ((((ShooterIOReal)io).shooterVelLT.get() + ((ShooterIOReal)io).shooterVelRT.get())/2+6) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink)
   }
 
   public Command cmdServoPosition(Supplier<Double> value) {

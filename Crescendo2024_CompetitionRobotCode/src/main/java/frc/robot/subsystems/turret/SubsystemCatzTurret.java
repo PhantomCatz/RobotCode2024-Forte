@@ -20,12 +20,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMathUtils;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
@@ -83,7 +86,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private boolean m_turretIntPos;
 
   private XboxController driveRumbleController;
-  
+
+  private final SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
   private SubsystemCatzTurret() {
 
@@ -232,14 +236,18 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
     //take difference between speaker and the curret robot translation
     Translation2d robotToGoal = goal.minus(robotPose.getTranslation());
-    
+    robotToGoal.div(Math.hypot(robotToGoal.getX(),robotToGoal.getY()));
+    robotToGoal.times(SubsystemCatzShooter.getInstance().getApproximateShootingSpeed());
+
+    robotToGoal.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx,drivetrain.getFieldRelativeSpeed().vy));
+
     //calculate new turret angle based off current robot position
     double angle = Math.atan2(robotToGoal.getY(), robotToGoal.getX());
 
     //offset new turret angle based off current robot rotation
-    angle = Math.PI + angle - robotPose.getRotation().getRadians(); //TBD why add half a rotation
+    angle = angle - robotPose.getRotation().getRadians(); 
 
-    angle = CatzMathUtils.toUnitCircAngle(angle);
+    angle = Math.toDegrees(angle);
 
     //if we purely just want to rely on apriltag for aiming
     if (aimAtVision && SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {
