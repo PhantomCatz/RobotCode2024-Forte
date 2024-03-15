@@ -67,6 +67,22 @@ public class CatzStateMachine extends SubsystemBase {
      return previousPose;   
     }
 
+    public boolean isTargetPositionAMP() {
+        return (targetNoteDestination == NoteDestination.AMP);
+    }
+
+    public boolean isTargetPositionSPEAKER() {
+        return (targetNoteDestination == NoteDestination.SPEAKER);
+    }
+
+    public boolean isTargetPositionHOARD() {
+        return (targetNoteDestination == NoteDestination.HOARD);
+    }
+
+    public boolean isTargetPositionTRAP() {
+        return (targetNoteDestination == NoteDestination.TRAP);
+    }
+
 
     public NoteDestination getNoteDestination() {
         return targetNoteDestination;

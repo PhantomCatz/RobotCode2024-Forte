@@ -72,7 +72,6 @@ public class PPTrajectoryFollowingCmd extends Command {
         for(int i=0; i<path.getAllPathPoints().size(); i++){
             System.out.println(path.getAllPathPoints().get(i).position);
         }
-        System.out.println("\n");
         Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
         //create pathplanner trajectory
