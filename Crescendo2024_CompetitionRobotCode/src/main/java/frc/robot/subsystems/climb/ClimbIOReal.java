@@ -9,8 +9,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class ClimbIOReal implements ClimbIO {
 
-    public static int CLIMB_MOTOR_ID_LT = 1;
-    public static int CLIMB_MOTOR_ID_RT = 5; //TBD
+    public static int CLIMB_MOTOR_ID_LT = 40;
+    public static int CLIMB_MOTOR_ID_RT = 41; //TBD
 
     //Kraken configuration constants
     public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;

@@ -71,17 +71,16 @@ public class SubsystemCatzClimb extends SubsystemBase {
     if(DriverStation.isDisabled()) {
       io.setClimbMtrPercentOutputLT(0.0);
       io.setClimbPositionRT(0.0);
+      climbPercentOutputLT = 0.0;
+      climbPercentOutputRT = 0.0;
+
     } else {
-      if(currentClimbState == ClimbState.SET_POSITION_PREP) {
-          io.setClimbPositionLT(10);
-          io.setClimbPositionRT(10);
-      } else if(currentClimbState == ClimbState.SET_POSITION_CLIMBING ||
-                currentClimbState == ClimbState.IN_POSITION) {
-          io.setClimbPositionLT(0);
-          io.setClimbPositionRT(0);
-      } else {
+      if(currentClimbState == ClimbState.MANUAL) {
         io.setClimbMtrPercentOutputLT(climbPercentOutputLT);
         io.setClimbMtrPercentOutputRT(climbPercentOutputRT);
+      } else {
+        io.setClimbMtrPercentOutputLT(0.0);
+        io.setClimbMtrPercentOutputRT(0.0);     
       }
     }
   }

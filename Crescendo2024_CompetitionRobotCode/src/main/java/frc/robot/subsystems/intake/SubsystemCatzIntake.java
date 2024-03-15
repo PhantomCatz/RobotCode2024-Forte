@@ -128,7 +128,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static final double INTAKE_AMP_TRANSITION_DEG = -60.0; //TBD Change to -80 on sn2
 
   public static final double INTAKE_MIN_ELEV_CLEARANCE_DEG = 110.0;
-  public static final double INTAKE_TRANSITION_CHECK_DEG = -45.0;
+  public static final double INTAKE_TRANSITION_CHECK_DEG = -47.0;
 
   private static final double INTAKE_NULL_DEG = -999.0;
 
@@ -267,13 +267,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
           }
 
           if (m_intakeElevatorInSafetyZone == false) {
-            if (m_targetPositionDeg == INTAKE_AMP_TRANSITION_DEG){ //|| //amp transition for going up
+            if (m_targetPositionDeg == INTAKE_AMP_TRANSITION_DEG){  //amp transition for going up
               // -----------------------------------------------------------------------------------
               // intake going to amp transition
               // -----------------------------------------------------------------------------------
               if (SubsystemCatzElevator.getInstance().getElevatorRevPos() > elevatorThresholdRev) {
                 m_intakeElevatorInSafetyZone = true;
-                System.out.println("reserve for intake amp transition");
+               // System.out.println("reserve for intake amp transition");
               }
             } else {
               // -----------------------------------------------------------------------------------
@@ -282,7 +282,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
               if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < elevatorThresholdRev) {
                 m_intakeElevatorInSafetyZone = true;
 
-                System.out.println("Coming from stow");
+                //System.out.println("Coming from stow");
               }
             }
 
@@ -290,6 +290,12 @@ public class SubsystemCatzIntake extends SubsystemBase {
                m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
                 m_intakeElevatorInSafetyZone = true;
             }
+            
+            if(m_targetPositionDeg == INTAKE_AMP_SCORE_DN_DEG &&  //amp intermediate for going down
+               m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
+                m_intakeElevatorInSafetyZone = true;
+            }
+
           }
 
  
@@ -326,7 +332,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
                 // -----------------------------------------------------------------------------------
                 if (m_nextTargetPositionDeg == INTAKE_AMP_TRANSITION_DEG ||
                     m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
-                      System.out.println("updating to transition" + m_nextTargetPositionDeg);
+                     // System.out.println("updating to transition" + m_nextTargetPositionDeg);
 
                   m_targetPositionDeg = m_nextTargetPositionDeg;
                   m_intermediatePositionReached = true;
@@ -398,7 +404,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     // periodic()
     // -------------------------------------------------------------------------------------
     if (m_targetPositionDeg == INTAKE_STOW_DEG) {
-      System.out.println("I-A");
+      //System.out.println("I-A");
       // -------------------------------------------------------------------------------------
       // If intake is already behind the elevator then elevator is already in a safe
       // position. If the intake is NOT behind the elevator then we need to make sure
@@ -411,7 +417,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // -------------------------------------------------------------------------------------
       if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG) {
         if(m_intermediatePositionReached == false) {
-          System.out.println("I-BC");
+          //System.out.println("I-BC");
           m_nextTargetPositionDeg = INTAKE_STOW_DEG; 
               m_targetPositionDeg = INTAKE_AMP_SCORE_DN_DEG; // set intermediate destination
           
@@ -419,11 +425,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
           nextElevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
         } 
       } else {
-          System.out.println("I-BA");
+          //System.out.println("I-BA");
         elevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
         if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV) {
           m_intakeElevatorInSafetyZone = true;
-          System.out.println("I-B");
+          //System.out.println("I-B");
         }
       }
     } else if (m_targetPositionDeg == INTAKE_AMP_TRANSITION_DEG) {
@@ -457,7 +463,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // up)
       // -------------------------------------------------------------------------------------
       if(m_intermediatePositionReached == false) {
-        System.out.println("I-D");
+        //System.out.println("I-D");
         m_nextTargetPositionDeg = INTAKE_AMP_TRANSITION_DEG; // set intermediate destination
             m_targetPositionDeg = INTAKE_AMP_SCORE_DN_DEG;
         
@@ -472,7 +478,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
               m_targetPositionDeg == INTAKE_AMP_SCORE_DN_DEG ||
               m_targetPositionDeg == INTAKE_SOURCE_LOAD_DN_DEG ||
               m_targetPositionDeg == INTAKE_AMP_SCORE_DEG) {
-      System.out.println("I-E");
+     // System.out.println("I-E");
 
       // -------------------------------------------------------------------------------------
       // If intake is already in front of the elevator then elevator is already in a
@@ -488,7 +494,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
       elevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
       if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG) {
-        System.out.println("I-G");
+       // System.out.println("I-G");
         m_intakeElevatorInSafetyZone = true;
       } else if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV) {
           // System.out.println("I-F");

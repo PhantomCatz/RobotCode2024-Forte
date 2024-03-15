@@ -154,13 +154,13 @@ public class SubsystemCatzElevator extends SubsystemBase {
             if(currentElevatorDirection == ElevatorDirection.DOWN) {
               if(SubsystemCatzIntake.getInstance().getWristAngle() > intakeClearanceAngle) {
                 m_elevatorIntakeInSafetyZone = true;
-                        System.out.println("E-G");
+                        //System.out.println("E-G");
 
               } 
             } else {
               if(SubsystemCatzIntake.getInstance().getWristAngle() < intakeClearanceAngle) {
                 m_elevatorIntakeInSafetyZone = true;
-                 System.out.println("E-F");
+                 //System.out.println("E-F");
 
               }     
             }

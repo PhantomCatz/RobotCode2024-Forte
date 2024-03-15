@@ -163,7 +163,7 @@ public final class CatzConstants {
   }
 
   public static final class ShooterConstants{
-    public static final double WHEEL_DIAMETER = 0.05; //in meters
+    public static final double WHEEL_DIAMETER = 0.0762; //in meters
     public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
   }
