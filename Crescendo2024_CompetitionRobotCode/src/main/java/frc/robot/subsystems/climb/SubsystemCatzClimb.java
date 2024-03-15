@@ -99,4 +99,8 @@ public class SubsystemCatzClimb extends SubsystemBase {
     climbPercentOutputRT = output;
     currentClimbState = ClimbState.MANUAL;
   }
+
+  public boolean isClimbing(){
+    return currentClimbState == ClimbState.SET_POSITION_PREP || currentClimbState == ClimbState.SET_POSITION_CLIMBING;
+  }
 }
