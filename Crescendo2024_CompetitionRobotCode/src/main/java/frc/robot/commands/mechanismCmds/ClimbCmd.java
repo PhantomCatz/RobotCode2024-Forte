@@ -7,7 +7,6 @@ package frc.robot.commands.mechanismCmds;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.climb.SubsystemCatzClimb;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -23,20 +22,15 @@ public class ClimbCmd extends Command {
   private SubsystemCatzClimb climb = SubsystemCatzClimb.getInstance();
 
 
-  Supplier<Boolean> m_supplierPovUP;
-  Supplier<Boolean> m_supplierPovDN;
-  Supplier<Boolean> m_supplierPovLT;
-  Supplier<Boolean> m_supplierPovRT;
+  Supplier<Double> m_supplierXboxLeftY;
+  Supplier<Double> m_supplierXboxRightY;
+
 
   
-  public ClimbCmd(Supplier<Boolean> PovUp, 
-                      Supplier<Boolean> PovDn, 
-                      Supplier<Boolean> PovLt, 
-                      Supplier<Boolean> PovRt) {
-    m_supplierPovUP = PovUp;
-    m_supplierPovDN = PovDn;
-    m_supplierPovLT = PovLt;
-    m_supplierPovRT = PovRt;
+  public ClimbCmd(Supplier<Double> supplierXboxleftY, Supplier<Double> supplierXboxRightY) {
+    m_supplierXboxLeftY = supplierXboxleftY;
+    m_supplierXboxRightY = supplierXboxRightY;
+
 
     addRequirements(elevator, intake, shooter, turret, climb);
   }
@@ -50,25 +44,8 @@ public class ClimbCmd extends Command {
   @Override
   public void execute() {
 
-    //raise both hooks
-    if(m_supplierPovUP.get()) {
-
-      climb.setLeftClimbPercentOutput(0.2);
-      climb.setRightClimbPercentOutput(0.2);
-    //lower both hook
-    } else if(m_supplierPovDN.get()) {
-
-      climb.setLeftClimbPercentOutput(-0.2);
-      climb.setRightClimbPercentOutput(-0.2);
-      //raise one hook
-    } else if(m_supplierPovLT.get()) {
-
-      climb.setLeftClimbPercentOutput(0.2);
-      //raise one hook
-    } else if(m_supplierPovRT.get()) {
-
-      climb.setRightClimbPercentOutput(0.2);
-    }
+    climb.setLeftClimbPercentOutput(m_supplierXboxLeftY.get()/5);
+    climb.setRightClimbPercentOutput(m_supplierXboxRightY.get()/5);
   }
 
   // Called once the command ends or is interrupted.

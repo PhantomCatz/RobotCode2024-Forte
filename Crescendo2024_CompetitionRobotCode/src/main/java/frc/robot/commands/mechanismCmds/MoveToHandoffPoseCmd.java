@@ -86,7 +86,7 @@ public class MoveToHandoffPoseCmd extends Command {
             System.out.println("Ground speaker");
         } else if(m_noteDestination == NoteDestination.AMP)  {
 
-            m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
             System.out.println("Ground AMP");
         }
       break;
@@ -116,7 +116,7 @@ public class MoveToHandoffPoseCmd extends Command {
           m_targetMechPoseEnd = CatzMechanismConstants.STOW;
         } else if(m_noteDestination == NoteDestination.AMP) {
             System.out.println("Intake Amp");
-          m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+          m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
         }
       
       break;
@@ -125,7 +125,7 @@ public class MoveToHandoffPoseCmd extends Command {
         m_targetMechPoseStart = CatzMechanismConstants.STOW;
 
         if(m_noteDestination == NoteDestination.AMP) {
-            m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
             System.out.println("Shooter Amp");
 
         } 
@@ -134,7 +134,7 @@ public class MoveToHandoffPoseCmd extends Command {
         
       default: 
         //invalid command...should have used switch handoff positions cmd
-        m_targetMechPoseStart = CatzMechanismConstants.HOME;
+       // m_targetMechPoseStart = CatzMechanismConstants.HOME;
       break;
     }
 

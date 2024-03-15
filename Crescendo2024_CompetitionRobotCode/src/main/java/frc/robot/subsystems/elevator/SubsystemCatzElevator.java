@@ -171,7 +171,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
                                     m_ffVolts, 
                                     inputs.bottomSwitchTripped);
 
-            if(inputs.elevatorPositionError < 1.0) {
+            if(inputs.elevatorPositionError < 0.2) {
               m_elevatorInPos = true;
             } 
           }

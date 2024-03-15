@@ -287,7 +287,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
             }
 
             if(m_targetPositionDeg == INTAKE_AMP_SCORE_DN_DEG &&  //amp intermediate for going down
-              m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
+               m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
                 m_intakeElevatorInSafetyZone = true;
             }
           }
@@ -336,6 +336,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
                   if(m_intermediatePositionReached == true) {
                     m_intermediatePositionReached = false;
                   }
+
                   m_nextTargetPositionDeg = INTAKE_NULL_DEG;
                 }
               }

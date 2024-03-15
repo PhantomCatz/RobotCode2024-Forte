@@ -14,6 +14,7 @@ import frc.robot.commands.mechanismCmds.ScoreAmpOrTrapCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
 import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
+import frc.robot.commands.mechanismCmds.MoveToAmpTransition;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.IntakeManualCmd;
 import frc.robot.subsystems.CatzStateMachine;
@@ -89,11 +90,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //ensure that the robot is shooter facing the speaker when reseting position
     xboxDrv.start().and(xboxDrv.leftTrigger()).onTrue(Commands.runOnce(()->driveTrain.resetPosition(new Pose2d(2.97,4.11, Rotation2d.fromDegrees(0)))));
 
-    //climb
-    xboxAux.b().and(xboxAux.a()).onTrue(new ClimbCmd(()->xboxAux.povUp().getAsBoolean(),      //both climb hooks up
-                                                      ()->xboxAux.povDown().getAsBoolean(),    //both climb hooks down
-                                                      ()->xboxAux.povLeft().getAsBoolean(),    //raise right climb hook
-                                                      ()->xboxAux.povRight().getAsBoolean()));  //raose left climb hook 
+
 
     //----------------------------------------------------------------------------------------
     //  Aux Commands
@@ -104,16 +101,28 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.povUp   ().onTrue(stateMachine.cmdNewNoteDestintation(NoteDestination.TRAP));
     xboxAux.povDown ().onTrue(stateMachine.cmdNewNoteDestintation(NoteDestination.HOARD));
 
+      //climb
+    xboxAux.back().and(xboxAux.start()).onTrue(new ClimbCmd(()->xboxAux.getLeftY(), ()->xboxAux.getRightY()));  //raose left climb hook 
 
     //Shooter to intake handoff
-    xboxAux.y().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
+    xboxAux.y().onTrue(Commands.either(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER),
+                                       new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE),
+                                       ()-> stateMachine.isTargetPositionSPEAKER()));
+    //tbd 
 
-    xboxAux.b().onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
-        
+    xboxAux.x().onTrue(Commands.either(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()),
+                                       new MoveToAmpTransition(),
+                                       ()-> stateMachine.isTargetPositionSPEAKER()));
+      
+    xboxAux.b().onTrue(Commands.either(shooter.cmdShoot(),
+                                       new ScoreAmpOrTrapCmd(),
+                                       ()-> stateMachine.isTargetPositionSPEAKER()));
 
-    // xboxAux.b().onTrue(Commands.either(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()),
-    //                                   new ScoreAmpOrTrapCmd(),
-    //                                   ()-> (stateMachine.getNoteDestination() == NoteDestination.SPEAKER)));
+    xboxAux.x().onTrue(Commands.either(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()),
+                                      new ScoreAmpOrTrapCmd(),
+                                      ()-> (stateMachine.isTargetPositionSPEAKER())));
+
+
     xboxAux.a().onTrue(new StowPoseCmd()); //intake pivot stow
 
     // xboxAux.back().onTrue(/*Signify Amp LEDs*/null);
@@ -124,7 +133,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.rightStick().onTrue(Commands.either(shooter.cmdShooterRamp(), 
                                                 new IntakeManualCmd(()->xboxAux.getRightY(), ()->xboxAux.rightStick().getAsBoolean()),
-                                                ()->stateMachine.getNoteDestination() == NoteDestination.SPEAKER));
+                                                ()->stateMachine.isTargetPositionSPEAKER()));
+
     //turret
     xboxAux.leftTrigger().onTrue(turret.cmdTurretLT());
     xboxAux.rightTrigger().onTrue(turret.cmdTurretRT());
