@@ -13,20 +13,21 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterLoadState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
-public class HomePoseCmd extends Command {
+public class StowPoseCmd extends Command {
   //subsystem declaration
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
   private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();  
   
-  public HomePoseCmd() {
+  public StowPoseCmd() {
     addRequirements(elevator, intake, shooter, turret);
   }
 
   @Override
   public void initialize() {
-      runMechanismSetpoints(CatzMechanismConstants.HOME);
+          System.out.println("stow");
+      runMechanismSetpoints(CatzMechanismConstants.STOW);
       intake.setRollersOff();
       shooter.setShooterLoadState(ShooterLoadState.LOAD_OFF);
   }

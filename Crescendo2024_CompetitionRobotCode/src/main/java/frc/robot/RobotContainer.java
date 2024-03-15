@@ -12,7 +12,7 @@ import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
 import frc.robot.commands.mechanismCmds.ScoreAmpOrTrapCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
-import frc.robot.commands.mechanismCmds.HomePoseCmd;
+import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.IntakeManualCmd;
@@ -62,7 +62,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
     xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
-    xboxTest = new CommandXboxController(2);
+    //xboxTest = new CommandXboxController(2);
 
     // Configure the trigger bindings and default cmds
     defaultCommands();
@@ -90,10 +90,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxDrv.start().and(xboxDrv.leftTrigger()).onTrue(Commands.runOnce(()->driveTrain.resetPosition(new Pose2d(2.97,4.11, Rotation2d.fromDegrees(0)))));
 
     //climb
-    xboxDrv.b().and(xboxAux.a()).onTrue(new ClimbCmd(()->xboxAux.povUp().getAsBoolean(),                                //both climb hooks up
-                                                                              ()->xboxAux.povDown().getAsBoolean(),    //both climb hooks down
-                                                                              ()->xboxAux.povLeft().getAsBoolean(),    //raise right climb hook
-                                                                              ()->xboxAux.povRight().getAsBoolean()));  //raose left climb hook 
+    xboxAux.b().and(xboxAux.a()).onTrue(new ClimbCmd(()->xboxAux.povUp().getAsBoolean(),      //both climb hooks up
+                                                      ()->xboxAux.povDown().getAsBoolean(),    //both climb hooks down
+                                                      ()->xboxAux.povLeft().getAsBoolean(),    //raise right climb hook
+                                                      ()->xboxAux.povRight().getAsBoolean()));  //raose left climb hook 
 
     //----------------------------------------------------------------------------------------
     //  Aux Commands
@@ -107,13 +107,14 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     //Shooter to intake handoff
     xboxAux.y().onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
-    xboxAux.x().onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
+
+    xboxAux.b().onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
         
 
-     xboxAux.b().onTrue(Commands.either(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()),
-                                        new ScoreAmpOrTrapCmd(),
-                                        ()-> (stateMachine.getNoteDestination() == NoteDestination.SPEAKER)));
-    xboxAux.a().onTrue(new HomePoseCmd()); //intake pivot stow
+    // xboxAux.b().onTrue(Commands.either(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()),
+    //                                   new ScoreAmpOrTrapCmd(),
+    //                                   ()-> (stateMachine.getNoteDestination() == NoteDestination.SPEAKER)));
+    xboxAux.a().onTrue(new StowPoseCmd()); //intake pivot stow
 
     // xboxAux.back().onTrue(/*Signify Amp LEDs*/null);
     // turn middle lights to red
@@ -124,7 +125,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.rightStick().onTrue(Commands.either(shooter.cmdShooterRamp(), 
                                                 new IntakeManualCmd(()->xboxAux.getRightY(), ()->xboxAux.rightStick().getAsBoolean()),
                                                 ()->stateMachine.getNoteDestination() == NoteDestination.SPEAKER));
-    //xboxAux.x().onTrue(new ScoreAmpOrTrapCmd());
     //turret
     xboxAux.leftTrigger().onTrue(turret.cmdTurretLT());
     xboxAux.rightTrigger().onTrue(turret.cmdTurretRT());

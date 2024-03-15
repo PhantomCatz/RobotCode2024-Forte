@@ -12,6 +12,7 @@ import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.CatzStateMachine.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -58,6 +59,16 @@ public class MoveToHandoffPoseCmd extends Command {
 
   @Override
   public void initialize() {
+    if(m_noteDestination == NoteDestination.AMP &&
+       m_noteSource == NoteSource.FROM_SHOOTER) {
+        CatzStateMachine.getInstance().cmdNewNoteDestintation(NoteDestination.AMP);
+    }
+
+    if(m_noteDestination == NoteDestination.SPEAKER &&
+       m_noteSource == NoteSource.FROM_INTAKE) {
+        CatzStateMachine.getInstance().cmdNewNoteDestintation(NoteDestination.SPEAKER);
+    }
+
     System.out.println("Handoff " + m_noteDestination.toString());
     System.out.println(m_noteSource.toString());
     m_targetMechPoseStartReached = false;

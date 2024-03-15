@@ -149,7 +149,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
           currentElevatorState == ElevatorControlState.SEMI_MANUAL)) {
 
         if((m_targetPositionRev != ELEVATOR_NULL_POSITION)) {
-        System.out.println("in setPosition");
 
           if(m_elevatorIntakeInSafetyZone == false) {
             if(currentElevatorDirection == ElevatorDirection.DOWN) {
@@ -238,10 +237,8 @@ public class SubsystemCatzElevator extends SubsystemBase {
         System.out.println("E-D");
 
       currentElevatorDirection = ElevatorDirection.UP;
-      intakeClearanceAngle = SubsystemCatzIntake.INTAKE_MAX_TRANSITION_ANGLE;
-      if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_MAX_TRANSITION_ANGLE) {
-        System.out.println("E-E");
-
+      intakeClearanceAngle = SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG;
+      if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
         //-------------------------------------------------------------------------------------
         //  intake is in front of elevator
         //----------------------------------------------------------------------------------
