@@ -12,6 +12,7 @@ import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.CatzStateMachine.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -58,6 +59,16 @@ public class MoveToHandoffPoseCmd extends Command {
 
   @Override
   public void initialize() {
+    if(m_noteDestination == NoteDestination.AMP &&
+       m_noteSource == NoteSource.FROM_SHOOTER) {
+        CatzStateMachine.getInstance().cmdNewNoteDestintation(NoteDestination.AMP);
+    }
+
+    if(m_noteDestination == NoteDestination.SPEAKER &&
+       m_noteSource == NoteSource.FROM_INTAKE) {
+        CatzStateMachine.getInstance().cmdNewNoteDestintation(NoteDestination.SPEAKER);
+    }
+
     System.out.println("Handoff " + m_noteDestination.toString());
     System.out.println(m_noteSource.toString());
     m_targetMechPoseStartReached = false;
@@ -75,7 +86,7 @@ public class MoveToHandoffPoseCmd extends Command {
             System.out.println("Ground speaker");
         } else if(m_noteDestination == NoteDestination.AMP)  {
 
-            m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
             System.out.println("Ground AMP");
         }
       break;
@@ -105,7 +116,7 @@ public class MoveToHandoffPoseCmd extends Command {
           m_targetMechPoseEnd = CatzMechanismConstants.STOW;
         } else if(m_noteDestination == NoteDestination.AMP) {
             System.out.println("Intake Amp");
-          m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+          m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
         }
       
       break;
@@ -114,7 +125,7 @@ public class MoveToHandoffPoseCmd extends Command {
         m_targetMechPoseStart = CatzMechanismConstants.STOW;
 
         if(m_noteDestination == NoteDestination.AMP) {
-            m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
             System.out.println("Shooter Amp");
 
         } 
@@ -123,7 +134,7 @@ public class MoveToHandoffPoseCmd extends Command {
         
       default: 
         //invalid command...should have used switch handoff positions cmd
-        m_targetMechPoseStart = CatzMechanismConstants.HOME;
+       // m_targetMechPoseStart = CatzMechanismConstants.HOME;
       break;
     }
 
