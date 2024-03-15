@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.CatzStateMachine.NoteSource;
