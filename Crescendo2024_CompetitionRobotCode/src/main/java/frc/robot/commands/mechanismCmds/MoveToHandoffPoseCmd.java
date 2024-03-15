@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.Robot.manipulatorMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
@@ -87,7 +86,7 @@ public class MoveToHandoffPoseCmd extends Command {
             // System.out.println("Ground speaker");
         } else if(m_noteDestination == NoteDestination.AMP)  {
 
-            m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
             // System.out.println("Ground AMP");
         }
       break;
@@ -117,7 +116,7 @@ public class MoveToHandoffPoseCmd extends Command {
           m_targetMechPoseEnd = CatzMechanismConstants.STOW;
         } else if(m_noteDestination == NoteDestination.AMP) {
             // System.out.println("Intake Amp");
-          m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+          m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
         }
       
       break;
@@ -126,7 +125,7 @@ public class MoveToHandoffPoseCmd extends Command {
         m_targetMechPoseStart = CatzMechanismConstants.STOW;
 
         if(m_noteDestination == NoteDestination.AMP) {
-            m_targetMechPoseEnd = CatzMechanismConstants.AMP_TRANSITION;
+            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
             // System.out.println("Shooter Amp");
 
         } 
@@ -173,8 +172,9 @@ public class MoveToHandoffPoseCmd extends Command {
 
           if(m_noteDestination == NoteDestination.SPEAKER) {
              intake.setRollersOutakeHandoff();
-
+            System.out.print("Outtaking");
             if(shooter.getShooterNoteState() == ShooterNoteState.NOTE_IN_POSTION) {
+            System.out.print("Note in position");
               intake.setRollersOff();
               m_targetMechPoseEndReached = true;
             } 

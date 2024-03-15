@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -10,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
-import frc.robot.commands.mechanismCmds.ScoreAmpOrTrapCmd;
+import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
 import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
@@ -20,6 +21,7 @@ import frc.robot.commands.mechanismCmds.IntakeManualCmd;
 import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.CatzStateMachine.NoteSource;
+import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.climb.SubsystemCatzClimb;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -38,6 +40,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   private SubsystemCatzClimb    climb;
   private SubsystemCatzElevator   elevator;
   private SubsystemCatzTurret     turret;
+  private SubsystemCatzLED      lead;
 
   private CatzStateMachine stateMachine;
 
@@ -69,9 +72,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     defaultCommands();
     configureBindings();
   }
- 
-  
    
+
   private void configureBindings() {    
     
     //------------------------------------------------------------------------------------
@@ -90,7 +92,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //ensure that the robot is shooter facing the speaker when reseting position
     xboxDrv.start().and(xboxDrv.leftTrigger()).onTrue(Commands.runOnce(()->driveTrain.resetPosition(new Pose2d(2.97,4.11, Rotation2d.fromDegrees(0)))));
 
-
+    xboxDrv.start().and(xboxDrv.back()).onTrue(Commands.runOnce(()->lead.signalHumanPlayerAMP()));
 
     //----------------------------------------------------------------------------------------
     //  Aux Commands
@@ -104,6 +106,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
       //climb
     xboxAux.back().and(xboxAux.start()).onTrue(new ClimbCmd(()->xboxAux.getLeftY(), ()->xboxAux.getRightY()));  //raose left climb hook 
 
+    //xboxAux.y().onTrue(new AimAndOrFireAtSpeakerCmd());
     //Shooter to intake handoff
     xboxAux.y().onTrue(Commands.either(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER),
                                        new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE),
@@ -115,11 +118,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                                        ()-> stateMachine.isTargetPositionSPEAKER()));
       
     xboxAux.b().onTrue(Commands.either(shooter.cmdShoot(),
-                                       new ScoreAmpOrTrapCmd(),
+                                       new ScoreAmpCmd(),
                                        ()-> stateMachine.isTargetPositionSPEAKER()));
 
     xboxAux.x().onTrue(Commands.either(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()),
-                                      new ScoreAmpOrTrapCmd(),
+                                      new ScoreAmpCmd(),
                                       ()-> (stateMachine.isTargetPositionSPEAKER())));
 
 
@@ -144,6 +147,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.rightBumper().onTrue(intake.cmdRollerOut());
     Trigger rollersOffBindingAux = xboxAux.leftBumper().and(xboxAux.rightBumper());
     rollersOffBindingAux.onTrue(intake.cmdRollerOff());
+
+    
   }
 
   //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active

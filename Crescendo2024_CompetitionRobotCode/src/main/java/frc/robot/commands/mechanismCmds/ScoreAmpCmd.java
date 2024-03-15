@@ -4,57 +4,64 @@
 
 package frc.robot.commands.mechanismCmds;
 
-import java.util.function.Supplier;
+import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.subsystems.climb.SubsystemCatzClimb;
+import frc.robot.subsystems.CatzStateMachine;
+import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorControlState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
+import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
-public class ClimbCmd extends Command {
+public class ScoreAmpCmd extends Command {
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
-  private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();  
-  private SubsystemCatzClimb climb = SubsystemCatzClimb.getInstance();
+  private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
 
+  private static Timer intakeNoteTimer = new Timer();
 
-  Supplier<Double> m_supplierXboxLeftY;
-  Supplier<Double> m_supplierXboxRightY;
+  private boolean m_targetMechPoseStartReached = false;
+  private boolean m_targetMechPoseEndReached   = false;
 
-
-  
-  public ClimbCmd(Supplier<Double> supplierXboxleftY, Supplier<Double> supplierXboxRightY) {
-    m_supplierXboxLeftY = supplierXboxleftY;
-    m_supplierXboxRightY = supplierXboxRightY;
-
-
-    addRequirements(elevator, intake, shooter, turret, climb);
+  public ScoreAmpCmd() {
+    addRequirements(intake, elevator, shooter, turret);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("in clmb");
-    climb.setClimbModeEnabled(true);
+    intake.setSquishyMode(true);
+    if(intake.getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
+      intake.pivotFullManual(0.3);
+    }
+    intakeNoteTimer.reset();
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climb.setLeftClimbPercentOutput(m_supplierXboxLeftY.get()/5);
-    climb.setRightClimbPercentOutput(m_supplierXboxRightY.get()/5);
+    if(intake.getWristAngle() > 20) {
+      intake.pivotFullManual(0.0);
+    } else {
+      intake.pivotFullManual(0.3);
+    }
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    climb.setClimbModeEnabled(false);
+    intake.setSquishyMode(false);
+      runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION);
   }
 
   // Returns true when the command should end.

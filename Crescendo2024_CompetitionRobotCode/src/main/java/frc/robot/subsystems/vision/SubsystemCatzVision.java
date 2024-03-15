@@ -80,8 +80,8 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight")
-                // new VisionIOLimeLight("limelight-turret", VisionConstants.LIMELIGHT_OFFSET_2)
+                new VisionIOLimeLight("limelight-udon"),
+                new VisionIOLimeLight("limelight-ramen")
             });
         }
         return instance;

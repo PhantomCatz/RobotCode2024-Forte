@@ -94,6 +94,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double m_targetPositionDeg = 0.0;
   private double m_nextTargetPositionDeg = INTAKE_NULL_DEG;
   private double m_currentPositionDeg = 0.0;
+  private double m_previousTargetPositionDeg = 0.0;
 
   private int m_iterationCounter;
 
@@ -415,7 +416,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // to/from
       // STOW position
       // -------------------------------------------------------------------------------------
-      if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG) {
+      if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG ||
+          m_previousTargetPositionDeg == INTAKE_AMP_SCORE_DEG) {
         if(m_intermediatePositionReached == false) {
           //System.out.println("I-BC");
           m_nextTargetPositionDeg = INTAKE_STOW_DEG; 
@@ -501,6 +503,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
           m_intakeElevatorInSafetyZone = true;
       }
     }
+
+    m_previousTargetPositionDeg = m_targetPositionDeg;
 
   } // End of updateTargetPositionIntake()
 

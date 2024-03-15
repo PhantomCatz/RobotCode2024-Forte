@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -171,15 +172,15 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
     //sn2
-    // public static final double LT_FRNT_OFFSET = 0.23406623085+0.5;      //mag encoder 0
-    // public static final double LT_BACK_OFFSET = 0.2372954059;           //mag encoder 1
-    // public static final double RT_BACK_OFFSET = 0.60861531521+0.5;      //mag encoder 2
-    // public static final double RT_FRNT_OFFSET = 0.838318270957+0.5;      //mag encoder 3
+    public static final double LT_FRNT_OFFSET = 0.23406623085+0.5;      //mag encoder 0
+    public static final double LT_BACK_OFFSET = 0.2372954059;           //mag encoder 1
+    public static final double RT_BACK_OFFSET = 0.60861531521+0.5;      //mag encoder 2
+    public static final double RT_FRNT_OFFSET = 0.838318270957+0.5;      //mag encoder 3
     //sn1
-    public static final double LT_FRNT_OFFSET =  0.21317;
-    public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
-    public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
-    public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
+    // public static final double LT_FRNT_OFFSET =  0.21317;
+    // public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
+    // public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
+    // public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
 
 
     public static final int LT_FRNT_DRIVE_ID = 1;
@@ -233,7 +234,7 @@ public final class CatzConstants {
     public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(3.3);//0.095;// mUnits.inchesToMeters(4);
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
-    public static final boolean START_FLIPPED = false;
+    public static final boolean START_FLIPPED = true;
 
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;
     public static final double FEEDFOWARD_Kv_VELOCITY_ACCELERATION_METERS = 0.24;
@@ -253,7 +254,7 @@ public final class CatzConstants {
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
                                                         SubsystemCatzIntake.INTAKE_STOW_DEG, 
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
-                                                        SubsystemCatzTurret.HOME_POSITION);
+                                                        1.0);
     public static final CatzMechanismPosition PREP_FOR_AMP = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
                                                         SubsystemCatzIntake.INTAKE_STOW_DEG, 
@@ -299,5 +300,11 @@ public final class CatzConstants {
     //-10
     
   }
+
+  //COLOR CONSTANTS::
+  public static final class CatzColorConstants {
+    public static final Color PHANTOM_SAPPHIRE = new Color(15, 25, 200); 
+  }
+
 
 }

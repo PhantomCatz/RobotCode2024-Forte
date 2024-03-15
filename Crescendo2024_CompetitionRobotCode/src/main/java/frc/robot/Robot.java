@@ -20,16 +20,20 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.CatzConstants.CatzColorConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
-import frc.robot.Utils.LEDs.CatzRGB;
-import frc.robot.Utils.LEDs.ColorMethod;
 import frc.robot.subsystems.CatzStateMachine;
+import frc.robot.subsystems.LEDs.SubsystemCatzLED;
+import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.vision.SubsystemCatzVision;
+import frc.robot.CatzAutonomous;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
+  public static SubsystemCatzLED lead = new SubsystemCatzLED();
   private RobotContainer m_robotContainer;
   
   @Override
@@ -85,7 +89,17 @@ public class Robot extends LoggedRobot {
 
     DriverStation.silenceJoystickConnectionWarning(true);
     // SubsystemCatzVision.getInstance().setUseSingleTag(true, 4);
-
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 1111) { //TBD 
+      lead.mid.colorSolid(Color.kGreen);
+      lead.top.colorSolid(Color.kGreen);
+      lead.bot.colorSolid(Color.kGreen);
+      
+    } else {
+      lead.mid.colorSolid(Color.kRed);
+      lead.top.colorSolid(Color.kRed);
+      lead.bot.colorSolid(Color.kRed);    
+    }
+    
   }
 
   @Override
@@ -104,11 +118,19 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-   m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    lead.top.colorAlternating(CatzColorConstants.PHANTOM_SAPPHIRE, Color.kWhite);
+    lead.mid.colorAlternating(CatzColorConstants.PHANTOM_SAPPHIRE, Color.kWhite);
+    lead.bot.colorAlternating(CatzColorConstants.PHANTOM_SAPPHIRE, Color.kWhite);
+    
+    lead.top.setMode(LEDMode.Flow);
+    lead.mid.setMode(LEDMode.Flow);
+    lead.bot.setMode(LEDMode.Flow);
   }
 
   @Override
@@ -150,69 +172,5 @@ public class Robot extends LoggedRobot {
   @Override
   public void testExit() {}
 
-  //-----------------------------------------------------------LED config------------------------------------------------
-  public static CatzRGB led = new CatzRGB();
-
-  //leds for mechanism state
-  public enum mechMode {
-    AutoMode(Color.kGreen),
-    ManualHoldMode(Color.kCyan),
-    ManualMode(Color.kRed);
-
-    public Color color;
-    mechMode(Color color){
-      this.color = color;
-    }
-  }
-
-  //leds for autoaligning
-  public enum AutoAlignState {
-    Aligned(Color.kGreen),
-    Misaligned_Veritcal(Color.kPurple),
-    Misaligned_Horizontal(Color.kYellow),
-    TargetNotFound(Color.kBlack);
-
-    public Color color;
-    AutoAlignState(Color color){
-      this.color = color;
-    }
-  }
-
-  //leds for the type of robot note state mode we are in
-  public enum manipulatorMode {
-    Amp(Color.kOrange), Amp_No_Note(Color.kWhite),
-    Speaker(Color.kOrange), Speaker_No_Note(Color.kWhite),
-    Climb(Color.kBlue), Climb_No_Note(Color.kYellow),
-    Hoard(Color.kAntiqueWhite),
-    Source(Color.kRed),
-    None(Color.kGhostWhite);
-
-    public Color color;
-    manipulatorMode(Color color){
-      this.color = color;
-    }
-  }
-
-    //default leds
-  public enum gameModeLED{
-    InAutonomous(led.startFlowing, led.PHANTOM_SAPPHIRE, Color.kWhite),
-    MatchEnd(led.startFlowingRainbow),
-    EndgameWheelLock(led.oneColorFillAllianceColor), 
-    TeleOp(led.doNothing);
-
-    public ColorMethod method;
-    public Color[] color;
-    private gameModeLED(ColorMethod method, Color... color)
-    {
-      this.method = method;
-      this.color = color;
-    }
-  }
-
-  public static mechMode intakeControlMode = mechMode.AutoMode;
-  public static mechMode elevatorControlMode = mechMode.AutoMode;
-  public static mechMode armControlMode = mechMode.AutoMode;
-  public static gameModeLED currentGameModeLED = gameModeLED.MatchEnd;
-  public static manipulatorMode currentGamePiece = manipulatorMode.None;
 }
 

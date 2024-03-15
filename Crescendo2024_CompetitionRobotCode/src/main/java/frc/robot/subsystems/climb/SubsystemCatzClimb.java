@@ -31,6 +31,7 @@ public class SubsystemCatzClimb extends SubsystemBase {
   private double climbPercentOutputLT = 0.0;
   private double climbPercentOutputRT = 0.0;
 
+  private boolean isClimbingEnabled = false;
 
 
 
@@ -75,7 +76,13 @@ public class SubsystemCatzClimb extends SubsystemBase {
     }
   }
 
+  public void setClimbModeEnabled(boolean set) {
+    isClimbingEnabled = set;
+  }
 
+  public boolean isClimbing(){
+    return isClimbingEnabled;
+  }
 
   public void setLeftClimbPercentOutput(double output) {
     climbPercentOutputLT = output;

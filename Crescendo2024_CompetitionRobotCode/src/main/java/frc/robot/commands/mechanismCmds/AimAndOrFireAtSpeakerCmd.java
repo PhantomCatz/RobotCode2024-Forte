@@ -186,8 +186,8 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     if(intake.getIntakeInPos() &&
        elevator.getElevatorInPos()) {
       //send the new target to the turret
-      turret.aimAtGoal(m_targetXY, false);
     }
+    turret.aimAtGoal(m_targetXY, false);
 
     double servoPos = shooterPivotTable.get(newDist);
     //send new target to the shooter
