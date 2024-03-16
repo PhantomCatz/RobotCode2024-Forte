@@ -1,14 +1,20 @@
 {
-  "robotWidth": 0.7366,
-  "robotLength": 0.74,
+  "robotWidth": 0.6,
+  "robotLength": 0.6,
   "holonomicMode": true,
   "pathFolders": [
-    "3 gp auto",
-    "5 gp path",
-    "6 Note Auton 5940",
-    "Scoring C2-4",
-    "Scoring C1-3",
-    "Scoring C5-3"
+    "1WingBulldozeAbove",
+    "1WingBulldozeUnder",
+    "BottomMidClear",
+    "CenterRushMid",
+    "DriveStraight",
+    "HoardLowMid",
+    "MCHA",
+    "S4PCSW",
+    "S4PW",
+    "Scoring_C1-3",
+    "Scoring_C2-4",
+    "Scoring_C5-3"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.0,

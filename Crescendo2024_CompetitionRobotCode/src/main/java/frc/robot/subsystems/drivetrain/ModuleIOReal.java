@@ -5,32 +5,42 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import frc.robot.CatzConstants.MtrConfigConstants;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 
 public class ModuleIOReal implements ModuleIO {
-
+    //Motor instantiation
     private final CANSparkMax STEER_MOTOR;
     private final TalonFX DRIVE_MOTOR;
 
+    //Motor Current limiting
+    public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
+    public static final int     KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS    = 55;
+    public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
+    public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
+
+    public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
+
+    //Mag enc instatiation
     private DutyCycleEncoder magEnc;
     private DigitalInput MagEncPWMInput;
 
+    //status code initialization
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
-            //create new config objects
+        //create new config objects
     private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
-    private Slot0Configs driveConfigs = new Slot0Configs();
+    private Slot0Configs driveConfigs         = new Slot0Configs();
 
     public ModuleIOReal(int driveMotorIDIO, int steerMotorIDIO, int magDIOPort) {
 
@@ -41,7 +51,7 @@ public class ModuleIOReal implements ModuleIO {
         //steer motor setup
         STEER_MOTOR = new CANSparkMax(steerMotorIDIO, MotorType.kBrushless);
         STEER_MOTOR.restoreFactoryDefaults();
-        STEER_MOTOR.setSmartCurrentLimit(MtrConfigConstants.NEO_CURRENT_LIMIT_AMPS);
+        STEER_MOTOR.setSmartCurrentLimit(NEO_CURRENT_LIMIT_AMPS);
         STEER_MOTOR.setIdleMode(IdleMode.kCoast);
         STEER_MOTOR.enableVoltageCompensation(12.0);
 
@@ -52,35 +62,41 @@ public class ModuleIOReal implements ModuleIO {
         talonConfigs.Slot0 = driveConfigs;
             //current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT;
-        talonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
-        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
-        talonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
+        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
+        talonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
+        talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 2.4; //TBD 0.3 has a better graph but it jitters the auton. 0.1 doesnt jitter for auton but slow for telop //for atlas
+        driveConfigs.kP = 0.01;//2.0;//2.4; //TBD 0.3 has a better graph but it jitters the auton.
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.00;
-
+ 
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){
             initializationStatus = DRIVE_MOTOR.getConfigurator().apply(talonConfigs);
             if(!initializationStatus.isOK())
                 System.out.println("Failed to Configure CAN ID" + driveMotorIDIO);
         }
+
     }
 
     @Override
     public void updateInputs(ModuleIOInputs inputs) {
-        inputs.driveMtrVelocity =       DRIVE_MOTOR.getRotorVelocity().getValue();
+
+        inputs.driveMtrVelocity       = DRIVE_MOTOR.getRotorVelocity().getValue();
         inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
-        inputs.magEncoderValue = magEnc.get();
+        inputs.driveAppliedVolts      = DRIVE_MOTOR.getMotorVoltage().getValueAsDouble();
+        inputs.magEncoderValue        = magEnc.get();
+        inputs.steerAppliedVolts      = STEER_MOTOR.getOutputCurrent();
+        inputs.driveVelocityError     = DRIVE_MOTOR.getClosedLoopError().getValueAsDouble();
+        inputs.steerAppliedVolts      = STEER_MOTOR.getAppliedOutput();
     }
 
     @Override
     public void setDriveVelocityIO(double velocity) {
-        DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity));
+        DRIVE_MOTOR.setControl(new VelocityDutyCycle(velocity));
     }
 
     @Override
@@ -96,11 +112,6 @@ public class ModuleIOReal implements ModuleIO {
     @Override
     public void setSteerPwrIO(double SteerPwr) {
         STEER_MOTOR.set(SteerPwr);
-    }
-
-    @Override
-    public void setSteerVoltageIO(double steerVoltage) {
-        STEER_MOTOR.setVoltage(steerVoltage);
     }
 
     @Override

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.178464664621639,
-        "y": 4.331587893945019
+        "x": 7.227466862341132,
+        "y": 5.551251658058872
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.5568472675406895,
-        "y": 4.627596178269281
+        "x": 5.553342461891771,
+        "y": 6.2770083885388885
       },
       "prevControl": {
-        "x": 6.888884546999863,
-        "y": 4.232918465836932
+        "x": 7.011129573185072,
+        "y": 6.144323441424661
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Scoring C1-3",
+  "folder": "Scoring_C1-3",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

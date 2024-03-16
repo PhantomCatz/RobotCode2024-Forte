@@ -2,13 +2,14 @@ package frc.robot.subsystems.drivetrain;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.I2C.Port;
 import frc.robot.CatzConstants.DriveConstants;
 public class GyroIONavX implements GyroIO 
 {
     private final AHRS navX;
 
     public GyroIONavX() {
-        navX = new AHRS();
+        navX = new AHRS(Port.kMXP, (byte) 200);
     }
 
     @Override
@@ -22,7 +23,7 @@ public class GyroIONavX implements GyroIO
     @Override
     public void resetNavXIO(){
         navX.reset();
-        navX.setAngleAdjustment(DriveConstants.initPose.getRotation().getDegrees());
+        navX.setAngleAdjustment(DriveConstants.defaultRot.getDegrees());
     }
 
     @Override
@@ -30,6 +31,9 @@ public class GyroIONavX implements GyroIO
         navX.setAngleAdjustment(gyroAdjustment);
     }
 
-
+    @Override
+    public double getAngleAdjustmentIO(){
+        return navX.getAngleAdjustment();
+    }
 }
 
