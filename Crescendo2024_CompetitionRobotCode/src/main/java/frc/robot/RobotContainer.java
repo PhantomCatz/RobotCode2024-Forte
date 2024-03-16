@@ -115,7 +115,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //mode speaker
     xboxAux.y().and(xboxAux.povRight()).onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
 
-    xboxAux.x().and(xboxAux.povRight()).onTrue(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()));
+    //xboxAux.x().and(xboxAux.povRight()).onTrue(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()));
 
     xboxAux.b().and(xboxAux.povRight()).onTrue(shooter.cmdShoot());
 
@@ -134,6 +134,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.x().and(xboxAux.povLeft()).onTrue(new MoveToAmpTransition());
 
     xboxAux.b().and(xboxAux.povLeft()).onTrue(new ScoreAmpCmd());
+
+    xboxAux.rightStick().onTrue(shooter.cmdServoPosition(()->xboxAux.getRightY()));
 
 
     //mode trap

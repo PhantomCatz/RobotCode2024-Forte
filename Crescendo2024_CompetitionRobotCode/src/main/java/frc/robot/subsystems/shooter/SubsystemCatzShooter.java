@@ -230,7 +230,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
 
     if(currentShooterServoState == ShooterServoState.AUTO) {
-      io.setServoPosition(m_newServoPosition);
+      io.setServoPosition(1.0);
+      System.out.println(m_newServoPosition);
       if(Math.abs(m_servoPosError) < 0.1) {
         m_shooterServoInPos = true;
       }
@@ -255,6 +256,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public void updateShooterServo(double position) {
+    
     m_shooterServoInPos = false;
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = position;

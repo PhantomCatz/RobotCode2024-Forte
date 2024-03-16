@@ -72,7 +72,7 @@ public class IntakeIOReal implements IntakeIO {
 
         talonConfigsPivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        pivotMtr.optimizeBusUtilization();
+        //pivotMtr.optimizeBusUtilization();
         
         pivotMtr.setPosition(SubsystemCatzIntake.INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV);
 
@@ -91,7 +91,7 @@ public class IntakeIOReal implements IntakeIO {
         talonConfigsRoller = talonConfigsPivot;
         talonConfigsRoller.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        rollerMtr.optimizeBusUtilization();
+        //rollerMtr.optimizeBusUtilization();
         
         //check if roller motor is initialized correctly
         rollerInitializationStatus = rollerMtr.getConfigurator().apply(talonConfigsRoller);

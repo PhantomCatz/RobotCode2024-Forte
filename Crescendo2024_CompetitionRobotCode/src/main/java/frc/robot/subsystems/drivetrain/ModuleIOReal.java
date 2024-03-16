@@ -73,7 +73,7 @@ public class ModuleIOReal implements ModuleIO {
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.00;
  
-        DRIVE_MOTOR.optimizeBusUtilization();
+       // DRIVE_MOTOR.optimizeBusUtilization();
 
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){
