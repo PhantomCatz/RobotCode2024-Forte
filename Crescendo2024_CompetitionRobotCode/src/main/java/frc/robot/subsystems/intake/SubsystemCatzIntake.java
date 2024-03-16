@@ -140,6 +140,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final static double INTAKE_ELEV_MIN_HEIGHT_FOR_AMP_TRANS_REV = 32.0;
 
   public final static double INTAKE_STOW_ELEV_CLEARED_DEG = 120.0;
+  public static final double INTAKE_TURRET_CLEARANCE = 125.0;
+
 
   private double elevatorThresholdRev = 0.0;
   private double nextElevatorThresholdRev = 0.0;
@@ -150,6 +152,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private static boolean m_intakeInPosition = false;
 
   private boolean m_intermediatePositionReached = false;
+
+  
 
   private Timer rollerTimer = new Timer();
 

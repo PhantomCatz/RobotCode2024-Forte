@@ -150,18 +150,19 @@ public class SubsystemCatzTurret extends SubsystemBase {
       if (currentTurretState == TurretState.AUTO) {
 
         if(Math.abs(m_turretTargetDegree) > 120) {
-          driveRumbleController.setRumble(RumbleType.kBothRumble, 0.3);
-          io.turretSetPwr(0.0);
-        } else if(Math.abs(m_turretTargetDegree) > 0.0) {
-          if(SubsystemCatzIntake.getInstance().getIntakeInPos()) {
-            io.turretSetPwr(setPositionPower);
-            driveRumbleController.setRumble(RumbleType.kBothRumble, 0.0);
-          }
 
+          io.turretSetPwr(0.0);
+          driveRumbleController.setRumble(RumbleType.kBothRumble, 0.3);
         } else {
-          io.turretSetPwr(setPositionPower);
-          driveRumbleController.setRumble(RumbleType.kBothRumble, 0.0);
+          if(Math.abs(m_turretTargetDegree) > 3) {
+            if(SubsystemCatzIntake.getInstance().getWristAngle() > SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {
+
+              io.turretSetPwr(setPositionPower);
+              driveRumbleController.setRumble(RumbleType.kBothRumble, 0.0);
+            }
+          }
         } 
+
 
         if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 3) {
           m_turretIntPos = true;
