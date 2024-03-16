@@ -49,6 +49,8 @@ public class ClimbIOReal implements ClimbIO {
             //neutral mode
         climbTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+        climbMtrLT.optimizeBusUtilization();
+        climbMtrRT.optimizeBusUtilization();
 
         //check if climb motor is initialized correctly
         initializationStatus = climbMtrRT.getConfigurator().apply(climbTalonConfigs);

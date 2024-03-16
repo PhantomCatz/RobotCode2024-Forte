@@ -189,6 +189,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   public Command testTurretAngles(){
     return run(()->{
+      currentTurretState = TurretState.AUTO;
       if(Math.abs(m_turretTargetDegree) != 40){
         m_turretTargetDegree = 40;
         return;

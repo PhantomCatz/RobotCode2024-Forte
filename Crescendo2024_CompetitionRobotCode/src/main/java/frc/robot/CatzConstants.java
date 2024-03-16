@@ -253,7 +253,7 @@ public final class CatzConstants {
     public static final CatzMechanismPosition STOW = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
                                                         SubsystemCatzIntake.INTAKE_STOW_DEG, 
-                                                        1.0, 
+                                                        SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition SUBWOOFER_PRESET = 

@@ -55,6 +55,7 @@ public class ElevatorIOReal implements ElevatorIO {
             //neutral mode
         elevatorTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+        ElevatorMtr.optimizeBusUtilization();
 
         ElevatorMtr.setPosition(0);
 

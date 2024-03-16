@@ -20,9 +20,11 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.CatzConstants.AllianceColor;
+import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
+import frc.robot.commands.mechanismCmds.MoveToPreset;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.CatzStateMachine.NoteSource;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -102,7 +104,7 @@ public class CatzAutonomous {
     private Command speaker4PieceWing(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("S4PW1")),
-            new AimAndOrFireAtSpeakerCmd().withTimeout(2.0),
+            new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET),
             shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                      new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW1"))),

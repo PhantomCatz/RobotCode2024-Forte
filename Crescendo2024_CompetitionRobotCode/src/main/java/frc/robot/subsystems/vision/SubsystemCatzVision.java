@@ -102,8 +102,7 @@ public class SubsystemCatzVision extends SubsystemBase {
                     
             //checks for when to process vision
             if (inputs[i].hasTarget && 
-                inputs[i].isNewVisionPose && 
-                !DriverStation.isAutonomous() && 
+                inputs[i].isNewVisionPose &&  
                 inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
                 useSingleTag = false;
                 if (useSingleTag) {

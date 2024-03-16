@@ -65,7 +65,7 @@ public class SubsystemCatzClimb extends SubsystemBase {
 
     if(DriverStation.isDisabled()) {
       io.setClimbMtrPercentOutputLT(0.0);
-      io.setClimbPositionRT(0.0);
+      io.setClimbMtrPercentOutputRT(0.0);
       climbPercentOutputLT = 0.0;
       climbPercentOutputRT = 0.0;
 

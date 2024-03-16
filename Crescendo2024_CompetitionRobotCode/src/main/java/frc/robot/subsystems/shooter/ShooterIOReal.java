@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -10,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
@@ -115,6 +117,8 @@ public class ShooterIOReal implements ShooterIO {
         LOAD_MOTOR.setSmartCurrentLimit(NEO_CURRENT_LIMIT_AMPS);
         LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.enableVoltageCompensation(12.0); //TBD is this the default value?
+        LOAD_MOTOR.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 32767);
+
         
         //Create shooter mtr array for easier calls
         shooterArray[0] = SHOOTER_MOTOR_RT;
@@ -134,7 +138,12 @@ public class ShooterIOReal implements ShooterIO {
 
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-         
+       // BaseStatusSignal.setUpdateFrequencyForAll(50, );
+        SHOOTER_MOTOR_LT.optimizeBusUtilization();
+        SHOOTER_MOTOR_RT.optimizeBusUtilization();
+
+
+
         //pid
         talonConfigs.Slot0 = pidConfigs;
         pidConfigs.kP = 0.11; //TBD

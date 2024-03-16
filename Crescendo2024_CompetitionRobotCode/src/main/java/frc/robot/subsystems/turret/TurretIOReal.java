@@ -7,6 +7,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkPIDController.AccelStrategy;
 
 import frc.robot.Utils.LoggedTunableNumber;
@@ -26,6 +27,7 @@ public class TurretIOReal implements TurretIO {
         turretMtr.setIdleMode(IdleMode.kBrake);
         turretMtr.enableVoltageCompensation(12.0);
         turretMtr.getEncoder().setPositionConversionFactor(1.0/SubsystemCatzTurret.TURRET_REV_PER_DEG);
+        turretMtr.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 37267);
 
         smartMotionPID = turretMtr.getPIDController();
         smartMotionPID.setP(0.01);
@@ -38,6 +40,7 @@ public class TurretIOReal implements TurretIO {
         smartMotionPID.setSmartMotionMaxAccel(5.0, 0);
         smartMotionPID.setSmartMotionMinOutputVelocity(0,0);
         smartMotionPID.setOutputRange(-1, 1);
+
     }
     @Override
     public void updateInputs(TurretIOInputs inputs) {

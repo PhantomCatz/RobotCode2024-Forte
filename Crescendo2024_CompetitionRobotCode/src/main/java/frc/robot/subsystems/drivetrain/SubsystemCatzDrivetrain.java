@@ -145,11 +145,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Update pose estimator with module encoder values + gyro
         m_poseEstimator.update(getRotation2d(), getModulePositions());
         
-        double dt = Timer.getFPGATimestamp() - prevTime;
-        double dSpeed = m_poseEstimator.getEstimatedPosition().getTranslation().getDistance(prevPose.getTranslation()) / dt;
+        // double dt = Timer.getFPGATimestamp() - prevTime;
+        // double dSpeed = m_poseEstimator.getEstimatedPosition().getTranslation().getDistance(prevPose.getTranslation()) / dt;
         
-        prevPose = m_poseEstimator.getEstimatedPosition();
-        prevTime = Timer.getFPGATimestamp();
+        // prevPose = m_poseEstimator.getEstimatedPosition();
+        // prevTime = Timer.getFPGATimestamp();
         // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop 
         var visionOdometry = vision.getVisionOdometry();   
         
@@ -171,7 +171,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 xyStdDev = 40;
             }
 
-            System.out.println(visionOdometry.get(i).getAvgArea());
+//            System.out.println(visionOdometry.get(i).getAvgArea());
 
 
             // dSpeed = Math.abs(dSpeed);
@@ -180,7 +180,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             // }
 
             Logger.recordOutput("XYStdDev", xyStdDev);
-            Logger.recordOutput("dSpeed", dSpeed);
 
             m_poseEstimator.setVisionMeasurementStdDevs(
             VecBuilder.fill(xyStdDev,xyStdDev,9)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
@@ -202,8 +201,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Update SmartDashboard with the gyro angle
         SmartDashboard.putNumber("gyroAngle", getGyroAngle());
         m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
-        m_fieldRelAccel = new FieldRelativeAccel(m_fieldRelVel, m_lastFieldRelVel, 0.02);
-        m_lastFieldRelVel = m_fieldRelVel;
+        // m_fieldRelAccel = new FieldRelativeAccel(m_fieldRelVel, m_lastFieldRelVel, 0.02);
+        // m_lastFieldRelVel = m_fieldRelVel;
     }
 
     public void driveRobotWithDescritizeDynamics(ChassisSpeeds chassisSpeeds) {

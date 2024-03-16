@@ -18,6 +18,7 @@ import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
 import frc.robot.commands.mechanismCmds.MoveToPreset;
 import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
+import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
 import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
@@ -82,7 +83,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
   private void configureBindings() {    
 
-    xboxDrv.y().onTrue(turret.testTurretAngles()); //delete later
+    //xboxDrv.y().onTrue(turret.testTurretAngles()); //delete later
     
     //------------------------------------------------------------------------------------
     //  Drive commands
@@ -97,18 +98,18 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxDrv.start().onTrue(driveTrain.resetGyro());
 
     //ensure that the robot is shooter facing the speaker when reseting position
-    xboxDrv.start().and(xboxDrv.leftTrigger()).onTrue(Commands.runOnce(()->driveTrain.resetPosition(new Pose2d(2.97,4.11, Rotation2d.fromDegrees(0)))));
+    xboxDrv.back().and(xboxDrv.leftTrigger()).onTrue(Commands.runOnce(()->driveTrain.resetPosition(new Pose2d(2.97,4.11, Rotation2d.fromDegrees(0)))));
 
     //signify amp
-    xboxDrv.start().and(xboxDrv.back()).onTrue(Commands.runOnce(()->lead.signalHumanPlayerAMP()));
+    xboxDrv.x().and(xboxDrv.back()).onTrue(Commands.runOnce(()->lead.signalHumanPlayerAMP()));
 
-    //----------------------------------------------------------------------------------------
+    //--------------------\--------------------------------------------------------------------
     //  Aux Commands
     //---------------------------------------------------------------------------------------- 
     //pov state machine commands 
 
       //climb
-    xboxAux.back().and(xboxAux.start()).onTrue(new ClimbCmd(()->xboxAux.getLeftY(), ()->xboxAux.getRightY()));  //raose left climb hook 
+    xboxAux.back().and(xboxAux.start()).onTrue(new ClimbCmd(()->xboxAux.getLeftY(), ()->xboxAux.getRightY()));  //raise left climb hook 
 
     
     //mode speaker
@@ -120,7 +121,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.rightStick().and(xboxAux.povRight()).onTrue(shooter.cmdShooterRamp());
 
-    xboxDrv.start().and(xboxDrv.x()).onTrue(new MoveToPreset(CatzMechanismConstants.HOARD_PRESET));
+    xboxAux.povDown().and(xboxDrv.x()).onTrue(new MoveToPreset(CatzMechanismConstants.HOARD_PRESET));
+
+    xboxAux.a().and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET));
+
+    xboxAux.b().and(xboxAux.x()).and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_DEFENSE));
 
 
     //mode amp
@@ -131,10 +136,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.b().and(xboxAux.povLeft()).onTrue(new ScoreAmpCmd());
 
 
-    //stow
+    //mode trap
+    xboxAux.povUp().and(xboxAux.x()).onTrue(new ScoreTrapCmd());
 
+    //stow
     xboxAux.a().onTrue(new StowPoseCmd());
 
+    
 
 
     // turn middle lights to red
