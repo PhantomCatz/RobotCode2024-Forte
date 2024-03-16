@@ -69,7 +69,7 @@ public class ModuleIOReal implements ModuleIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 0.01;//2.0;//2.4; //TBD 0.3 has a better graph but it jitters the auton.
+        driveConfigs.kP = 2.4;//2.0;//2.4; //TBD 0.3 has a better graph but it jitters the auton.
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.00;
  

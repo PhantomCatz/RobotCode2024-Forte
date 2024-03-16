@@ -138,56 +138,15 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
         shooter.cmdShoot();
     }
 
-    // m_robotVel = drivetrain.getFieldRelativeSpeed();
-    // m_robotAccel = drivetrain.getFieldRelativeAccel();
-
-    // //take the distance to the speaker
-    // robotToGoalXY = m_targetXY.minus(drivetrain.getPose().getTranslation());
-
-    // //convert the distance to meters
-    // distanceToSpeakerMeters = robotToGoalXY.getDistance(new Translation2d());
-
-    // //get the time it takes for note to reach the speaker in seconds
-    // shotTime = timeTable.get(distanceToSpeakerMeters); //TBD is this even necessary the note is moving pretty fast
-
-    // movingGoalLocation = new Translation2d();
-
-    // //run 5 iterations to test the goal location accuraccy
-    // for(int i=0;i<5;i++){
-    //   //collect new shooting targets modifed by robot acceleration and velocity
-    //     m_virtualGoalX = m_targetXY.getX()
-    //            - shotTime * (m_robotVel.vx + m_robotAccel.ax * k_ACCEL_COMP_FACTOR);
-    //     m_virtualGoalY = m_targetXY.getY()
-    //             - shotTime * (m_robotVel.vy + m_robotAccel.ay * k_ACCEL_COMP_FACTOR);
-
-    //     testGoalLocation = new Translation2d(m_virtualGoalX, m_virtualGoalY);
-
-    //     toTestGoal = testGoalLocation.minus(drivetrain.getPose().getTranslation());
-
-    //     //take the new time to reach target
-    //     newShotTime = timeTable.get(toTestGoal.getDistance(new Translation2d()));
-
-    //     //if the difference between the two is low, skip the iterations 
-    //     if(Math.abs(newShotTime-shotTime) <= 0.010){
-    //         i=4;
-    //     }
-      
-    //     //create the new target for the shooter and shooter pivot
-    //     if(i == 4){
-    //         movingGoalLocation = testGoalLocation;
-    //     }
-    //     else{ //continue attempting to close the gap
-    //         shotTime = newShotTime;
-    //     }
-    // }
-
     double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
     
     if(intake.getIntakeInPos() &&
        elevator.getElevatorInPos()) {
       //send the new target to the turret
     }
-    turret.aimAtGoal(m_targetXY, false, false);
+    if(intake.getIntakeInPos()) {
+      turret.aimAtGoal(m_targetXY, false, false);
+    }
 
     double servoPos = shooterPivotTable.get(newDist);
     //send new target to the shooter
