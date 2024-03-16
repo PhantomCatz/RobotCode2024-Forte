@@ -7,32 +7,26 @@ package frc.robot.Utils;
 
 public class CatzMechanismPosition {
 
-    private double m_elevatorTargetEncPos;
-    private double m_intakePivotTargetAngle;
-    private double m_shooterVerticalTargetAngle;
-    private double m_turretTargetAngle;
+    public double m_elevatorTargetEncPos;
+    public double m_intakePivotTargetEncPos;
+    public double m_shooterTargetRPS;
 
-    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetAngle, double shooterTargetHorizontalPosition, double turretTargetAngle) {
+    public CatzMechanismPosition(double elevatorTargetEncPos, double intakePivotTargetEncPos, double shooterTargetRPS) {
         this.m_elevatorTargetEncPos = elevatorTargetEncPos;
-        this.m_intakePivotTargetAngle = intakePivotTargetAngle;
-        this.m_shooterVerticalTargetAngle = shooterTargetHorizontalPosition;
-        this.m_turretTargetAngle = turretTargetAngle;
+        this.m_intakePivotTargetEncPos = intakePivotTargetEncPos;
+        this.m_shooterTargetRPS = shooterTargetRPS;
     }
 
-    public double getElevatorTargetRev() {
+    public double getElevatorTargetEncPos() {
         return m_elevatorTargetEncPos;
     }
 
-    public double getIntakePivotTargetAngle() {
-        return m_intakePivotTargetAngle;
+    public double getIntakePivotTargetEncPos() {
+        return m_intakePivotTargetEncPos;
     }
 
-    public double getShooterVerticalTargetAngle() {
-        return m_shooterVerticalTargetAngle;
-    }
-
-    public double getTurretTargetAngle() {
-        return m_turretTargetAngle;
+    public double getShooterTargetRPSPos() {
+        return m_intakePivotTargetEncPos;
     }
 
 }

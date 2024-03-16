@@ -2,31 +2,37 @@ package frc.robot.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindHolonomic;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
-import frc.robot.Utils.FieldRelativeAccel;
-import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.Utils.GeometryUtils;
 import frc.robot.Utils.LocalADStarAK;
-// import frc.robot.subsystems.vision.SubsystemCatzVision;;
-import frc.robot.subsystems.vision.SubsystemCatzVision;
+import frc.robot.subsystems.vision.SubsystemCatzVision;;
 
 // Drive train subsystem for swerve drive implementation
 public class SubsystemCatzDrivetrain extends SubsystemBase {
@@ -39,15 +45,13 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
     //Vision instatiation
-    // private final SubsystemCatzVision vision = SubsystemCatzVision.getInstance();
+    private final SubsystemCatzVision vision = SubsystemCatzVision.getInstance();
 
     // Array of swerve modules representing each wheel in the drive train
     private CatzSwerveModule[] m_swerveModules = new CatzSwerveModule[4];
 
     // Swerve drive pose estimator for tracking robot pose
     private static SwerveDrivePoseEstimator m_poseEstimator;
-
-    private final SubsystemCatzVision vision = SubsystemCatzVision.getInstance();
 
     // Swerve modules representing each corner of the robot
     public final CatzSwerveModule LT_FRNT_MODULE;
@@ -57,10 +61,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // boolean for determining whether to use vision estimates in pose estimation
     private boolean isVisionEnabled = true;
-
-    private FieldRelativeSpeed m_fieldRelVel = new FieldRelativeSpeed();
-    private FieldRelativeSpeed m_lastFieldRelVel = new FieldRelativeSpeed();
-    private FieldRelativeAccel m_fieldRelAccel = new FieldRelativeAccel();
 
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
@@ -98,11 +98,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Initialize the swerve drive pose estimator
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
-                Rotation2d.fromDegrees(getGyroAngle()), 
-                getModulePositions(), 
-                new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180)), 
-                VecBuilder.fill(0.1, 0.1, 0.7),  //odometry standard devs
-                VecBuilder.fill(5, 5, 500)); //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
+                DriveConstants.initPose.getRotation(), getModulePositions(), DriveConstants.initPose);
         
         //Configure logging trajectories to advantage kit
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -117,20 +113,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         gyroIO.resetNavXIO();
 
-        if(DriveConstants.START_FLIPPED){
-            flipGyro();
-        }
-        
-
     }
 
-    // Get the singleton instance of the CatzDriveTrainSubsystem
-    public static SubsystemCatzDrivetrain getInstance() {
-        return instance;
-    }
-
-    private Pose2d prevPose = new Pose2d();
-    private double prevTime = Timer.getFPGATimestamp();
+    // Periodic update method for the drive train subsystem
     @Override
     public void periodic() {
         // Update inputs (sensors/encoders) for code logic and advantage kit
@@ -144,66 +129,38 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         // Update pose estimator with module encoder values + gyro
         m_poseEstimator.update(getRotation2d(), getModulePositions());
-        
-        double dt = Timer.getFPGATimestamp() - prevTime;
-        double dSpeed = m_poseEstimator.getEstimatedPosition().getTranslation().getDistance(prevPose.getTranslation()) / dt;
-        
-        prevPose = m_poseEstimator.getEstimatedPosition();
-        prevTime = Timer.getFPGATimestamp();
-        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop 
-        var visionOdometry = vision.getVisionOdometry();   
-        
-        for (int i = 0; i < visionOdometry.size(); i++) {
-            //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
-            double xyStdDev = 0;
 
-            if(visionOdometry.get(i).getPose().getX() == -1 && visionOdometry.get(i).getPose().getY() == -1){
-                break;
+        if(isVisionEnabled) {
+            // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop
+            for (int i = 0; i < vision.getVisionOdometry().size(); i++) {
+                //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less
+                m_poseEstimator.addVisionMeasurement(
+                        vision.getVisionOdometry().get(i).getPose(),
+                        vision.getVisionOdometry().get(i).getTimestamp(),
+                        VecBuilder.fill(
+                                vision.getMinDistance() * DriveConstants.ESTIMATION_COEFFICIENT,
+                                vision.getMinDistance() * DriveConstants.ESTIMATION_COEFFICIENT,
+                                5.0));
             }
-
-            if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
-                xyStdDev = 3;
-            }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
-                xyStdDev = 5;
-            }else if(visionOdometry.get(i).getAvgArea() >= 0.12){
-                xyStdDev = 10;
-            }else{
-                xyStdDev = 40;
-            }
-
-            System.out.println(visionOdometry.get(i).getAvgArea());
-
-
-            dSpeed = Math.abs(dSpeed);
-            if (dSpeed > 10){
-                xyStdDev *= dSpeed / 3; //account for some shaking when suddenly moving fast.
-            }
-
-            Logger.recordOutput("XYStdDev", xyStdDev);
-            Logger.recordOutput("dSpeed", dSpeed);
-
-            m_poseEstimator.setVisionMeasurementStdDevs(
-            VecBuilder.fill(xyStdDev,xyStdDev,9)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
-        
-            m_poseEstimator.addVisionMeasurement(
-                new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
-                visionOdometry.get(i).getTimestamp()
-            );
-
         }
 
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 
-        //Logger.recordOutput("Obometry/LimelightPose", vision.getVisionOdometry().get(0).getPose()); 
-
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
         // Logger.recordOutput("Obometry/pose", getPose());
 
         // Update SmartDashboard with the gyro angle
         SmartDashboard.putNumber("gyroAngle", getGyroAngle());
-        m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
-        m_fieldRelAccel = new FieldRelativeAccel(m_fieldRelVel, m_lastFieldRelVel, 0.02);
-        m_lastFieldRelVel = m_fieldRelVel;
+    }
+
+    // Access method for updating drivetrain instructions
+    public void driveRobotWith254CorrectedDynamics(ChassisSpeeds chassisSpeeds) {
+        // Apply second-order kinematics to prevent swerve skew
+        chassisSpeeds = correctForDynamics(chassisSpeeds);
+
+        // Convert chassis speeds to individual module states and set module states
+        SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+        setModuleStates(moduleStates);
     }
 
     public void driveRobotWithDescritizeDynamics(ChassisSpeeds chassisSpeeds) {
@@ -238,15 +195,25 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         Logger.recordOutput("Drive/optimized module states", optimizedDesiredStates);
     }
 
-    //--------------------------------------------------DriveTrain MISC methods-------------------------------------------------
-    public void printAverageWheelMagEncValues(){
-        System.out.println("LF: " + m_swerveModules[0].getAverageRawMagEnc());
-        System.out.println("LB: " + m_swerveModules[1].getAverageRawMagEnc());
-        System.out.println("RB: " + m_swerveModules[2].getAverageRawMagEnc());
-        System.out.println("RF: " + m_swerveModules[3].getAverageRawMagEnc());
-
+    /**
+     * Correction for swerve second-order dynamics issue. Borrowed from 254:
+     * https://github.com/Team254/FRC-2022-Public/blob/main/src/main/java/com/team254/frc2022/subsystems/Drive.java#L325
+     * Discussion:
+     * https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964
+     */
+    private static ChassisSpeeds correctForDynamics(ChassisSpeeds originalSpeeds) {
+        final double LOOP_TIME_S = 0.02;
+        Pose2d futureRobotPose = new Pose2d(originalSpeeds.vxMetersPerSecond * LOOP_TIME_S,
+                originalSpeeds.vyMetersPerSecond * LOOP_TIME_S,
+                Rotation2d.fromRadians(originalSpeeds.omegaRadiansPerSecond * LOOP_TIME_S));
+        Twist2d twistForPose = GeometryUtils.log(futureRobotPose);
+        ChassisSpeeds updatedSpeeds = new ChassisSpeeds(twistForPose.dx / LOOP_TIME_S, twistForPose.dy / LOOP_TIME_S,
+                twistForPose.dtheta / LOOP_TIME_S);
+        return updatedSpeeds;
     }
-    
+
+    //--------------------------------------------------DriveTrain MISC methods-------------------------------------------------
+
     // Set brake mode for all swerve modules
     public void setBrakeMode() {
         for (CatzSwerveModule module : m_swerveModules) {
@@ -271,23 +238,15 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         }, this);
     }
 
-    public FieldRelativeSpeed getFieldRelativeSpeed() {
-        return m_fieldRelVel;
-      }
-    
-      public FieldRelativeAccel getFieldRelativeAccel() {
-        return m_fieldRelAccel;
-      }
     //----------------------------------------------Gyro methods----------------------------------------------
 
-    public void flipGyro() {
-        gyroIO.setAngleAdjustmentIO(180 + gyroIO.getAngleAdjustmentIO());
+    // reset gyro then flip 180 degrees
+    public Command flipGyro() {
+        return runOnce(() -> gyroIO.setAngleAdjustmentIO(getGyroAngle()+180));
     }
 
     public Command resetGyro() {
-        return runOnce(() -> {
-            gyroIO.setAngleAdjustmentIO(-gyroInputs.gyroYaw);
-        });
+        return runOnce(() -> gyroIO.setAngleAdjustmentIO(-gyroInputs.gyroYaw));
     }
 
     // Get the gyro angle (negative due to the weird coordinate system)
@@ -317,25 +276,16 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Reset the position of the robot with a given pose
     public void resetPosition(Pose2d pose) {
-        double angle = getGyroAngle();
-        if(DriveConstants.START_FLIPPED){
-            pose = new Pose2d(pose.getTranslation(), pose.getRotation().plus(Rotation2d.fromDegrees(180)));
-        }
-        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-            angle += 180;
-        }
-        m_poseEstimator.resetPosition(Rotation2d.fromDegrees(angle),getModulePositions(),pose);
-        
-    }
- 
-    // Get the current pose of the robot
-    public Pose2d getPose() {
-        return m_poseEstimator.getEstimatedPosition();
+        m_poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
     }
 
-    public Command zeroPoseEstimatorCmd() {
-        return runOnce(()->resetPosition(new Pose2d(0.0,0.0, Rotation2d.fromDegrees(0))));
+    // Get the current pose of the robot
+    public Pose2d getPose() {
+        Pose2d currentPosition = m_poseEstimator.getEstimatedPosition();
+        // currentPosition = new Pose2d(currentPosition.getX(), currentPosition.getY(), getRotation2d());
+        return currentPosition;
     }
+
 
     //----------------------------------------------Enc resets-------------------------------------------------------
 
@@ -344,6 +294,12 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         for (CatzSwerveModule module : m_swerveModules) {
             module.resetDriveEncs();
         }
+    }
+
+    // Reset gyro and position for autonomous mode
+    public void resetForAutonomous() {
+        // flipGyro().execute();
+        resetPosition(DriveConstants.initPose);
     }
 
     // Get an array of swerve module states
@@ -379,4 +335,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         isVisionEnabled = enable;
     }
 
+    // Get the singleton instance of the CatzDriveTrainSubsystem
+    public static SubsystemCatzDrivetrain getInstance() {
+        return instance;
+    }
 }

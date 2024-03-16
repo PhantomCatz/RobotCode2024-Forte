@@ -7,13 +7,13 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 public interface ModuleIO {
  @AutoLog
- static class ModuleIOInputs {
+ public static class ModuleIOInputs {
+    public double gyroAngle = 0.0;
     public double driveMtrVelocity = 0.0;
     public double driveMtrSensorPosition = 0.0;
     public double magEncoderValue = 0.0;
     public double driveAppliedVolts = 0.0;
     public double steerAppliedVolts = 0.0;
-    public double driveVelocityError = 0.0;
  }
 
  /** Updates the set of loggable inputs. */
@@ -24,6 +24,8 @@ public interface ModuleIO {
  public default void setDriveVelocityIO(double velocity) {}
 
  public default void setSteerPwrIO(double SteerPwr) {}
+
+ public default void setSteerVoltageIO(double steerVoltage) {}
 
  public default void setSteerCoastModeIO() {}
 
@@ -36,6 +38,10 @@ public interface ModuleIO {
  public default void setDriveSimPwrIO(double volts) {}
 
  public default void setSteerSimPwrIO(double volts) {}
+
+ public default void setDriveControlIO(VelocityTorqueCurrentFOC controlValue) {}
+
+ public default void setSteerControlIO(PositionVoltage controlValue) {}
 
  public default void resetMagEncoderIO() {}
 

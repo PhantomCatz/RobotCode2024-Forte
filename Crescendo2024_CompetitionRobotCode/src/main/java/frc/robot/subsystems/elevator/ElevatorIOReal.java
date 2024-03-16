@@ -2,109 +2,68 @@ package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.MtrConfigConstants;
 
 public class ElevatorIOReal implements ElevatorIO {
 
-    //elevator motor ids
-    public static int ELEVATOR_RT_MTR_ID = 51;
-
-    //Kraken configuration constants
-    public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
-    public static final int     KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS    = 55;
-    public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
-    public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
-
                 //create new config objects
-    private TalonFXConfiguration elevatorTalonConfigs = new TalonFXConfiguration();
+    private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
+    private Slot0Configs elevatorConfigs = new Slot0Configs();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
-    private DigitalInput m_bottomLimit = new DigitalInput(3);
 
     private final TalonFX ElevatorMtr;
 
     public ElevatorIOReal() {
-        //Elevator Motor setup
-        ElevatorMtr = new TalonFX(ELEVATOR_RT_MTR_ID);
+
+        //Drive Motor setup
+        ElevatorMtr = new TalonFX(0);
             //reset to factory defaults
         ElevatorMtr.getConfigurator().apply(new TalonFXConfiguration());
-
-        // set Motion Magic settings
-        elevatorTalonConfigs.MotionMagic.MotionMagicCruiseVelocity = 130; // Target cruise velocity of 80 rps
-        elevatorTalonConfigs.MotionMagic.MotionMagicAcceleration   = 240; // Target acceleration of 160 rps/s (0.5 seconds)
-        elevatorTalonConfigs.MotionMagic.MotionMagicJerk           = 400; // Target jerk of 1600 rps/s/s (0.1 seconds)
-
-        elevatorTalonConfigs.Slot0.kP = 7.0;
-        elevatorTalonConfigs.Slot0.kI = 0.0;
-        elevatorTalonConfigs.Slot0.kD = 0.02;
+        talonConfigs.Slot0 = elevatorConfigs;
             //current limit
-        elevatorTalonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        elevatorTalonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
-        elevatorTalonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
-        elevatorTalonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
-        elevatorTalonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
+        talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
+        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = MtrConfigConstants.FALCON_ENABLE_CURRENT_LIMIT;
+        talonConfigs.CurrentLimits.SupplyCurrentLimit       = MtrConfigConstants.FALCON_CURRENT_LIMIT_AMPS;
+        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = MtrConfigConstants.FALCON_CURRENT_LIMIT_TRIGGER_AMPS;
+        talonConfigs.CurrentLimits.SupplyTimeThreshold      = MtrConfigConstants.FALCON_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
-        elevatorTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            //pid
+        elevatorConfigs.kP = 2.5; //TBD 
+        elevatorConfigs.kI = 0.0;
+        elevatorConfigs.kD = 0.05;
+            //ramping
 
+        //check if drive motor is initialized correctly
 
-        ElevatorMtr.setPosition(0);
-
-
-        //check if elevator motor is initialized correctly
-        initializationStatus = ElevatorMtr.getConfigurator().apply(elevatorTalonConfigs);
-        if(!initializationStatus.isOK()) {
-            System.out.println("Failed to Configure Elevator Mtr Controller CAN ID" + ELEVATOR_RT_MTR_ID);
-        }
+            initializationStatus = ElevatorMtr.getConfigurator().apply(talonConfigs);
+            if(!initializationStatus.isOK())
+                System.out.println("Failed to Configure CAN ID" + 0);
             
     }
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.elevatorVoltage          = ElevatorMtr.getMotorVoltage().getValue();
-        inputs.elevatorDutyCycle        = ElevatorMtr.getDutyCycle().getValue();
-        inputs.elevatorTorqueCurrent    = ElevatorMtr.getTorqueCurrent().getValue();
-        inputs.elevatorVelocity         = ElevatorMtr.getVelocity().getValue();
-        inputs.elevatorPosRev           = ElevatorMtr.getPosition().getValue();
-        inputs.elevatorPositionError    = ElevatorMtr.getClosedLoopError().getValue();
-
-        inputs.bottomSwitchTripped      = m_bottomLimit.get();
+        inputs.elevatorVoltage = ElevatorMtr.getMotorVoltage().getValue();
     }
     
     @Override
-    public void setElevatorPosition(double newPositionElevator, double elevatorFF, boolean limitSwtichPressed) {
-        ElevatorMtr.setControl(new MotionMagicVoltage(newPositionElevator,
-                                                        true, 
-                                                        elevatorFF,
-                                                        0, 
-                                                        false,
-                                                        false,
-                                                        false));
-    }
-
-    @Override
-    public void setElevatorVoltage(double volts) {
-        ElevatorMtr.setControl(new VoltageOut(volts));
+    public void setElevatorPosition(double newPositionElevator) {
+        ElevatorMtr.setControl(new PositionVoltage(newPositionElevator));
     }
 
     @Override
     public void setElevatorPercentOutput(double speed) {
         ElevatorMtr.set(speed);
-    }
-
-    @Override
-    public void setSelectedSensorPosition(double setNewReadPosition) {
-        ElevatorMtr.setPosition(setNewReadPosition);
-    }
-
-    public double getElevatorError(){
-        return ElevatorMtr.getClosedLoopError().getValue();
     }
 }

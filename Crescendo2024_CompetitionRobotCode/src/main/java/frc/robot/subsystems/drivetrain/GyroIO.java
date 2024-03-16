@@ -9,7 +9,6 @@ public interface GyroIO
     public double gyroAngle;
     public double gyroYaw;
     public double gyroRoll;
-    public double gyroPitch;
     public boolean gyroConnected;
   }
 
@@ -18,6 +17,4 @@ public interface GyroIO
   public default void resetNavXIO() {}
 
   public default void setAngleAdjustmentIO(double gyroYaw) {}
-
-  public default double getAngleAdjustmentIO() {return 0.0;}
 }
