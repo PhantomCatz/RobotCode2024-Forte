@@ -187,6 +187,16 @@ public class SubsystemCatzTurret extends SubsystemBase {
     Logger.recordOutput("turret/m_TurretTargetDegree", m_turretTargetDegree);
   }
 
+  public Command testTurretAngles(){
+    return run(()->{
+      if(Math.abs(m_turretTargetDegree) != 40){
+        m_turretTargetDegree = 40;
+        return;
+      }
+      m_turretTargetDegree *= -1;
+    });
+  }
+
   //-------------------------------------------------------------------------------------------------
   //    Manual Rotate Methods
   //-------------------------------------------------------------------------------------------------
@@ -227,7 +237,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     double angle = Math.atan2(robotToGoal.getY(), robotToGoal.getX());
 
     //offset new turret angle based off current robot rotation
-    angle = angle - robotPose.getRotation().getRadians(); 
+    angle = angle - CatzMathUtils.toUnitCircAngle(robotPose.getRotation().getRadians()); 
 
     angle = Math.toDegrees(angle);
 

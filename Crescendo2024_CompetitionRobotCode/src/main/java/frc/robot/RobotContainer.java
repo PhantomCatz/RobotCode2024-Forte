@@ -78,6 +78,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
    
 
   private void configureBindings() {    
+
+    xboxDrv.y().onTrue(turret.testTurretAngles()); //delete later
     
     //------------------------------------------------------------------------------------
     //  Drive commands
