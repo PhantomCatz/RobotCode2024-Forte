@@ -172,10 +172,10 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
     //sn2
-    public static final double LT_FRNT_OFFSET = 0.238187505;      //mag encoder 0
-    public static final double LT_BACK_OFFSET = 0.2222354630+0.5;           //mag encoder 1
-    public static final double RT_BACK_OFFSET = 0.097752502443812+0.5;//0.60861531521+0.5;      //mag encoder 2
-    public static final double RT_FRNT_OFFSET = 0.327964458199111+0.5;//0.838318270957+0.5;      //mag encoder 3
+      public static final double LT_FRNT_OFFSET = 0.23406623085+0.5;      //mag encoder 0
+    public static final double LT_BACK_OFFSET = 0.1198;           //mag encoder 1
+    public static final double RT_BACK_OFFSET = 0.60861531521+0.5;      //mag encoder 2
+    public static final double RT_FRNT_OFFSET = 0.838318270957-0.5;      //mag encoder 3
     //sn1
     // public static final double LT_FRNT_OFFSET =  0.21317;
     // public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;

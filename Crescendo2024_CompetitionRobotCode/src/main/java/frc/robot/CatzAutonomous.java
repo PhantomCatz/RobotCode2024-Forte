@@ -71,7 +71,9 @@ public class CatzAutonomous {
 
         // pathChooser.addOption("Center Rush MId", CenterRushMid());
 
-        pathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
+        pathChooser.addOption("DriveStraightRight", driveTranslateAutoRight());
+        pathChooser.addOption("DriveStraightMid", driveTranslateAutoMid());
+        pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
         //pathChooser.addOption("Curve", curveAuto());
     }
 
@@ -122,23 +124,23 @@ public class CatzAutonomous {
     private Command speaker4PieceCSWing(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("S4PCSW1")),
-            new AimAndOrFireAtSpeakerCmd(),
+            // new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                      new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW1"))),
-            new AimAndOrFireAtSpeakerCmd(),
+            // new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                      new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW2"))),
-            new AimAndOrFireAtSpeakerCmd(),
+            // new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                      new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW3"))),
-            new AimAndOrFireAtSpeakerCmd(),
+            // new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                      new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW4"))),
-            new AimAndOrFireAtSpeakerCmd(),
+            // new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot()
         );
     }
@@ -331,10 +333,26 @@ public class CatzAutonomous {
     }
     
     //below are test paths
-    private Command driveTranslateAuto() {
+    private Command driveTranslateAutoRight() {
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightFullTurn")),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightFullTurn"))
+            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightRight")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightRight"))
+        );
+    }
+
+    private Command driveTranslateAutoMid(){
+        return new SequentialCommandGroup(
+          setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightMid")),
+          new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightMid"))
+
+        );
+    }
+
+    private Command driveTranslateAutoLeft(){
+        return new SequentialCommandGroup(
+          setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightLeft")),
+          new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightLeft"))
+
         );
     }
 

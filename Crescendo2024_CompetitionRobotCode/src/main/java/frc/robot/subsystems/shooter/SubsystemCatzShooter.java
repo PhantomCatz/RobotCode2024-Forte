@@ -231,12 +231,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
     if(currentShooterServoState == ShooterServoState.AUTO) {
       io.setServoPosition(1.0);
-      System.out.println(m_newServoPosition);
+      //System.out.println(m_newServoPosition);
       if(Math.abs(m_servoPosError) < 0.1) {
         m_shooterServoInPos = true;
       }
     } else {
-      System.out.println(m_newServoPosition);
+      //System.out.println(m_newServoPosition);
       io.setServoPosition(m_newServoPosition);
     }
   }
