@@ -101,6 +101,7 @@ public class Robot extends LoggedRobot {
     }
 
     lead.mid.colorRainbow();
+    lead.mid.setMode(LEDMode.Flow);
   }
 
   @Override

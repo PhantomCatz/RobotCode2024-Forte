@@ -51,29 +51,52 @@ public class CatzStateMachine extends SubsystemBase {
 
         if (SubsystemCatzClimb.getInstance().isClimbing()) {
             if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
-                lead.top.setModeNColor(Color.kBlue, Color.kBlue, LEDMode.Solid);
-                lead.bot.setModeNColor(Color.kBlue, Color.kBlue, LEDMode.Solid);
-                lead.mid.colorRainbow();
+                lead.top.colorSolid(Color.kBlue);
+                lead.top.setMode(LEDMode.Solid);
+
+                lead.bot.colorSolid(Color.kBlue);
+                lead.bot.setMode(LEDMode.Solid);
+
             } else {
-                lead.top.setModeNColor(Color.kWhite, Color.kBlue, LEDMode.Alternating);
-                lead.bot.setModeNColor(Color.kBlue, Color.kWhite, LEDMode.Alternating);
-                lead.mid.colorRainbow();
+                lead.top.colorSolid(Color.kWhite);
+                lead.top.colorSolid2(Color.kBlue);
+                lead.top.setMode(LEDMode.Alternating);
+                
+                lead.bot.colorSolid(Color.kWhite);
+                lead.bot.colorSolid2(Color.kBlue);
+                lead.bot.setMode(LEDMode.Alternating);
             }
         } else if (targetNoteDestination == NoteDestination.AMP) {
             if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
-                lead.top.setModeNColor(Color.kYellow, Color.kYellow, LEDMode.Solid);
-                lead.bot.setModeNColor(Color.kYellow, Color.kYellow, LEDMode.Solid);
+                lead.top.colorSolid(Color.kYellow);
+                lead.top.setMode(LEDMode.Solid);
+
+                lead.bot.colorSolid(Color.kYellow);
+                lead.bot.setMode(LEDMode.Solid);
             } else {
-                lead.top.setModeNColor(Color.kWhite, Color.kYellow, LEDMode.Alternating);
-                lead.bot.setModeNColor(Color.kYellow, Color.kWhite, LEDMode.Alternating);
+                lead.top.colorSolid(Color.kWhite);
+                lead.top.colorSolid2(Color.kYellow);
+                lead.top.setMode(LEDMode.Alternating);
+                
+                lead.bot.colorSolid(Color.kWhite);
+                lead.bot.colorSolid2(Color.kYellow);
+                lead.bot.setMode(LEDMode.Alternating);
             }
         } else if (targetNoteDestination == NoteDestination.SPEAKER) {
             if (SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()) {
-                lead.top.setModeNColor(Color.kOrange, Color.kOrange, LEDMode.Solid);
-                lead.bot.setModeNColor(Color.kOrange, Color.kOrange, LEDMode.Solid);
+                lead.top.colorSolid(Color.kOrange);
+                lead.top.setMode(LEDMode.Solid);
+
+                lead.bot.colorSolid(Color.kOrange);
+                lead.bot.setMode(LEDMode.Solid);
             } else {
-                lead.top.setModeNColor(Color.kOrange, Color.kWhite, LEDMode.Alternating);
-                lead.bot.setModeNColor(Color.kWhite, Color.kOrange, LEDMode.Alternating);
+                lead.top.colorSolid(Color.kWhite);
+                lead.top.colorSolid2(Color.kOrange);
+                lead.top.setMode(LEDMode.Alternating);
+                
+                lead.bot.colorSolid(Color.kWhite);
+                lead.bot.colorSolid2(Color.kOrange);
+                lead.bot.setMode(LEDMode.Alternating);
             }
         }
     }

@@ -16,24 +16,17 @@ public class LEDSection {
     private int alt = 0;
 
     private Color[] ledColors;
+    private Color[] ledColors2;
     private LEDMode ledMode = LEDMode.Solid;
-
-    private Color color;
-    private Color altColor;
 
     public LEDSection(int ledCount) {
         LED_COUNT = ledCount;
         ledColors = new Color[LED_COUNT];
+        ledColors2 = new Color[LED_COUNT];
     }
 
     public void setIteration(int iteration) {
         this.iteration = iteration;
-    }
-
-    public void setModeNColor(Color color1, Color color2, LEDMode mode) {
-        color = color1;
-        altColor = color2;
-        ledMode = mode;
     }
 
     public void setMode(LEDMode mode) {
@@ -57,42 +50,37 @@ public class LEDSection {
     }
 
     public void colorRainbow() {
-        ledMode = LEDMode.Flow;
         for (int i = 0; i < LED_COUNT; i++) {
             ledColors[i] = Color.fromHSV((int) ((double) i / LED_COUNT * 180), 255, 255);
         }
     }
 
-    public Color[] getColors() {
-        if (currentIteration >= iteration) {
-            switch (ledMode) {
-                case Solid:
-                    colorSolid(color);
-                    break;
+    public void colorSolid2(Color color) {
+        for (int i = 0; i < LED_COUNT; i++) {
+            ledColors2[i] = color;
+        }
+    }
 
-                case Blink:
-                    if (alt % 2 == 0) {
-                        colorSolid(color);
-                    } else {
-                        colorSolid(Color.kBlack);
-                    }
-                    break;
-
-                case Alternating:
-                    if (alt % 2 == 0) {
-                        colorSolid(color);
-                    } else {
-                        colorSolid(altColor);
-                    }
-                    break;
-
-                case Flow:
-                    for (int i = 0; i < LED_COUNT; i++) {
-                        ledColors[i] = ledColors[(i + 1) % LED_COUNT];
-                    }
-                    break;
+    public void colorAlternating2(Color color1, Color color2) {
+        for (int i = 0; i < LED_COUNT; i++) {
+            if (i % 2 == 0) {
+                ledColors2[i] = color1;
+            } else {
+                ledColors2[i] = color2;
             }
+        }
+    }
 
+    public void colorRainbow2() {
+        for (int i = 0; i < LED_COUNT; i++) {
+            ledColors2[i] = Color.fromHSV((int) ((double) i / LED_COUNT * 180), 255, 255);
+        }
+    }
+
+    public Color[] getColors() {
+        currentIteration++;
+
+        if (currentIteration >= iteration) {
             currentIteration = 1;
 
             if (alt > 200000) {
@@ -100,8 +88,32 @@ public class LEDSection {
             }
 
             alt++;
+            
+            switch (ledMode) {
+                case Solid:
+                    return ledColors;
+
+                case Blink:
+                    if (alt % 2 == 0) {
+                        return ledColors;
+                    } else {
+                        return new Color[LED_COUNT];
+                    }
+
+                case Alternating:
+                    if (alt % 2 == 0) {
+                        return ledColors;
+                    } else {
+                        return ledColors2;
+                    }
+
+                case Flow:
+                    for (int i = 0; i < LED_COUNT; i++) {
+                        ledColors[i] = ledColors[(i + 1) % LED_COUNT];
+                    }
+                    return ledColors;
+            }    
         }
-        currentIteration++;
         return ledColors;
     }
 }

@@ -32,8 +32,13 @@ public class SubsystemCatzLED extends SubsystemBase {
         led.start();
 
         top.colorSolid(Color.kBlack);
+        top.colorSolid2(Color.kBlack);
+
         mid.colorSolid(Color.kBlack);
+        mid.colorSolid2(Color.kBlack);
+
         bot.colorSolid(Color.kBlack);
+        bot.colorSolid2(Color.kBlack);
     }
 
     public static SubsystemCatzLED getInstance() {
