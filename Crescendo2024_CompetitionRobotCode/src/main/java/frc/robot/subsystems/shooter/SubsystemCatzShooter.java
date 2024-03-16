@@ -235,6 +235,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
       if(Math.abs(m_servoPosError) < 0.1) {
         m_shooterServoInPos = true;
       }
+    } else {
+      System.out.println(m_newServoPosition);
+      io.setServoPosition(m_newServoPosition);
     }
   }
 
@@ -262,9 +265,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_newServoPosition = position;
   }
 
-  public Command setPositionCmd(double position) {
+  public Command setPositionCmd(Supplier<Double> position) {
     currentShooterServoState = ShooterServoState.FULL_MANUAL;
-    return run(()->m_newServoPosition = position);
+    return run(()->m_newServoPosition = position.get());
   }
 
   //-------------------------------------------------------------------------------------

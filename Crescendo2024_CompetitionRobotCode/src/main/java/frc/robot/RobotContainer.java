@@ -135,7 +135,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.b().and(xboxAux.povLeft()).onTrue(new ScoreAmpCmd());
 
-    xboxAux.rightStick().onTrue(shooter.cmdServoPosition(()->xboxAux.getRightY()));
+    xboxAux.rightStick().onTrue(shooter.setPositionCmd(()->xboxAux.getRightY()));
 
 
     //mode trap
