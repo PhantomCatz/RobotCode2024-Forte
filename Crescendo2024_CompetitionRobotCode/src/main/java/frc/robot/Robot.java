@@ -33,7 +33,7 @@ import frc.robot.CatzAutonomous;
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
-  public static SubsystemCatzLED lead = new SubsystemCatzLED();
+  public static SubsystemCatzLED lead = SubsystemCatzLED.getInstance();
   private RobotContainer m_robotContainer;
   
   @Override
@@ -61,7 +61,7 @@ public class Robot extends LoggedRobot {
       // Running on a real robot, log to a USB stick
       case REAL:
 
-        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
         Logger.addDataReceiver(new NT4Publisher());
         
        // new PowerDistribution(1, ModuleType.kRev);
@@ -89,7 +89,7 @@ public class Robot extends LoggedRobot {
 
     DriverStation.silenceJoystickConnectionWarning(true);
     // SubsystemCatzVision.getInstance().setUseSingleTag(true, 4);
-    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 1111) { //TBD 
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263) { 
       lead.mid.colorSolid(Color.kGreen);
       lead.top.colorSolid(Color.kGreen);
       lead.bot.colorSolid(Color.kGreen);
@@ -99,7 +99,8 @@ public class Robot extends LoggedRobot {
       lead.top.colorSolid(Color.kRed);
       lead.bot.colorSolid(Color.kRed);    
     }
-    
+
+    lead.mid.colorRainbow();
   }
 
   @Override
@@ -162,7 +163,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-        // SubsystemCatzDrivetrain.getInstance().printAverageWheelMagEncValues();
 
   }
 

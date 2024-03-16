@@ -70,7 +70,7 @@ public class CatzAutonomous {
         // pathChooser.addOption("Center Rush MId", CenterRushMid());
 
         pathChooser.addOption("DriveTranslate Auto", driveTranslateAuto());
-        pathChooser.addOption("Curve", curveAuto());
+        //pathChooser.addOption("Curve", curveAuto());
     }
 
     //configured dashboard

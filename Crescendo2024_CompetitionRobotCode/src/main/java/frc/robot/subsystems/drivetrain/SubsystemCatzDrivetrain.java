@@ -121,7 +121,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             flipGyro();
         }
         
-        resetPosition(new Pose2d(1.23,5.49,Rotation2d.fromDegrees(180)));
+        // resetPosition(new Pose2d(1.23,5.49,Rotation2d.fromDegrees(180)));
     }
 
     // Get the singleton instance of the CatzDriveTrainSubsystem
@@ -157,9 +157,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
             double xyStdDev = 0;
 
-            if(visionOdometry.get(i).getPose().getX() == -1 && visionOdometry.get(i).getPose().getY() == -1){
-                break;
-            }
+            // if(visionOdometry.get(i).getPose().getX() == -1 && visionOdometry.get(i).getPose().getY() == -1){
+            //     break;
+            // }
 
             if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
                 xyStdDev = 3;
@@ -174,10 +174,10 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             System.out.println(visionOdometry.get(i).getAvgArea());
 
 
-            dSpeed = Math.abs(dSpeed);
-            if (dSpeed > 10){
-                xyStdDev *= dSpeed / 3; //account for some shaking when suddenly moving fast.
-            }
+            // dSpeed = Math.abs(dSpeed);
+            // if (dSpeed > 10){
+            //     xyStdDev *= dSpeed / 4; //account for some shaking when suddenly moving fast.
+            // }
 
             Logger.recordOutput("XYStdDev", xyStdDev);
             Logger.recordOutput("dSpeed", dSpeed);

@@ -72,7 +72,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         for(int i=0; i<path.getAllPathPoints().size(); i++){
             System.out.println(path.getAllPathPoints().get(i).position);
         }
-        Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
+       // Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
         //create pathplanner trajectory
         this.trajectory = new PathPlannerTrajectory(
@@ -94,7 +94,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         Rotation2d targetOrientation     = goal.targetHolonomicRotation;
         Pose2d currentPose               = m_driveTrain.getPose();
 
-        Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
+        //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         
         /* 
         * Convert PP trajectory into a wpilib trajectory type 
@@ -109,11 +109,11 @@ public class PPTrajectoryFollowingCmd extends Command {
 
         //debug
         //System.out.println(goal.getTargetHolonomicPose());
-        Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
+        //Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
         //construct chassisspeeds
         ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
-        Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
-        Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
+        //Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
+        //Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
         //send to drivetrain
         m_driveTrain.driveRobotWithDescritizeDynamics(adjustedSpeeds);
 

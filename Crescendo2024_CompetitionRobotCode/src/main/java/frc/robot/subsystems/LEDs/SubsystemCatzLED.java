@@ -13,7 +13,7 @@ public class SubsystemCatzLED extends SubsystemBase {
 
     private static SubsystemCatzLED instance = new SubsystemCatzLED();
 
-    private final int LED_PWM_PORT = 6; //2 soon on friday comp
+    private final int LED_PWM_PORT = 2; //2 soon on friday comp
     private final int LED_COUNT_HALF = 17; //half 18
     private final int LED_EDGE = 4; //4
 
@@ -24,7 +24,7 @@ public class SubsystemCatzLED extends SubsystemBase {
     public LEDSection mid = new LEDSection(LED_COUNT_HALF-2*LED_EDGE);
     public LEDSection bot = new LEDSection(LED_EDGE);
 
-    public SubsystemCatzLED() {
+    private SubsystemCatzLED() {
         led = new AddressableLED(LED_PWM_PORT);
         ledBuffer = new AddressableLEDBuffer(LED_COUNT_HALF*2);
         led.setLength(ledBuffer.getLength());
@@ -36,7 +36,7 @@ public class SubsystemCatzLED extends SubsystemBase {
         bot.colorSolid(Color.kBlack);
     }
 
-    public SubsystemCatzLED getInstance() {
+    public static SubsystemCatzLED getInstance() {
         return instance;
     }
 
@@ -54,8 +54,17 @@ public class SubsystemCatzLED extends SubsystemBase {
     }
 
     for(int i=0; i<LED_COUNT_HALF; i++){
-        ledBuffer.setLED(i, ledColors[i]);
-        ledBuffer.setLED(i+LED_COUNT_HALF, ledColors[LED_COUNT_HALF-i-1]);
+        Color color = ledColors[i];
+        Color opColor = ledColors[LED_COUNT_HALF-i-1];
+        if(color == null){
+            color = Color.kBlack;
+        }
+        if(opColor == null){
+            opColor = Color.kBlack;
+        }
+
+        ledBuffer.setLED(i, color);
+        ledBuffer.setLED(i+LED_COUNT_HALF, opColor);
     }
         led.setData(ledBuffer);
         // for(int i=0; i<LED_COUNT_HALF;i++){

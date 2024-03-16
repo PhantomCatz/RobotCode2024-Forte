@@ -182,10 +182,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
     }
   
 
-    Logger.recordOutput("elevator/targetRev", m_targetPositionRev);
-    Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
-    Logger.recordOutput("elevator/elevatorin safety", m_elevatorIntakeInSafetyZone);
-    Logger.recordOutput("elevator/GOing up", currentElevatorDirection.toString());
+    // Logger.recordOutput("elevator/targetRev", m_targetPositionRev);
+    // Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
+    // Logger.recordOutput("elevator/elevatorin safety", m_elevatorIntakeInSafetyZone);
+    // Logger.recordOutput("elevator/GOing up", currentElevatorDirection.toString());
   }
 
 

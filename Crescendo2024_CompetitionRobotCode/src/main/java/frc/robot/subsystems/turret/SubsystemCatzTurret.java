@@ -144,13 +144,14 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
     if(DriverStation.isDisabled()) {
       io.turretSetPwr(0.0);
-      manualTurretPwr = 0;
+      manualTurretPwr = 0.0;
       currentTurretState = TurretState.FULL_MANUAL;
     } else { 
       if (currentTurretState == TurretState.AUTO) {
 
         if(Math.abs(currentTurretDegree) > 120) {
           driveRumbleController.setRumble(RumbleType.kBothRumble, 0.3);
+          io.turretSetPwr(0.0);
         } else {
           io.turretSetPwr(setPositionPower);
           driveRumbleController.setRumble(RumbleType.kBothRumble, 0.0);
@@ -169,13 +170,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
         io.turretSetPwr(manualTurretPwr);
       }
     }
-    if (currentTurretDegree > TURRET_POSITIVE_MAX_RANGE) { //Added limits to periodic because resetEncoder bugged and turned uncontrolably bypassing limits
-      manualTurretPwr = 0.0;
-    } else {
-      if (currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE) {
-        manualTurretPwr = 0.0;
-      }
-    }
+    // if (currentTurretDegree > TURRET_POSITIVE_MAX_RANGE) { //Added limits to periodic because resetEncoder bugged and turned uncontrolably bypassing limits
+    //   manualTurretPwr = 0.0;
+    // } else {
+    //   if (currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE) {
+    //     manualTurretPwr = 0.0;
+    //   }
+    // }
 
     Logger.recordOutput("turret/offsetXTurret", offsetAprilTagX);
     // whc 01Mar24 need to fix.  Do we need to install a limelight? TBD
@@ -192,54 +193,35 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public void rotateLeft(){
     currentTurretState = TurretState.FULL_MANUAL;
 
-    if (currentTurretDegree > (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) {
-      manualTurretPwr = -TURRET_POWER;
-    }
-    else if ((currentTurretDegree < (TURRET_NEGATIVE_MAX_RANGE - NEGATIVE_DECEL_THRESHOLD)) && (currentTurretDegree >= TURRET_NEGATIVE_MAX_RANGE) && (manualTurretPwr < 0)){
-      manualTurretPwr = -TURRET_DECEL_PWR;
-    }
-    else if ((currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE))
-    {
-       io.turretSetPwr(m_setPositionPID.calculate(currentTurretDegree, TURRET_NEGATIVE_MAX_RANGE ));
-    }  
-    else {
-      manualTurretPwr = 0.0;
-    }       
-      m_turretIntPos = false;   
+
+      manualTurretPwr = 0.2;
+  
   }
   
   
   public void rotateRight(){
     currentTurretState = TurretState.FULL_MANUAL;
-    
-    if (currentTurretDegree < (TURRET_POSITIVE_MAX_RANGE - POS_DECEL_THRESHOLD)){
-      manualTurretPwr = TURRET_POWER;
-    }
-    else if ((currentTurretDegree > (TURRET_POSITIVE_MAX_RANGE - POS_DECEL_THRESHOLD)) && (currentTurretDegree < TURRET_POSITIVE_MAX_RANGE) && (manualTurretPwr > 0)){
-      manualTurretPwr = TURRET_DECEL_PWR;
-    }
-    else if ((currentTurretDegree > TURRET_POSITIVE_MAX_RANGE))
-    {
-      io.turretSetPwr(m_setPositionPID.calculate(currentTurretDegree, TURRET_POSITIVE_MAX_RANGE));
-    }  
-    else {
-      manualTurretPwr = 0.0;
-    }          
-      m_turretIntPos = false;
+  
+      manualTurretPwr = 0.2;
+
   }
 
   //-------------------------------------------------------------------------------------------------
   //    Automated Methods
   //-------------------------------------------------------------------------------------------------
-  public void aimAtGoal(Translation2d goal, boolean aimAtVision) {
+  public void aimAtGoal(Translation2d goal, boolean aimAtVision, boolean acctRobotVel) {
     Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
 
     //take difference between speaker and the curret robot translation
     Translation2d robotToGoal = goal.minus(robotPose.getTranslation());
-    robotToGoal.div(Math.hypot(robotToGoal.getX(),robotToGoal.getY()));
-    robotToGoal.times(SubsystemCatzShooter.getInstance().getApproximateShootingSpeed());
 
-    robotToGoal.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx,drivetrain.getFieldRelativeSpeed().vy));
+    if(acctRobotVel){
+      robotToGoal.div(Math.hypot(robotToGoal.getX(),robotToGoal.getY()));
+      robotToGoal.times(SubsystemCatzShooter.getInstance().getApproximateShootingSpeed());
+  
+      robotToGoal.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx,drivetrain.getFieldRelativeSpeed().vy));
+    }
+
 
     //calculate new turret angle based off current robot position
     double angle = Math.atan2(robotToGoal.getY(), robotToGoal.getX());
@@ -305,7 +287,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
 
   public Command cmdAutoRotate() {
-    return run(() -> aimAtGoal(new Translation2d(), true));
+    return run(() -> aimAtGoal(new Translation2d(), true, true));
   }
   
   public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {

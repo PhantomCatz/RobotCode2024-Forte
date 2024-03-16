@@ -15,6 +15,7 @@ import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.Utils.LimelightHelpers;
 import frc.robot.Utils.LimelightHelpers.LimelightResults;
+import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 
 public class VisionIOLimeLight implements VisionIO {
     
@@ -84,7 +85,7 @@ public class VisionIOLimeLight implements VisionIO {
 
             if(pose2d.getTranslation().getDistance(prevPos.getTranslation()) > 0.3){
                 badData = true;
-                pose2d = new Pose2d(-1,-1,new Rotation2d());
+                pose2d = SubsystemCatzDrivetrain.getInstance().getPose();
             }
 
             if(!badData){

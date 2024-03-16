@@ -118,8 +118,8 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   @Override
   public void initialize() {
     //start the flywheel
-    //shooter.startShooterFlywheel();
-    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AMP_TRANSITION.getIntakePivotTargetAngle());
+    shooter.startShooterFlywheel();
+    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.INTAKE_SOURCE.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.STOW);
 
     if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {
@@ -187,7 +187,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
        elevator.getElevatorInPos()) {
       //send the new target to the turret
     }
-    turret.aimAtGoal(m_targetXY, false);
+    turret.aimAtGoal(m_targetXY, false, false);
 
     double servoPos = shooterPivotTable.get(newDist);
     //send new target to the shooter
@@ -197,8 +197,6 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     Logger.recordOutput("ShooterCalcs/Fixed Time", shotTime);
     Logger.recordOutput("ShooterCalcs/NewDist", newDist);
     Logger.recordOutput("ShooterCalcs/Calculated (mtrs)", distanceToSpeakerMeters);
-    Logger.recordOutput("ShooterCalcs/Goal X", m_virtualGoalX);
-    Logger.recordOutput("ShooterCalcs/Goal Y", m_virtualGoalY);
     Logger.recordOutput("ShooterCalcs/NewShotTime", newShotTime);
 
   }

@@ -64,12 +64,12 @@ public class TeleopDriveCmd extends Command {
     m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
 
     //logging
-    Logger.recordOutput("robot xspeed", xSpeed);
-    Logger.recordOutput("robot yspeed", ySpeed);
-    Logger.recordOutput("robot turnspeed", turningSpeed);
-    Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
-    Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
-    Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
+    // Logger.recordOutput("robot xspeed", xSpeed);
+    // Logger.recordOutput("robot yspeed", ySpeed);
+    // Logger.recordOutput("robot turnspeed", turningSpeed);
+    // Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
+    // Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
+    // Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
 
   }
 

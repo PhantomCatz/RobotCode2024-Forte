@@ -58,18 +58,20 @@ public class MoveToHandoffPoseCmd extends Command {
 
   @Override
   public void initialize() {
+
+
     if(m_noteDestination == NoteDestination.AMP &&
        m_noteSource == NoteSource.FROM_SHOOTER) {
-        CatzStateMachine.getInstance().cmdNewNoteDestintation(NoteDestination.AMP);
+        CatzStateMachine.getInstance().cmdNewNoteDestination(NoteDestination.AMP);
     }
 
     if(m_noteDestination == NoteDestination.SPEAKER &&
        m_noteSource == NoteSource.FROM_INTAKE) {
-        CatzStateMachine.getInstance().cmdNewNoteDestintation(NoteDestination.SPEAKER);
+        CatzStateMachine.getInstance().cmdNewNoteDestination(NoteDestination.SPEAKER);
     }
 
-    System.out.println("Handoff " + m_noteDestination.toString());
-    System.out.println(m_noteSource.toString());
+    // System.out.println("Handoff " + m_noteDestination.toString());
+    // System.out.println(m_noteSource.toString());
     m_targetMechPoseStartReached = false;
     m_targetMechPoseEndReached   = false;
 
@@ -77,7 +79,6 @@ public class MoveToHandoffPoseCmd extends Command {
       case INTAKE_GROUND:
         m_targetMechPoseStart = CatzMechanismConstants.INTAKE_GROUND;
         intake.setRollersGround();
-
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
@@ -172,9 +173,9 @@ public class MoveToHandoffPoseCmd extends Command {
 
           if(m_noteDestination == NoteDestination.SPEAKER) {
              intake.setRollersOutakeHandoff();
-            System.out.print("Outtaking");
+            //System.out.print("Outtaking");
             if(shooter.getShooterNoteState() == ShooterNoteState.NOTE_IN_POSTION) {
-            System.out.print("Note in position");
+            //System.out.print("Note in position");
               intake.setRollersOff();
               m_targetMechPoseEndReached = true;
             } 
@@ -246,7 +247,7 @@ public class MoveToHandoffPoseCmd extends Command {
     boolean turretState   = turret.getTurretInPos();
     boolean shooterState  = shooter.getShooterServoInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-    // System.out.println("i " + intakeState + "t " + turretState + "s " + shooterState + "e " +elevatorState);
+    //System.out.println("i " + intakeState + "t " + turretState + "s " + shooterState + "e " + elevatorState);
     return(intakeState && turretState && shooterState && elevatorState);
   }
 

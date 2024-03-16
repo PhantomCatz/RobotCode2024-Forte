@@ -96,6 +96,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double m_currentPositionDeg = 0.0;
   private double m_previousTargetPositionDeg = 0.0;
 
+  private boolean isIntakeInScoreAmp;
+
   private int m_iterationCounter;
 
   private double positionErrorDeg = 0.0;
@@ -123,8 +125,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static final double INTAKE_SOURCE_LOAD_DN_DEG = 125.0;
   public static final double INTAKE_SOURCE_LOAD_UP_DEG =  97.0; //with drivetrain inner rail to the
                                                              // bottom inner rail 7 1/4 inches
-  public static final double INTAKE_AMP_SCORE_DN_DEG   =  92.6; // 92.6; //90.43; 
-  public static final double INTAKE_GROUND_PICKUP_DEG  = -22.0;
+  public static final double INTAKE_AMP_SCORE_DN_DEG   =  92.6; //90.43; 
+  public static final double INTAKE_GROUND_PICKUP_DEG  = -31.0; //-22.0;
   public static final double INTAKE_AMP_SCORE_DEG      = -22.0;
   public static final double INTAKE_AMP_TRANSITION_DEG = -60.0; //TBD Change to -80 on sn2
 
@@ -291,11 +293,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
                m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
                 m_intakeElevatorInSafetyZone = true;
             }
-            
-            if(m_targetPositionDeg == INTAKE_AMP_SCORE_DN_DEG &&  //amp intermediate for going down
-               m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
-                m_intakeElevatorInSafetyZone = true;
-            }
 
           }
 
@@ -366,13 +363,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
       }
     }
 
-    Logger.recordOutput("intake/ff volts", m_ffVolts);
-    Logger.recordOutput("intake/pivotvel", pivotVelRadPerSec);
-    Logger.recordOutput("intake/position error", positionErrorDeg);
+    // Logger.recordOutput("intake/ff volts", m_ffVolts);
+    // Logger.recordOutput("intake/pivotvel", pivotVelRadPerSec);
+    // Logger.recordOutput("intake/position error", positionErrorDeg);
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
     Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
-    Logger.recordOutput("intake/roller mode", m_currentRollerState.toString());
-    Logger.recordOutput("intake/intake mode", m_currentIntakeControlState.toString());
+    // Logger.recordOutput("intake/roller mode", m_currentRollerState.toString());
+    // Logger.recordOutput("intake/intake mode", m_currentIntakeControlState.toString());
 
   }
 
@@ -417,9 +414,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // STOW position
       // -------------------------------------------------------------------------------------
       if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG ||
-          m_previousTargetPositionDeg == INTAKE_AMP_SCORE_DEG) {
+          getIsIntakeInAmpScoring()) {
         if(m_intermediatePositionReached == false) {
-          //System.out.println("I-BC");
+          System.out.println("I-BC");
           m_nextTargetPositionDeg = INTAKE_STOW_DEG; 
               m_targetPositionDeg = INTAKE_AMP_SCORE_DN_DEG; // set intermediate destination
           
@@ -573,6 +570,16 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   public boolean getIntakeBeamBreakBroken() {
     return inputs.isIntakeBeamBrkBroken;
+  }
+
+  public void setWasIntakeInAmpScoring(boolean set) {
+    isIntakeInScoreAmp = set;
+    System.out.println("is intake in amp score" + set);
+  }
+
+  public boolean getIsIntakeInAmpScoring() {
+    System.out.println(isIntakeInScoreAmp);
+    return isIntakeInScoreAmp;
   }
 
   // -------------------------------------------------------------------------------------
