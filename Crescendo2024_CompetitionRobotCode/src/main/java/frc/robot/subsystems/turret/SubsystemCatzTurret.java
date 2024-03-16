@@ -149,9 +149,15 @@ public class SubsystemCatzTurret extends SubsystemBase {
     } else { 
       if (currentTurretState == TurretState.AUTO) {
 
-        if(Math.abs(currentTurretDegree) > 120) {
+        if(Math.abs(m_turretTargetDegree) > 120) {
           driveRumbleController.setRumble(RumbleType.kBothRumble, 0.3);
           io.turretSetPwr(0.0);
+        } else if(Math.abs(m_turretTargetDegree) > 0.0) {
+          if(SubsystemCatzIntake.getInstance().getIntakeInPos()) {
+            io.turretSetPwr(setPositionPower);
+            driveRumbleController.setRumble(RumbleType.kBothRumble, 0.0);
+          }
+
         } else {
           io.turretSetPwr(setPositionPower);
           driveRumbleController.setRumble(RumbleType.kBothRumble, 0.0);
@@ -170,13 +176,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
         io.turretSetPwr(manualTurretPwr);
       }
     }
-    // if (currentTurretDegree > TURRET_POSITIVE_MAX_RANGE) { //Added limits to periodic because resetEncoder bugged and turned uncontrolably bypassing limits
-    //   manualTurretPwr = 0.0;
-    // } else {
-    //   if (currentTurretDegree < TURRET_NEGATIVE_MAX_RANGE) {
-    //     manualTurretPwr = 0.0;
-    //   }
-    // }
+
 
     Logger.recordOutput("turret/offsetXTurret", offsetAprilTagX);
     // whc 01Mar24 need to fix.  Do we need to install a limelight? TBD

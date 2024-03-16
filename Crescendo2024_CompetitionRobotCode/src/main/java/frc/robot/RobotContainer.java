@@ -11,9 +11,12 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
+import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
+import frc.robot.commands.mechanismCmds.MoveToPreset;
 import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
 import frc.robot.commands.mechanismCmds.StowPoseCmd;
@@ -88,14 +91,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxDrv.leftStick().and(xboxAux.povRight()).onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
 
     //mode amp
-    xboxDrv.leftStick().and(xboxAux.povLeft()).onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));
-
-
-    
-                                               
-    xboxDrv.rightStick().onTrue(Commands.either(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_SOURCE), 
-                                                new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_SOURCE),
-                                                ()-> stateMachine.getNoteDestination() == NoteDestination.SPEAKER));
+    xboxDrv.leftStick().and(xboxAux.povLeft()).onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));                               
 
 
     xboxDrv.start().onTrue(driveTrain.resetGyro());
@@ -120,7 +116,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.x().and(xboxAux.povRight()).onTrue(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()));
 
+    xboxAux.b().and(xboxAux.povRight()).onTrue(shooter.cmdShoot());
 
+    xboxAux.rightStick().and(xboxAux.povRight()).onTrue(shooter.cmdShooterRamp());
+
+    xboxDrv.start().and(xboxDrv.x()).onTrue(new MoveToPreset(CatzMechanismConstants.HOARD_PRESET));
 
 
     //mode amp

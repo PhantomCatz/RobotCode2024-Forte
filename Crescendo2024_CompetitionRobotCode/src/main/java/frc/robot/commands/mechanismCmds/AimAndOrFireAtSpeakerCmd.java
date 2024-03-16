@@ -134,7 +134,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
 
   @Override 
   public void execute() {
-    if(m_bSupplier != null && m_bSupplier.get() == true) {
+    if(m_bSupplier.get() == true) {
         shooter.cmdShoot();
     }
 
