@@ -1,4 +1,4 @@
-package frc.robot.subsystems.drivetrain;
+    package frc.robot.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -115,7 +115,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
             });
 
-        gyroIO.resetNavXIO();
+        gyroIO.resetNavXIO(0);
 
         if(DriveConstants.START_FLIPPED){
             flipGyro();
@@ -280,7 +280,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     //----------------------------------------------Gyro methods----------------------------------------------
 
     public void flipGyro() {
-        gyroIO.setAngleAdjustmentIO(180 + gyroIO.getAngleAdjustmentIO());
+        gyroIO.setAngleAdjustmentIO(180);
     }
 
     public Command resetGyro() {
@@ -316,7 +316,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Reset the position of the robot with a given pose
     public void resetPosition(Pose2d pose) {
-        double angle = getGyroAngle();
+        double angle = pose.getRotation().getDegrees();
+        gyroIO.resetNavXIO(-pose.getRotation().getDegrees());
         if(DriveConstants.START_FLIPPED){
             pose = new Pose2d(pose.getTranslation(), pose.getRotation().plus(Rotation2d.fromDegrees(180)));
         }

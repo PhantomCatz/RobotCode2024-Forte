@@ -103,14 +103,14 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();
+        // inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();
         inputs.pivotMtrRev =            pivotMtr.getPosition().getValue();
-        inputs.rollerVoltage =          rollerMtr.getTorqueCurrent().getValue();
-        inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
-        inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
-        inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
+        // inputs.rollerVoltage =          rollerMtr.getTorqueCurrent().getValue();
+        // inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
+        // inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
+        // inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
         inputs.pivotMtrVelocityRPS =    pivotMtr.getVelocity().getValue();
-        //true if beambreak is broken \/ \/
+        // //true if beambreak is broken \/ \/
         inputs.isIntakeBeamBrkBroken =   !intakeBeamBreak.get(); //TBD add method for controling inputs
         inputs.closedLoopPivotMtr =     pivotMtr.getClosedLoopError().getValue();
     }

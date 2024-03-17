@@ -165,23 +165,23 @@ public class ShooterIOReal implements ShooterIO {
 
         inputs.shooterVelocityLT        = SHOOTER_MOTOR_LT.getVelocity().getValue();
         inputs.shooterVelocityRT        = SHOOTER_MOTOR_RT.getVelocity().getValue();
-        inputs.velocityThresholdLT      = -shooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET; //was shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET
-        inputs.velocityThresholdRT      =  shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
-        inputs.shooterVelocityErrorLT   = SHOOTER_MOTOR_LT.getClosedLoopError().getValue();
-        inputs.shooterVelocityErrorRT   = SHOOTER_MOTOR_RT.getClosedLoopError().getValue();
-        inputs.shooterMotorVoltageLT    = SHOOTER_MOTOR_LT.getMotorVoltage().getValue();
-        inputs.shooterMotorVoltageRT    = SHOOTER_MOTOR_RT.getMotorVoltage().getValue();
-        inputs.shooterDutyCycleLT       = SHOOTER_MOTOR_LT.getDutyCycle().getValue();
-        inputs.shooterDutyCycleRT       = SHOOTER_MOTOR_RT.getDutyCycle().getValue();
-        inputs.shooterTorqueCurrentLT   = SHOOTER_MOTOR_LT.getTorqueCurrent().getValue();
-        inputs.shooterTorqueCurrentRT   = SHOOTER_MOTOR_RT.getTorqueCurrent().getValue();
+        // inputs.velocityThresholdLT      = -shooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET; //was shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET
+        // inputs.velocityThresholdRT      =  shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
+        // inputs.shooterVelocityErrorLT   = SHOOTER_MOTOR_LT.getClosedLoopError().getValue();
+        // inputs.shooterVelocityErrorRT   = SHOOTER_MOTOR_RT.getClosedLoopError().getValue();
+        // inputs.shooterMotorVoltageLT    = SHOOTER_MOTOR_LT.getMotorVoltage().getValue();
+        // inputs.shooterMotorVoltageRT    = SHOOTER_MOTOR_RT.getMotorVoltage().getValue();
+        // inputs.shooterDutyCycleLT       = SHOOTER_MOTOR_LT.getDutyCycle().getValue();
+        // inputs.shooterDutyCycleRT       = SHOOTER_MOTOR_RT.getDutyCycle().getValue();
+        // inputs.shooterTorqueCurrentLT   = SHOOTER_MOTOR_LT.getTorqueCurrent().getValue();
+        // inputs.shooterTorqueCurrentRT   = SHOOTER_MOTOR_RT.getTorqueCurrent().getValue();
 
         inputs.shooterLoadBeamBreakState   = !LOAD_BEAM_BREAK.get();
         inputs.shooterAdjustBeamBreakState = !ADJUST_BEAM_BREAK.get();
 
         inputs.loadMotorPercentOutput = LOAD_MOTOR.get();
-        inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
-        inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
+        // inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
+        // inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
 
         inputs.servoLeftPosition  = shooterServoLT.get();
         inputs.servoRightPosition = shooterServoRT.get();
@@ -192,8 +192,8 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setShooterEnabled() {
-        double shooterVelocityLT = shooterVelLT.get(); //TBD
-        double shooterVelocityRT = shooterVelRT.get();
+        double shooterVelocityLT = 58.0; //TBD
+        double shooterVelocityRT = 80.0;
 
         SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-shooterVelocityLT).withEnableFOC(true));
         SHOOTER_MOTOR_RT.setControl(new VelocityVoltage( shooterVelocityRT).withEnableFOC(true));

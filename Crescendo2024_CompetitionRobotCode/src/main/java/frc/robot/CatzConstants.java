@@ -172,10 +172,10 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
     //sn2
-      public static final double LT_FRNT_OFFSET = 0.23406623085+0.5;      //mag encoder 0
-    public static final double LT_BACK_OFFSET = 0.1198;           //mag encoder 1
-    public static final double RT_BACK_OFFSET = 0.60861531521+0.5;      //mag encoder 2
-    public static final double RT_FRNT_OFFSET = 0.838318270957-0.5;      //mag encoder 3
+    public static final double LT_FRNT_OFFSET = 0.7364;      //mag encoder 0
+    public static final double LT_BACK_OFFSET = 0.3417120085428+0.5 ;           //mag encoder 1
+    public static final double RT_BACK_OFFSET = 0.6294 +0.5;      //mag encoder 2
+    public static final double RT_FRNT_OFFSET = -0.1687+0.5;        //mag encoder 3
     //sn1
     // public static final double LT_FRNT_OFFSET =  0.21317;
     // public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
@@ -219,7 +219,7 @@ public final class CatzConstants {
     );
     
     //data has been referenced using recalc calculator https://www.reca.lc/drive
-    public static final double MAX_SPEED = Units.feetToMeters(14.34); // meters per second 4.81
+    public static final double MAX_SPEED = 20.0;//Units.feetToMeters(14.34); // meters per second 4.81
 
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 12.0; // radians per second
     public static final double MAX_SPEED_DESATURATION = MAX_SPEED; 
@@ -253,7 +253,7 @@ public final class CatzConstants {
     public static final CatzMechanismPosition STOW = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
                                                         SubsystemCatzIntake.INTAKE_STOW_DEG, 
-                                                        SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
+                                                        1.0, 
                                                         SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition SUBWOOFER_PRESET = 

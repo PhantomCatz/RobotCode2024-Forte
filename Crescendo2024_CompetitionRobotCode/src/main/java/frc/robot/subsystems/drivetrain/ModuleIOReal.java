@@ -24,9 +24,9 @@ public class ModuleIOReal implements ModuleIO {
     private final TalonFX DRIVE_MOTOR;
 
     //Motor Current limiting
-    public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
-    public static final int     KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS    = 55;
-    public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
+    public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 50;
+    public static final int     KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS    = 60;
+    public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.1;
     public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
 
     public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
@@ -60,12 +60,18 @@ public class ModuleIOReal implements ModuleIO {
             //reset to factory defaults
         DRIVE_MOTOR.getConfigurator().apply(new TalonFXConfiguration());
         talonConfigs.Slot0 = driveConfigs;
+
+        talonConfigs.Voltage.PeakForwardVoltage = 11.5;
+        talonConfigs.Voltage.PeakReverseVoltage = -11.5;
             //current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
+        talonConfigs.CurrentLimits.SupplyCurrentLimit       = 40.0;
         talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
         talonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
         talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
         talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
+
+
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
@@ -74,6 +80,7 @@ public class ModuleIOReal implements ModuleIO {
         driveConfigs.kD = 0.00;
  
        // DRIVE_MOTOR.optimizeBusUtilization();
+
 
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){

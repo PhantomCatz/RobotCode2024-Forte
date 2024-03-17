@@ -55,26 +55,30 @@ public class CatzAutonomous {
         chosenAllianceColor.addDefaultOption("Blue Alliance", CatzConstants.AllianceColor.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  CatzConstants.AllianceColor.Red);
 
-        pathChooser.addOption("2 Note Auton", driveStraightPickup());
-        pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
-        pathChooser.addOption("Speaker 4 Piece CS Wing", speaker4PieceCSWing());
+        pathChooser.addOption("mid", mid());
+        pathChooser.addOption("bot", bot());
+        pathChooser.addOption("top", top());
+        // pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
+        // pathChooser.addOption("Speaker 4 Piece CS Wing", speaker4PieceCSWing());
 
-        pathChooser.addOption("1 Wing Bulldoze Under", WingBulldozeUnder());
-        pathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
+        // pathChooser.addOption("1 Wing Bulldoze Under", WingBulldozeUnder());
+        // pathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
 
-        pathChooser.addOption("ScoringC13", scoringC13());
-        pathChooser.addOption("ScoringC53", scoringC53());
-        pathChooser.addOption("Run and gun W1 C1-3", RNGC1W13());
+        // pathChooser.addOption("ScoringC13", scoringC13());
+        // pathChooser.addOption("ScoringC53", scoringC53());
+        // pathChooser.addOption("Run and gun W1 C1-3", RNGC1W13());
 
-        pathChooser.addOption("Hoard Lower Mid", HoardLowerMid());
-        pathChooser.addOption("Bottom Mid Clear", BottomMidClear());
+        // pathChooser.addOption("Hoard Lower Mid", HoardLowerMid());
+        // pathChooser.addOption("Bottom Mid Clear", BottomMidClear());
 
         // pathChooser.addOption("Center Rush MId", CenterRushMid());
 
-        pathChooser.addOption("DriveStraightRight", driveTranslateAutoRight());
-        pathChooser.addOption("DriveStraightMid", driveTranslateAutoMid());
-        pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
+        // pathChooser.addOption("DriveStraightRight", driveTranslateAutoRight());
+        // pathChooser.addOption("DriveStraightMid", driveTranslateAutoMid());
+        // pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
         //pathChooser.addOption("Curve", curveAuto());
+
+        //HOLDEN ADD YOUR PATH!!!!!!! TBD
     }
 
     //configured dashboard
@@ -91,15 +95,34 @@ public class CatzAutonomous {
     }
 
     //-------------------------------------------Auton Paths--------------------------------------------
-    private Command driveStraightPickup(){
+
+    private Command mid(){
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraight")),
-            shooter.shootPreNote(),
-            new ParallelCommandGroup(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraight")))
+            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightMid")),
+            shooter.shootPreNote().withTimeout(1.5),
+            Commands.waitSeconds(1.0),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightMid"))
             );
             // new AimAndOrFireAtSpeakerCmd(),
             // shooter.cmdShoot());
+    }
+
+    private Command bot(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightBot")),
+            shooter.shootPreNote().withTimeout(1.5),
+            Commands.waitSeconds(1.0),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightBot"))
+        );
+    }
+
+    private Command top(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightTop")),
+            shooter.shootPreNote().withTimeout(1.5),
+            Commands.waitSeconds(1.0),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightTop"))
+        );
     }
 
     //https://docs.google.com/presentation/d/19F_5L03n90t7GhtzQhD4mYNEMkdFsUGoDSb4tT9HqNI/edit#slide=id.g268da342b19_1_0

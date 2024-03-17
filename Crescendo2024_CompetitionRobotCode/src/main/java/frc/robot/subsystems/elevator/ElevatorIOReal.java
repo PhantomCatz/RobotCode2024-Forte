@@ -70,10 +70,10 @@ public class ElevatorIOReal implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.elevatorVoltage          = ElevatorMtr.getMotorVoltage().getValue();
-        inputs.elevatorDutyCycle        = ElevatorMtr.getDutyCycle().getValue();
-        inputs.elevatorTorqueCurrent    = ElevatorMtr.getTorqueCurrent().getValue();
-        inputs.elevatorVelocity         = ElevatorMtr.getVelocity().getValue();
+        // inputs.elevatorVoltage          = ElevatorMtr.getMotorVoltage().getValue();
+        // inputs.elevatorDutyCycle        = ElevatorMtr.getDutyCycle().getValue();
+        // inputs.elevatorTorqueCurrent    = ElevatorMtr.getTorqueCurrent().getValue();
+        // inputs.elevatorVelocity         = ElevatorMtr.getVelocity().getValue();
         inputs.elevatorPosRev           = ElevatorMtr.getPosition().getValue();
         inputs.elevatorPositionError    = ElevatorMtr.getClosedLoopError().getValue();
 

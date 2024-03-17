@@ -123,6 +123,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.povDown().and(xboxAux.x()).onTrue(new MoveToPreset(CatzMechanismConstants.HOARD_PRESET));
 
+    xboxAux.a().and(xboxAux.povUp()).onTrue(shooter.cmdServoPosition(1.0)); 
+    xboxAux.a().and(xboxAux.povDown()).onTrue(shooter.cmdServoPosition(0.0)); 
+
+
     xboxAux.a().and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET));
 
     xboxAux.b().and(xboxAux.x()).and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_DEFENSE));

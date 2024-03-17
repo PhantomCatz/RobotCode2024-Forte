@@ -86,6 +86,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   private boolean m_desiredBeamBreakState;
   private int     m_iterationCounter;
+  private int     m_iterationCounter2;
 
   private boolean m_shooterServoInPos = false;
   
@@ -166,24 +167,28 @@ public class SubsystemCatzShooter extends SubsystemBase {
           
           case START_SHOOTER_FLYWHEEL:
             io.setShooterEnabled();
+            m_iterationCounter2 =0; 
             currentShooterLoadState = ShooterLoadState.WAIT_FOR_MOTORS_TO_REV_UP;
           break;
           
           
           case WAIT_FOR_MOTORS_TO_REV_UP:
-          //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
-            if(inputs.shooterVelocityLT <= inputs.velocityThresholdLT && // was -inputs.shooterVelocityLT >= inputs.velocityThresholdLT
-                inputs.shooterVelocityRT >= inputs.velocityThresholdRT) {
-              if(DriverStation.isAutonomous()) {
+          System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
+          if(DriverStation.isAutonomous()) {
+            m_iterationCounter2++;
+            if(m_iterationCounter2 > timer(1)) {
                 m_iterationCounter = 0;
                 currentShooterLoadState = ShooterLoadState.SHOOTING;
-              } else {
+   
+            }
+          } else {
+            if(inputs.shooterVelocityRT >= 74.0 &&
+               inputs.shooterVelocityLT >= 54.0) {
                 xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
                 
-                m_iterationCounter = 0;
-                
+                m_iterationCounter = 0;  
             }
-            }
+          }
           break;
 
           case SHOOTING:
@@ -254,8 +259,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return ((((ShooterIOReal)io).shooterVelLT.get() + ((ShooterIOReal)io).shooterVelRT.get())/2+6) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink)
   }
 
-  public Command cmdServoPosition(Supplier<Double> value) {
-    return run(()-> updateShooterServo(value.get()));
+  public Command cmdServoPosition(double value) {
+    return run(()-> updateShooterServo(value));
   }
 
   public void updateShooterServo(double position) {
