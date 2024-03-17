@@ -122,7 +122,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   // Intake position defs & variables
   // -----------------------------------------------------------------------------------------------
   public static final double INTAKE_STOW_DEG           = 163.0;
-  public static final double INTAKE_SOURCE_LOAD_DN_DEG = 125.0;
+  public static final double INTAKE_SOURCE_LOAD_DN_DEG = 30.0;
   public static final double INTAKE_SOURCE_LOAD_UP_DEG =  97.0; //with drivetrain inner rail to the
                                                              // bottom inner rail 7 1/4 inches
   public static final double INTAKE_AMP_SCORE_DN_DEG   =  92.6; //90.43; 

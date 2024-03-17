@@ -141,6 +141,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.rightStick().onTrue(shooter.setPositionCmd(()->xboxAux.getRightY()));
 
+    xboxAux.start().onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_SOURCE));
+
 
     //mode trap
     xboxAux.povUp().and(xboxAux.x()).onTrue(new ScoreTrapCmd());

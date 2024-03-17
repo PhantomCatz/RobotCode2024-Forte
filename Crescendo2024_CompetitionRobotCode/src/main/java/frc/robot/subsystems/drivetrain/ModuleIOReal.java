@@ -26,7 +26,7 @@ public class ModuleIOReal implements ModuleIO {
     //Motor Current limiting
     public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 50;
     public static final int     KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS    = 60;
-    public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.1;
+    public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.05;
     public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
 
     public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;

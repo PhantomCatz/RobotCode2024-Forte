@@ -219,9 +219,9 @@ public final class CatzConstants {
     );
     
     //data has been referenced using recalc calculator https://www.reca.lc/drive
-    public static final double MAX_SPEED = 20.0;//Units.feetToMeters(14.34); // meters per second 4.81
+    public static final double MAX_SPEED = 24.0;//Units.feetToMeters(14.34); // meters per second 4.81
 
-    public static final double MAX_ANGSPEED_RAD_PER_SEC = 12.0; // radians per second
+    public static final double MAX_ANGSPEED_RAD_PER_SEC = 24.0; // radians per second
     public static final double MAX_SPEED_DESATURATION = MAX_SPEED; 
 
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
