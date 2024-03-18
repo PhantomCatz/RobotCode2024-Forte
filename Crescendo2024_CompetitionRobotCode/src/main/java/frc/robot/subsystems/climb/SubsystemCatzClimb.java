@@ -7,6 +7,7 @@ package frc.robot.subsystems.climb;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
@@ -51,6 +52,7 @@ public class SubsystemCatzClimb extends SubsystemBase {
       break;
     }
 
+    
   }
 
   public static SubsystemCatzClimb getInstance() {
@@ -70,6 +72,7 @@ public class SubsystemCatzClimb extends SubsystemBase {
       climbPercentOutputRT = 0.0;
 
     } else {
+      
         io.setClimbMtrPercentOutputLT(climbPercentOutputLT);
         io.setClimbMtrPercentOutputRT(climbPercentOutputRT);
 
@@ -90,5 +93,13 @@ public class SubsystemCatzClimb extends SubsystemBase {
 
   public void setRightClimbPercentOutput(double output) {
     climbPercentOutputRT = output;
+  }
+
+  public Command setClimbOff(){
+    return run(()-> setClimbMtrsZero());
+  }
+  public void setClimbMtrsZero(){
+    climbPercentOutputLT = 0.0;
+    climbPercentOutputRT = 0.0;
   }
 }

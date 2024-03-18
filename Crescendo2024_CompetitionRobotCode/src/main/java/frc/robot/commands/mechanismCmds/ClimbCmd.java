@@ -46,9 +46,18 @@ public class ClimbCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climb.setLeftClimbPercentOutput(m_supplierXboxLeftY.get()/2);
-    climb.setRightClimbPercentOutput(m_supplierXboxRightY.get()/2);
-
+    if(Math.abs(m_supplierXboxLeftY.get()) > 0.1 ){
+      climb.setLeftClimbPercentOutput(-m_supplierXboxLeftY.get()/2);
+    }
+    else{
+      climb.setLeftClimbPercentOutput(0.0);
+    }
+    if(Math.abs(m_supplierXboxRightY.get()) > 0.1 ){
+      climb.setRightClimbPercentOutput(m_supplierXboxRightY.get()/2);
+    }
+    else{
+      climb.setRightClimbPercentOutput(0.0);
+    }
   }
 
   // Called once the command ends or is interrupted.

@@ -7,10 +7,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.CatzConstants.CatzColorConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
@@ -79,7 +81,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     defaultCommands();
     configureBindings();
   }
-   
+  
 
   private void configureBindings() {    
 
@@ -103,13 +105,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //signify amp
     xboxDrv.x().and(xboxDrv.back()).onTrue(Commands.runOnce(()->lead.signalHumanPlayerAMP()));
 
-    //--------------------\--------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------
     //  Aux Commands
     //---------------------------------------------------------------------------------------- 
     //pov state machine commands 
 
       //climb
-    xboxAux.back().and(xboxAux.start()).onTrue(new ClimbCmd(()->xboxAux.getLeftY(), ()->xboxAux.getRightY()));  //raise left climb hook 
+    xboxAux.back().and(xboxAux.start()).onTrue(new ClimbCmd(()->xboxAux.getLeftY(), ()->xboxAux.getRightY()));//.onFalse(new ClimbCmd(()->0.0, ()->0.0));  //raise left climb hook 
 
     
     //mode speaker
@@ -121,7 +123,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.rightStick().and(xboxAux.povRight()).onTrue(shooter.cmdShooterRamp());
 
-    xboxAux.povDown().and(xboxAux.x()).onTrue(new MoveToPreset(CatzMechanismConstants.HOARD_PRESET));
+    xboxAux.povDown().and(xboxAux.x()).onTrue(new MoveToPreset(CatzMechanismConstants.SCORING_TRAP));
+    xboxAux.povDown().and(xboxAux.b()).onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_SOURCE));
 
     xboxAux.a().and(xboxAux.povUp()).onTrue(shooter.cmdServoPosition(1.0)); 
     xboxAux.a().and(xboxAux.povDown()).onTrue(shooter.cmdServoPosition(0.0)); 
@@ -141,7 +144,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.rightStick().onTrue(shooter.setPositionCmd(()->xboxAux.getRightY()));
 
-    xboxAux.start().onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_SOURCE));
+    // xboxAux.start().onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_SOURCE));
 
 
     //mode trap

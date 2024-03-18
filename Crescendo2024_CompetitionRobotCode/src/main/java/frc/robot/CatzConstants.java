@@ -1,4 +1,4 @@
-package frc.robot;
+   package frc.robot;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -173,9 +173,10 @@ public final class CatzConstants {
   public static final class DriveConstants {
     //sn2
     public static final double LT_FRNT_OFFSET = 0.7364;      //mag encoder 0
-    public static final double LT_BACK_OFFSET = 0.3417120085428+0.5 ;           //mag encoder 1
-    public static final double RT_BACK_OFFSET = 0.6294 +0.5;      //mag encoder 2
-    public static final double RT_FRNT_OFFSET = -0.1687+0.5;        //mag encoder 3
+    public static final double LT_BACK_OFFSET = -0.2732+0.5 ;           //mag encoder 1
+    public static final double RT_BACK_OFFSET = 0.138439;
+    ;      //mag encoder 2
+    public static final double RT_FRNT_OFFSET = 0.8088+0.5;        //mag encoder 3
     //sn1
     // public static final double LT_FRNT_OFFSET =  0.21317;
     // public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
@@ -306,14 +307,14 @@ public final class CatzConstants {
                                                         SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition INTAKE_SOURCE = 
-                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
-                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_DN_DEG,
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_SOURCE_PICKUP,
+                                                        SubsystemCatzIntake.INTAKE_SOURCE_LOAD_UP_DEG,
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION);
 
     public static final CatzMechanismPosition SCORING_TRAP = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_SCORE_TRAP, 
-                                                        SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
+                                                        140.0,
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS,
                                                         SubsystemCatzTurret.HOME_POSITION);
     //-10

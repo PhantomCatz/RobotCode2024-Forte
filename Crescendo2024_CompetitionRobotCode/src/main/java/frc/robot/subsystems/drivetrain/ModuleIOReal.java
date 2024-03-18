@@ -65,11 +65,13 @@ public class ModuleIOReal implements ModuleIO {
         talonConfigs.Voltage.PeakReverseVoltage = -11.5;
             //current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        talonConfigs.CurrentLimits.SupplyCurrentLimit       = 40.0;
-        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
-        talonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
-        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
+        talonConfigs.CurrentLimits.StatorCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
+        talonConfigs.CurrentLimits.StatorCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
         talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
+
+        talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
+        talonConfigs.CurrentLimits.SupplyCurrentLimit       =  KRAKEN_CURRENT_LIMIT_AMPS;
+
 
 
             //neutral mode

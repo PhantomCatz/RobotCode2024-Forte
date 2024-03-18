@@ -49,7 +49,7 @@ public class ScoreAmpCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(intake.getWristAngle() > 20) {
+    if(intake.getWristAngle() > -30) {
       intake.pivotFullManual(0.0);
     } else {
       intake.pivotFullManual(-0.3);

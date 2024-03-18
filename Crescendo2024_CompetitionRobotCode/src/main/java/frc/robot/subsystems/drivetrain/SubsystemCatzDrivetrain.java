@@ -1,4 +1,4 @@
-    package frc.robot.subsystems.drivetrain;
+package frc.robot.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -121,7 +121,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             flipGyro();
         }
         
-        // resetPosition(new Pose2d(1.23,5.49,Rotation2d.fromDegrees(180)));
+        resetPosition(new Pose2d(1.23,5.49,Rotation2d.fromDegrees(0)));
     }
 
     // Get the singleton instance of the CatzDriveTrainSubsystem

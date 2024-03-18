@@ -109,7 +109,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static enum IntakeControlState {
     AUTO,
     SEMI_MANUAL, // TBD or Manual Hold?
-    FULL_MANUAL
+    FULL_MANUAL,
+    VOLTAGE_CONTROL
   }
 
   private static IntakeControlState m_currentIntakeControlState = IntakeControlState.AUTO;
@@ -357,6 +358,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
             }
           }
         }
+      } else if(m_currentIntakeControlState == IntakeControlState.VOLTAGE_CONTROL) {
+        io.setIntakePivotVoltage(PIVOT_FF_kG);
+    
       } else {
         // -------------------------------------------------------------------------------------
         // Manual Control Mode - Use operator input to change intake angle
@@ -419,7 +423,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
       if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG ||
           getIsIntakeInAmpScoring()) {
         if(m_intermediatePositionReached == false) {
-          System.out.println("I-BC");
           m_nextTargetPositionDeg = INTAKE_STOW_DEG; 
               m_targetPositionDeg = INTAKE_AMP_SCORE_DN_DEG; // set intermediate destination
           
@@ -528,6 +531,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     m_currentIntakeControlState = IntakeControlState.FULL_MANUAL;
     m_intakeInPosition = false;
   }
+
 
   public void setPivotDisabled() {
     io.setIntakePivotPercentOutput(0.0);

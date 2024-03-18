@@ -61,6 +61,8 @@ public class ClimbIOReal implements ClimbIO {
         if(!initializationStatus.isOK()) {
             System.out.println("Failed to Configure Climb Mtr Controller CAN ID" + CLIMB_MOTOR_ID_LT);
         }
+
+        climbMtrLT.setInverted(true);
     }
 
     @Override
