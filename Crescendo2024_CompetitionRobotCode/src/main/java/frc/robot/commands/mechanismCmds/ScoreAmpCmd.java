@@ -40,7 +40,7 @@ public class ScoreAmpCmd extends Command {
   public void initialize() {
     intake.setSquishyMode(true);
     if(intake.getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
-      runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP);
+      runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP_PRESET);
     }
     intakeNoteTimer.reset();
     intake.setWasIntakeInAmpScoring(false);
@@ -61,7 +61,7 @@ public class ScoreAmpCmd extends Command {
   @Override
   public void end(boolean interrupted) {
     intake.setSquishyMode(false);
-      runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION);
+      runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION_PRESET);
     intake.setWasIntakeInAmpScoring(true);
 
   }

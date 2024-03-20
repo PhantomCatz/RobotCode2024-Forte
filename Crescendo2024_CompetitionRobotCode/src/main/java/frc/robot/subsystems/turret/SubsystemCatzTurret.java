@@ -45,8 +45,16 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //------------------------------------------------------------------------
   private final double TURRET_POWER     = 0.4;
   private final double TURRET_DECEL_PWR = 0.3;
- 
-  //pid values
+
+  private final double TURRET_POSITIVE_MAX_RANGE =  120.0; 
+  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0;
+
+  private final double NEGATIVE_DECEL_THRESHOLD  =  -15.0;
+  private final double POS_DECEL_THRESHOLD       =   15.0;
+
+  // -----------------------------------------------------------------------------------------------
+  // Turret Closed Loop Processing (PIDF, etc)
+  // -----------------------------------------------------------------------------------------------
   private static final double TURRET_kP = 0.02;
   private static final double TURRET_kI = 0.0;
   private static final double TURRET_kD = 0.0;
@@ -55,12 +63,14 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double LIMELIGHT_kI = 0.0;
   private static final double LIMELIGHT_kD = 0.0001;
 
-  private final double TURRET_POSITIVE_MAX_RANGE =  120.0; 
-  private final double TURRET_NEGATIVE_MAX_RANGE = -120.0;
-
-  private final double NEGATIVE_DECEL_THRESHOLD  =  -15.0;
-  private final double POS_DECEL_THRESHOLD       =   15.0;
-
+  // -----------------------------------------------------------------------------------------------
+  //
+  // Turret Definitions & Variables
+  //
+  // -----------------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
+  // Turret Gear Def
+  // -----------------------------------------------------------------------------------------------
   private static final double TURRET_GEARBOX_PINION      = 9.0/1.0;
   private static final double TURRET_GEARBOX_TURRET_GEAR = 140.0/10.0;
  
@@ -69,7 +79,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   
   public static final double HOME_POSITION       = 0.0;
 
-  public static double currentTurretDegree = 0.0; //0.0
+  public static double currentTurretDegree = 0.0; 
 
   //turret variables
   private double m_turretTargetDegree;
@@ -88,6 +98,16 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private XboxController driveRumbleController;
 
   private final SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
+
+  // -----------------------------------------------------------------------------------------------
+  // Control Mode Defs
+  // -----------------------------------------------------------------------------------------------
+  private static TurretState currentTurretState;
+  public static enum TurretState {
+    AUTO,
+    TRACKING_APRILTAG,
+    FULL_MANUAL
+  }
 
   private SubsystemCatzTurret() {
 
@@ -119,13 +139,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   // Get the singleton instance of the Turret Subsystem
   public static SubsystemCatzTurret getInstance() {
       return instance;
-  }
-  
-  private static TurretState currentTurretState;
-  public static enum TurretState {
-    AUTO,
-    TRACKING_APRILTAG,
-    FULL_MANUAL
   }
 
   @Override
@@ -209,8 +222,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
       manualTurretPwr = 0.2;
   
   }
-  
-  
+
   public void rotateRight(){
     currentTurretState = TurretState.FULL_MANUAL;
   
@@ -222,18 +234,21 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //    Automated Methods
   //-------------------------------------------------------------------------------------------------
   public void aimAtGoal(Translation2d goal, boolean aimAtVision, boolean acctRobotVel) {
+    //collect drivetrain pose
     Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
 
     //take difference between speaker and the curret robot translation
     Translation2d robotToGoal = goal.minus(robotPose.getTranslation());
 
+    //boolean to use robot velocity for move while shooting
     if(acctRobotVel){
-      robotToGoal.div(Math.hypot(robotToGoal.getX(),robotToGoal.getY()));
+
+      robotToGoal.div(Math.hypot(robotToGoal.getX(), robotToGoal.getY())); 
+
       robotToGoal.times(SubsystemCatzShooter.getInstance().getApproximateShootingSpeed());
-  
+
       robotToGoal.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx,drivetrain.getFieldRelativeSpeed().vy));
     }
-
 
     //calculate new turret angle based off current robot position
     double angle = Math.atan2(robotToGoal.getY(), robotToGoal.getX());
@@ -241,13 +256,16 @@ public class SubsystemCatzTurret extends SubsystemBase {
     //offset new turret angle based off current robot rotation
     angle = angle - CatzMathUtils.toUnitCircAngle(robotPose.getRotation().getRadians()); 
 
+    //translate angle to turret readable degree angle
     angle = Math.toDegrees(angle);
 
     //if we purely just want to rely on apriltag for aiming
     if (aimAtVision && SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {
+      
       currentTurretState = TurretState.TRACKING_APRILTAG;
+
     } else {
-      m_turretTargetDegree = angle;
+      m_turretTargetDegree = angle; //assign new turret angle
       currentTurretState = TurretState.AUTO;
     }
       m_turretIntPos = false;
@@ -296,10 +314,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   
   public Command cmdTurretDegree(double turretDeg) {
     return run(() -> setTurretTargetDegree(turretDeg));
-  }
-
-  public Command cmdAutoRotate() {
-    return run(() -> aimAtGoal(new Translation2d(), true, true));
   }
   
   public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {

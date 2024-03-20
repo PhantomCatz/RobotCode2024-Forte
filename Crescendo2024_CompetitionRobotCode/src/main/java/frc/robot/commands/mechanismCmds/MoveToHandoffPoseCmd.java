@@ -77,28 +77,28 @@ public class MoveToHandoffPoseCmd extends Command {
 
     switch(m_noteSource) {
       case INTAKE_GROUND:
-        m_targetMechPoseStart = CatzMechanismConstants.INTAKE_GROUND;
+        m_targetMechPoseStart = CatzMechanismConstants.INTAKE_GROUND_PRESET;
         intake.setRollersGround();
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
 
-            m_targetMechPoseEnd = CatzMechanismConstants.STOW;
+            m_targetMechPoseEnd = CatzMechanismConstants.STOW_PRESET;
             // System.out.println("Ground speaker");
         } else if(m_noteDestination == NoteDestination.AMP)  {
 
-            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
+            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP_PRESET;
             // System.out.println("Ground AMP");
         }
       break;
 
       case INTAKE_SOURCE:
-        m_targetMechPoseStart = CatzMechanismConstants.INTAKE_SOURCE;
+        m_targetMechPoseStart = CatzMechanismConstants.INTAKE_SOURCE_PRESET;
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
 
-            m_targetMechPoseEnd = CatzMechanismConstants.STOW;
+            m_targetMechPoseEnd = CatzMechanismConstants.STOW_PRESET;
             intake.setRollersIntakeSource();
             // System.out.println(" Source Speaker");
         } else if(m_noteDestination == NoteDestination.AMP) {
@@ -108,25 +108,25 @@ public class MoveToHandoffPoseCmd extends Command {
       break;
 
       case FROM_INTAKE:
-        m_targetMechPoseStart = CatzMechanismConstants.STOW;
+        m_targetMechPoseStart = CatzMechanismConstants.STOW_PRESET;
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
             // System.out.println("Intake Speaker");
 
-          m_targetMechPoseEnd = CatzMechanismConstants.STOW;
+          m_targetMechPoseEnd = CatzMechanismConstants.STOW_PRESET;
         } else if(m_noteDestination == NoteDestination.AMP) {
             // System.out.println("Intake Amp");
-          m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
+          m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP_PRESET;
         }
       
       break;
 
       case FROM_SHOOTER:
-        m_targetMechPoseStart = CatzMechanismConstants.STOW;
+        m_targetMechPoseStart = CatzMechanismConstants.STOW_PRESET;
 
         if(m_noteDestination == NoteDestination.AMP) {
-            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP;
+            m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP_PRESET;
             // System.out.println("Shooter Amp");
 
         } 

@@ -30,7 +30,7 @@ public class CatzStateMachine extends SubsystemBase {
 
     private static NoteDestination targetNoteDestination = NoteDestination.SPEAKER;
 
-    private static CatzMechanismPosition previousPose = CatzMechanismConstants.STOW;
+    private static CatzMechanismPosition previousPose = CatzMechanismConstants.STOW_PRESET;
 
     private static SubsystemCatzLED lead = SubsystemCatzLED.getInstance();
 

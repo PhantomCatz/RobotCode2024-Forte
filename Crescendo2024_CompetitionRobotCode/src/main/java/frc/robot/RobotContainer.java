@@ -43,13 +43,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     
   //subsystems
   private SubsystemCatzDrivetrain driveTrain; 
-  private SubsystemCatzVision vision;
+  private SubsystemCatzVision     vision;
   private SubsystemCatzIntake     intake;
-  private SubsystemCatzShooter  shooter;
-  private SubsystemCatzClimb    climb;
+  private SubsystemCatzShooter    shooter;
+  private SubsystemCatzClimb      climb;
   private SubsystemCatzElevator   elevator;
   private SubsystemCatzTurret     turret;
-  private SubsystemCatzLED      lead;
+  private SubsystemCatzLED        led;
 
   private CatzStateMachine stateMachine;
 
@@ -58,13 +58,12 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   //xbox controller
   private CommandXboxController xboxDrv;
   private CommandXboxController xboxAux;
- // private CommandXboxController xboxTest;
 
   public RobotContainer() {
     //instantiate subsystems
     elevator   = SubsystemCatzElevator.getInstance();
     driveTrain = SubsystemCatzDrivetrain.getInstance(); 
-    vision   = SubsystemCatzVision.getInstance();
+    vision     = SubsystemCatzVision.getInstance();
     intake     = SubsystemCatzIntake.getInstance();
     turret     = SubsystemCatzTurret.getInstance();
     shooter    = SubsystemCatzShooter.getInstance();
@@ -103,7 +102,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxDrv.back().and(xboxDrv.leftTrigger()).onTrue(Commands.runOnce(()->driveTrain.resetPosition(new Pose2d(2.97,4.11, Rotation2d.fromDegrees(0)))));
 
     //signify amp
-    xboxDrv.x().and(xboxDrv.back()).onTrue(Commands.runOnce(()->lead.signalHumanPlayerAMP()));
+    xboxDrv.x().and(xboxDrv.back()).onTrue(Commands.runOnce(()->led.signalHumanPlayerAMP()));
 
     //----------------------------------------------------------------------------------------
     //  Aux Commands
@@ -123,8 +122,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.rightStick().and(xboxAux.povRight()).onTrue(shooter.cmdShooterRamp());
 
-    xboxAux.povDown().and(xboxAux.x()).onTrue(new MoveToPreset(CatzMechanismConstants.SCORING_TRAP));
-    xboxAux.povDown().and(xboxAux.b()).onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_SOURCE));
+    xboxAux.povDown().and(xboxAux.x()).onTrue(new MoveToPreset(CatzMechanismConstants.SCORING_TRAP_PRESET));
+    xboxAux.povDown().and(xboxAux.b()).onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_SOURCE_PRESET));
 
     xboxAux.a().and(xboxAux.povUp()).onTrue(shooter.cmdServoPosition(1.0)); 
     xboxAux.a().and(xboxAux.povDown()).onTrue(shooter.cmdServoPosition(0.0)); 
@@ -132,7 +131,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.a().and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET));
 
-    xboxAux.b().and(xboxAux.x()).and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_DEFENSE));
+    xboxAux.b().and(xboxAux.x()).and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_DEFENSE_PRESET));
 
 
     //mode amp

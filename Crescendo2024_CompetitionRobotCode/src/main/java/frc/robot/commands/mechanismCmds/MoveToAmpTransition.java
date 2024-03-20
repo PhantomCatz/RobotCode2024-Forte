@@ -27,7 +27,7 @@ public class MoveToAmpTransition extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION);    //run initial sepoint
+    runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION_PRESET);    //run initial sepoint
 
   }
 

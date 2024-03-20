@@ -5,9 +5,6 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
-// import frc.robot.Robot.gameModeLED;
-import frc.robot.subsystems.intake.SubsystemCatzIntake;
-
 
 public class SubsystemCatzLED extends SubsystemBase {
 

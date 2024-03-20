@@ -25,7 +25,7 @@ public class ScoreTrapCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    runMechanismSetpoints(CatzMechanismConstants.SCORING_TRAP);
+    runMechanismSetpoints(CatzMechanismConstants.SCORING_TRAP_PRESET);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

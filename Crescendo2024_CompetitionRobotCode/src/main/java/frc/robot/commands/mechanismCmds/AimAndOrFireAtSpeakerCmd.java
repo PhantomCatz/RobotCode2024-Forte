@@ -119,8 +119,8 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   public void initialize() {
     //start the flywheel
     shooter.startShooterFlywheel();
-    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.INTAKE_SOURCE.getIntakePivotTargetAngle());
-    elevator.updateTargetPositionElevator(CatzMechanismConstants.STOW);
+    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.INTAKE_SOURCE_PRESET.getIntakePivotTargetAngle());
+    elevator.updateTargetPositionElevator(CatzMechanismConstants.STOW_PRESET);
 
     if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {
         //translation of the blue alliance speaker
