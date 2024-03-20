@@ -412,11 +412,11 @@ public class CatzAutonomous {
         //send path info to trajectory following command in a chained autocoring path
         return new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
                                                         .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false), //transfer note to intake if applicable
-                                          new MoveToPreset(CatzMechanismConstants.AMP_TRANSITION),                  //move to amp transition
+                                          new MoveToPreset(CatzMechanismConstants.AMP_TRANSITION_PRESET),                  //move to amp transition
                                           new PPTrajectoryFollowingCmd(bezierPoints,                                //start auto trajectory
                                                                             autoPathfindingConstraints, 
                                                                                 new GoalEndState(0.0, Rotation2d.fromDegrees(90))),
-                                          new MoveToPreset(CatzMechanismConstants.SCORING_AMP));                    //move to amp scoring position
+                                          new MoveToPreset(CatzMechanismConstants.SCORING_AMP_PRESET));                    //move to amp scoring position
     }
 
     public Command autoFindPathSpeakerAW() {
