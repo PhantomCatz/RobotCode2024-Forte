@@ -38,8 +38,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
 
-    //Vision instatiation
-    // private final SubsystemCatzVision vision = SubsystemCatzVision.getInstance();
 
     // Array of swerve modules representing each wheel in the drive train
     private CatzSwerveModule[] m_swerveModules = new CatzSwerveModule[4];

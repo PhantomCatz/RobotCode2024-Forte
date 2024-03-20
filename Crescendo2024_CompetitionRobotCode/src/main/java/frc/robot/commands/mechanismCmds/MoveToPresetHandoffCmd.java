@@ -26,7 +26,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
-public class MoveToHandoffPoseCmd extends Command {
+public class MoveToPresetHandoffCmd extends Command {
   
   //subsystem declaration
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
@@ -49,7 +49,7 @@ public class MoveToHandoffPoseCmd extends Command {
   private Timer transferToShooter  = new Timer();
 
 
-  public MoveToHandoffPoseCmd(NoteDestination noteDestination, NoteSource noteSource) {
+  public MoveToPresetHandoffCmd(NoteDestination noteDestination, NoteSource noteSource) {
     this.m_noteDestination = noteDestination;
     this.m_noteSource = noteSource;
 

@@ -67,10 +67,12 @@ public class ModuleIOReal implements ModuleIO {
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
         talonConfigs.CurrentLimits.StatorCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
         talonConfigs.CurrentLimits.StatorCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
-        talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
 
         talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
         talonConfigs.CurrentLimits.SupplyCurrentLimit       =  KRAKEN_CURRENT_LIMIT_AMPS;
+        talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
+        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+
 
 
 
