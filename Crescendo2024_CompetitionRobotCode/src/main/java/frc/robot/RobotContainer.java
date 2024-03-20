@@ -17,7 +17,7 @@ import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
-import frc.robot.commands.mechanismCmds.MoveToHandoffPoseCmd;
+import frc.robot.commands.mechanismCmds.MoveToPresetHandoffCmd;
 import frc.robot.commands.mechanismCmds.MoveToPreset;
 import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
 import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
@@ -90,10 +90,12 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //  Drive commands
     //------------------------------------------------------------------------------------
     //mode speaker
-    xboxDrv.leftStick().and(xboxAux.povRight()).onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
+    xboxDrv.leftStick().and(xboxAux.povRight()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
 
     //mode amp
-    xboxDrv.leftStick().and(xboxAux.povLeft()).onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));                               
+    xboxDrv.leftStick().and(xboxAux.povLeft()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));       
+    
+    xboxDrv.b().onTrue(auton.autoScoreAmp());
 
 
     xboxDrv.start().onTrue(driveTrain.resetGyro());
@@ -114,7 +116,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     
     //mode speaker
-    xboxAux.y().and(xboxAux.povRight()).onTrue(new MoveToHandoffPoseCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
+    xboxAux.y().and(xboxAux.povRight()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
 
     //xboxAux.x().and(xboxAux.povRight()).onTrue(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()));
 
@@ -135,7 +137,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
     //mode amp
-    xboxAux.y().and(xboxAux.povLeft()).onTrue(new MoveToHandoffPoseCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
+    xboxAux.y().and(xboxAux.povLeft()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
 
     xboxAux.x().and(xboxAux.povLeft()).onTrue(new MoveToAmpTransition());
 

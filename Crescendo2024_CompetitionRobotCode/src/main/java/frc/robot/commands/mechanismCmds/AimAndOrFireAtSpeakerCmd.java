@@ -123,7 +123,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     elevator.updateTargetPositionElevator(CatzMechanismConstants.STOW_PRESET);
 
     if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {
-        //translation of the blue alliance speaker
+      //translation of the blue alliance speaker
       m_targetXY = new Translation2d(0.0, 5.55);
     } else {
       //translation of the Red alliance speaker
