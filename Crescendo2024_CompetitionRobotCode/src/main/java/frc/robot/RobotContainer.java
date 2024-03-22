@@ -125,7 +125,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.rightStick().and(xboxAux.povRight()).onTrue(shooter.cmdShooterRamp());
 
     xboxAux.povDown().and(xboxAux.x()).onTrue(new MoveToPreset(CatzMechanismConstants.SCORING_TRAP_PRESET));
-    xboxAux.povDown().and(xboxAux.b()).onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_SOURCE_PRESET));
+    xboxAux.povDown().and(xboxAux.b()).onTrue(new MoveToPreset(CatzMechanismConstants.PREP_FOR_AMP_PRESET));
 
     xboxAux.a().and(xboxAux.povUp()).onTrue(shooter.cmdServoPosition(1.0)); 
     xboxAux.a().and(xboxAux.povDown()).onTrue(shooter.cmdServoPosition(0.0)); 
@@ -163,8 +163,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     xboxAux.leftStick().onTrue(new ManualElevatorCmd(()->xboxAux.getLeftY(), ()->xboxAux.leftStick().getAsBoolean()));
 
     //turret
-    xboxAux.leftTrigger().onTrue(turret.cmdTurretLT()).onFalse(turret.cmdTurretOff());
-    xboxAux.rightTrigger().onTrue(turret.cmdTurretRT()).onFalse(turret.cmdTurretOff());
+    xboxAux.leftTrigger().onTrue(turret.cmdTurretLT(()->xboxAux.getLeftTriggerAxis()));
+    xboxAux.rightTrigger().onTrue(turret.cmdTurretRT(()->xboxAux.getRightTriggerAxis()));
 
 
     //intake

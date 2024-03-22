@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkPIDController.AccelStrategy;
@@ -26,8 +27,14 @@ public class TurretIOReal implements TurretIO {
         turretMtr.setSmartCurrentLimit(NEO_CURRENT_LIMIT_AMPS);
         turretMtr.setIdleMode(IdleMode.kBrake);
         turretMtr.enableVoltageCompensation(12.0);
-        turretMtr.getEncoder().setPositionConversionFactor(1.0/SubsystemCatzTurret.TURRET_REV_PER_DEG);
-        turretMtr.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 37267);
+        turretMtr.getEncoder().setPositionConversionFactor(1.0/SubsystemCatzTurret.TURRET_MOTOR_SHAFT_REV_PER_DEG);
+
+        turretMtr.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 32767);
+
+         turretMtr.setSoftLimit(SoftLimitDirection.kForward, (int) SubsystemCatzTurret.TURRET_MAX_ANGLE_DEG);
+         turretMtr.setSoftLimit(SoftLimitDirection.kReverse, (int) SubsystemCatzTurret.TURRET_MIN_ANGLE_DEG);
+
+        turretMtr.burnFlash(); //save configs so if pwr lost to be reapplied
 
         smartMotionPID = turretMtr.getPIDController();
         smartMotionPID.setP(0.01);

@@ -237,9 +237,9 @@ public class MoveToPresetHandoffCmd extends Command {
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
 
     intake  .updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
-    elevator.updateTargetPositionElevator(pose);
-    shooter .updateTargetPositionShooter (pose);
-    turret  .updateTargetPositionTurret  (pose);
+    elevator.updateTargetPositionElevator  (pose);
+    shooter .updateTargetPositionShooter   (pose);
+    turret  .updateTargetPositionTurret    (pose);
   }
 
   private boolean areMechanismsInPosition() {
