@@ -10,12 +10,13 @@
     "DriveStraight",
     "HoardLowMid",
     "MCHA",
-    "TwoPiece",
+    "Hoard_C1-2",
     "S4PCSW",
     "S4PW",
     "Scoring_C1-3",
     "Scoring_C2-4",
-    "Scoring_C5-3"
+    "Scoring_C5-3",
+    "TwoPiece"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.0,
