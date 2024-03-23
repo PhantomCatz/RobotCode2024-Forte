@@ -118,6 +118,10 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // resetPosition(new Pose2d(1.23,5.49,Rotation2d.fromDegrees(0)));
     }
 
+    public void resetGyroTrue(){
+        gyroIO.resetNavXIO(0);
+    }
+
     // Get the singleton instance of the CatzDriveTrainSubsystem
     public static SubsystemCatzDrivetrain getInstance() {
         return instance;
@@ -275,6 +279,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     public void flipGyro() {
         gyroIO.setAngleAdjustmentIO(180);
+        System.out.println("kakikukeko");
     }
 
     public Command resetGyro() {
@@ -311,7 +316,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     // Reset the position of the robot with a given pose
     public void resetPosition(Pose2d pose) {
         double angle = pose.getRotation().getDegrees();
-
+        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+            angle += 180;
+            gyroIO.setAngleAdjustmentIO(180);
+            
+        }
         pose = new Pose2d(pose.getTranslation(), Rotation2d.fromDegrees(angle));
         m_poseEstimator.resetPosition(Rotation2d.fromDegrees(angle),getModulePositions(),pose);
     }

@@ -66,6 +66,8 @@ public class CatzSwerveModule {
         //Logging outputs
         Logger.recordOutput("Module/absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
         Logger.recordOutput("Module/angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/drive applied volts", inputs.driveAppliedVolts);
+
 
         SmartDashboard.putNumber("absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
         SmartDashboard.putNumber("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());

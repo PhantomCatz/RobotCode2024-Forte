@@ -141,7 +141,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousExit() {
     if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-      SubsystemCatzDrivetrain.getInstance().flipGyro();
+      SubsystemCatzDrivetrain.getInstance().resetGyroTrue(); //for some reason adding 180 degrees doesnt work but resetting works?????
     }
   }
 
