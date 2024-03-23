@@ -236,9 +236,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
           break;
         case ROLLERS_OUT_EJECT:
 
-          // if (rollerTimer.hasElapsed(0.5)) {
-          //   setRollersOff();
-          // }
+          if (rollerTimer.hasElapsed(0.5)) {
+            setRollersOff();
+          }
           break;
         case ROLLERS_OUT_SHOOTER_HANDOFF:
 

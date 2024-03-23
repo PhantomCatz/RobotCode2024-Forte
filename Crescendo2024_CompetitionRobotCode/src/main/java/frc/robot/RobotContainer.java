@@ -26,7 +26,6 @@ import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.MoveToAmpTransition;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
-import frc.robot.commands.mechanismCmds.IntakeManualCmd;
 import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.CatzStateMachine.NoteSource;
@@ -83,8 +82,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   
 
   private void configureBindings() {    
-
-    //xboxDrv.y().onTrue(turret.testTurretAngles()); //delete later
     
     //------------------------------------------------------------------------------------
     //  Drive commands
@@ -141,6 +138,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.x().and(xboxAux.povLeft()).onTrue(new MoveToAmpTransition());
 
+    xboxAux.x().and(()->stateMachine.getNoteDestination() == NoteDestination.AMP).onTrue(Commands.print("Amp state"));
+    xboxAux.x().and(()->stateMachine.getNoteDestination() == NoteDestination.SPEAKER).onTrue(Commands.print("speaker state"));
+
     xboxAux.b().and(xboxAux.povLeft()).onTrue(new ScoreAmpCmd());
 
     xboxAux.rightStick().onTrue(shooter.setPositionCmd(()->xboxAux.getRightY()));
@@ -173,7 +173,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     Trigger rollersOffBindingAux = xboxAux.leftBumper().and(xboxAux.rightBumper());
     rollersOffBindingAux.onTrue(intake.cmdRollerOff());
 
-    
+    xboxAux.povLeft().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.AMP))); //default state
+    xboxAux.povUp().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.TRAP)));
+    xboxAux.povDown().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.HOARD)));
+    xboxAux.povRight().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.SPEAKER)));
   }
 
   //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active

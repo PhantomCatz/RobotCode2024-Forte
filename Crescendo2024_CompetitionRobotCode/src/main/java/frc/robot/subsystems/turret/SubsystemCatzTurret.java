@@ -55,9 +55,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   private static final double TURRET_GEARBOX_DRIVING_GEAR    =  10.0;        //Pinion Gear
   private static final double TURRET_GEARBOX_DRIVEN_GEAR     = 140.0;        //Turret Gear
-  private static final double TURRET_GEARBOX_RATIO           = TURRET_GEARBOX_DRIVEN_GEAR / TURRET_GEARBOX_DRIVING_GEAR; //TBD
+  private static final double TURRET_GEARBOX_RATIO           = TURRET_GEARBOX_DRIVEN_GEAR / TURRET_GEARBOX_DRIVING_GEAR; 
  
-  public static final double TURRET_GEAR_REDUCTION           = TURRET_PLANETARY_GEARBOX_RATIO * TURRET_GEARBOX_RATIO;    //TBD
+  public static final double TURRET_GEAR_REDUCTION           = TURRET_PLANETARY_GEARBOX_RATIO * TURRET_GEARBOX_RATIO;    
   public static final double TURRET_MOTOR_SHAFT_REV_PER_DEG  = TURRET_GEAR_REDUCTION / 360.0;     //TBD 
   
 
@@ -282,15 +282,15 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //    - Current robot rotation
       //--------------------------------------------------------------------------------------------
       double angle = Math.atan2(robotToGoal.getY(), robotToGoal.getX());
+      Logger.recordOutput("AutoAim/local turret target angle", angle);
 
-      Logger.recordOutput("AutoAim/angleBeforeUnitConversion", angle);
       angle = angle - CatzMathUtils.toUnitCircAngle(robotPose.getRotation().getRadians()); 
+      Logger.recordOutput("AutoAim/global turret target angle", angle);
+
 
       m_turretTargetDegree = Math.toDegrees(angle);    //Convert from radians to deg
-
-      m_currentTurretState   = TurretState.AUTO;
-
       Logger.recordOutput("AutoAim/targetTurretDeg", m_turretTargetDegree);
+      m_currentTurretState   = TurretState.AUTO;
     }
 
     m_turretInPos = false;

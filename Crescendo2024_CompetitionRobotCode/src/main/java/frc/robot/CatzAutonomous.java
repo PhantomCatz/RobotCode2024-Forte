@@ -426,13 +426,31 @@ public class CatzAutonomous {
                     );
 
         //send path info to trajectory following command in a chained autocoring path
-        return new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
-                                                        .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false), //transfer note to intake if applicable
-                                          new MoveToPreset(CatzMechanismConstants.AMP_TRANSITION_PRESET),                  //move to amp transition
-                                          new PPTrajectoryFollowingCmd(bezierPoints,                                //start auto trajectory
-                                                                            autoPathfindingConstraints, 
-                                                                                new GoalEndState(0.0, Rotation2d.fromDegrees(90))),
+        return new SequentialCommandGroup(new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
+                                                                                    .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false), //transfer note to intake if applicable
+                                                                    new MoveToPreset(CatzMechanismConstants.AMP_TRANSITION_PRESET),                  //move to amp transition
+                                                                    new PPTrajectoryFollowingCmd(bezierPoints,                                //start auto trajectory
+                                                                                                        autoPathfindingConstraints, 
+                                                                                                            new GoalEndState(0.0, Rotation2d.fromDegrees(90)))),
                                           new MoveToPreset(CatzMechanismConstants.SCORING_AMP_PRESET));                    //move to amp scoring position
+    }
+
+    public Command autoHoardFromSource() {
+
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(1.85, 7.5, Rotation2d.fromDegrees(90)),
+                new Pose2d(1.85, 7.8, Rotation2d.fromDegrees(90))
+                    );
+
+        //send path info to trajectory following command in a chained autocoring path
+        return new SequentialCommandGroup(new ParallelCommandGroup(new PPTrajectoryFollowingCmd(bezierPoints,                                //start auto trajectory
+                                                                                                    autoPathfindingConstraints, 
+                                                                                                        new GoalEndState(0.0, Rotation2d.fromDegrees(90))),
+                                                                    new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
+                                                                                                            .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false)), //transfer note to intake if applicable
+                                          new MoveToPreset(CatzMechanismConstants.HOARD_PRESET),                    //move to hoard preset
+                                          new AimAndOrFireAtSpeakerCmd(),
+                                          shooter.cmdShoot());                    
     }
 
     public Command autoFindPathSpeakerAW() {

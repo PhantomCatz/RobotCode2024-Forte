@@ -20,6 +20,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
+import frc.robot.CatzConstants.FieldConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
@@ -135,11 +136,13 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call
       
       //translation of the blue alliance speaker
-      m_targetXY = new Translation2d(0.0, 5.55);
+      m_targetXY = new Translation2d(0.0, FieldConstants.SPEAKER_COORD_MTRS_Y);
+      System.out.println("blue tracking");
     } else {
       
       //translation of the Red alliance speaker
-      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , 5.55);      //TBD - Magic #'s, what about defining Red & Blue constants, using IF to select and have 1 translation2D() call
+      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);      //TBD - Magic #'s, what about defining Red & Blue constants, using IF to select and have 1 translation2D() call
+      System.out.println("red tracking");
     }
 
   }

@@ -128,8 +128,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
       currentShooterLoadState = ShooterLoadState.LOAD_OFF;
       io.setShooterDisabled();
     } else {
-      //load motor logic
       switch(currentShooterLoadState) {
+          //-------------------------------------------------------------------------------------------
+          //
+          // feeder roller periodic logic
+          //
+          //-------------------------------------------------------------------------------------------
           case LOAD_IN:
             io.loadNote();
             currentShooterLoadState = ShooterLoadState.LOAD_IN_DONE;
@@ -173,7 +177,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
           
           
           case WAIT_FOR_MOTORS_TO_REV_UP:
-          System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
+          //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
           if(DriverStation.isAutonomous()) {
             m_iterationCounter2++;
             if(m_iterationCounter2 > timer(1)) {
@@ -224,18 +228,16 @@ public class SubsystemCatzShooter extends SubsystemBase {
       }
     
       Logger.recordOutput("shooter/current load state", currentShooterLoadState.toString());
-      Logger.recordOutput("servopos", m_newServoPosition);
+      Logger.recordOutput("shooter/servopos", m_newServoPosition);
 
-      //servo Logic
+      //-------------------------------------------------------------------------------------------
+      //
+      // servo periodic logic
+      //
+      //-------------------------------------------------------------------------------------------
       m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
 
-      if(currentShooterServoState == ShooterServoState.AUTO) {
-        io.setServoPosition(m_newServoPosition);
-
-      } else {
-
-        io.setServoPosition(m_newServoPosition);
-      }
+      io.setServoPosition(m_newServoPosition);
 
       if(Math.abs(m_servoPosError) < 0.1) {
         m_shooterServoInPos = true;
@@ -248,7 +250,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
     m_shooterServoInPos = false;
-    currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
   }
 
@@ -262,12 +263,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   public void updateShooterServo(double position) {
     m_shooterServoInPos = false;
-    currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = position;
   }
 
   public Command setPositionCmd(Supplier<Double> position) {
-    currentShooterServoState = ShooterServoState.FULL_MANUAL;
     return run(()->m_newServoPosition = position.get());
   }
 
