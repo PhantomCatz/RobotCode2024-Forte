@@ -253,8 +253,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
   }
 
-  public double getApproximateShootingSpeed(){
-    return ((((ShooterIOReal)io).shooterVelLT.get() + ((ShooterIOReal)io).shooterVelRT.get())/2+6) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink)
+  public double getScuffedShootingSpeed(){
+    return ((((ShooterIOReal)io).shooterVelLT.get() + ((ShooterIOReal)io).shooterVelRT.get())/2+2) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink)
   }
 
   public Command cmdServoPosition(double value) {

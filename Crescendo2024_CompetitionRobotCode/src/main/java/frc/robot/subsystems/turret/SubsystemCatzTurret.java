@@ -238,7 +238,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //  aimAtGoal()
   //
   //-------------------------------------------------------------------------------------------------
-  public void aimAtGoal(Translation2d goal, boolean aimUsingSpeakerAprilTag, boolean acctRobotVel) {
+  public void aimAtGoal(Translation2d goal, boolean aimUsingSpeakerAprilTag, boolean accountRobotVel) {
 
     if (aimUsingSpeakerAprilTag) {
       //--------------------------------------------------------------------------------------------
@@ -261,18 +261,18 @@ public class SubsystemCatzTurret extends SubsystemBase {
       Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
 
       //take difference between speaker and the currnet robot translation
-      Translation2d robotToGoal = goal.minus(robotPose.getTranslation());
+      Translation2d roboDistanceFromSpeaker = goal.minus(robotPose.getTranslation());
 
       //--------------------------------------------------------------------------------------------
       //  If we are trying to aim while moving, then we need to take into account robot velocity
       //--------------------------------------------------------------------------------------------
-      if(acctRobotVel){
+      if(accountRobotVel){
 
-        robotToGoal.div(Math.hypot(robotToGoal.getX(), robotToGoal.getY())); 
+        roboDistanceFromSpeaker.div(Math.hypot(roboDistanceFromSpeaker.getX(), roboDistanceFromSpeaker.getY())); //direction
 
-        robotToGoal.times(SubsystemCatzShooter.getInstance().getApproximateShootingSpeed());
+        roboDistanceFromSpeaker.times(SubsystemCatzShooter.getInstance().getScuffedShootingSpeed());  //magnitude
 
-        robotToGoal.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx, 
+        roboDistanceFromSpeaker.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx, 
                                             drivetrain.getFieldRelativeSpeed().vy));
       }
 
@@ -280,8 +280,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //  Calculate new turret target angle in deg based off:
       //    - Current robot position
       //    - Current robot rotation
-      //--------------------------------------------------------------------------------------------
-      double angle = Math.atan2(robotToGoal.getY(), robotToGoal.getX());
+      //---------------------------------------------------------------------------------  -----------
+      double angle = Math.atan2(roboDistanceFromSpeaker.getY(), roboDistanceFromSpeaker.getX());
       Logger.recordOutput("AutoAim/local turret target angle", angle);
 
       angle = angle - CatzMathUtils.toUnitCircAngle(robotPose.getRotation().getRadians()); 

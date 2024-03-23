@@ -80,7 +80,6 @@ public class CatzAutonomous {
     //     pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
     //     pathChooser.addOption("Curve", curveAuto());
 
-        //HOLDEN ADD YOUR PATH!!!!!!! TBD
     }
 
     //configured dashboard

@@ -15,6 +15,9 @@ import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
+import frc.robot.subsystems.CatzStateMachine;
+import frc.robot.subsystems.CatzStateMachine.NoteDestination;
+import frc.robot.subsystems.CatzStateMachine.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
@@ -43,6 +46,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static enum IntakeRollerState {
     ROLLERS_IN_SOURCE,
     ROLLERS_IN_GROUND,
+    ROLLERS_IN_SCORING_AMP,
     ROLLERS_OUT_EJECT,
     ROLLERS_OUT_SHOOTER_HANDOFF,
     ROLLERS_OFF
@@ -233,6 +237,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
           if (inputs.isIntakeBeamBrkBroken) {
             setRollersOff();
           }
+          break;
+        case ROLLERS_IN_SCORING_AMP:
           break;
         case ROLLERS_OUT_EJECT:
 
@@ -593,7 +599,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   // Roller Methods
   // -------------------------------------------------------------------------------------
   public Command cmdRollerIn() {
-    return runOnce(() -> setRollersGround());
+    return runOnce(() -> setRollersIn());
   }
 
   public Command cmdRollerOut() {
@@ -604,10 +610,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
     return runOnce(() -> setRollersOff());
   }
 
-  public void setRollersGround() {
+  public void setRollersIn() {
     rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
-    m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
+    if(CatzStateMachine.getInstance().getNoteDestination() == NoteDestination.AMP) {
+      m_currentRollerState = IntakeRollerState.ROLLERS_IN_SCORING_AMP;
+    } else {
+      m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
+    }
   }
 
   public void setRollersIntakeSource() {
@@ -615,6 +625,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
     m_currentRollerState = IntakeRollerState.ROLLERS_IN_SOURCE;
   }
+
 
   public void setRollersOutakeHandoff() {
     rollerTimer.restart();

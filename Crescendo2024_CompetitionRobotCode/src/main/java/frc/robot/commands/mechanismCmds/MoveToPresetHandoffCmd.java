@@ -78,7 +78,7 @@ public class MoveToPresetHandoffCmd extends Command {
     switch(m_noteSource) {
       case INTAKE_GROUND:
         m_targetMechPoseStart = CatzMechanismConstants.INTAKE_GROUND_PRESET;
-        intake.setRollersGround();
+        intake.setRollersIn();
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
