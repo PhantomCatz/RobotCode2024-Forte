@@ -221,7 +221,7 @@ public final class CatzConstants {
     );
     
     //data has been referenced using recalc calculator https://www.reca.lc/drive
-    public static final double MAX_SPEED = 24.0;//Units.feetToMeters(14.34); // meters per second 4.81
+    public static final double MAX_SPEED = Units.feetToMeters(17.1); // meters per second 4.81
 
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 24.0; // radians per second
     public static final double MAX_SPEED_DESATURATION = MAX_SPEED; 
@@ -255,7 +255,7 @@ public final class CatzConstants {
     public static final CatzMechanismPosition STOW_PRESET = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
                                                         SubsystemCatzIntake.INTAKE_STOW_DEG, 
-                                                        1.0, 
+                                                        SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition SUBWOOFER_PRESET = 
@@ -272,7 +272,7 @@ public final class CatzConstants {
 
     public static final CatzMechanismPosition HOARD_PRESET = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
-                                                        SubsystemCatzIntake.INTAKE_STOW_DEG, 
+                                                        30.0, 
                                                         0.6, 
                                                         -30.0);
 
@@ -318,6 +318,13 @@ public final class CatzConstants {
                                                         119.0,
                                                         SubsystemCatzShooter.SERVO_OPTIMAL_HANDOFF_POS,
                                                         SubsystemCatzTurret.HOME_POSITION_DEG);
+
+    public static final CatzMechanismPosition AUTO_AIM_PRESET = 
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
+                                                        SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG, 
+                                                        -999.0, 
+                                                        -999.0);
+
     //-10
     
   }

@@ -192,13 +192,13 @@ public class SubsystemCatzElevator extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   // Elevator Access Methods
   //-------------------------------------------------------------------------------------
-  public void updateTargetPositionElevator(CatzMechanismPosition targetPosition) {
+  public void updateTargetPositionElevator(double targetPositionRev) {
     // System.out.println("EUP" + targetPosition.getElevatorTargetRev());
     m_elevatorInPos = false;
     currentElevatorState = ElevatorControlState.AUTO;
 
     m_elevatorIntakeInSafetyZone = false;
-    m_targetPositionRev = targetPosition.getElevatorTargetRev();
+    m_targetPositionRev = targetPositionRev;
 
     if(m_targetPositionRev == ELEVATOR_STOW ||
        m_targetPositionRev == ELEVATOR_GROUND_PICKUP ||

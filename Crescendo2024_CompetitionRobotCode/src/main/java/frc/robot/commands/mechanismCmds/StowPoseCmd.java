@@ -45,7 +45,7 @@ public class StowPoseCmd extends Command {
   //factory for updating all mechanisms with the packaged target info associated with the new postion
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
     intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
-    elevator.updateTargetPositionElevator(pose);
+    elevator.updateTargetPositionElevator(pose.getElevatorTargetRev());
     shooter.updateTargetPositionShooter(pose);
     turret.updateTargetPositionTurret(pose);
   }
