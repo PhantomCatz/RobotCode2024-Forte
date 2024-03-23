@@ -514,10 +514,6 @@ public class CatzAutonomous {
 
         drivetrain.resetPosition(path.getPreviewStartingHolonomicPose());
         allianceColor = chosenAllianceColor.get();
-
-        if(allianceColor == CatzConstants.AllianceColor.Red) {
-            drivetrain.flipGyro();
-        }
     });
     }
 
