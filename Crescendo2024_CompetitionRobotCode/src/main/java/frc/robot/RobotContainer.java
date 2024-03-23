@@ -95,8 +95,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //mode amp
     xboxDrv.leftStick().and(xboxAux.povLeft()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));       
     
-    xboxDrv.b().onTrue(auton.autoScoreAmp());
-
+    // xboxDrv.b().onTrue(auton.autoScoreAmp());
+    xboxDrv.b().onTrue(new AimAndOrFireAtSpeakerCmd());
 
     xboxDrv.start().onTrue(driveTrain.resetGyro());
 
@@ -145,7 +145,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.rightStick().onTrue(shooter.setPositionCmd(()->xboxAux.getRightY()));
 
-    // xboxAux.start().onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_SOURCE));
+    xboxAux.start().onTrue(new MoveToPreset(CatzMechanismConstants.HOARD_PRESET));
 
 
     //mode trap

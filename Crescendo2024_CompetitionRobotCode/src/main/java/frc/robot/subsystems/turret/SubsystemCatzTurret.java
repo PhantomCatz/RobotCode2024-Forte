@@ -30,6 +30,7 @@ import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
@@ -146,8 +147,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
 
     m_setPositionPID      = new PIDController(TURRET_kP,    TURRET_kI,    TURRET_kD);
-
     m_trackingApriltagPID = new PIDController(LIMELIGHT_kP, LIMELIGHT_kI, LIMELIGHT_kD);
+
+    io.turretSetEncoderPos(HOME_POSITION_DEG);
   }
   
   // Get the singleton instance of the Turret Subsystem
@@ -167,8 +169,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("turret", inputs);
 
-    currentTurretDegree = inputs.turretEncValue;    //TBD - Del comment; IO Scrub Inputs  IOREAL Frame Period value
+    currentTurretDegree = inputs.turretEncValue; 
     
+    //set targetturret degree if note has exited shooter
+    if(SubsystemCatzShooter.getInstance().getShooterNoteState() == ShooterNoteState.NOTE_HAS_BEEN_SHOT) {
+      m_turretTargetDegree = HOME_POSITION_DEG;
+    }
+
     //obtain calculation values
     setPositionPower  =  m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
     m_closedLoopError = ((currentTurretDegree - m_turretTargetDegree));
@@ -276,11 +283,14 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //--------------------------------------------------------------------------------------------
       double angle = Math.atan2(robotToGoal.getY(), robotToGoal.getX());
 
+      Logger.recordOutput("AutoAim/angleBeforeUnitConversion", angle);
       angle = angle - CatzMathUtils.toUnitCircAngle(robotPose.getRotation().getRadians()); 
 
       m_turretTargetDegree = Math.toDegrees(angle);    //Convert from radians to deg
 
       m_currentTurretState   = TurretState.AUTO;
+
+      Logger.recordOutput("AutoAim/targetTurretDeg", m_turretTargetDegree);
     }
 
     m_turretInPos = false;
@@ -304,18 +314,18 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //-------------------------------------------------------------------------------------------------
   public void rotateLeft(double power){
     m_currentTurretState = TurretState.FULL_MANUAL; 
-    manualTurretPwrLT  = power * TURRET_POWER_SCALE;          //TBD what is setting direction?  How are motor pwr constants above uesd?  How does this relate to periodic manual user input?
+    manualTurretPwrLT  = -power * TURRET_POWER_SCALE;    
 
   }
 
   public void rotateRight(double power){
     m_currentTurretState = TurretState.FULL_MANUAL;         
-    manualTurretPwrRT  = -power * TURRET_POWER_SCALE;
+    manualTurretPwrRT  = power * TURRET_POWER_SCALE;
   }
 
   public double perioidicTurretManual(double pwrLT, double pwrRT) {
 
-      if(pwrLT > 0.1) {
+      if(pwrLT < -0.1) {
         manualTurretPwr = pwrLT;
       } else if(pwrRT > 0.1) {
         manualTurretPwr = pwrRT;
@@ -338,34 +348,33 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
   
   public Command cmdTurretOff() {
-    m_currentTurretState = TurretState.FULL_MANUAL;     //TBD Flip
-    return run(() -> io.turretSetPwr(0.0));
+    return run(() -> setTurretDisabled());
   }
 
   private void setTurretDisabled() {
       io.turretSetPwr(0.0);
       manualTurretPwr    = 0.0;
-      m_currentTurretState = TurretState.FULL_MANUAL;   //TBD - Make Method for everything we want when going to power off
+      m_currentTurretState = TurretState.FULL_MANUAL;  
   }
 
   //-------------------------------------------------------------------------------------------------
   //    Cmd Methods
   //-------------------------------------------------------------------------------------------------
   public Command cmdResetTurretPosition(){
-    return run(() -> io.turretSetEncoderPos(HOME_POSITION_DEG));    //TBD - Confirm purpose;  Where is it called?
+    return run(() -> io.turretSetEncoderPos(HOME_POSITION_DEG));   
   }
   
   public Command cmdTurretDegree(double turretDeg) {            
     return run(() -> setTurretTargetDegree(turretDeg));
   }
 
-  public void setTurretTargetDegree(double turretTargetDegree) {      //TBD can we put this with the cmd?
+  public void setTurretTargetDegree(double turretTargetDegree) {    
     m_turretInPos       = false;
     m_currentTurretState   = TurretState.AUTO;
     m_turretTargetDegree = turretTargetDegree;
   }
   
-  public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {     //TBD - Is this just for Stow or ???
+  public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {     //TBD conver to top method and deletee after converting
     m_turretInPos       = false;
     m_currentTurretState = TurretState.AUTO;
     m_turretTargetDegree = newPosition.getTurretTargetAngle();

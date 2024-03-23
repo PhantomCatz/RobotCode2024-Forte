@@ -222,27 +222,24 @@ public class SubsystemCatzShooter extends SubsystemBase {
             }
           break;
       }
-    }
-    Logger.recordOutput("shooter/current load state", currentShooterLoadState.toString());
-    Logger.recordOutput("servopos", m_newServoPosition);
+    
+      Logger.recordOutput("shooter/current load state", currentShooterLoadState.toString());
+      Logger.recordOutput("servopos", m_newServoPosition);
 
-    //servo Logic
-    m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
+      //servo Logic
+      m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
 
-    if(currentShooterServoState == ShooterServoState.TUNNING) {
-      double servoPosition = servoPosTunning.get();
-      io.setServoPosition(servoPosition);
-    }
+      if(currentShooterServoState == ShooterServoState.AUTO) {
+        io.setServoPosition(m_newServoPosition);
 
-    if(currentShooterServoState == ShooterServoState.AUTO) {
-      io.setServoPosition(1.0);
-      //System.out.println(m_newServoPosition);
+      } else {
+
+        io.setServoPosition(m_newServoPosition);
+      }
+
       if(Math.abs(m_servoPosError) < 0.1) {
         m_shooterServoInPos = true;
       }
-    } else {
-      //System.out.println(m_newServoPosition);
-      io.setServoPosition(m_newServoPosition);
     }
   }
 
@@ -264,7 +261,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public void updateShooterServo(double position) {
-    
     m_shooterServoInPos = false;
     currentShooterServoState = ShooterServoState.AUTO;
     m_newServoPosition = position;
@@ -286,9 +282,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   // Getter Methods 
   //------------------------------------------------------------------------------------- 
-  private ShooterServoState getShooterServoState() {
-    return currentShooterServoState;
-  }
 
   public boolean getShooterServoInPos() {
     return m_shooterServoInPos;
