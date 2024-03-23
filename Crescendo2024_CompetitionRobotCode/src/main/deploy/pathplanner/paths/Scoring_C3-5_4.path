@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 5.842988609054142,
-        "y": 4.459858150485532
+        "x": 4.92,
+        "y": 4.7747133896043605
       },
       "prevControl": {
-        "x": 5.842988609054142,
-        "y": 4.459858150485532
+        "x": 4.92,
+        "y": 4.7747133896043605
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Scoring_C5-3",
+  "folder": "Scoring_C3-5",
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

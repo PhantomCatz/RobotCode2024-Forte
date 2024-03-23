@@ -152,19 +152,19 @@ public class CatzAutonomous {
             // new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW1"))),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW1"))),
             // new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW2"))),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW2"))),
             // new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW3"))),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW3"))),
             // new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW4"))),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PCSW4"))),
             // new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot()
         );
@@ -197,48 +197,45 @@ public class CatzAutonomous {
 
     private Command scoringC53() {
     return new SequentialCommandGroup(
-        setAutonStartPose(PathPlannerPath.fromPathFile("Scoring_C5-3_1")),
+        setAutonStartPose(PathPlannerPath.fromPathFile("Scoring_C3-5_1")),
         new AimAndOrFireAtSpeakerCmd(),
         shooter.cmdShoot(),
         new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C5-3_1"))),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C5-3_2")),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_1"))),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_2")),
         new AimAndOrFireAtSpeakerCmd(),
         shooter.cmdShoot(),
         new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C5-3_3"))),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C5-3_4")),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_3"))),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_4")),
         new AimAndOrFireAtSpeakerCmd(),
         shooter.cmdShoot(),
         new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C5-3_5"))),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C5-3_6")),
+                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_5"))),
+        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_6")),
         new AimAndOrFireAtSpeakerCmd(),
         shooter.cmdShoot()
         );
     }
 
     private Command RNGC1W13() {
-    return new SequentialCommandGroup(
-        setAutonStartPose(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
-
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1"))),
-                new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
-                new AimAndOrFireAtSpeakerCmd(),
-                shooter.cmdShoot(),
-                new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3"))),
-                new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
-                new AimAndOrFireAtSpeakerCmd(),
-                shooter.cmdShoot(),
-                new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5"))),
-                new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6")),
-                new AimAndOrFireAtSpeakerCmd(),
-                shooter.cmdShoot()
-            )
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot()
         );
     }
 
@@ -253,56 +250,56 @@ public class CatzAutonomous {
     //     new AimAndOrFireAtSpeakerCmd(),
     //     shooter.cmdShoot(),
     //     new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-    //                                  new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C5-3_3"))),
+    //                                  new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_3"))),
     //     new AimAndOrFireAtSpeakerCmd(),
     //     shooter.cmdShoot()
     //     );
     // }
 
     private Command BottomMidClear() {
-    return new SequentialCommandGroup(
-        setAutonStartPose(PathPlannerPath.fromPathFile("BottomMidClear-1")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-1"))),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-2"))),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-3")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-4"))),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-5")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-6")))
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("BottomMidClear-1")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-1"))),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-2"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-3")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-4"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-5")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("BottomMidClear-6")))
         );
     }
 
     private Command MidClearHoardAmp() {
-    return new SequentialCommandGroup(
-        setAutonStartPose(PathPlannerPath.fromPathFile("MCHA1")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA1"))),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA2")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA3"))),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA4")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA5"))),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA6")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot()
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("MCHA1")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA1"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA2")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA3"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA4")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA5"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("MCHA6")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot()
         );
     }
 
@@ -330,7 +327,7 @@ public class CatzAutonomous {
     }
 
     private Command HoardC12() {
-        return new SequentialCommandGroup(
+        return new SequentialCommandGroup( 
             setAutonStartPose(PathPlannerPath.fromPathFile("Hoard_C1-2_1")),
             new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShoot(),
@@ -346,30 +343,30 @@ public class CatzAutonomous {
     }
 
     private Command WingBulldozeUnder() {
-    return new SequentialCommandGroup(
-        setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeUnder-1")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-1"))),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-2")),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-3"))
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeUnder-1")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-1"))),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-2")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-3"))
         );
     }
 
     private Command WingBulldozeAbove() {
-    return new SequentialCommandGroup(
-        setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1"))),
-        new AimAndOrFireAtSpeakerCmd(),
-        shooter.cmdShoot(),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-2")),
-        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-3"))
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1"))),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-2")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-3"))
         );
     }
     
