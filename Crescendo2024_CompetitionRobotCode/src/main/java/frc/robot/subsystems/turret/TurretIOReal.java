@@ -31,8 +31,11 @@ public class TurretIOReal implements TurretIO {
 
         turretMtr.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 32767);
 
-         turretMtr.setSoftLimit(SoftLimitDirection.kForward, (int) SubsystemCatzTurret.TURRET_MAX_ANGLE_DEG);
-         turretMtr.setSoftLimit(SoftLimitDirection.kReverse, (int) SubsystemCatzTurret.TURRET_MIN_ANGLE_DEG);
+         turretMtr.enableSoftLimit(SoftLimitDirection.kForward, true);
+         turretMtr.enableSoftLimit(SoftLimitDirection.kReverse, true);
+         
+         turretMtr.setSoftLimit(SoftLimitDirection.kForward, 90);
+         turretMtr.setSoftLimit(SoftLimitDirection.kReverse, -90);
 
         turretMtr.burnFlash(); //save configs so if pwr lost to be reapplied
 
@@ -51,7 +54,7 @@ public class TurretIOReal implements TurretIO {
     }
     @Override
     public void updateInputs(TurretIOInputs inputs) {
-        // inputs.turretMtrPercentOutput = turretMtr.getAppliedOutput();
+        inputs.turretMtrPercentOutput = turretMtr.getAppliedOutput();
         // inputs.turretMtrOutputCurrent = turretMtr.getOutputCurrent();
         inputs.turretEncValue         = turretMtr.getEncoder().getPosition();
 

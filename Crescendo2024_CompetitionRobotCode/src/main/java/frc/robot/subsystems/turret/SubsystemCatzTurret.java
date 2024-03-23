@@ -283,11 +283,14 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //--------------------------------------------------------------------------------------------
       double angle = Math.atan2(robotToGoal.getY(), robotToGoal.getX());
 
+      Logger.recordOutput("AutoAim/angleBeforeUnitConversion", angle);
       angle = angle - CatzMathUtils.toUnitCircAngle(robotPose.getRotation().getRadians()); 
 
       m_turretTargetDegree = Math.toDegrees(angle);    //Convert from radians to deg
 
       m_currentTurretState   = TurretState.AUTO;
+
+      Logger.recordOutput("AutoAim/targetTurretDeg", m_turretTargetDegree);
     }
 
     m_turretInPos = false;
@@ -311,18 +314,18 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //-------------------------------------------------------------------------------------------------
   public void rotateLeft(double power){
     m_currentTurretState = TurretState.FULL_MANUAL; 
-    manualTurretPwrLT  = power * TURRET_POWER_SCALE;    
+    manualTurretPwrLT  = -power * TURRET_POWER_SCALE;    
 
   }
 
   public void rotateRight(double power){
     m_currentTurretState = TurretState.FULL_MANUAL;         
-    manualTurretPwrRT  = -power * TURRET_POWER_SCALE;
+    manualTurretPwrRT  = power * TURRET_POWER_SCALE;
   }
 
   public double perioidicTurretManual(double pwrLT, double pwrRT) {
 
-      if(pwrLT > 0.1) {
+      if(pwrLT < -0.1) {
         manualTurretPwr = pwrLT;
       } else if(pwrRT > 0.1) {
         manualTurretPwr = pwrRT;
