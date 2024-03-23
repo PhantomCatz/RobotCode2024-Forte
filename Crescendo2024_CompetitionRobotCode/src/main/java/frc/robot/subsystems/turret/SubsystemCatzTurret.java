@@ -169,7 +169,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("turret", inputs);
 
-    currentTurretDegree = inputs.turretEncValue; 
+    currentTurretDegree = -inputs.turretEncValue; 
     
     //set targetturret degree if note has exited shooter
     if(SubsystemCatzShooter.getInstance().getShooterNoteState() == ShooterNoteState.NOTE_HAS_BEEN_SHOT) {
@@ -273,7 +273,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
         roboDistanceFromSpeaker.times(SubsystemCatzShooter.getInstance().getScuffedShootingSpeed());  //magnitude
 
         roboDistanceFromSpeaker.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx, 
-                                            drivetrain.getFieldRelativeSpeed().vy));
+                                                        drivetrain.getFieldRelativeSpeed().vy));
       }
 
       //--------------------------------------------------------------------------------------------

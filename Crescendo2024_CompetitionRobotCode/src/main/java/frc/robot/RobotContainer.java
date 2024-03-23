@@ -118,6 +118,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //xboxAux.x().and(xboxAux.povRight()).onTrue(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()));
 
     xboxAux.b().and(xboxAux.povRight()).onTrue(shooter.cmdShoot());
+    
 
     xboxAux.rightStick().and(xboxAux.povRight()).onTrue(shooter.cmdShooterRamp());
 

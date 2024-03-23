@@ -34,8 +34,8 @@ public class TurretIOReal implements TurretIO {
          turretMtr.enableSoftLimit(SoftLimitDirection.kForward, true);
          turretMtr.enableSoftLimit(SoftLimitDirection.kReverse, true);
          
-         turretMtr.setSoftLimit(SoftLimitDirection.kForward, 90);
-         turretMtr.setSoftLimit(SoftLimitDirection.kReverse, -90);
+         turretMtr.setSoftLimit(SoftLimitDirection.kForward, 80);
+         turretMtr.setSoftLimit(SoftLimitDirection.kReverse, -80);
 
         turretMtr.burnFlash(); //save configs so if pwr lost to be reapplied
 
