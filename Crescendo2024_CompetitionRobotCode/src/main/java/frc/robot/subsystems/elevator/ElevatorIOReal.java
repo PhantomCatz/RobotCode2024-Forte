@@ -15,7 +15,7 @@ import frc.robot.CatzConstants;
 public class ElevatorIOReal implements ElevatorIO {
 
     //elevator motor ids
-    public static int ELEVATOR_RT_MTR_ID = 51;
+    public static int ELEVATOR_RT_MTR_ID = 50;
 
     //Kraken configuration constants
     public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
@@ -34,13 +34,14 @@ public class ElevatorIOReal implements ElevatorIO {
     public ElevatorIOReal() {
         //Elevator Motor setup
         ElevatorMtr = new TalonFX(ELEVATOR_RT_MTR_ID);
+        ElevatorMtr.setInverted(true);
             //reset to factory defaults
         ElevatorMtr.getConfigurator().apply(new TalonFXConfiguration());
 
         // set Motion Magic settings
-        elevatorTalonConfigs.MotionMagic.MotionMagicCruiseVelocity = 130; // Target cruise velocity of 80 rps
-        elevatorTalonConfigs.MotionMagic.MotionMagicAcceleration   = 240; // Target acceleration of 160 rps/s (0.5 seconds)
-        elevatorTalonConfigs.MotionMagic.MotionMagicJerk           = 400; // Target jerk of 1600 rps/s/s (0.1 seconds)
+        elevatorTalonConfigs.MotionMagic.MotionMagicCruiseVelocity = 260; // Target cruise velocity of 80 rps
+        elevatorTalonConfigs.MotionMagic.MotionMagicAcceleration   = 400; // Target acceleration of 160 rps/s (0.5 seconds)
+        elevatorTalonConfigs.MotionMagic.MotionMagicJerk           = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
         elevatorTalonConfigs.Slot0.kP = 7.0;
         elevatorTalonConfigs.Slot0.kI = 0.0;
@@ -54,6 +55,7 @@ public class ElevatorIOReal implements ElevatorIO {
             //neutral mode
         elevatorTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+        //ElevatorMtr.optimizeBusUtilization();
 
         ElevatorMtr.setPosition(0);
 
@@ -68,14 +70,14 @@ public class ElevatorIOReal implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.elevatorVoltage          = ElevatorMtr.getMotorVoltage().getValue();
-        inputs.elevatorDutyCycle        = ElevatorMtr.getDutyCycle().getValue();
-        inputs.elevatorTorqueCurrent    = ElevatorMtr.getTorqueCurrent().getValue();
-        inputs.elevatorVelocity         = ElevatorMtr.getVelocity().getValue();
+        // inputs.elevatorVoltage          = ElevatorMtr.getMotorVoltage().getValue();
+        // inputs.elevatorDutyCycle        = ElevatorMtr.getDutyCycle().getValue();
+        // inputs.elevatorTorqueCurrent    = ElevatorMtr.getTorqueCurrent().getValue();
+        // inputs.elevatorVelocity         = ElevatorMtr.getVelocity().getValue();
         inputs.elevatorPosRev           = ElevatorMtr.getPosition().getValue();
         inputs.elevatorPositionError    = ElevatorMtr.getClosedLoopError().getValue();
 
-        inputs.bottomSwitchTripped      = m_bottomLimit.get();
+        // inputs.bottomSwitchTripped      = m_bottomLimit.get();
     }
     
     @Override

@@ -43,7 +43,7 @@ public class IntakeIOReal implements IntakeIO {
     private TalonFXConfiguration talonConfigsPivot  = new TalonFXConfiguration();
     private TalonFXConfiguration talonConfigsRoller = new TalonFXConfiguration();
 
-    private final DigitalInput intakeBeamBreak = new DigitalInput(4);
+    private final DigitalInput intakeBeamBreak = new DigitalInput(5);
 
 
     public IntakeIOReal() {
@@ -71,6 +71,8 @@ public class IntakeIOReal implements IntakeIO {
         talonConfigsPivot.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
 
         talonConfigsPivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        //pivotMtr.optimizeBusUtilization();
         
         pivotMtr.setPosition(SubsystemCatzIntake.INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV);
 
@@ -89,7 +91,8 @@ public class IntakeIOReal implements IntakeIO {
         talonConfigsRoller = talonConfigsPivot;
         talonConfigsRoller.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-
+        //rollerMtr.optimizeBusUtilization();
+        
         //check if roller motor is initialized correctly
         rollerInitializationStatus = rollerMtr.getConfigurator().apply(talonConfigsRoller);
         if(!rollerInitializationStatus.isOK()) {
@@ -100,14 +103,14 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();
+        // inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();
         inputs.pivotMtrRev =            pivotMtr.getPosition().getValue();
-        inputs.rollerVoltage =          rollerMtr.getTorqueCurrent().getValue();
-        inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
-        inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
-        inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
+        // inputs.rollerVoltage =          rollerMtr.getTorqueCurrent().getValue();
+        // inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
+        // inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
+        // inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
         inputs.pivotMtrVelocityRPS =    pivotMtr.getVelocity().getValue();
-        //true if beambreak is broken \/ \/
+        // //true if beambreak is broken \/ \/
         inputs.isIntakeBeamBrkBroken =   !intakeBeamBreak.get(); //TBD add method for controling inputs
         inputs.closedLoopPivotMtr =     pivotMtr.getClosedLoopError().getValue();
     }
@@ -134,13 +137,14 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void setSquishyMode(boolean enable) {
+        double limit;
         if(enable) {
             talonConfigsPivot.CurrentLimits.SupplyCurrentLimit = 10; 
         } else {
             talonConfigsPivot.CurrentLimits.SupplyCurrentLimit = KRAKEN_CURRENT_LIMIT_AMPS;
         }
-
-        pivotInitializationStatus = pivotMtr.getConfigurator().apply(talonConfigsPivot.CurrentLimits);
+        // System.out.println("in squishy set " + enable);
+        pivotMtr.getConfigurator().apply(talonConfigsPivot);
     }
 
     @Override

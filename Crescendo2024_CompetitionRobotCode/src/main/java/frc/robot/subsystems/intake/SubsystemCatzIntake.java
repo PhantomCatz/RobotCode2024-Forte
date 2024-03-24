@@ -15,6 +15,9 @@ import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
+import frc.robot.subsystems.CatzStateMachine;
+import frc.robot.subsystems.CatzStateMachine.NoteDestination;
+import frc.robot.subsystems.CatzStateMachine.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
@@ -43,6 +46,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static enum IntakeRollerState {
     ROLLERS_IN_SOURCE,
     ROLLERS_IN_GROUND,
+    ROLLERS_IN_SCORING_AMP,
     ROLLERS_OUT_EJECT,
     ROLLERS_OUT_SHOOTER_HANDOFF,
     ROLLERS_OFF
@@ -94,6 +98,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double m_targetPositionDeg = 0.0;
   private double m_nextTargetPositionDeg = INTAKE_NULL_DEG;
   private double m_currentPositionDeg = 0.0;
+  private double m_previousTargetPositionDeg = 0.0;
+
+  private boolean isIntakeInScoreAmp;
 
   private int m_iterationCounter;
 
@@ -106,7 +113,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static enum IntakeControlState {
     AUTO,
     SEMI_MANUAL, // TBD or Manual Hold?
-    FULL_MANUAL
+    FULL_MANUAL,
+    VOLTAGE_CONTROL
   }
 
   private static IntakeControlState m_currentIntakeControlState = IntakeControlState.AUTO;
@@ -119,16 +127,16 @@ public class SubsystemCatzIntake extends SubsystemBase {
   // Intake position defs & variables
   // -----------------------------------------------------------------------------------------------
   public static final double INTAKE_STOW_DEG           = 163.0;
-  public static final double INTAKE_SOURCE_LOAD_DN_DEG = 125.0;
+  public static final double INTAKE_SOURCE_LOAD_DN_DEG = 30.0;
   public static final double INTAKE_SOURCE_LOAD_UP_DEG =  97.0; //with drivetrain inner rail to the
                                                              // bottom inner rail 7 1/4 inches
-  public static final double INTAKE_AMP_SCORE_DN_DEG   =  92.6; // 92.6; //90.43; 
-  public static final double INTAKE_GROUND_PICKUP_DEG  = -22.0;
+  public static final double INTAKE_AMP_SCORE_DN_DEG   =  92.6; //90.43; 
+  public static final double INTAKE_GROUND_PICKUP_DEG  = -25.0; //-22.0;
   public static final double INTAKE_AMP_SCORE_DEG      = -22.0;
   public static final double INTAKE_AMP_TRANSITION_DEG = -60.0; //TBD Change to -80 on sn2
 
   public static final double INTAKE_MIN_ELEV_CLEARANCE_DEG = 110.0;
-  public static final double INTAKE_TRANSITION_CHECK_DEG = -45.0;
+  public static final double INTAKE_TRANSITION_CHECK_DEG = -47.0;
 
   private static final double INTAKE_NULL_DEG = -999.0;
 
@@ -137,6 +145,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final static double INTAKE_ELEV_MIN_HEIGHT_FOR_AMP_TRANS_REV = 32.0;
 
   public final static double INTAKE_STOW_ELEV_CLEARED_DEG = 120.0;
+  public static final double INTAKE_TURRET_CLEARANCE = 125.0;
+
 
   private double elevatorThresholdRev = 0.0;
   private double nextElevatorThresholdRev = 0.0;
@@ -147,6 +157,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private static boolean m_intakeInPosition = false;
 
   private boolean m_intermediatePositionReached = false;
+
+  
 
   private Timer rollerTimer = new Timer();
 
@@ -214,8 +226,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     } else {
       // robot enabled
 
-      // ---------------------------------------Intake Roller logic
-      // -------------------------------------------
+      // ---------------------------------------Intake Roller logic -------------------------------------------
       switch (m_currentRollerState) {
         case ROLLERS_IN_SOURCE:
           if (inputs.isIntakeBeamBrkBroken) {
@@ -226,6 +237,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
           if (inputs.isIntakeBeamBrkBroken) {
             setRollersOff();
           }
+          break;
+        case ROLLERS_IN_SCORING_AMP:
           break;
         case ROLLERS_OUT_EJECT:
 
@@ -267,13 +280,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
           }
 
           if (m_intakeElevatorInSafetyZone == false) {
-            if (m_targetPositionDeg == INTAKE_AMP_TRANSITION_DEG){ //|| //amp transition for going up
+            if (m_targetPositionDeg == INTAKE_AMP_TRANSITION_DEG){  //amp transition for going up
               // -----------------------------------------------------------------------------------
               // intake going to amp transition
               // -----------------------------------------------------------------------------------
               if (SubsystemCatzElevator.getInstance().getElevatorRevPos() > elevatorThresholdRev) {
                 m_intakeElevatorInSafetyZone = true;
-                System.out.println("reserve for intake amp transition");
+               // System.out.println("reserve for intake amp transition");
               }
             } else {
               // -----------------------------------------------------------------------------------
@@ -282,7 +295,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
               if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < elevatorThresholdRev) {
                 m_intakeElevatorInSafetyZone = true;
 
-                System.out.println("Coming from stow");
+                //System.out.println("Coming from stow");
               }
             }
 
@@ -290,6 +303,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
                m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
                 m_intakeElevatorInSafetyZone = true;
             }
+
           }
 
  
@@ -326,7 +340,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
                 // -----------------------------------------------------------------------------------
                 if (m_nextTargetPositionDeg == INTAKE_AMP_TRANSITION_DEG ||
                     m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
-                      System.out.println("updating to transition" + m_nextTargetPositionDeg);
+                     // System.out.println("updating to transition" + m_nextTargetPositionDeg);
 
                   m_targetPositionDeg = m_nextTargetPositionDeg;
                   m_intermediatePositionReached = true;
@@ -350,6 +364,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
             }
           }
         }
+      } else if(m_currentIntakeControlState == IntakeControlState.VOLTAGE_CONTROL) {
+        io.setIntakePivotVoltage(PIVOT_FF_kG);
+    
       } else {
         // -------------------------------------------------------------------------------------
         // Manual Control Mode - Use operator input to change intake angle
@@ -359,13 +376,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
       }
     }
 
-    Logger.recordOutput("intake/ff volts", m_ffVolts);
-    Logger.recordOutput("intake/pivotvel", pivotVelRadPerSec);
-    Logger.recordOutput("intake/position error", positionErrorDeg);
+    // Logger.recordOutput("intake/ff volts", m_ffVolts);
+    // Logger.recordOutput("intake/pivotvel", pivotVelRadPerSec);
+    // Logger.recordOutput("intake/position error", positionErrorDeg);
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
     Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
-    Logger.recordOutput("intake/roller mode", m_currentRollerState.toString());
-    Logger.recordOutput("intake/intake mode", m_currentIntakeControlState.toString());
+    // Logger.recordOutput("intake/roller mode", m_currentRollerState.toString());
+    // Logger.recordOutput("intake/intake mode", m_currentIntakeControlState.toString());
 
   }
 
@@ -375,7 +392,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //
   // -----------------------------------------------------------------------------------------------
   public void updateAutoTargetPositionIntake(double targetPosition) {
-    System.out.println("IUP" + targetPosition);
+    // System.out.println("IUP" + targetPosition);
     // -------------------------------------------------------------------------------------
     // Initialize Variables
     // -------------------------------------------------------------------------------------
@@ -398,7 +415,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     // periodic()
     // -------------------------------------------------------------------------------------
     if (m_targetPositionDeg == INTAKE_STOW_DEG) {
-      System.out.println("I-A");
+      //System.out.println("I-A");
       // -------------------------------------------------------------------------------------
       // If intake is already behind the elevator then elevator is already in a safe
       // position. If the intake is NOT behind the elevator then we need to make sure
@@ -409,9 +426,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // to/from
       // STOW position
       // -------------------------------------------------------------------------------------
-      if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG) {
+      if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG ||
+          getIsIntakeInAmpScoring()) {
         if(m_intermediatePositionReached == false) {
-          System.out.println("I-BC");
           m_nextTargetPositionDeg = INTAKE_STOW_DEG; 
               m_targetPositionDeg = INTAKE_AMP_SCORE_DN_DEG; // set intermediate destination
           
@@ -419,15 +436,15 @@ public class SubsystemCatzIntake extends SubsystemBase {
           nextElevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
         } 
       } else {
-          System.out.println("I-BA");
+          //System.out.println("I-BA");
         elevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
         if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV) {
           m_intakeElevatorInSafetyZone = true;
-          System.out.println("I-B");
+          //System.out.println("I-B");
         }
       }
     } else if (m_targetPositionDeg == INTAKE_AMP_TRANSITION_DEG) {
-      System.out.println("I-C");
+      // System.out.println("I-C");
       // -------------------------------------------------------------------------------------
       // There are two cases to consider based on where Note is coming from:
       // 1. SRC/Gnd Pickup
@@ -457,7 +474,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // up)
       // -------------------------------------------------------------------------------------
       if(m_intermediatePositionReached == false) {
-        System.out.println("I-D");
+        //System.out.println("I-D");
         m_nextTargetPositionDeg = INTAKE_AMP_TRANSITION_DEG; // set intermediate destination
             m_targetPositionDeg = INTAKE_AMP_SCORE_DN_DEG;
         
@@ -472,7 +489,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
               m_targetPositionDeg == INTAKE_AMP_SCORE_DN_DEG ||
               m_targetPositionDeg == INTAKE_SOURCE_LOAD_DN_DEG ||
               m_targetPositionDeg == INTAKE_AMP_SCORE_DEG) {
-      System.out.println("I-E");
+     // System.out.println("I-E");
 
       // -------------------------------------------------------------------------------------
       // If intake is already in front of the elevator then elevator is already in a
@@ -488,13 +505,15 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
       elevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
       if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG) {
-        System.out.println("I-G");
+       // System.out.println("I-G");
         m_intakeElevatorInSafetyZone = true;
       } else if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV) {
-          System.out.println("I-F");
+          // System.out.println("I-F");
           m_intakeElevatorInSafetyZone = true;
       }
     }
+
+    m_previousTargetPositionDeg = m_targetPositionDeg;
 
   } // End of updateTargetPositionIntake()
 
@@ -518,6 +537,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     m_currentIntakeControlState = IntakeControlState.FULL_MANUAL;
     m_intakeInPosition = false;
   }
+
 
   public void setPivotDisabled() {
     io.setIntakePivotPercentOutput(0.0);
@@ -565,11 +585,21 @@ public class SubsystemCatzIntake extends SubsystemBase {
     return inputs.isIntakeBeamBrkBroken;
   }
 
+  public void setWasIntakeInAmpScoring(boolean set) {
+    isIntakeInScoreAmp = set;
+    // System.out.println("is intake in amp score" + set);
+  }
+
+  public boolean getIsIntakeInAmpScoring() {
+    // System.out.println(isIntakeInScoreAmp);
+    return isIntakeInScoreAmp;
+  }
+
   // -------------------------------------------------------------------------------------
   // Roller Methods
   // -------------------------------------------------------------------------------------
   public Command cmdRollerIn() {
-    return runOnce(() -> setRollersGround());
+    return runOnce(() -> setRollersIn());
   }
 
   public Command cmdRollerOut() {
@@ -580,10 +610,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
     return runOnce(() -> setRollersOff());
   }
 
-  public void setRollersGround() {
+  public void setRollersIn() {
     rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
-    m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
+    if(CatzStateMachine.getInstance().getNoteDestination() == NoteDestination.AMP) {
+      m_currentRollerState = IntakeRollerState.ROLLERS_IN_SCORING_AMP;
+    } else {
+      m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
+    }
   }
 
   public void setRollersIntakeSource() {
@@ -591,6 +625,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
     m_currentRollerState = IntakeRollerState.ROLLERS_IN_SOURCE;
   }
+
 
   public void setRollersOutakeHandoff() {
     rollerTimer.restart();

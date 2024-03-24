@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3959954881393342,
-        "y": 5.527514849608872
+        "x": 0.7401886415755699,
+        "y": 6.698598504187022
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6067905459634015,
-        "y": 6.45267093672561
+        "x": 1.7004772383296536,
+        "y": 6.710309340732803
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1454890270693507,
-        "y": 6.979658581285779
+        "x": 3.984090364757048,
+        "y": 7.424670370025476
       },
       "prevControl": {
-        "x": 1.0563812283116707,
-        "y": 7.108477783289376
+        "x": 2.642830355560852,
+        "y": 7.490356495691594
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,18 +34,18 @@
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 57.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "S4PW",
+  "folder": "DriveStraight",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": 57.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

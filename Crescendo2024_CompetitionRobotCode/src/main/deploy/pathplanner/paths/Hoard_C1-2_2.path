@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3959954881393342,
-        "y": 5.527514849608872
+        "x": 8.05,
+        "y": 7.43
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6067905459634015,
-        "y": 6.45267093672561
+        "x": 6.994379005406182,
+        "y": 7.115352033145798
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1454890270693507,
-        "y": 6.979658581285779
+        "x": 5.64,
+        "y": 6.66
       },
       "prevControl": {
-        "x": 1.0563812283116707,
-        "y": 7.108477783289376
+        "x": 6.342671775243661,
+        "y": 6.9409515067642795
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,20 +32,20 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 11.05,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "S4PW",
+  "folder": "Hoard_C1-2",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": false

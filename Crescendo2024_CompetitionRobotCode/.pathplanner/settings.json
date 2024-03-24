@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.6,
-  "robotLength": 0.6,
+  "robotWidth": 0.9,
+  "robotLength": 0.93,
   "holonomicMode": true,
   "pathFolders": [
     "1WingBulldozeAbove",
@@ -10,11 +10,13 @@
     "DriveStraight",
     "HoardLowMid",
     "MCHA",
+    "Hoard_C1-2",
     "S4PCSW",
     "S4PW",
     "Scoring_C1-3",
     "Scoring_C2-4",
-    "Scoring_C5-3"
+    "Scoring_C5-3",
+    "TwoPiece"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.0,

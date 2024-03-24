@@ -15,13 +15,20 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Utils.LEDs.SubsystemCatzLED;
-import frc.robot.Utils.LEDs.LEDSection.LEDMode;
+import frc.robot.CatzConstants.CatzColorConstants;
+import frc.robot.CatzConstants.DriveConstants;
+import frc.robot.Utils.LocalADStarAK;
+import frc.robot.subsystems.CatzStateMachine;
+import frc.robot.subsystems.LEDs.SubsystemCatzLED;
+import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.vision.SubsystemCatzVision;
+import frc.robot.CatzAutonomous;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
+  public static SubsystemCatzLED lead = SubsystemCatzLED.getInstance();
   private RobotContainer m_robotContainer;
   
   public static SubsystemCatzLED lead;
@@ -114,6 +121,14 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
+    lead.top.colorAlternating(CatzColorConstants.PHANTOM_SAPPHIRE, Color.kWhite);
+    lead.mid.colorAlternating(CatzColorConstants.PHANTOM_SAPPHIRE, Color.kWhite);
+    lead.bot.colorAlternating(CatzColorConstants.PHANTOM_SAPPHIRE, Color.kWhite);
+    
+    lead.top.setMode(LEDMode.Flow);
+    lead.mid.setMode(LEDMode.Flow);
+    lead.bot.setMode(LEDMode.Flow);
   }
 
   @Override
@@ -122,7 +137,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousExit() {
     if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-      SubsystemCatzDrivetrain.getInstance().flipGyro();
+      SubsystemCatzDrivetrain.getInstance().resetGyroTrue(); //for some reason adding 180 degrees doesnt work but resetting works?????
     }
   }
 
@@ -131,11 +146,12 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    
   }
 
   @Override
   public void teleopPeriodic() {
-
+    m_robotContainer.logDpadStates();
  
   }
 
@@ -145,7 +161,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-        // SubsystemCatzDrivetrain.getInstance().printAverageWheelMagEncValues();
 
   }
 
@@ -154,5 +169,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void testExit() {}
+
 }
 

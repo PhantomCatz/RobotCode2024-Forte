@@ -17,7 +17,7 @@ import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 
-
+ 
 /*
     Assume the Limelight is the front of the robot
 */
@@ -80,8 +80,8 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight")
-                // new VisionIOLimeLight("limelight-turret", VisionConstants.LIMELIGHT_OFFSET_2)
+                new VisionIOLimeLight("limelight-udon"),
+                new VisionIOLimeLight("limelight-ramen")
             });
         }
         return instance;
@@ -102,8 +102,7 @@ public class SubsystemCatzVision extends SubsystemBase {
                     
             //checks for when to process vision
             if (inputs[i].hasTarget && 
-                inputs[i].isNewVisionPose && 
-                !DriverStation.isAutonomous() && 
+                inputs[i].isNewVisionPose &&  
                 inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
                 useSingleTag = false;
                 if (useSingleTag) {

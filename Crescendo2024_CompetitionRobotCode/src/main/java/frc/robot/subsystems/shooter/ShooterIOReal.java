@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -10,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
@@ -19,8 +21,6 @@ import frc.robot.subsystems.turret.TurretIOReal;
 
 public class ShooterIOReal implements ShooterIO {
   //any type of Shooter Mtr Config Constnats/Logic Constants should go here 
-    public static int SHOOTER_MTR_ID = 53;
-    public static int TURRET_MTR_ID = 54;
     public static int ACCEPTABLE_VEL_ERROR = 20;
 /*-----------------------------------------------------------------------------------------
  * 
@@ -79,8 +79,8 @@ public class ShooterIOReal implements ShooterIO {
     private final int SERVO_PW_US_MIN_POSITION          = 1000;
 
     //Tunable motor velocities
-    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 65); // was 65
-    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 85); // was 85
+    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 58); // was 65
+    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 80); // was 85
 
     TalonFX[] shooterArray = new TalonFX[2];
 
@@ -115,6 +115,8 @@ public class ShooterIOReal implements ShooterIO {
         LOAD_MOTOR.setSmartCurrentLimit(NEO_CURRENT_LIMIT_AMPS);
         LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.enableVoltageCompensation(12.0); //TBD is this the default value?
+        LOAD_MOTOR.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 32767);
+
         
         //Create shooter mtr array for easier calls
         shooterArray[0] = SHOOTER_MOTOR_RT;
@@ -134,7 +136,12 @@ public class ShooterIOReal implements ShooterIO {
 
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-         
+       // BaseStatusSignal.setUpdateFrequencyForAll(50, );
+        SHOOTER_MOTOR_LT.optimizeBusUtilization();
+        SHOOTER_MOTOR_RT.optimizeBusUtilization();
+
+
+
         //pid
         talonConfigs.Slot0 = pidConfigs;
         pidConfigs.kP = 0.11; //TBD
@@ -146,7 +153,7 @@ public class ShooterIOReal implements ShooterIO {
         for(int i=0;i<2;i++) {
             initializationStatus = shooterArray[i].getConfigurator().apply(talonConfigs);
              if(!initializationStatus.isOK())
-                System.out.println("Failed to Configure CAN ID for shooter "+ shooterArray.toString());
+                System.out.println("Failed to Configure CAN ID for shooter ");//+ shooterArray.toString()); // add in later
         }
     }
 
@@ -156,23 +163,23 @@ public class ShooterIOReal implements ShooterIO {
 
         inputs.shooterVelocityLT        = SHOOTER_MOTOR_LT.getVelocity().getValue();
         inputs.shooterVelocityRT        = SHOOTER_MOTOR_RT.getVelocity().getValue();
-        inputs.velocityThresholdLT      = -shooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET; //was shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET
-        inputs.velocityThresholdRT      =  shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
-        inputs.shooterVelocityErrorLT   = SHOOTER_MOTOR_LT.getClosedLoopError().getValue();
-        inputs.shooterVelocityErrorRT   = SHOOTER_MOTOR_RT.getClosedLoopError().getValue();
-        inputs.shooterMotorVoltageLT    = SHOOTER_MOTOR_LT.getMotorVoltage().getValue();
-        inputs.shooterMotorVoltageRT    = SHOOTER_MOTOR_RT.getMotorVoltage().getValue();
-        inputs.shooterDutyCycleLT       = SHOOTER_MOTOR_LT.getDutyCycle().getValue();
-        inputs.shooterDutyCycleRT       = SHOOTER_MOTOR_RT.getDutyCycle().getValue();
-        inputs.shooterTorqueCurrentLT   = SHOOTER_MOTOR_LT.getTorqueCurrent().getValue();
-        inputs.shooterTorqueCurrentRT   = SHOOTER_MOTOR_RT.getTorqueCurrent().getValue();
+        // inputs.velocityThresholdLT      = -shooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET; //was shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET
+        // inputs.velocityThresholdRT      =  shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
+        // inputs.shooterVelocityErrorLT   = SHOOTER_MOTOR_LT.getClosedLoopError().getValue();
+        // inputs.shooterVelocityErrorRT   = SHOOTER_MOTOR_RT.getClosedLoopError().getValue();
+        // inputs.shooterMotorVoltageLT    = SHOOTER_MOTOR_LT.getMotorVoltage().getValue();
+        // inputs.shooterMotorVoltageRT    = SHOOTER_MOTOR_RT.getMotorVoltage().getValue();
+        // inputs.shooterDutyCycleLT       = SHOOTER_MOTOR_LT.getDutyCycle().getValue();
+        // inputs.shooterDutyCycleRT       = SHOOTER_MOTOR_RT.getDutyCycle().getValue();
+        // inputs.shooterTorqueCurrentLT   = SHOOTER_MOTOR_LT.getTorqueCurrent().getValue();
+        // inputs.shooterTorqueCurrentRT   = SHOOTER_MOTOR_RT.getTorqueCurrent().getValue();
 
         inputs.shooterLoadBeamBreakState   = !LOAD_BEAM_BREAK.get();
         inputs.shooterAdjustBeamBreakState = !ADJUST_BEAM_BREAK.get();
 
         inputs.loadMotorPercentOutput = LOAD_MOTOR.get();
-        inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
-        inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
+        // inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
+        // inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
 
         inputs.servoLeftPosition  = shooterServoLT.get();
         inputs.servoRightPosition = shooterServoRT.get();
@@ -183,8 +190,8 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setShooterEnabled() {
-        double shooterVelocityLT = shooterVelLT.get(); //TBD
-        double shooterVelocityRT = shooterVelRT.get();
+        double shooterVelocityLT = 58.0;//58.0; //TBD
+        double shooterVelocityRT = 80.0;//80.0;
 
         SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-shooterVelocityLT).withEnableFOC(true));
         SHOOTER_MOTOR_RT.setControl(new VelocityVoltage( shooterVelocityRT).withEnableFOC(true));

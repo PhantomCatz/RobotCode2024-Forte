@@ -1,6 +1,8 @@
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -24,9 +26,9 @@ public class ModuleIOReal implements ModuleIO {
     private final TalonFX DRIVE_MOTOR;
 
     //Motor Current limiting
-    public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
-    public static final int     KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS    = 55;
-    public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
+    public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 50;
+    public static final int     KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS    = 60;
+    public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.05;
     public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
 
     public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
@@ -41,6 +43,9 @@ public class ModuleIOReal implements ModuleIO {
         //create new config objects
     private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
     private Slot0Configs driveConfigs         = new Slot0Configs();
+
+        //StatusSignal
+    StatusSignal<Double> drivePosition;
 
     public ModuleIOReal(int driveMotorIDIO, int steerMotorIDIO, int magDIOPort) {
 
@@ -60,19 +65,33 @@ public class ModuleIOReal implements ModuleIO {
             //reset to factory defaults
         DRIVE_MOTOR.getConfigurator().apply(new TalonFXConfiguration());
         talonConfigs.Slot0 = driveConfigs;
+
+        talonConfigs.Voltage.PeakForwardVoltage = 11.5;
+        talonConfigs.Voltage.PeakReverseVoltage = -11.5;
             //current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
-        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
-        talonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+        talonConfigs.CurrentLimits.StatorCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
+        talonConfigs.CurrentLimits.StatorCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+
         talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
+        talonConfigs.CurrentLimits.SupplyCurrentLimit       =  KRAKEN_CURRENT_LIMIT_AMPS;
         talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
+        talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 0.01;//2.0;//2.4; //TBD 0.3 has a better graph but it jitters the auton.
+        driveConfigs.kP = 0.03;//0.039//2.0;//2.4; //TBD 0.3 has a better graph but it jitters the auton.
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.00;
  
+        drivePosition = DRIVE_MOTOR.getPosition();
+        BaseStatusSignal.setUpdateFrequencyForAll(250, drivePosition);
+
+        //DRIVE_MOTOR.optimizeBusUtilization (1.0);
+
+
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){
             initializationStatus = DRIVE_MOTOR.getConfigurator().apply(talonConfigs);
@@ -86,7 +105,7 @@ public class ModuleIOReal implements ModuleIO {
     public void updateInputs(ModuleIOInputs inputs) {
 
         inputs.driveMtrVelocity       = DRIVE_MOTOR.getRotorVelocity().getValue();
-        inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
+        inputs.driveMtrSensorPosition = drivePosition.getValueAsDouble();
         inputs.driveAppliedVolts      = DRIVE_MOTOR.getMotorVoltage().getValueAsDouble();
         inputs.magEncoderValue        = magEnc.get();
         inputs.steerAppliedVolts      = STEER_MOTOR.getOutputCurrent();

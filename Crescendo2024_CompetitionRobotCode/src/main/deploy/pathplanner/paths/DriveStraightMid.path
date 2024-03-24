@@ -1,0 +1,65 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.44283883432246,
+        "y": 5.515804013063089
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.4545496708682417,
+        "y": 3.8879977331994597
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.3023087957730821,
+        "y": 1.5224087509515962
+      },
+      "prevControl": {
+        "x": 1.3564714147973218,
+        "y": 1.9103302115306087
+      },
+      "nextControl": {
+        "x": 1.2481461767488424,
+        "y": 1.1344872903725836
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.339994354739065,
+        "y": 1.276481183490184
+      },
+      "prevControl": {
+        "x": 2.3211515752560734,
+        "y": 1.3818787124022174
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "DriveStraight",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

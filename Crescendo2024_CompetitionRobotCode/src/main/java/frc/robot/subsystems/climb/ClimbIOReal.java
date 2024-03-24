@@ -9,8 +9,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class ClimbIOReal implements ClimbIO {
 
-    public static int CLIMB_MOTOR_ID_LT = 1;
-    public static int CLIMB_MOTOR_ID_RT = 5; //TBD
+    public static int CLIMB_MOTOR_ID_LT = 40;
+    public static int CLIMB_MOTOR_ID_RT = 41; //TBD
 
     //Kraken configuration constants
     public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
@@ -49,6 +49,8 @@ public class ClimbIOReal implements ClimbIO {
             //neutral mode
         climbTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+        climbMtrLT.optimizeBusUtilization();
+        climbMtrRT.optimizeBusUtilization();
 
         //check if climb motor is initialized correctly
         initializationStatus = climbMtrRT.getConfigurator().apply(climbTalonConfigs);
@@ -59,21 +61,23 @@ public class ClimbIOReal implements ClimbIO {
         if(!initializationStatus.isOK()) {
             System.out.println("Failed to Configure Climb Mtr Controller CAN ID" + CLIMB_MOTOR_ID_LT);
         }
+
+        climbMtrLT.setInverted(true);
     }
 
     @Override
     public void updateInputs(ClimbIOInputs inputs) {
-        inputs.climbDutyCycleLT = climbMtrLT.getDutyCycle().getValue();
-        inputs.climbPositionErrorLT = climbMtrLT.getClosedLoopError().getValue();
-        inputs.climbSpoolRevLT = climbMtrLT.getPosition().getValue();
-        inputs.climbTorqueCurrentLT = climbMtrLT.getTorqueCurrent().getValue();
-        inputs.climbVoltageLT = climbMtrLT.getMotorVoltage().getValue();
+        // inputs.climbDutyCycleLT = climbMtrLT.getDutyCycle().getValue();
+        //inputs.climbPositionErrorLT = climbMtrLT.getClosedLoopError().getValue();
+        // inputs.climbSpoolRevLT = climbMtrLT.getPosition().getValue();
+        // inputs.climbTorqueCurrentLT = climbMtrLT.getTorqueCurrent().getValue();
+        // inputs.climbVoltageLT = climbMtrLT.getMotorVoltage().getValue();
 
-        inputs.climbDutyCycleRT = climbMtrRT.getDutyCycle().getValue();
-        inputs.climbPositionErrorRT = climbMtrRT.getClosedLoopError().getValue();
-        inputs.climbSpoolRevRT = climbMtrRT.getPosition().getValue();
-        inputs.climbTorqueCurrentRT = climbMtrRT.getTorqueCurrent().getValue();
-        inputs.climbVoltageRT = climbMtrRT.getMotorVoltage().getValue();
+        // inputs.climbDutyCycleRT = climbMtrRT.getDutyCycle().getValue();
+        // //inputs.climbPositionErrorRT = climbMtrRT.getClosedLoopError().getValue();
+        // inputs.climbSpoolRevRT = climbMtrRT.getPosition().getValue();
+        // inputs.climbTorqueCurrentRT = climbMtrRT.getTorqueCurrent().getValue();
+        // inputs.climbVoltageRT = climbMtrRT.getMotorVoltage().getValue();
     }
 
     @Override

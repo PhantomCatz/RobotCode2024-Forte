@@ -12,13 +12,11 @@ import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 public class ManualElevatorCmd extends Command {
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   Supplier<Double> m_supplierLeftY;
-  Supplier<Boolean> m_supplierLeftJoyStickPressed;
 
-  public ManualElevatorCmd(Supplier<Double> supplierLeftY, Supplier<Boolean> supplierLeftJoyStickPressed) {
+  public ManualElevatorCmd(Supplier<Double> supplierLeftY) {
     addRequirements(elevator);
 
     this.m_supplierLeftY = supplierLeftY;
-    this.m_supplierLeftJoyStickPressed = supplierLeftJoyStickPressed;
   }
 
   @Override

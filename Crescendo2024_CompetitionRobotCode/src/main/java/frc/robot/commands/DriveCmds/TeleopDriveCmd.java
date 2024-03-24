@@ -41,7 +41,7 @@ public class TeleopDriveCmd extends Command {
     //obtain realtime joystick inputs with supplier methods
     double xSpeed =       -m_supplierLeftJoyY.get();
     double ySpeed =       -m_supplierLeftJoyX.get(); 
-    double turningSpeed = -m_supplierRightJoyX.get();
+    double turningSpeed =  m_supplierRightJoyX.get();
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
@@ -64,12 +64,12 @@ public class TeleopDriveCmd extends Command {
     m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
 
     //logging
-    Logger.recordOutput("robot xspeed", xSpeed);
-    Logger.recordOutput("robot yspeed", ySpeed);
-    Logger.recordOutput("robot turnspeed", turningSpeed);
-    Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
-    Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
-    Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
+    // Logger.recordOutput("robot xspeed", xSpeed);
+    // Logger.recordOutput("robot yspeed", ySpeed);
+    // Logger.recordOutput("robot turnspeed", turningSpeed);
+    // Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
+    // Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
+    // Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
 
   }
 

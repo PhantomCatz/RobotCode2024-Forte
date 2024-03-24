@@ -47,7 +47,6 @@ public class PPTrajectoryFollowingCmd extends Command {
     //Auto Pathplanning trajectoreies
     public PPTrajectoryFollowingCmd(List<Translation2d> bezierPoints, PathConstraints constraints, GoalEndState endRobotState) {
         PathPlannerPath newPath = new PathPlannerPath(bezierPoints, constraints, endRobotState);
-
         path = newPath;
 
         hocontroller = DriveConstants.holonomicDriveController;
@@ -59,20 +58,19 @@ public class PPTrajectoryFollowingCmd extends Command {
     public void initialize() {
         // Reset and begin timer
         timer.reset();
-        timer.start();  
-        
+        timer.start();
 
         //flip auton path to mirrored red side if we choose red alliance
-      if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
             path = path.flipPath();
-            System.out.println("flip");
+            // System.out.println("flip");
         }
 
         //path debug
-        for(int i=0; i<path.getAllPathPoints().size(); i++){
-            System.out.println(path.getAllPathPoints().get(i).position);
-        }
-        Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
+        // for(int i=0; i<path.getAllPathPoints().size(); i++){
+        //     System.out.println(path.getAllPathPoints().get(i).position);
+        // }
+       // Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
         //create pathplanner trajectory
         this.trajectory = new PathPlannerTrajectory(
@@ -94,7 +92,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         Rotation2d targetOrientation     = goal.targetHolonomicRotation;
         Pose2d currentPose               = m_driveTrain.getPose();
 
-        Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
+        //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         
         /* 
         * Convert PP trajectory into a wpilib trajectory type 
@@ -109,11 +107,11 @@ public class PPTrajectoryFollowingCmd extends Command {
 
         //debug
         //System.out.println(goal.getTargetHolonomicPose());
-        Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
+        //Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
         //construct chassisspeeds
         ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
-        Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
-        Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
+        //Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
+        //Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
         //send to drivetrain
         m_driveTrain.driveRobotWithDescritizeDynamics(adjustedSpeeds);
 

@@ -6,10 +6,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkPIDController.AccelStrategy;
-
-import frc.robot.Utils.LoggedTunableNumber;
 
 public class TurretIOReal implements TurretIO {
 
@@ -25,7 +25,17 @@ public class TurretIOReal implements TurretIO {
         turretMtr.setSmartCurrentLimit(NEO_CURRENT_LIMIT_AMPS);
         turretMtr.setIdleMode(IdleMode.kBrake);
         turretMtr.enableVoltageCompensation(12.0);
-        turretMtr.getEncoder().setPositionConversionFactor(1.0/SubsystemCatzTurret.TURRET_REV_PER_DEG);
+        turretMtr.getEncoder().setPositionConversionFactor(1.0/SubsystemCatzTurret.TURRET_MOTOR_SHAFT_REV_PER_DEG);
+
+        turretMtr.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 32767);
+
+         turretMtr.enableSoftLimit(SoftLimitDirection.kForward, true);
+         turretMtr.enableSoftLimit(SoftLimitDirection.kReverse, true);
+         
+         turretMtr.setSoftLimit(SoftLimitDirection.kForward, 80);
+         turretMtr.setSoftLimit(SoftLimitDirection.kReverse, -80);
+
+        turretMtr.burnFlash(); //save configs so if pwr lost to be reapplied
 
         smartMotionPID = turretMtr.getPIDController();
         smartMotionPID.setP(0.01);
@@ -38,11 +48,12 @@ public class TurretIOReal implements TurretIO {
         smartMotionPID.setSmartMotionMaxAccel(5.0, 0);
         smartMotionPID.setSmartMotionMinOutputVelocity(0,0);
         smartMotionPID.setOutputRange(-1, 1);
+
     }
     @Override
     public void updateInputs(TurretIOInputs inputs) {
         inputs.turretMtrPercentOutput = turretMtr.getAppliedOutput();
-        inputs.turretMtrOutputCurrent = turretMtr.getOutputCurrent();
+        // inputs.turretMtrOutputCurrent = turretMtr.getOutputCurrent();
         inputs.turretEncValue         = turretMtr.getEncoder().getPosition();
 
     }

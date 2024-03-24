@@ -7,12 +7,10 @@ package frc.robot.subsystems.climb;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
-import frc.robot.subsystems.elevator.ElevatorIO;
-import frc.robot.subsystems.elevator.ElevatorIOInputsAutoLogged;
-import frc.robot.subsystems.elevator.ElevatorIOReal;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator;
+
 
 public class SubsystemCatzClimb extends SubsystemBase {
   //instance instantiation
@@ -31,13 +29,8 @@ public class SubsystemCatzClimb extends SubsystemBase {
   private double climbPercentOutputLT = 0.0;
   private double climbPercentOutputRT = 0.0;
 
-  private ClimbState currentClimbState;
-  public enum ClimbState {
-    MANUAL,
-    SET_POSITION_PREP,
-    SET_POSITION_CLIMBING,
-    IN_POSITION
-  }
+  private boolean isClimbingEnabled = false;
+
 
 
   private SubsystemCatzClimb() {
@@ -56,6 +49,7 @@ public class SubsystemCatzClimb extends SubsystemBase {
       break;
     }
 
+    
   }
 
   public static SubsystemCatzClimb getInstance() {
@@ -70,34 +64,40 @@ public class SubsystemCatzClimb extends SubsystemBase {
 
     if(DriverStation.isDisabled()) {
       io.setClimbMtrPercentOutputLT(0.0);
-      io.setClimbPositionRT(0.0);
+      io.setClimbMtrPercentOutputRT(0.0);
+      climbPercentOutputLT = 0.0;
+      climbPercentOutputRT = 0.0;
+
     } else {
-      if(currentClimbState == ClimbState.SET_POSITION_PREP) {
-          io.setClimbPositionLT(10);
-          io.setClimbPositionRT(10);
-      } else if(currentClimbState == ClimbState.SET_POSITION_CLIMBING ||
-                currentClimbState == ClimbState.IN_POSITION) {
-          io.setClimbPositionLT(0);
-          io.setClimbPositionRT(0);
-      } else {
+      
         io.setClimbMtrPercentOutputLT(climbPercentOutputLT);
         io.setClimbMtrPercentOutputRT(climbPercentOutputRT);
-      }
+
     }
   }
 
-  public void updateClimbTargetPosition(ClimbState newClimbState) {
-    currentClimbState = newClimbState;
+  public void setClimbModeEnabled(boolean set) {
+    isClimbingEnabled = set;
+  }
+
+  public boolean isClimbing(){
+    return isClimbingEnabled;
   }
 
   public void setLeftClimbPercentOutput(double output) {
     climbPercentOutputLT = output;
-    currentClimbState = ClimbState.MANUAL;
   }
 
   public void setRightClimbPercentOutput(double output) {
     climbPercentOutputRT = output;
-    currentClimbState = ClimbState.MANUAL;
+  }
+
+  public Command setClimbOff(){
+    return run(()-> setClimbMtrsZero());
+  }
+  public void setClimbMtrsZero(){
+    climbPercentOutputLT = 0.0;
+    climbPercentOutputRT = 0.0;
   }
 
   public boolean isClimbing(){

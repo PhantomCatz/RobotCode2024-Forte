@@ -26,10 +26,11 @@ public class StowPoseCmd extends Command {
 
   @Override
   public void initialize() {
-          System.out.println("stow");
-      runMechanismSetpoints(CatzMechanismConstants.STOW);
+      runMechanismSetpoints(CatzMechanismConstants.STOW_PRESET);
       intake.setRollersOff();
       shooter.setShooterLoadState(ShooterLoadState.LOAD_OFF);
+      shooter.disableShooterFlywheel();
+      
   }
 
   @Override
@@ -46,7 +47,7 @@ public class StowPoseCmd extends Command {
   //factory for updating all mechanisms with the packaged target info associated with the new postion
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
     intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
-    elevator.updateTargetPositionElevator(pose);
+    elevator.updateTargetPositionElevator(pose.getElevatorTargetRev());
     shooter.updateTargetPositionShooter(pose);
     turret.updateTargetPositionTurret(pose);
   }

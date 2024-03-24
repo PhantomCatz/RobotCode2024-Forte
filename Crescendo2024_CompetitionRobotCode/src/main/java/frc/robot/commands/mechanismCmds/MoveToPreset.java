@@ -4,74 +4,46 @@
 
 package frc.robot.commands.mechanismCmds;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.subsystems.climb.SubsystemCatzClimb;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
-public class ClimbCmd extends Command {
+public class MoveToPreset extends Command {
+
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
   private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
-  private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();  
-  private SubsystemCatzClimb climb = SubsystemCatzClimb.getInstance();
+  private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
 
+  private CatzMechanismPosition m_preset;
+  public MoveToPreset(CatzMechanismPosition preset) {
+    m_preset = preset;
+    addRequirements(intake, elevator, shooter, turret);
 
-  Supplier<Double> m_supplierXboxLeftY;
-  Supplier<Double> m_supplierXboxRightY;
-
-
-  
-  public ClimbCmd(Supplier<Double> supplierXboxleftY, Supplier<Double> supplierXboxRightY) {
-    m_supplierXboxLeftY = supplierXboxleftY;
-    m_supplierXboxRightY = supplierXboxRightY;
-
-
-    addRequirements(elevator, intake, shooter, turret, climb);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("in clmb");
-    climb.setClimbModeEnabled(true);
+    runMechanismSetpoints(m_preset);
 
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    if(Math.abs(m_supplierXboxLeftY.get()) > 0.1 ){
-      climb.setLeftClimbPercentOutput(-m_supplierXboxLeftY.get()/2);
-    }
-    else{
-      climb.setLeftClimbPercentOutput(0.0);
-    }
-    if(Math.abs(m_supplierXboxRightY.get()) > 0.1 ){
-      climb.setRightClimbPercentOutput(m_supplierXboxRightY.get()/2);
-    }
-    else{
-      climb.setRightClimbPercentOutput(0.0);
-    }
-  }
+  public void execute() {}
 
-  // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    climb.setClimbModeEnabled(false);
-  }
+  public void end(boolean interrupted) {}
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return areMechanismsInPosition();
   }
 
+  
   //factory for updating all mechanisms with the packaged target info associated with the new postion
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
     intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
