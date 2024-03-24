@@ -184,23 +184,30 @@ public final class CatzConstants {
     public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
     public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
 
+    // public static final double LT_FRNT_OFFSET = 0.00406; // sn1
+    // public static final double LT_BACK_OFFSET = 0.0395;
+    // public static final double RT_BACK_OFFSET = -0.75084;
+    // public static final double RT_FRNT_OFFSET = 0.55098;
 
     public static final int LT_FRNT_DRIVE_ID = 1;
     public static final int LT_BACK_DRIVE_ID = 3;
-    public static final int RT_BACK_DRIVE_ID = 5;
-    public static final int RT_FRNT_DRIVE_ID = 7; 
+    public static final int RT_BACK_DRIVE_ID = 22;
+    public static final int RT_FRNT_DRIVE_ID = 7; //SN1
+
+
     
     public static final int LT_FRNT_STEER_ID = 2;
     public static final int LT_BACK_STEER_ID = 4;
     public static final int RT_BACK_STEER_ID = 6;
     public static final int RT_FRNT_STEER_ID = 8;
-
+ 
     public static final int LT_FRNT_ENC_PORT = 9;
-    public static final int LT_BACK_ENC_PORT = 8; 
+    public static final int LT_BACK_ENC_PORT = 8; //SN1 8 //atlas 6
     public static final int RT_BACK_ENC_PORT = 7;
-    public static final int RT_FRNT_ENC_PORT = 6; 
+    public static final int RT_FRNT_ENC_PORT = 6; //SN1 6 //atlas 8
 
     //--------------------------------------MTR CONFIGS------------------------------------
+
     public static final Rotation2d defaultRot = new Rotation2d(0.0);
     private static final double ROBOT_WIDTH = Units.inchesToMeters(23.5); //29 atlas
     private static final double ROBOT_LENGTH = Units.inchesToMeters(24); //29 atlas
@@ -223,20 +230,19 @@ public final class CatzConstants {
     //data has been referenced using recalc calculator https://www.reca.lc/drive
     public static final double MAX_SPEED = Units.feetToMeters(15.7); // meters per second 4.81
 
-    public static final double MAX_ANGSPEED_RAD_PER_SEC = 24.0; // radians per second
+    public static final double MAX_ANGSPEED_RAD_PER_SEC = 12.0; // radians per second
     public static final double MAX_SPEED_DESATURATION = MAX_SPEED; 
 
     public static final double SDS_L1_GEAR_RATIO = 8.14;       //SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75;       //SDS mk4i L2 ratio reduction
-    public static final double SDS_L2_PLUS_GEAR_RATIO = 6.75 * (14/16);       //SDS mk4i L2 ratio reduction plud random numbers from eddy
-    public static final double SDS_L2_GEAR_RATIO_PLUS_16T = 5.90;  //SDS mk4i L2+ ratio reduction 16th tooth
-    public static final double SDS_L2_GEAR_RATIO_PLUS_15T = 6.30;  //SDS mk4i L2+ ratio reduction 15th tooth
-    
+    public static final double SDS_L2_PLUS_GEAR_RATIO = 6.75 * (14.0/16.0);       //SDS mk4i L2 ratio reduction plud random numbers from eddy
+
+
                                                                 //overtime
-    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(3.3);//0.095;// mUnits.inchesToMeters(4);
+    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(3.2);//0.095;// mUnits.inchesToMeters(4);
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE   = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
-    public static final boolean START_FLIPPED = false;
+    public static final boolean START_FLIPPED = true;
 
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;
     public static final double FEEDFOWARD_Kv_VELOCITY_ACCELERATION_METERS = 0.24;

@@ -60,6 +60,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     private FieldRelativeSpeed m_lastFieldRelVel = new FieldRelativeSpeed();
     private FieldRelativeAccel m_fieldRelAccel = new FieldRelativeAccel();
 
+
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
         // Determine gyro input/output based on the robot mode
@@ -98,7 +99,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 Rotation2d.fromDegrees(getGyroAngle()), 
                 getModulePositions(), 
-                new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180)), 
+                new Pose2d(2.0, 5.55, Rotation2d.fromDegrees(0.0)), 
                 VecBuilder.fill(0.1, 0.1, 0.7),  //odometry standard devs
                 VecBuilder.fill(5, 5, 500)); //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
         
@@ -115,7 +116,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         gyroIO.resetNavXIO(0);
         
-        // resetPosition(new Pose2d(1.23,5.49,Rotation2d.fromDegrees(0)));
+        startOdometryPeriodic();
     }
 
     public void resetGyroTrue(){
@@ -127,21 +128,65 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         return instance;
     }
 
-    private Pose2d prevPose = new Pose2d();
-    private double prevTime = Timer.getFPGATimestamp();
+    private void startOdometryPeriodic(){
+        Thread odometryThread = new Thread(()-> {
+            m_poseEstimator.update(getRotation2d(), getModulePositions());
+
+            Timer.delay(0.01);
+        });
+        odometryThread.start();
+    }
+
     @Override
     public void periodic() {
         // Update inputs (sensors/encoders) for code logic and advantage kit
         for (CatzSwerveModule module : m_swerveModules) {
             module.periodic();
         }
-
         // Update gyro inputs and log them
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/gyroinputs ", gyroInputs);
+            var visionOdometry = vision.getVisionOdometry();   
+            for (int i = 0; i < visionOdometry.size(); i++) {
+                //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
+                double xyStdDev = 0;
+
+                // if(visionOdometry.get(i).getPose().getX() == -1 && visionOdometry.get(i).getPose().getY() == -1){
+                //     break;
+                // }
+
+                if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
+                    xyStdDev = 3;
+                }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
+                    xyStdDev = 5;
+                }else if(visionOdometry.get(i).getAvgArea() >= 0.12){
+                    xyStdDev = 10;
+                }else{
+                    xyStdDev = 40;
+                }
+
+                //System.out.println(visionOdometry.get(i).getAvgArea());
+
+
+                // dSpeed = Math.abs(dSpeed);
+                // if (dSpeed > 10){
+                //     xyStdDev *= dSpeed / 4; //account for some shaking when suddenly moving fast.
+                // }
+
+
+                m_poseEstimator.setVisionMeasurementStdDevs(
+                VecBuilder.fill(xyStdDev,xyStdDev,9)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
+            
+                m_poseEstimator.addVisionMeasurement(
+                    new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
+                    visionOdometry.get(i).getTimestamp()
+                );
+
+            }
+            m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
+
 
         // Update pose estimator with module encoder values + gyro
-        m_poseEstimator.update(getRotation2d(), getModulePositions());
         
         // double dt = Timer.getFPGATimestamp() - prevTime;
         // double dSpeed = m_poseEstimator.getEstimatedPosition().getTranslation().getDistance(prevPose.getTranslation()) / dt;
@@ -149,45 +194,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // prevPose = m_poseEstimator.getEstimatedPosition();
         // prevTime = Timer.getFPGATimestamp();
         // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop 
-        var visionOdometry = vision.getVisionOdometry();   
-        
-        for (int i = 0; i < visionOdometry.size(); i++) {
-            //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
-            double xyStdDev = 0;
-
-            // if(visionOdometry.get(i).getPose().getX() == -1 && visionOdometry.get(i).getPose().getY() == -1){
-            //     break;
-            // }
-
-            if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
-                xyStdDev = 3;
-            }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
-                xyStdDev = 5;
-            }else if(visionOdometry.get(i).getAvgArea() >= 0.12){
-                xyStdDev = 10;
-            }else{
-                xyStdDev = 40;
-            }
-
-//            System.out.println(visionOdometry.get(i).getAvgArea());
-
-
-            // dSpeed = Math.abs(dSpeed);
-            // if (dSpeed > 10){
-            //     xyStdDev *= dSpeed / 4; //account for some shaking when suddenly moving fast.
-            // }
-
-            Logger.recordOutput("XYStdDev", xyStdDev);
-
-            m_poseEstimator.setVisionMeasurementStdDevs(
-            VecBuilder.fill(xyStdDev,xyStdDev,9)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
-        
-            m_poseEstimator.addVisionMeasurement(
-                new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
-                visionOdometry.get(i).getTimestamp()
-            );
-
-        }
 
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 

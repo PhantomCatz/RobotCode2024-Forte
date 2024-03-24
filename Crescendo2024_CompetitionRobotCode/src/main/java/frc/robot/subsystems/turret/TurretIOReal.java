@@ -11,8 +11,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkPIDController.AccelStrategy;
 
-import frc.robot.Utils.LoggedTunableNumber;
-
 public class TurretIOReal implements TurretIO {
 
     private final CANSparkMax turretMtr;

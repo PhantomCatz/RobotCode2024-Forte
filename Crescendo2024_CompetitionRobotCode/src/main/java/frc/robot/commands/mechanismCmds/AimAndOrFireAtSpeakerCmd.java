@@ -133,7 +133,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());   
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
 
-    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call
+    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
       
       //translation of the blue alliance speaker
       m_targetXY = new Translation2d(0.0, FieldConstants.SPEAKER_COORD_MTRS_Y);
@@ -159,7 +159,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
     double servoPos = shooterPivotTable.get(newDist);
 
-    turret.aimAtGoal(m_targetXY, false, true);   
+    turret.aimAtGoal(m_targetXY, false, false);    
     shooter.updateShooterServo(servoPos);
 
     //in telop this boolean supplier is being evaluated to see if button was pressed

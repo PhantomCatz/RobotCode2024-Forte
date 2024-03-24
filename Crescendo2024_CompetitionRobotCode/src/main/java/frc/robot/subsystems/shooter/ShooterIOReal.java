@@ -21,8 +21,6 @@ import frc.robot.subsystems.turret.TurretIOReal;
 
 public class ShooterIOReal implements ShooterIO {
   //any type of Shooter Mtr Config Constnats/Logic Constants should go here 
-    public static int SHOOTER_MTR_ID = 53;
-    public static int TURRET_MTR_ID = 54;
     public static int ACCEPTABLE_VEL_ERROR = 20;
 /*-----------------------------------------------------------------------------------------
  * 
@@ -155,7 +153,7 @@ public class ShooterIOReal implements ShooterIO {
         for(int i=0;i<2;i++) {
             initializationStatus = shooterArray[i].getConfigurator().apply(talonConfigs);
              if(!initializationStatus.isOK())
-                System.out.println("Failed to Configure CAN ID for shooter "+ shooterArray.toString());
+                System.out.println("Failed to Configure CAN ID for shooter ");//+ shooterArray.toString()); // add in later
         }
     }
 

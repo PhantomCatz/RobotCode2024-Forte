@@ -73,7 +73,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
     xboxAux = new CommandXboxController(OIConstants.XBOX_AUX_PORT);
-    //xboxTest = new CommandXboxController(2);
 
     // Configure the trigger bindings and default cmds
     defaultCommands();
@@ -81,6 +80,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   }
   
   private boolean isRampedUp = false;
+  private boolean dpadUP = false;
+  private boolean dpadDN = false;
+  private boolean dpadRT = false;
+  private boolean dpadLT = false;
 
   private void configureBindings() {    
     
@@ -143,43 +146,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     xboxAux.povUp().onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
     xboxAux.povUp().and(xboxAux.b()).onTrue(new ScoreTrapCmd());
-    
 
-      //climb
-    // xboxAux.back().and(xboxAux.start()).onTrue(new ClimbCmd(()->xboxAux.getLeftY(), ()->xboxAux.getRightY()));//.onFalse(new ClimbCmd(()->0.0, ()->0.0));  //raise left climb hook 
-    // //xboxAux.x().and(xboxAux.povRight()).onTrue(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()));
-    // //statmachine shooter vs intake elevator manual control dependant on state
-    // xboxAux.leftStick().onTrue(new ManualElevatorCmd(()->xboxAux.getLeftY(), ()->xboxAux.leftStick().getAsBoolean()));
-
-    // //turret
-    // xboxAux.leftTrigger().onTrue(turret.cmdTurretLT(()->xboxAux.getLeftTriggerAxis()));
-    // xboxAux.rightTrigger().onTrue(turret.cmdTurretRT(()->xboxAux.getRightTriggerAxis()));
-
-      // Trigger rollersOffBindingAux = xboxDrv.leftBumper().and(xboxDrv.rightBumper());
-      // rollersOffBindingAux.onTrue(intake.cmdRollerOff()); // intake off
-    // //intake
-    // xboxAux.leftBumper().onTrue(intake.cmdRollerIn());
-    // xboxAux.rightBumper().onTrue(intake.cmdRollerOut());
-    // Trigger rollersOffBindingAux = xboxAux.leftBumper().and(xboxAux.rightBumper());
-    // rollersOffBindingAux.onTrue(intake.cmdRollerOff());
-
-    // xboxAux.povLeft().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.AMP))); //default state
-    // xboxAux.povUp().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.TRAP)));
-    // xboxAux.povDown().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.HOARD)));
-    // xboxAux.povRight().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.SPEAKER)));
-  
-    // xboxAux.rightStick().and(xboxAux.povRight()).onTrue(shooter.cmdShooterRamp());
-
-    // xboxAux.povDown().and(xboxAux.x()).onTrue(new MoveToPreset(CatzMechanismConstants.SCORING_TRAP_PRESET));
-    // xboxAux.povDown().and(xboxAux.b()).onTrue(new MoveToPreset(CatzMechanismConstants.PREP_FOR_AMP_PRESET));
-
-    // xboxAux.a().and(xboxAux.povUp()).onTrue(shooter.cmdServoPosition(1.0)); 
-    // xboxAux.a().and(xboxAux.povDown()).onTrue(shooter.cmdServoPosition(0.0)); 
-
-
-    // xboxAux.a().and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET));
-
-    // xboxAux.b().and(xboxAux.x()).and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_DEFENSE_PRESET));
 
   }
 

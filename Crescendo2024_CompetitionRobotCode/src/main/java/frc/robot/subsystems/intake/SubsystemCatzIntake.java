@@ -587,11 +587,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   public void setWasIntakeInAmpScoring(boolean set) {
     isIntakeInScoreAmp = set;
-    System.out.println("is intake in amp score" + set);
+    // System.out.println("is intake in amp score" + set);
   }
 
   public boolean getIsIntakeInAmpScoring() {
-    System.out.println(isIntakeInScoreAmp);
+    // System.out.println(isIntakeInScoreAmp);
     return isIntakeInScoreAmp;
   }
 

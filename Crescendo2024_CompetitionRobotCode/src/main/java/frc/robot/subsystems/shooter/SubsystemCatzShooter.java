@@ -203,7 +203,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
             }
 
             m_iterationCounter++;
-            System.out.println(m_iterationCounter);
+            // System.out.println(m_iterationCounter);
 
             if(m_iterationCounter >= timer(1)) {
               io.setShooterDisabled();
@@ -259,7 +259,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public Command cmdServoPosition(double value) {
-    return run(()-> updateShooterServo(value));
+    return runOnce(()-> updateShooterServo(value));
   }
 
   public void updateShooterServo(double position) {
