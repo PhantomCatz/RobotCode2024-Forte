@@ -89,7 +89,7 @@ public class ModuleIOReal implements ModuleIO {
         drivePosition = DRIVE_MOTOR.getPosition();
         BaseStatusSignal.setUpdateFrequencyForAll(250, drivePosition);
 
-        //DRIVE_MOTOR.optimizeBusUtilization(1.0);
+        //DRIVE_MOTOR.optimizeBusUtilization (1.0);
 
 
         //check if drive motor is initialized correctly

@@ -344,5 +344,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
     currentShooterLoadState = state;
   }
 
+  public void setShootPosLogic(){
+    updateShooterServo(1.0);
+    
+  }
+
+  public Command setShootingPos(){
+    return runOnce(()-> setShootPosLogic());
+  }
 
 }

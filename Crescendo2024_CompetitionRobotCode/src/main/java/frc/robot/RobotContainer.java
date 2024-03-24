@@ -112,11 +112,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
               xboxAux.rightTrigger().onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
 
-              xboxAux.rightBumper().onTrue(shooter.rampUpFlyWheels());  //RAMPING UP 
+              // xboxAux.x().onTrue();
+
+              xboxAux.a().onTrue(shooter.rampUpFlyWheels());  //RAMPING UP 
 
               xboxAux.b().onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
 
-              xboxAux.x().onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
+              xboxAux.y().onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
               xboxAux.rightStick().onTrue(shooter.cmdServoPosition(xboxAux.getRightY())); //MOVE SERVO POSITION MANUAL 
 
