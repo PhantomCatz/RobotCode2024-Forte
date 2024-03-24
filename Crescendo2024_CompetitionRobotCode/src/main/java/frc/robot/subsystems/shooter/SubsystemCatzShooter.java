@@ -22,6 +22,8 @@ import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.turret.TurretIO;
+import frc.robot.subsystems.turret.TurretIO.TurretIOInputs;
 
 
 public class SubsystemCatzShooter extends SubsystemBase {
@@ -214,6 +216,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
               currentShooterLoadState = ShooterLoadState.LOAD_OFF;
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
+              
             }
           break;
 
@@ -342,15 +345,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   public void setShooterLoadState(ShooterLoadState state) {
     currentShooterLoadState = state;
-  }
-
-  public void setShootPosLogic(){
-    updateShooterServo(1.0);
-    
-  }
-
-  public Command setShootingPos(){
-    return runOnce(()-> setShootPosLogic());
   }
 
 }
