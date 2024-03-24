@@ -323,6 +323,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
     manualTurretPwrRT  = power * TURRET_POWER_SCALE;
   }
 
+  public Command rotate(double power){
+    return runOnce(()->{
+      m_currentTurretState = TurretState.FULL_MANUAL;
+      manualTurretPwr = power * TURRET_POWER_SCALE;
+    });
+  }
+
   public double perioidicTurretManual(double pwrLT, double pwrRT) {
 
       if(pwrLT < -0.1) {
@@ -350,6 +357,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public Command cmdTurretOff() {
     return run(() -> setTurretDisabled());
   }
+
 
   private void setTurretDisabled() {
       io.turretSetPwr(0.0);

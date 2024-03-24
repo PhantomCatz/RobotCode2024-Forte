@@ -186,11 +186,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
    
             }
           } else {
-            if(inputs.shooterVelocityRT >= 74.0 &&
-               inputs.shooterVelocityLT >= 54.0) {
+            if(inputs.shooterVelocityRT >= inputs.shooterVelocityRT-20 &&
+               inputs.shooterVelocityLT >= inputs.shooterVelocityLT-20) {
                 xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
                 
                 m_iterationCounter = 0;  
+                
             }
           }
           break;

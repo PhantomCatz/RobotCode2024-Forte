@@ -80,105 +80,109 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     configureBindings();
   }
   
+  private boolean isRampedUp = false;
 
   private void configureBindings() {    
     
     //------------------------------------------------------------------------------------
     //  Drive commands
     //------------------------------------------------------------------------------------
-    //mode speaker
-    xboxDrv.leftStick().and(xboxAux.povRight()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
+    //RESET GYRO
+      xboxDrv.start().onTrue(driveTrain.resetGyro());
 
-    //mode amp
-    xboxDrv.leftStick().and(xboxAux.povLeft()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));       
-    
-    // xboxDrv.b().onTrue(auton.autoScoreAmp());
-    xboxDrv.b().onTrue(new AimAndOrFireAtSpeakerCmd());
+      //LED
+      xboxDrv.x().and(xboxDrv.back()).onTrue(Commands.runOnce(()->led.signalHumanPlayerAMP()));
 
-    xboxDrv.start().onTrue(driveTrain.resetGyro());
+      //INTAKE
+      xboxDrv.leftBumper().onTrue(intake.cmdRollerIn()); // intake in
+      xboxDrv.rightBumper().onTrue(intake.cmdRollerOut()); // intake out
+      xboxDrv.b().onTrue(intake.cmdRollerOff());
+   
 
-    //ensure that the robot is shooter facing the speaker when reseting position
-    xboxDrv.back().and(xboxDrv.leftTrigger()).onTrue(Commands.runOnce(()->driveTrain.resetPosition(new Pose2d(2.97,4.11, Rotation2d.fromDegrees(0)))));
-
-    //signify amp
-    xboxDrv.x().and(xboxDrv.back()).onTrue(Commands.runOnce(()->led.signalHumanPlayerAMP()));
+      xboxDrv.rightStick().onTrue(new StowPoseCmd());
+     
+      xboxDrv.leftStick().and(xboxDrv.povRight()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
+      xboxDrv.leftStick().and(xboxDrv.povLeft()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));
 
     //----------------------------------------------------------------------------------------
     //  Aux Commands
     //---------------------------------------------------------------------------------------- 
-    //pov state machine commands 
 
-      //climb
-    xboxAux.back().and(xboxAux.start()).onTrue(new ClimbCmd(()->xboxAux.getLeftY(), ()->xboxAux.getRightY()));//.onFalse(new ClimbCmd(()->0.0, ()->0.0));  //raise left climb hook 
-
-    
-    //mode speaker
+    //SPEAKER MODE
     xboxAux.y().and(xboxAux.povRight()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
 
-    //xboxAux.x().and(xboxAux.povRight()).onTrue(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()));
+    xboxAux.b().and(xboxAux.povRight()).onTrue(shooter.shootPreNote());
+    xboxAux.a().and(xboxAux.povRight()).onTrue(shooter.cmdShoot());
 
-    xboxAux.b().and(xboxAux.povRight()).onTrue(shooter.cmdShoot());
-    
+    xboxAux.x().and(xboxAux.povRight()).onTrue(new AimAndOrFireAtSpeakerCmd());
 
-    xboxAux.rightStick().and(xboxAux.povRight()).onTrue(shooter.cmdShooterRamp());
+    xboxAux.povRight().onTrue(shooter.cmdServoPosition(xboxAux.getRightY()));
 
-    xboxAux.povDown().and(xboxAux.x()).onTrue(new MoveToPreset(CatzMechanismConstants.SCORING_TRAP_PRESET));
-    xboxAux.povDown().and(xboxAux.b()).onTrue(new MoveToPreset(CatzMechanismConstants.PREP_FOR_AMP_PRESET));
-
-    xboxAux.a().and(xboxAux.povUp()).onTrue(shooter.cmdServoPosition(1.0)); 
-    xboxAux.a().and(xboxAux.povDown()).onTrue(shooter.cmdServoPosition(0.0)); 
+    xboxAux.povRight().onTrue(turret.rotate(xboxAux.getRightX()));
 
 
-    xboxAux.a().and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET));
 
-    xboxAux.b().and(xboxAux.x()).and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_DEFENSE_PRESET));
-
-
-    //mode amp
+    //AMP MODE
     xboxAux.y().and(xboxAux.povLeft()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
 
     xboxAux.x().and(xboxAux.povLeft()).onTrue(new MoveToAmpTransition());
 
-    xboxAux.x().and(()->stateMachine.getNoteDestination() == NoteDestination.AMP).onTrue(Commands.print("Amp state"));
-    xboxAux.x().and(()->stateMachine.getNoteDestination() == NoteDestination.SPEAKER).onTrue(Commands.print("speaker state"));
-
     xboxAux.b().and(xboxAux.povLeft()).onTrue(new ScoreAmpCmd());
+
+    xboxAux.povLeft().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
+
+    // xboxAux.x().and(()->stateMachine.getNoteDestination() == NoteDestination.AMP).onTrue(Commands.print("Amp state"));
+    // xboxAux.x().and(()->stateMachine.getNoteDestination() == NoteDestination.SPEAKER).onTrue(Commands.print("speaker state"));
 
     xboxAux.rightStick().onTrue(shooter.setPositionCmd(()->xboxAux.getRightY()));
 
     xboxAux.start().onTrue(new MoveToPreset(CatzMechanismConstants.HOARD_PRESET));
 
 
-    //mode trap
-    xboxAux.povUp().and(xboxAux.x()).onTrue(new ScoreTrapCmd());
+    //CLIMB MODE
 
-    //stow
-    xboxAux.a().onTrue(new StowPoseCmd());
-
+    xboxAux.povUp().onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
+    xboxAux.povUp().and(xboxAux.b()).onTrue(new ScoreTrapCmd());
     
 
+      //climb
+    // xboxAux.back().and(xboxAux.start()).onTrue(new ClimbCmd(()->xboxAux.getLeftY(), ()->xboxAux.getRightY()));//.onFalse(new ClimbCmd(()->0.0, ()->0.0));  //raise left climb hook 
+    // //xboxAux.x().and(xboxAux.povRight()).onTrue(new AimAndOrFireAtSpeakerCmd(()->xboxAux.b().getAsBoolean()));
+    // //statmachine shooter vs intake elevator manual control dependant on state
+    // xboxAux.leftStick().onTrue(new ManualElevatorCmd(()->xboxAux.getLeftY(), ()->xboxAux.leftStick().getAsBoolean()));
 
-    // turn middle lights to red
+    // //turret
+    // xboxAux.leftTrigger().onTrue(turret.cmdTurretLT(()->xboxAux.getLeftTriggerAxis()));
+    // xboxAux.rightTrigger().onTrue(turret.cmdTurretRT(()->xboxAux.getRightTriggerAxis()));
 
-    //statmachine shooter vs intake elevator manual control dependant on state
-    xboxAux.leftStick().onTrue(new ManualElevatorCmd(()->xboxAux.getLeftY(), ()->xboxAux.leftStick().getAsBoolean()));
+      // Trigger rollersOffBindingAux = xboxDrv.leftBumper().and(xboxDrv.rightBumper());
+      // rollersOffBindingAux.onTrue(intake.cmdRollerOff()); // intake off
+    // //intake
+    // xboxAux.leftBumper().onTrue(intake.cmdRollerIn());
+    // xboxAux.rightBumper().onTrue(intake.cmdRollerOut());
+    // Trigger rollersOffBindingAux = xboxAux.leftBumper().and(xboxAux.rightBumper());
+    // rollersOffBindingAux.onTrue(intake.cmdRollerOff());
 
-    //turret
-    xboxAux.leftTrigger().onTrue(turret.cmdTurretLT(()->xboxAux.getLeftTriggerAxis()));
-    xboxAux.rightTrigger().onTrue(turret.cmdTurretRT(()->xboxAux.getRightTriggerAxis()));
+    // xboxAux.povLeft().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.AMP))); //default state
+    // xboxAux.povUp().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.TRAP)));
+    // xboxAux.povDown().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.HOARD)));
+    // xboxAux.povRight().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.SPEAKER)));
+  
+    // xboxAux.rightStick().and(xboxAux.povRight()).onTrue(shooter.cmdShooterRamp());
+
+    // xboxAux.povDown().and(xboxAux.x()).onTrue(new MoveToPreset(CatzMechanismConstants.SCORING_TRAP_PRESET));
+    // xboxAux.povDown().and(xboxAux.b()).onTrue(new MoveToPreset(CatzMechanismConstants.PREP_FOR_AMP_PRESET));
+
+    // xboxAux.a().and(xboxAux.povUp()).onTrue(shooter.cmdServoPosition(1.0)); 
+    // xboxAux.a().and(xboxAux.povDown()).onTrue(shooter.cmdServoPosition(0.0)); 
 
 
-    //intake
-    xboxAux.leftBumper().onTrue(intake.cmdRollerIn());
-    xboxAux.rightBumper().onTrue(intake.cmdRollerOut());
-    Trigger rollersOffBindingAux = xboxAux.leftBumper().and(xboxAux.rightBumper());
-    rollersOffBindingAux.onTrue(intake.cmdRollerOff());
+    // xboxAux.a().and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET));
 
-    xboxAux.povLeft().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.AMP))); //default state
-    xboxAux.povUp().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.TRAP)));
-    xboxAux.povDown().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.HOARD)));
-    xboxAux.povRight().onTrue(Commands.runOnce(()-> stateMachine.cmdNewNoteDestination(NoteDestination.SPEAKER)));
+    // xboxAux.b().and(xboxAux.x()).and(xboxAux.povRight()).onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_DEFENSE_PRESET));
+
   }
+
 
   //mechanisms with default commands revert back to these cmds if no other cmd requiring the subsystem is active
   private void defaultCommands() {  
