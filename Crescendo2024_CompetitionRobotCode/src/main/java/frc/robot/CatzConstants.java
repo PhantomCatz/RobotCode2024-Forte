@@ -261,8 +261,8 @@ public final class CatzConstants {
   
 
   public static final class CatzMechanismConstants {
-    public static robotMode driverCurrentMode = robotMode.SPEAKER_MODE;
-    public enum robotMode {
+    public static RobotMode driverCurrentMode = RobotMode.SPEAKER_MODE;
+    public enum RobotMode {
       SPEAKER_MODE,
       AMP_MODE, 
       HOARD_MODE, 
@@ -342,6 +342,12 @@ public final class CatzConstants {
                                                         SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG, 
                                                         -999.0, 
                                                         -999.0);
+
+    public static final CatzMechanismPosition SHOOTER_DEFAULT_PRESET =
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW,
+                                                        SubsystemCatzIntake.INTAKE_STOW_DEG,
+                                                        1.0, 
+                                                        SubsystemCatzTurret.HOME_POSITION_DEG);
 
     //-10
     

@@ -11,6 +11,11 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.pathplanner.lib.pathfinding.Pathfinding;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,56 +38,70 @@ public class Robot extends LoggedRobot {
   
   @Override
   public void robotInit() {
-  //   // Record metadata
-  //   Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
-  //   Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-  //   Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-  //   Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
-  //   Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-  //   switch (BuildConstants.DIRTY) {
-  //     case 0:
-  //        Logger.recordMetadata("GitDirty", "All changes committed");
-  //        break;
-  //     case 1:
-  //        Logger.recordMetadata("GitDirty", "Uncomitted changes");
-  //        break;
-  //      default:
-  //        Logger.recordMetadata("GitDirty", "Unknown");
-  //        break;
-  //  }
+    // Record metadata
+    Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    switch (BuildConstants.DIRTY) {
+      case 0:
+         Logger.recordMetadata("GitDirty", "All changes committed");
+         break;
+      case 1:
+         Logger.recordMetadata("GitDirty", "Uncomitted changes");
+         break;
+       default:
+         Logger.recordMetadata("GitDirty", "Unknown");
+         break;
+   }
 
-  //   // Set up data receivers & replay source
-  //   switch (CatzConstants.currentMode) {
-  //     // Running on a real robot, log to a USB stick
-  //     case REAL:
+    // Set up data receivers & replay source
+    switch (CatzConstants.currentMode) {
+      // Running on a real robot, log to a USB stick
+      case REAL:
 
-  //       Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
-  //       Logger.addDataReceiver(new NT4Publisher());
-        
-  //      // new PowerDistribution(1, ModuleType.kRev);
-  //       break;
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
+        Logger.addDataReceiver(new NT4Publisher());
+       // new PowerDistribution(1, ModuleType.kRev);
+        break;
 
-  //     // Running a physics simulator, log to local folder
-  //     case SIM:
-  //       Logger.addDataReceiver(new WPILOGWriter("F:/robotics code projects/loggingfiles/"));
-  //       Logger.addDataReceiver(new NT4Publisher());
-  //       break;
+      // Running a physics simulator, log to local folder
+      case SIM:
+        Logger.addDataReceiver(new WPILOGWriter("F:/robotics code projects/loggingfiles/"));
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
 
-  //     // Replaying a log, set up replay source
-  //     case REPLAY:
-  //       setUseTiming(false); // Run as fast as possible
-  //       String logPath = LogFileUtil.findReplayLog();
-  //       Logger.setReplaySource(new WPILOGReader(logPath));
-  //       Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
-  //       break;
-  //   }
-  //   // Start AdvantageKit logger
-  //   Logger.start();
+      // Replaying a log, set up replay source
+      case REPLAY:
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        break;
+    }
+    // Start AdvantageKit logger
+    Logger.start();
 
-  //   //instantiate the robot subsystems and commands using an object
-  //   m_robotContainer = new RobotContainer();
+    //instantiate the robot subsystems and commands using an object
+    m_robotContainer = new RobotContainer();
 
-  //   DriverStation.silenceJoystickConnectionWarning(true);
+    DriverStation.silenceJoystickConnectionWarning(true);
+    // SubsystemCatzVision.getInstance().setUseSingleTag(true, 4);
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263) { 
+      lead.mid.colorSolid(Color.kGreen);
+      lead.top.colorSolid(Color.kGreen);
+      lead.bot.colorSolid(Color.kGreen);
+      
+    } else {
+      lead.mid.colorSolid(Color.kRed);
+      lead.top.colorSolid(Color.kRed);
+      lead.bot.colorSolid(Color.kRed);    
+    }
+
+    lead.mid.colorRainbow();
+    lead.mid.setMode(LEDMode.Flow);
+
   }
 
   @Override
@@ -101,15 +120,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-   m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-   lead.bot.colorAlternating(Color.kBlue, Color.kWhite);
-   lead.mid.colorAlternating(Color.kBlue, Color.kWhite);
-   lead.top.colorAlternating(Color.kBlue, Color.kWhite);
-
-    lead.bot.setMode(LEDMode.Flow);
-    lead.mid.setMode(LEDMode.Flow);
-    lead.top.setMode(LEDMode.Flow);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -130,7 +141,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousExit() {
     if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-      SubsystemCatzDrivetrain.getInstance().resetGyroTrue(); //for some reason adding 180 degrees doesnt work but resetting works?????
+      SubsystemCatzDrivetrain.getInstance().flipGyro();
     }
   }
 
@@ -139,12 +150,11 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    
   }
 
   @Override
   public void teleopPeriodic() {
-    m_robotContainer.logDpadStates();
+
  
   }
 
@@ -164,4 +174,3 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
 }
-
