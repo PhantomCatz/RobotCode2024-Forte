@@ -262,12 +262,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
       //take difference between speaker and the currnet robot translation
       Translation2d roboDistanceFromSpeaker = goal.minus(robotPose.getTranslation());
-      // System.out.println(roboDistanceFromSpeaker);
       //--------------------------------------------------------------------------------------------
       //  If we are trying to aim while moving, then we need to take into account robot velocity
       //--------------------------------------------------------------------------------------------
       roboDistanceFromSpeaker.div(Math.hypot(roboDistanceFromSpeaker.getX(), roboDistanceFromSpeaker.getY())); //direction
-      roboDistanceFromSpeaker.times(SubsystemCatzShooter.getInstance().getScuffedShootingSpeed());  //magnitude
+      
+      double shootingSpeedVelocity = SubsystemCatzShooter.getInstance().getScuffedShootingSpeed();
+      roboDistanceFromSpeaker.times(shootingSpeedVelocity);  //magnitude
      
       if(accountRobotVel){
         roboDistanceFromSpeaker.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx, 

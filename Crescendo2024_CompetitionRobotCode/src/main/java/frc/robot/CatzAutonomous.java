@@ -426,7 +426,7 @@ public class CatzAutonomous {
     }
 
     public Command autoScoreAmp() {
-
+        
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
                 new Pose2d(1.85, 7.5, Rotation2d.fromDegrees(90)),
                 new Pose2d(1.85, 7.8, Rotation2d.fromDegrees(90))

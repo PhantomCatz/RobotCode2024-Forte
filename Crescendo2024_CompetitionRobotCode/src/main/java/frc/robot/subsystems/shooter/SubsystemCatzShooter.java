@@ -36,9 +36,17 @@ public class SubsystemCatzShooter extends SubsystemBase {
    * Linear Servo Values
    *-----------------------------------------------------------------------------------------*/
   LoggedTunableNumber servoPosTunning = new LoggedTunableNumber("ServoPos", 0);
-    
+  
+  //Servo SetPositions
+  public static final double SERVO_STOW_POS = 0.0;
+  public static final double SERVO_OPTIMAL_HANDOFF_HIGH_POS = 0.4;
+
+
+  private double m_newServoPosition;
+  private double m_servoPosError;
+
   /*-----------------------------------------------------------------------------------------
-   * States and Variables for Periodic
+   * States
    *-----------------------------------------------------------------------------------------*/
 
   private static ShooterLoadState currentShooterLoadState;
@@ -53,14 +61,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
     LOAD_OFF,
     LOAD_OUT
   }
-
-/*-----------------------------------------------------------------------------------------
-  * Constants for Shooter
-  *-----------------------------------------------------------------------------------------*/
-  public static final double SERVO_OPTIMAL_HANDOFF_POS = 0.0;
-
-  private double m_newServoPosition;
-  private double m_servoPosError;
 
   //for determining state machine for shooter
   private ShooterServoState currentShooterServoState;
@@ -78,6 +78,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
     NOTE_HAS_BEEN_SHOT,
     NULL
   }
+
+  /*-----------------------------------------------------------------------------------------
+  * Constants for Shooter
+  *-----------------------------------------------------------------------------------------*/
 
   private final double LOOP_CYCLE_MS = 0.02;
 
@@ -239,7 +243,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
       m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
 
       io.setServoPosition(m_newServoPosition);
-
       if(Math.abs(m_servoPosError) < 0.1) {
         m_shooterServoInPos = true;
       }
@@ -255,7 +258,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public double getScuffedShootingSpeed(){
-    return ((((ShooterIOReal)io).shooterVelLT.get() + ((ShooterIOReal)io).shooterVelRT.get())/2+2) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink)
+    return ((inputs.shooterVelocityRT + inputs.shooterVelocityLT)/2+2) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink) TBD
   }
 
   public Command cmdServoPosition(double value) {
@@ -306,7 +309,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public Command cmdShooterDisabled() {
-    return runOnce(()->io.setShooterDisabled());
+    return runOnce(()->disableShooterFlywheel());
+  }
+
+  public void disableShooterFlywheel() {
+    io.setShooterDisabled();
   }
 
   //-------------------------------------------------------------------------------------

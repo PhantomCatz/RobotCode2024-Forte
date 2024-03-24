@@ -29,6 +29,8 @@ public class StowPoseCmd extends Command {
       runMechanismSetpoints(CatzMechanismConstants.STOW_PRESET);
       intake.setRollersOff();
       shooter.setShooterLoadState(ShooterLoadState.LOAD_OFF);
+      shooter.disableShooterFlywheel();
+      
   }
 
   @Override

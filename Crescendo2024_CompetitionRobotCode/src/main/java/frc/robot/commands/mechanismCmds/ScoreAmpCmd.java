@@ -50,7 +50,7 @@ public class ScoreAmpCmd extends Command {
   @Override
   public void execute() {
     if(intake.getWristAngle() > -30) {
-      intake.pivotFullManual(0.0);
+      intake.pivotFullManual(-0.1);
     } else {
       intake.pivotFullManual(-0.3);
     }

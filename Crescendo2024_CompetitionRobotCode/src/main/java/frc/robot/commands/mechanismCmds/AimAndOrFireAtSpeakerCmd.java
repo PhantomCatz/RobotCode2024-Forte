@@ -58,21 +58,34 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   private static final InterpolatingDoubleTreeMap shooterPivotTable = new InterpolatingDoubleTreeMap();
 
   static { 
-    shooterPivotTable.put(1.37, 0.600);     //53.93701 inches     Shooted from lining up against the subwoofer
+    shooterPivotTable.put(1.37, 0.650);     //53.93701 inches     Shooted from lining up against the subwoofer
+    shooterPivotTable.put(1.37, 0.600);     
     shooterPivotTable.put(1.37, 0.700);
+
+    shooterPivotTable.put(1.87, 0.575);     //73.62205
     shooterPivotTable.put(1.87, 0.650);     //73.62205
     shooterPivotTable.put(1.87, 0.500);
+
+    shooterPivotTable.put(2.37, 0.325);
     shooterPivotTable.put(2.37, 0.350);     //93.30709
     shooterPivotTable.put(2.37, 0.300);
+
+    shooterPivotTable.put(2.87, 0.290); 
     shooterPivotTable.put(2.87, 0.300);     //112.9921
-    shooterPivotTable.put(2.87, 0.280);    
+    shooterPivotTable.put(2.87, 0.280); 
+
+    shooterPivotTable.put(3.37, 0.225);
     shooterPivotTable.put(3.37, 0.250);     //132.6772
     shooterPivotTable.put(3.37, 0.200);
+
+    shooterPivotTable.put(3.87, 0.112);
     shooterPivotTable.put(3.87, 0.125);     //152.3622  
     shooterPivotTable.put(3.87, 0.100);
+
+    shooterPivotTable.put(4.87, 0.070);
     shooterPivotTable.put(4.87, 0.100);     //191.7323
     shooterPivotTable.put(4.87, 0.050);
-    shooterPivotTable.put(4.87, 0.100);
+
     shooterPivotTable.put(5.87, 0.000);     //231.1024
 
   }

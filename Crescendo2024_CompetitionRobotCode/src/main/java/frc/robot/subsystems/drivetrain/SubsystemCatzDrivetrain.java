@@ -1,5 +1,11 @@
 package frc.robot.subsystems.drivetrain;
 
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -11,19 +17,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
-import frc.robot.Utils.GeometryUtils;
 import frc.robot.Utils.LocalADStarAK;
 // import frc.robot.subsystems.vision.SubsystemCatzVision;;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
@@ -44,6 +52,21 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Swerve drive pose estimator for tracking robot pose
     private static SwerveDrivePoseEstimator m_poseEstimator;
+
+    @AutoLog
+    public static class OdometryTimestampInputs {
+        public double[] timestamps = new double[] {};
+    }
+    public static final Lock odometryLock = new ReentrantLock();
+    public static final Queue<Double> timestampQueue = new ArrayBlockingQueue<>(20);
+
+    private final OdometryTimestampInputsAutoLogged odometryTimestampInputs =
+      new OdometryTimestampInputsAutoLogged();
+
+    // Store previous positions and time for filtering odometry data
+    private SwerveDriveWheelPositions lastPositions = null;
+    private double lastTime = 0.0;
+
 
     private final SubsystemCatzVision vision = SubsystemCatzVision.getInstance();
 
@@ -139,6 +162,17 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
+        // Update & process odometry inputs
+        odometryLock.lock();
+        // Read timestamps from odometry thread and fake
+        odometryTimestampInputs.timestamps =
+            timestampQueue.stream().mapToDouble(Double::valueOf).toArray();
+        if (odometryTimestampInputs.timestamps.length == 0) {
+        odometryTimestampInputs.timestamps = new double[] {Timer.getFPGATimestamp()};
+        }
+        timestampQueue.clear();
+        Logger.processInputs("Drive/OdometryTimestamps", odometryTimestampInputs);
+
         // Update inputs (sensors/encoders) for code logic and advantage kit
         for (CatzSwerveModule module : m_swerveModules) {
             module.periodic();
@@ -146,44 +180,52 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Update gyro inputs and log them
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/gyroinputs ", gyroInputs);
-            var visionOdometry = vision.getVisionOdometry();   
-            for (int i = 0; i < visionOdometry.size(); i++) {
-                //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
-                double xyStdDev = 0;
 
-                // if(visionOdometry.get(i).getPose().getX() == -1 && visionOdometry.get(i).getPose().getY() == -1){
-                //     break;
-                // }
+        odometryLock.unlock();
 
-                if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
-                    xyStdDev = 3;
-                }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
-                    xyStdDev = 5;
-                }else if(visionOdometry.get(i).getAvgArea() >= 0.12){
-                    xyStdDev = 10;
-                }else{
-                    xyStdDev = 40;
-                }
+       
+        
 
-                //System.out.println(visionOdometry.get(i).getAvgArea());
+        
+        var visionOdometry = vision.getVisionOdometry();   
+        for (int i = 0; i < visionOdometry.size(); i++) {
+            //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
+            double xyStdDev = 0;
 
+            // if(visionOdometry.get(i).getPose().getX() == -1 && visionOdometry.get(i).getPose().getY() == -1){
+            //     break;
+            // }
 
-                // dSpeed = Math.abs(dSpeed);
-                // if (dSpeed > 10){
-                //     xyStdDev *= dSpeed / 4; //account for some shaking when suddenly moving fast.
-                // }
-
-
-                m_poseEstimator.setVisionMeasurementStdDevs(
-                VecBuilder.fill(xyStdDev,xyStdDev,9)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
-            
-                m_poseEstimator.addVisionMeasurement(
-                    new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
-                    visionOdometry.get(i).getTimestamp()
-                );
-
+            if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
+                xyStdDev = 3;
+            }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
+                xyStdDev = 5;
+            }else if(visionOdometry.get(i).getAvgArea() >= 0.12){
+                xyStdDev = 10;
+            }else{
+                xyStdDev = 40;
             }
-            m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
+
+            //System.out.println(visionOdometry.get(i).getAvgArea());
+
+
+            // dSpeed = Math.abs(dSpeed);
+            // if (dSpeed > 10){
+            //     xyStdDev *= dSpeed / 4; //account for some shaking when suddenly moving fast.
+            // }
+
+
+            m_poseEstimator.setVisionMeasurementStdDevs(
+            VecBuilder.fill(xyStdDev,xyStdDev,9)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
+        
+            m_poseEstimator.addVisionMeasurement(
+                new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
+                visionOdometry.get(i).getTimestamp()
+            );
+
+        }
+
+        m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
 
 
         // Update pose estimator with module encoder values + gyro
@@ -272,6 +314,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 module.setSteerPower(0.0);
             }
         }, this);
+    }
+
+    //command to cancel running auto trajectories
+    public Command cancelTrajectory() {
+        return new InstantCommand();
     }
 
     public FieldRelativeSpeed getFieldRelativeSpeed() {

@@ -155,7 +155,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-
+    m_robotContainer.logDpadStates();
  
   }
 

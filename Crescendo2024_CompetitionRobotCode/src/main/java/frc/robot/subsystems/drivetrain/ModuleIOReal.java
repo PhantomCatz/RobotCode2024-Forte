@@ -1,6 +1,8 @@
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -42,6 +44,9 @@ public class ModuleIOReal implements ModuleIO {
     private TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
     private Slot0Configs driveConfigs         = new Slot0Configs();
 
+        //StatusSignal
+    StatusSignal<Double> drivePosition;
+
     public ModuleIOReal(int driveMotorIDIO, int steerMotorIDIO, int magDIOPort) {
 
         //mag encoder setup
@@ -74,8 +79,6 @@ public class ModuleIOReal implements ModuleIO {
         talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
 
-
-
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
@@ -83,7 +86,10 @@ public class ModuleIOReal implements ModuleIO {
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.00;
  
-       // DRIVE_MOTOR.optimizeBusUtilization();
+        drivePosition = DRIVE_MOTOR.getPosition();
+        BaseStatusSignal.setUpdateFrequencyForAll(250, drivePosition);
+
+        //DRIVE_MOTOR.optimizeBusUtilization(1.0);
 
 
         //check if drive motor is initialized correctly
@@ -99,7 +105,7 @@ public class ModuleIOReal implements ModuleIO {
     public void updateInputs(ModuleIOInputs inputs) {
 
         inputs.driveMtrVelocity       = DRIVE_MOTOR.getRotorVelocity().getValue();
-        inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
+        inputs.driveMtrSensorPosition = drivePosition.getValueAsDouble();
         inputs.driveAppliedVolts      = DRIVE_MOTOR.getMotorVoltage().getValueAsDouble();
         inputs.magEncoderValue        = magEnc.get();
         inputs.steerAppliedVolts      = STEER_MOTOR.getOutputCurrent();
