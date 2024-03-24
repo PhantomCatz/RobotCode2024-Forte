@@ -112,7 +112,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
               xboxAux.rightTrigger().onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
 
-              // xboxAux.x().onTrue();
+              xboxAux.x().onTrue(shooter.cmdServoPosition(1.0));
 
               xboxAux.a().onTrue(shooter.rampUpFlyWheels());  //RAMPING UP 
 
