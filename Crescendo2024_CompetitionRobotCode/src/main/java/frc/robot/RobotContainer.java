@@ -162,7 +162,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //CLIMB MODE
 
     xboxAux.povUp().onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
-    xboxAux.b().and(()->dpadUP = true).onTrue(new ScoreTrapCmd());
+    xboxAux.b().and(()->dpadUP == true).onTrue(new ScoreTrapCmd());
     //xboxAux.povUp().and(xboxAux.b()).onTrue(new ScoreTrapCmd());
 
 
