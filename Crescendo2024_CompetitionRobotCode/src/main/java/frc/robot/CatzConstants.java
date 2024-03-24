@@ -343,6 +343,12 @@ public final class CatzConstants {
                                                         -999.0, 
                                                         -999.0);
 
+    public static final CatzMechanismPosition SHOOTER_DEFAULT_PRESET =
+                              new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW,
+                                                        SubsystemCatzIntake.INTAKE_STOW_DEG,
+                                                        1.0, 
+                                                        SubsystemCatzTurret.HOME_POSITION_DEG);
+
     //-10
     
   }
