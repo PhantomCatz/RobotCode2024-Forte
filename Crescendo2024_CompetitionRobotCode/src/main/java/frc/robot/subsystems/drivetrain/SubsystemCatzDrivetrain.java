@@ -53,21 +53,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     // Swerve drive pose estimator for tracking robot pose
     private static SwerveDrivePoseEstimator m_poseEstimator;
 
-    @AutoLog
-    public static class OdometryTimestampInputs {
-        public double[] timestamps = new double[] {};
-    }
-    public static final Lock odometryLock = new ReentrantLock();
-    public static final Queue<Double> timestampQueue = new ArrayBlockingQueue<>(20);
-
-    private final OdometryTimestampInputsAutoLogged odometryTimestampInputs =
-      new OdometryTimestampInputsAutoLogged();
-
-    // Store previous positions and time for filtering odometry data
-    private SwerveDriveWheelPositions lastPositions = null;
-    private double lastTime = 0.0;
-
-
     private final SubsystemCatzVision vision = SubsystemCatzVision.getInstance();
 
     // Swerve modules representing each corner of the robot
@@ -153,25 +138,13 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     private void startOdometryPeriodic(){
         Thread odometryThread = new Thread(()-> {
-            m_poseEstimator.update(getRotation2d(), getModulePositions());
-
-            Timer.delay(0.01);
+   
         });
         odometryThread.start();
     }
 
     @Override
     public void periodic() {
-        // Update & process odometry inputs
-        odometryLock.lock();
-        // Read timestamps from odometry thread and fake
-        odometryTimestampInputs.timestamps =
-            timestampQueue.stream().mapToDouble(Double::valueOf).toArray();
-        if (odometryTimestampInputs.timestamps.length == 0) {
-        odometryTimestampInputs.timestamps = new double[] {Timer.getFPGATimestamp()};
-        }
-        timestampQueue.clear();
-        Logger.processInputs("Drive/OdometryTimestamps", odometryTimestampInputs);
 
         // Update inputs (sensors/encoders) for code logic and advantage kit
         for (CatzSwerveModule module : m_swerveModules) {
@@ -181,9 +154,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/gyroinputs ", gyroInputs);
 
-        odometryLock.unlock();
+        //odometryLock.unlock();
 
-       
+        m_poseEstimator.update(getRotation2d(), getModulePositions());      
         
 
         

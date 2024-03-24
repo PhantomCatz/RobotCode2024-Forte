@@ -31,7 +31,6 @@ public class Robot extends LoggedRobot {
   public static SubsystemCatzLED lead = SubsystemCatzLED.getInstance();
   private RobotContainer m_robotContainer;
   
-  public static SubsystemCatzLED lead;
   @Override
   public void robotInit() {
   //   // Record metadata
@@ -84,12 +83,6 @@ public class Robot extends LoggedRobot {
   //   m_robotContainer = new RobotContainer();
 
   //   DriverStation.silenceJoystickConnectionWarning(true);
-
-    lead = new SubsystemCatzLED();
-
-    lead.bot.setModeNColor(Color.kRed,Color.kRed,LEDMode.Solid);
-    lead.mid.colorRainbow();
-    lead.top.setModeNColor(Color.kBlue, Color.kBlue, LEDMode.Solid);
   }
 
   @Override

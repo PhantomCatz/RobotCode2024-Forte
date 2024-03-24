@@ -72,11 +72,11 @@ public class ShooterIOReal implements ShooterIO {
     private final int SERVO_LEFT_PWM_ID  = 0;
     private final int SERVO_RIGHT_PWM_ID = 1;
 
-    private final int SERVO_PW_US_MAX_POSITION          = 2000;
-    private final int SERVO_PW_US_MAX_DEADBAND_POSITION = 1800;
-    private final int SERVO_PW_US_CENTER_POSITION       = 1500;
-    private final int SERVO_PW_US_MIN_DEADBAND_POSITION = 1200;
-    private final int SERVO_PW_US_MIN_POSITION          = 1000;
+    private static final int SERVO_PW_US_MAX_POSITION          = 2000;
+    private static final int SERVO_PW_US_MAX_DEADBAND_POSITION = 1800;
+    private static final int SERVO_PW_US_CENTER_POSITION       = 1500;
+    private static final int SERVO_PW_US_MIN_DEADBAND_POSITION = 1200;
+    private static final int SERVO_PW_US_MIN_POSITION          = 1000;
 
     //Tunable motor velocities
     LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 58); // was 65
@@ -137,8 +137,8 @@ public class ShooterIOReal implements ShooterIO {
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
        // BaseStatusSignal.setUpdateFrequencyForAll(50, );
-        SHOOTER_MOTOR_LT.optimizeBusUtilization();
-        SHOOTER_MOTOR_RT.optimizeBusUtilization();
+        // SHOOTER_MOTOR_LT.optimizeBusUtilization();
+        // SHOOTER_MOTOR_RT.optimizeBusUtilization();
 
 
 
@@ -163,8 +163,8 @@ public class ShooterIOReal implements ShooterIO {
 
         inputs.shooterVelocityLT        = SHOOTER_MOTOR_LT.getVelocity().getValue();
         inputs.shooterVelocityRT        = SHOOTER_MOTOR_RT.getVelocity().getValue();
-        // inputs.velocityThresholdLT      = -shooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET; //was shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET
-        // inputs.velocityThresholdRT      =  shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
+        inputs.velocityThresholdLT      = -shooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET; //was shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET
+        inputs.velocityThresholdRT      =  shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
         // inputs.shooterVelocityErrorLT   = SHOOTER_MOTOR_LT.getClosedLoopError().getValue();
         // inputs.shooterVelocityErrorRT   = SHOOTER_MOTOR_RT.getClosedLoopError().getValue();
         // inputs.shooterMotorVoltageLT    = SHOOTER_MOTOR_LT.getMotorVoltage().getValue();

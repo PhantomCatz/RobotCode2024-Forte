@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.shooter;
 
+import java.sql.Driver;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -46,11 +47,20 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private double m_servoPosError;
 
   /*-----------------------------------------------------------------------------------------
+   * Time Constants
+   *-----------------------------------------------------------------------------------------*/
+  private final double LOOP_CYCLE_SECONDS = 0.02;
+
+  private final int WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT = (int) (Math.round(1.0/LOOP_CYCLE_SECONDS) + 1.0); 
+  private final int SHOOTING_TIMEOUT                  = (int) (Math.round(0.5/LOOP_CYCLE_SECONDS) + 1.0);
+  private final int LOAD_OUT_TIMEOUT                  = (int) (Math.round(0.5/LOOP_CYCLE_SECONDS) + 1.0);
+
+  /*-----------------------------------------------------------------------------------------
    * States
    *-----------------------------------------------------------------------------------------*/
 
-  private static ShooterLoadState currentShooterLoadState;
-  public static enum ShooterLoadState {
+  private static ShooterState currentShooterState;
+  public static enum ShooterState {
     LOAD_IN,
     FINE_TUNE,
     LOAD_IN_DONE,
@@ -60,14 +70,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
     SHOOTING,
     LOAD_OFF,
     LOAD_OUT
-  }
-
-  //for determining state machine for shooter
-  private ShooterServoState currentShooterServoState;
-  public enum ShooterServoState {
-    FULL_MANUAL,
-    AUTO,
-    TUNNING
   }
  
   //shooter note state for determining when other mechanism should turn off
@@ -82,15 +84,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
   /*-----------------------------------------------------------------------------------------
   * Constants for Shooter
   *-----------------------------------------------------------------------------------------*/
-
-  private final double LOOP_CYCLE_MS = 0.02;
-
   private static final boolean BEAM_IS_BROKEN     = true;
   private static final boolean BEAM_IS_NOT_BROKEN = false;
 
   private boolean m_desiredBeamBreakState;
   private int     m_iterationCounter;
-  private int     m_iterationCounter2;
 
   private boolean m_shooterServoInPos = false;
   
@@ -128,11 +126,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
+
     if(DriverStation.isDisabled()) {
-      currentShooterLoadState = ShooterLoadState.LOAD_OFF;
-      io.setShooterDisabled();
+      disableShooter();
     } else {
-      switch(currentShooterLoadState) {
+      switch(currentShooterState) {
           //-------------------------------------------------------------------------------------------
           //
           // feeder roller periodic logic
@@ -140,7 +138,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
           //-------------------------------------------------------------------------------------------
           case LOAD_IN:
             io.loadNote();
-            currentShooterLoadState = ShooterLoadState.LOAD_IN_DONE;
+            currentShooterState = ShooterState.LOAD_IN_DONE;
             currentNoteState = ShooterNoteState.NOTE_IN_ADJUST;
           break;
 
@@ -148,9 +146,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
             if(inputs.shooterLoadBeamBreakState == BEAM_IS_BROKEN) { 
               io.loadDisabled();
               m_iterationCounter = 0;
-              currentShooterLoadState = ShooterLoadState.WAIT_FOR_NOTE_TO_SETTLE;
-
-
+              currentShooterState = ShooterState.WAIT_FOR_NOTE_TO_SETTLE;
             }
           break;
 
@@ -162,58 +158,14 @@ public class SubsystemCatzShooter extends SubsystemBase {
               m_desiredBeamBreakState = BEAM_IS_BROKEN;
               io.fineAdjustFwd();
             }
-                currentShooterLoadState = ShooterLoadState.FINE_TUNE;
+                currentShooterState = ShooterState.FINE_TUNE;
           break;
 
           case FINE_TUNE:
             if(inputs.shooterAdjustBeamBreakState == m_desiredBeamBreakState) { //if front is still conncected adjust foward until it breaks
               io.loadDisabled();
-              currentShooterLoadState = ShooterLoadState.LOAD_OFF;
+              currentShooterState = ShooterState.LOAD_OFF;
               currentNoteState = ShooterNoteState.NOTE_IN_POSTION;
-            }
-          break;
-          
-          case START_SHOOTER_FLYWHEEL:
-            io.setShooterEnabled();
-            m_iterationCounter2 =0; 
-            currentShooterLoadState = ShooterLoadState.WAIT_FOR_MOTORS_TO_REV_UP;
-          break;
-          
-          
-          case WAIT_FOR_MOTORS_TO_REV_UP:
-          //System.out.println(-inputs.shooterVelocityLT + " Lt sHOOTER " + inputs.velocityThresholdLT);
-          if(DriverStation.isAutonomous()) {
-            m_iterationCounter2++;
-            if(m_iterationCounter2 > timer(1)) {
-                m_iterationCounter = 0;
-                currentShooterLoadState = ShooterLoadState.SHOOTING;
-   
-            }
-          } else {
-            if(inputs.shooterVelocityRT >= inputs.shooterVelocityRT-20 &&
-               inputs.shooterVelocityLT >= inputs.shooterVelocityLT-20) {
-                xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
-                
-                m_iterationCounter = 0;  
-                
-            }
-          }
-          break;
-
-          case SHOOTING:
-            io.feedShooter();
-            if(DriverStation.isAutonomous() == false) {
-              xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
-            }
-
-            m_iterationCounter++;
-            // System.out.println(m_iterationCounter);
-
-            if(m_iterationCounter >= timer(1)) {
-              io.setShooterDisabled();
-              currentShooterLoadState = ShooterLoadState.LOAD_OFF;
-              currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
-              SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
             }
           break;
 
@@ -223,30 +175,77 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
           case LOAD_OUT:
             io.loadBackward();
-            m_iterationCounter++;
-            if(m_iterationCounter >= timer(0.5)) {
+            
+            if(m_iterationCounter >= LOAD_OUT_TIMEOUT) {
               io.loadDisabled();
-              currentShooterLoadState = ShooterLoadState.LOAD_OFF;
+              currentShooterState = ShooterState.LOAD_OFF;
               m_iterationCounter = 0;
             }
+            m_iterationCounter++;
+          break;
+          
+          case START_SHOOTER_FLYWHEEL:
+            io.setShooterEnabled();
+            currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
+          break;
+          
+          
+          case WAIT_FOR_MOTORS_TO_REV_UP:
+            if(inputs.shooterVelocityRT >= inputs.velocityThresholdRT &&
+               inputs.shooterVelocityLT >= inputs.velocityThresholdLT) {
+
+              if(DriverStation.isAutonomous()) {
+                currentShooterState = ShooterState.SHOOTING;
+              } else {
+                xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
+              }
+            
+
+            } else {
+              if(DriverStation.isAutonomous()) {
+                if(m_iterationCounter > WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT) {
+                  m_iterationCounter = 0;
+                  currentShooterState = ShooterState.SHOOTING;
+                }
+                m_iterationCounter++;
+              }
+            }
+            break;
+
+          case SHOOTING:
+            io.feedShooter();
+            
+            if(DriverStation.isTeleop() == true) {
+              xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
+            }
+
+            if(m_iterationCounter >= SHOOTING_TIMEOUT) {
+              io.setShooterDisabled();
+              currentShooterState = ShooterState.LOAD_OFF;
+              currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
+              SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
+            }
+            
+            m_iterationCounter++;
           break;
       }
-    
-      Logger.recordOutput("shooter/current load state", currentShooterLoadState.toString());
-      Logger.recordOutput("shooter/servopos", m_newServoPosition);
-
+  
       //-------------------------------------------------------------------------------------------
       //
       // servo periodic logic
       //
       //-------------------------------------------------------------------------------------------
-      m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
-
+      
       io.setServoPosition(m_newServoPosition);
-      if(Math.abs(m_servoPosError) < 0.1) {
+      
+      m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
+      if(Math.abs(m_servoPosError) < 0.05) {
         m_shooterServoInPos = true;
       }
-    }
+    } // End of Enabled
+    
+    Logger.recordOutput("shooter/servopos", m_newServoPosition);
+
   }
 
   //-------------------------------------------------------------------------------------
@@ -261,8 +260,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return ((inputs.shooterVelocityRT + inputs.shooterVelocityLT)/2+2) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink) TBD
   }
 
-  public Command cmdServoPosition(double value) {
-    return runOnce(()-> updateShooterServo(value));
+  public Command cmdServoPosition(Supplier<Double> value) {
+    return run(()-> updateShooterServo(value.get()));
   }
 
   public void updateShooterServo(double position) {
@@ -272,14 +271,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   public Command setPositionCmd(Supplier<Double> position) {
     return run(()->m_newServoPosition = position.get());
-  }
-
-  //-------------------------------------------------------------------------------------
-  // Calculation Methods 
-  //------------------------------------------------------------------------------------- 
-  private double timer(double seconds){ // in seconds; converts time to iteration counter units
-    //System.out.println(Math.round(seconds/LOOP_CYCLE_MS) + 1);
-    return Math.round(seconds/LOOP_CYCLE_MS) + 1;
   }
 
   //-------------------------------------------------------------------------------------
@@ -305,52 +296,41 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public void startShooterFlywheel() {
-    currentShooterLoadState = ShooterLoadState.START_SHOOTER_FLYWHEEL;
+    currentShooterState = ShooterState.START_SHOOTER_FLYWHEEL;
   }
 
   public Command cmdShooterDisabled() {
-    return runOnce(()->disableShooterFlywheel());
+    return runOnce(()->disableShooter());
   }
 
-  public void disableShooterFlywheel() {
-    io.setShooterDisabled();
+  public void disableShooter() {
+    currentShooterState = ShooterState.LOAD_OFF;
+    io.setShooterDisabled(); 
+    io.loadDisabled();
   }
 
-  //-------------------------------------------------------------------------------------
-  // Shooter Loading Methods 
-  //-------------------------------------------------------------------------------------
+  public void setShooterState(ShooterState state) {
+    currentShooterState = state;
+  }
+
   public Command cmdShoot() {
-      return runOnce(()->setShooterLoadState(ShooterLoadState.SHOOTING));
+    return runOnce(()->setShooterState(ShooterState.SHOOTING));
   }
 
+  //-------------------------------------------------------------------------------------
+  // Loading Methods 
+  //-------------------------------------------------------------------------------------
   public Command cmdLoad(){
-    return runOnce(()->setShooterLoadState(ShooterLoadState.LOAD_IN));
+    return runOnce(()->setShooterState(ShooterState.LOAD_IN));
   }
   
   public Command loadBackward() {
     m_iterationCounter = 0;
-    return runOnce(()->setShooterLoadState(ShooterLoadState.LOAD_OUT));
+    return runOnce(()->setShooterState(ShooterState.LOAD_OUT));
   }
   
   public Command loadDisabled() {
-    return runOnce(()->setShooterLoadState(ShooterLoadState.LOAD_OFF));
-  }
-
-  public Command rampUpFlyWheels(){
-    return runOnce(()->startShooterFlywheel());
-  }
-
-  public void setShooterLoadState(ShooterLoadState state) {
-    currentShooterLoadState = state;
-  }
-
-  public void setShootPosLogic(){
-    updateShooterServo(1.0);
-    
-  }
-
-  public Command setShootingPos(){
-    return runOnce(()-> setShootPosLogic());
+    return runOnce(()->setShooterState(ShooterState.LOAD_OFF));
   }
 
 }

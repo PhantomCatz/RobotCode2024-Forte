@@ -158,6 +158,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
       System.out.println("red tracking");
     }
 
+
   }
 
   

@@ -284,7 +284,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
       Logger.recordOutput("AutoAim/local turret target angle", angle);
 
-      angle = CatzMathUtils.toUnitCircAngle(angle - robotPose.getRotation().getRadians()); 
+      angle = CatzMathUtils.toUnitCircAngle(angle - robotPose.getRotation().getRadians() - 3.14); 
       Logger.recordOutput("AutoAim/global turret target angle", angle);
 
       m_turretTargetDegree = Math.toDegrees(angle);    //Convert from radians to deg
