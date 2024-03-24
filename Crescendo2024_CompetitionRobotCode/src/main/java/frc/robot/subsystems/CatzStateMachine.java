@@ -5,13 +5,16 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Robot;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.Utils.LEDs.LEDSection.LEDMode;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.IntakeManualCmd;
@@ -49,56 +52,6 @@ public class CatzStateMachine extends SubsystemBase {
     public void periodic() {
         Logger.recordOutput("statemachine/note destination", targetNoteDestination);
 
-        if (SubsystemCatzClimb.getInstance().isClimbing()) {
-            if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
-                lead.top.colorSolid(Color.kBlue);
-                lead.top.setMode(LEDMode.Solid);
-
-                lead.bot.colorSolid(Color.kBlue);
-                lead.bot.setMode(LEDMode.Solid);
-
-            } else {
-                lead.top.colorSolid(Color.kWhite);
-                lead.top.colorSolid2(Color.kBlue);
-                lead.top.setMode(LEDMode.Alternating);
-                
-                lead.bot.colorSolid(Color.kWhite);
-                lead.bot.colorSolid2(Color.kBlue);
-                lead.bot.setMode(LEDMode.Alternating);
-            }
-        } else if (targetNoteDestination == NoteDestination.AMP) {
-            if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
-                lead.top.colorSolid(Color.kYellow);
-                lead.top.setMode(LEDMode.Solid);
-
-                lead.bot.colorSolid(Color.kYellow);
-                lead.bot.setMode(LEDMode.Solid);
-            } else {
-                lead.top.colorSolid(Color.kWhite);
-                lead.top.colorSolid2(Color.kYellow);
-                lead.top.setMode(LEDMode.Alternating);
-                
-                lead.bot.colorSolid(Color.kWhite);
-                lead.bot.colorSolid2(Color.kYellow);
-                lead.bot.setMode(LEDMode.Alternating);
-            }
-        } else if (targetNoteDestination == NoteDestination.SPEAKER) {
-            if (SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()) {
-                lead.top.colorSolid(Color.kOrange);
-                lead.top.setMode(LEDMode.Solid);
-
-                lead.bot.colorSolid(Color.kOrange);
-                lead.bot.setMode(LEDMode.Solid);
-            } else {
-                lead.top.colorSolid(Color.kWhite);
-                lead.top.colorSolid2(Color.kOrange);
-                lead.top.setMode(LEDMode.Alternating);
-                
-                lead.bot.colorSolid(Color.kWhite);
-                lead.bot.colorSolid2(Color.kOrange);
-                lead.bot.setMode(LEDMode.Alternating);
-            }
-        }
     }
 
     // -----------------------------------------------
