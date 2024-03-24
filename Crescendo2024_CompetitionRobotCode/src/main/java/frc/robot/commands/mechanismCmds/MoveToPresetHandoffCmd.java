@@ -20,9 +20,8 @@ import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterLoadState;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
@@ -157,7 +156,7 @@ public class MoveToPresetHandoffCmd extends Command {
           runMechanismSetpoints(m_targetMechPoseEnd);
 
           if(m_noteDestination == NoteDestination.SPEAKER) {
-            shooter.setShooterLoadState(ShooterLoadState.LOAD_IN);
+            shooter.setShooterState(ShooterState.LOAD_IN);
           }
 
           m_targetMechPoseStartReached = true; //reached start postion and start for end position
@@ -189,7 +188,7 @@ public class MoveToPresetHandoffCmd extends Command {
       if(m_targetMechPoseStartReached == false) {
         if(areMechanismsInPosition()) {
           intake.setRollersIntakeSource();
-          shooter.setShooterLoadState(ShooterLoadState.LOAD_OUT);
+          shooter.setShooterState(ShooterState.LOAD_OUT);
           m_targetMechPoseStartReached = true;
         }
       }
@@ -215,7 +214,7 @@ public class MoveToPresetHandoffCmd extends Command {
       if(m_targetMechPoseStartReached == false) {
         if(areMechanismsInPosition()) {
             intake.setRollersOutakeHandoff();
-          shooter.setShooterLoadState(ShooterLoadState.LOAD_IN);
+          shooter.setShooterState(ShooterState.LOAD_IN);
           m_targetMechPoseStartReached = true;
         }
       }

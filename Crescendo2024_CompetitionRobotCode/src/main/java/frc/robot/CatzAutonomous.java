@@ -108,7 +108,7 @@ public class CatzAutonomous {
     private Command mid(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightMid")),
-            shooter.rampUpFlyWheels().withTimeout(1.5),
+            shooter.cmdShooterRamp().withTimeout(1.5),
             Commands.waitSeconds(1.0),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightMid"))
             );
@@ -119,7 +119,7 @@ public class CatzAutonomous {
     private Command bot(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightBot")),
-            shooter.rampUpFlyWheels().withTimeout(1.5),
+            shooter.cmdShooterRamp().withTimeout(1.5),
             Commands.waitSeconds(1.0),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightBot"))
         );
@@ -128,7 +128,7 @@ public class CatzAutonomous {
     private Command top(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightTop")),
-            shooter.rampUpFlyWheels().withTimeout(1.5),
+            shooter.cmdShooterRamp().withTimeout(1.5),
             Commands.waitSeconds(1.0),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightTop"))
         );
@@ -434,11 +434,11 @@ public class CatzAutonomous {
 
         //send path info to trajectory following command in a chained autocoring path
         return new SequentialCommandGroup(new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
-                                                                                    .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false), //transfer note to intake if applicable
+                                                                                    .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false)), //transfer note to intake if applicable
                                                                     new MoveToPreset(CatzMechanismConstants.AMP_TRANSITION_PRESET),                  //move to amp transition
                                                                     new PPTrajectoryFollowingCmd(bezierPoints,                                //start auto trajectory
                                                                                                         autoPathfindingConstraints, 
-                                                                                                            new GoalEndState(0.0, Rotation2d.fromDegrees(90)))),
+                                                                                                            new GoalEndState(0.0, Rotation2d.fromDegrees(90))),
                                           new MoveToPreset(CatzMechanismConstants.SCORING_AMP_PRESET));                    //move to amp scoring position
     }
 

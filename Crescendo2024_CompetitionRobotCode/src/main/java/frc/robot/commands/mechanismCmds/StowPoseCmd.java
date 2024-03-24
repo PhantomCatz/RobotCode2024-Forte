@@ -10,7 +10,7 @@ import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterLoadState;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class StowPoseCmd extends Command {
@@ -28,8 +28,8 @@ public class StowPoseCmd extends Command {
   public void initialize() {
       runMechanismSetpoints(CatzMechanismConstants.STOW_PRESET);
       intake.setRollersOff();
-      shooter.setShooterLoadState(ShooterLoadState.LOAD_OFF);
-      shooter.disableShooterFlywheel();
+      shooter.setShooterState(ShooterState.LOAD_OFF);
+      shooter.disableShooter();
       
   }
 

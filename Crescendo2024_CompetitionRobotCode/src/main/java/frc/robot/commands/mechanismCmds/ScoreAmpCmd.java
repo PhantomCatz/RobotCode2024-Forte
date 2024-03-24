@@ -17,7 +17,6 @@ import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 

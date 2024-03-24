@@ -63,7 +63,6 @@ public class Robot extends LoggedRobot {
 
         Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
         Logger.addDataReceiver(new NT4Publisher());
-        
        // new PowerDistribution(1, ModuleType.kRev);
         break;
 
@@ -102,6 +101,7 @@ public class Robot extends LoggedRobot {
 
     lead.mid.colorRainbow();
     lead.mid.setMode(LEDMode.Flow);
+
   }
 
   @Override
