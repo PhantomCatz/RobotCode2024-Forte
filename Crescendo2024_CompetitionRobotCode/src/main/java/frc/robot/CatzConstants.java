@@ -84,6 +84,9 @@ public final class CatzConstants {
    * Width refers to the <i>y</i> direction (as described by wpilib)
    */
   public class FieldConstants {
+
+  
+
     public static final double SPEAKER_COORD_MTRS_Y = Units.inchesToMeters(219.277);
     public static double FIELD_LENGTH_MTRS = Units.inchesToMeters(651.223);
     public static double fieldWidth = Units.inchesToMeters(323.277);
@@ -258,6 +261,15 @@ public final class CatzConstants {
   
 
   public static final class CatzMechanismConstants {
+    public static robotMode driverCurrentMode = robotMode.SPEAKER_MODE;
+    public enum robotMode {
+      SPEAKER_MODE,
+      AMP_MODE, 
+      HOARD_MODE, 
+      CLIMB_MAINTENANCE_MODE,
+      CLIMB_MODE
+    }
+
     public static final CatzMechanismPosition STOW_PRESET = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
                                                         SubsystemCatzIntake.INTAKE_STOW_DEG, 
@@ -340,5 +352,6 @@ public final class CatzConstants {
     public static final Color PHANTOM_SAPPHIRE = new Color(15, 25, 200); 
   }
 
+  
 
 }

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.CatzColorConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
+import frc.robot.CatzConstants.CatzMechanismConstants.robotMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToPresetHandoffCmd;
@@ -81,126 +82,130 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     configureBindings();
   }
   
-  private boolean isRampedUp = false;
-  private boolean dpadUP = false;
-  private boolean dpadDN = false;
-  private boolean dpadRT = false;
-  private boolean dpadLT = false;
 
   private void configureBindings() {    
     
-    //------------------------------------------------------------------------------------
-    //  Drive commands
-    //------------------------------------------------------------------------------------
-    //RESET GYRO
+      //RESET GYRO
       xboxDrv.start().onTrue(driveTrain.resetGyro());
 
-      //LED
-      xboxDrv.x().and(xboxDrv.back()).onTrue(Commands.runOnce(()->led.signalHumanPlayerAMP()));
-
-      //INTAKE
-      xboxDrv.leftBumper().onTrue(intake.cmdRollerIn()); // intake in
-      xboxDrv.rightBumper().onTrue(intake.cmdRollerOut()); // intake out
-      xboxDrv.b().onTrue(intake.cmdRollerOff());
+    //------------------------------------------------------------------------------------
+    // INTAKE COMMANDS
+    //------------------------------------------------------------------------------------
+      xboxDrv.leftBumper ().onTrue(intake.cmdRollerIn());      // intake rollers in 
+      xboxDrv.rightBumper().onTrue(intake.cmdRollerOut());     // intake rollers out
+      xboxDrv.b().onTrue(intake.cmdRollerOff());               // intake rollers off
    
-
-      xboxDrv.rightStick().onTrue(Commands.parallel(new StowPoseCmd(),
-                                                    driveTrain.cancelTrajectory()));
+     
+      xboxDrv.rightStick().onTrue(Commands.parallel(new StowPoseCmd(),               //STOW INTAKE 
+                                                    driveTrain.cancelTrajectory())); //TBD LC
     
-      // xboxDrv.leftStick().and(xboxDrv.povRight()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
-      // xboxDrv.leftStick().and(xboxDrv.povLeft()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));
-
-      xboxDrv.leftStick().and(()->(dpadRT == true)).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));
-      xboxDrv.leftStick().and(()->(dpadLT == true)).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND));
-
-    //----------------------------------------------------------------------------------------
-    //  Aux Commands
-    //---------------------------------------------------------------------------------------- 
-
-    //SPEAKER MODE
-    //xboxAux.y().and(xboxAux.povRight()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
-    xboxAux.y().and(()-> dpadRT == true).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));
-
-    //xboxAux.b().and(xboxAux.povRight()).onTrue(shooter.shootPreNote());
-    xboxAux.b().and(()-> dpadRT == true).onTrue(shooter.shootPreNote());
+      
+    //------------------------------------------------------------------------------------
     
-    //xboxAux.a().and(xboxAux.povRight()).onTrue(shooter.cmdShoot());
-    xboxAux.b().and(()->dpadRT == true).onTrue(shooter.cmdShoot());
+     xboxAux.back().onTrue(Commands.runOnce(()-> led.signalHumanPlayerAMP())); // SIGNAL HUMAN PLAYER FOR AMP SCORING
 
-    //xboxAux.x().and(xboxAux.povRight()).onTrue(new AimAndOrFireAtSpeakerCmd());
-    xboxAux.x().and((()->dpadRT == true)).onTrue(new AimAndOrFireAtSpeakerCmd());
+      switch (CatzConstants.CatzMechanismConstants.driverCurrentMode) {
+
+          case SPEAKER_MODE:  
+              
+              xboxDrv.leftStick().onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
+
+              xboxAux.rightTrigger().onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
+
+              xboxAux.rightBumper().onTrue(shooter.rampUpFlyWheels());  //RAMPING UP 
+
+              xboxAux.b().onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
+
+              xboxAux.x().onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
+
+              xboxAux.rightStick().onTrue(shooter.cmdServoPosition(xboxAux.getRightY())); //MOVE SERVO POSITION MANUAL 
+
+              xboxAux.rightStick().onTrue(turret.rotate(xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
+
+          break;
+          //------------------------------------------------------------------------------------
+          case AMP_MODE:
+              xboxDrv.leftStick().onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE AND STOWS TO AMP SCORE DOWN POS
+
+              xboxAux.leftTrigger().onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)); //NOTE IN SHOOTER TRANSFERED TO INTAKE
+
+              xboxAux.y().onTrue(new MoveToAmpTransition());                      //MOVE TO AMP TRANSITION POSITION 
+
+              xboxAux.b().onTrue(new ScoreAmpCmd());                              //SCORE AMP (^^ MUST BE IN AMP TRANSITION POS FIRST)
+
+              xboxAux.leftStick().onTrue(new ManualElevatorCmd((()->xboxAux.getRightY()))); //MANUAL MODE FOR ELEVATOR
+
+          break;
+          //------------------------------------------------------------------------------------
+          case HOARD_MODE: // HOARD MODE IS NOT DONE BECAUSE WE STILL NEED TO WRITE CODE FOR IT 
+              xboxAux.y().onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));  //PICK UP GROUND TO SHOOTER
+
+              xboxAux.rightBumper().onTrue(shooter.rampUpFlyWheels()); //RAMPING UP
+                
+              xboxAux.b().onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
+
+              xboxAux.x().onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER
+
+              xboxAux.a().onTrue(intake.cmdRollerOut());               // INTAKE ROLLERS SHOOT
 
 
-    xboxAux.povRight().onTrue(shooter.cmdServoPosition(xboxAux.getRightY()));
+          break;
+          //------------------------------------------------------------------------------------
+    
+          case CLIMB_MODE:
+              xboxAux.povUp().onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
+              xboxAux.y().onTrue(new ScoreTrapCmd());
+              xboxAux.b().onTrue(intake.cmdRollerOut());
 
-    xboxAux.povRight().onTrue(turret.rotate(xboxAux.getRightX()));
+          break;
 
+          //------------------------------------------------------------------------------------   
 
+          case CLIMB_MAINTENANCE_MODE:
+              xboxAux.povUp().onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
+          break;
 
-    //AMP MODE
-    //xboxAux.y().and(xboxAux.povLeft()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
+          //------------------------------------------------------------------------------------
 
-    xboxAux.y().and(()-> dpadLT == true).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));
+          default:
+              CatzConstants.CatzMechanismConstants.driverCurrentMode = robotMode.SPEAKER_MODE;
+          break;
 
-
-    //xboxAux.x().and(xboxAux.povLeft()).onTrue(new MoveToAmpTransition());
-    xboxAux.x().and(()->dpadLT == true).onTrue(new MoveToAmpTransition());
-    xboxAux.x().and(()->dpadLT == true).and(xboxAux.leftBumper()).onTrue(auton.autoScoreAmp()); //autoscore amp
-
-
-    //xboxAux.b().and(xboxAux.povLeft()).onTrue(new ScoreAmpCmd());
-    xboxAux.b().and(()->dpadLT == true).onTrue(new ScoreAmpCmd());
-
-    //xboxAux.povLeft().onTrue(new ManualElevatorCmd(()->xboxAux.getRightY()));
-    xboxAux.leftStick().and(()->dpadLT == true).onTrue(new ManualElevatorCmd((()->xboxAux.getRightY())));
-
-    xboxAux.rightStick().onTrue(shooter.setPositionCmd(()->xboxAux.getRightY()));
-
-    xboxAux.start().onTrue(new MoveToPreset(CatzMechanismConstants.HOARD_PRESET));
+      }
+    //------------------------------------------------------------------------------------  
 
 
-    //CLIMB MODE
+    // //------------------------------------------------------------------------------------
+    // //  CLIMB COMMANDS
+    // //------------------------------------------------------------------------------------
+    //   xboxAux.povUp().onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
 
-    xboxAux.povUp().onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
-    xboxAux.b().and(()->dpadUP == true).onTrue(new ScoreTrapCmd());
-    //xboxAux.povUp().and(xboxAux.b()).onTrue(new ScoreTrapCmd());
 
 
-    //DPAD toggle factory
-    xboxAux.povUp().onTrue(Commands.parallel(Commands.runOnce(()->dpadUP = true),
-                                             Commands.runOnce(()->dpadDN = false),
-                                             Commands.runOnce(()->dpadLT = false),
-                                             Commands.runOnce(()->dpadRT = false)));
+    // //------------------------------------------------------------------------------------
+    // //  TRAP COMMAND
+    // //------------------------------------------------------------------------------------
+    //   xboxAux.povUp().and(xboxAux.b()).onTrue(new ScoreTrapCmd());
+    
 
-    xboxAux.povDown().onTrue(Commands.parallel(Commands.runOnce(()->dpadUP = false),
-                                               Commands.runOnce(()->dpadDN = true),
-                                               Commands.runOnce(()->dpadLT = false),
-                                               Commands.runOnce(()->dpadRT = false)));
+      
+    //------------------------------------------------------------------------------------
+    //  CHANGING MODES
+    //------------------------------------------------------------------------------------
+        xboxAux.povUp().and(xboxDrv.povUp()).onTrue(Commands.runOnce(()-> CatzConstants.CatzMechanismConstants.driverCurrentMode = robotMode.CLIMB_MODE)); // CLIMB MODE
 
-    xboxAux.povLeft().onTrue(Commands.parallel(Commands.runOnce(()->dpadUP = false),
-                                               Commands.runOnce(()->dpadDN = false),
-                                               Commands.runOnce(()->dpadLT = true),
-                                               Commands.runOnce(()->dpadRT = false)));
+        xboxAux.rightBumper().and(xboxAux.leftBumper()).onTrue(Commands.runOnce(()->CatzConstants.CatzMechanismConstants.driverCurrentMode = robotMode.CLIMB_MAINTENANCE_MODE)); //CLIMB MANTAINANCE MODE
 
-    xboxAux.povRight().onTrue(Commands.parallel(Commands.runOnce(()->dpadUP = false),
-                                                Commands.runOnce(()->dpadDN = false),
-                                                Commands.runOnce(()->dpadLT = false),
-                                                Commands.runOnce(()->dpadRT = true)));
-
+        xboxAux.povDown().onTrue(Commands.runOnce(()->CatzConstants.CatzMechanismConstants.driverCurrentMode = robotMode.HOARD_MODE));                     //HOARD MODE
+      
+        xboxAux.povLeft().onTrue(Commands.runOnce(()-> CatzConstants.CatzMechanismConstants.driverCurrentMode = robotMode.AMP_MODE));                      //AMP MODE
+      
+        xboxAux.povRight().onTrue(Commands.runOnce(()->CatzConstants.CatzMechanismConstants.driverCurrentMode = robotMode.SPEAKER_MODE));                  //SPEAKER MODE
+    //------------------------------------------------------------------------------------
   }
 
   public void logDpadStates() {
-    String scoringMode;
-    if(dpadLT) {
-      scoringMode = "amp";
-    } else if(dpadUP) {
-      scoringMode = "climb";
-    } else if(dpadDN) {
-      scoringMode = "hoard";
-    } else {
-      scoringMode = "Speaker";
-    }
-      SmartDashboard.putString("Scoring Mode", scoringMode);
+       SmartDashboard.putString("Scoring Mode", CatzConstants.CatzMechanismConstants.driverCurrentMode.toString());
 
   }
 

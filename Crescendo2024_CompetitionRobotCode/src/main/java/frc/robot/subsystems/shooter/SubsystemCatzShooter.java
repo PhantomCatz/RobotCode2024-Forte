@@ -336,7 +336,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return runOnce(()->setShooterLoadState(ShooterLoadState.LOAD_OFF));
   }
 
-  public Command shootPreNote(){
+  public Command rampUpFlyWheels(){
     return runOnce(()->startShooterFlywheel());
   }
 

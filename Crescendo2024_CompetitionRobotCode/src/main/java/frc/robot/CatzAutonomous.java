@@ -108,7 +108,7 @@ public class CatzAutonomous {
     private Command mid(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightMid")),
-            shooter.shootPreNote().withTimeout(1.5),
+            shooter.rampUpFlyWheels().withTimeout(1.5),
             Commands.waitSeconds(1.0),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightMid"))
             );
@@ -119,7 +119,7 @@ public class CatzAutonomous {
     private Command bot(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightBot")),
-            shooter.shootPreNote().withTimeout(1.5),
+            shooter.rampUpFlyWheels().withTimeout(1.5),
             Commands.waitSeconds(1.0),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightBot"))
         );
@@ -128,7 +128,7 @@ public class CatzAutonomous {
     private Command top(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightTop")),
-            shooter.shootPreNote().withTimeout(1.5),
+            shooter.rampUpFlyWheels().withTimeout(1.5),
             Commands.waitSeconds(1.0),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightTop"))
         );
