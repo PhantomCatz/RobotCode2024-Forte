@@ -261,8 +261,8 @@ public final class CatzConstants {
   
 
   public static final class CatzMechanismConstants {
-    public static robotMode driverCurrentMode = robotMode.SPEAKER_MODE;
-    public enum robotMode {
+    public static RobotMode driverCurrentMode = RobotMode.SPEAKER_MODE;
+    public enum RobotMode {
       SPEAKER_MODE,
       AMP_MODE, 
       HOARD_MODE, 
