@@ -29,16 +29,6 @@ import frc.robot.commands.mechanismCmds.MoveToPresetHandoffCmd;
 public class CatzStateMachine extends SubsystemBase {
 
     private static NoteDestination targetNoteDestination = NoteDestination.SPEAKER;
-
-    private static CatzMechanismPosition previousPose = CatzMechanismConstants.STOW_PRESET;
-
-    private static SubsystemCatzLED lead = SubsystemCatzLED.getInstance();
-
-    private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
-    private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
-    private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
-    private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
-
     public static CatzStateMachine instance = new CatzStateMachine();
 
     public static CatzStateMachine getInstance() {
@@ -48,99 +38,9 @@ public class CatzStateMachine extends SubsystemBase {
     @Override
     public void periodic() {
         Logger.recordOutput("statemachine/note destination", targetNoteDestination);
-
-        if (SubsystemCatzClimb.getInstance().isClimbing()) {
-            if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
-                lead.top.colorSolid(Color.kBlue);
-                lead.top.setMode(LEDMode.Solid);
-
-                lead.bot.colorSolid(Color.kBlue);
-                lead.bot.setMode(LEDMode.Solid);
-
-            } else {
-                lead.top.colorSolid(Color.kWhite);
-                lead.top.colorSolid2(Color.kBlue);
-                lead.top.setMode(LEDMode.Alternating);
-                
-                lead.bot.colorSolid(Color.kWhite);
-                lead.bot.colorSolid2(Color.kBlue);
-                lead.bot.setMode(LEDMode.Alternating);
-            }
-        } else if (targetNoteDestination == NoteDestination.AMP) {
-            if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
-                lead.top.colorSolid(Color.kYellow);
-                lead.top.setMode(LEDMode.Solid);
-
-                lead.bot.colorSolid(Color.kYellow);
-                lead.bot.setMode(LEDMode.Solid);
-            } else {
-                lead.top.colorSolid(Color.kWhite);
-                lead.top.colorSolid2(Color.kYellow);
-                lead.top.setMode(LEDMode.Alternating);
-                
-                lead.bot.colorSolid(Color.kWhite);
-                lead.bot.colorSolid2(Color.kYellow);
-                lead.bot.setMode(LEDMode.Alternating);
-            }
-        } else if (targetNoteDestination == NoteDestination.SPEAKER) {
-            if (SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()) {
-                lead.top.colorSolid(Color.kOrange);
-                lead.top.setMode(LEDMode.Solid);
-
-                lead.bot.colorSolid(Color.kOrange);
-                lead.bot.setMode(LEDMode.Solid);
-            } else {
-                lead.top.colorSolid(Color.kWhite);
-                lead.top.colorSolid2(Color.kOrange);
-                lead.top.setMode(LEDMode.Alternating);
-                
-                lead.bot.colorSolid(Color.kWhite);
-                lead.bot.colorSolid2(Color.kOrange);
-                lead.bot.setMode(LEDMode.Alternating);
-            }
-        }
     }
 
-    // -----------------------------------------------
-    // setter methods
-    // ----------------------------------------------
-    public Command cmdNewNoteDestination(NoteDestination newDestination) {
-        return runOnce(() -> setNewNoteDestination(newDestination));
-    }
 
-    private void setNewNoteDestination(NoteDestination newDestination) {
-        targetNoteDestination = newDestination;
-        //System.out.println(targetNoteDestination);
-    }
-
-    public static void setPreviousPose(CatzMechanismPosition pose) {
-        previousPose = pose;
-    }
-    private boolean xboxYPressed = false;
-    public  Command cmdXboxY() {
-        return runOnce(()-> xboxYPressed = true);
-    }
-
-    // -----------------------------------------------
-    // getter methods
-    // ----------------------------------------------
-    public CatzMechanismPosition getPreviousPose() {
-        return previousPose;
-    }
-
-    public boolean returnFalse()
-    {
-        return false;
-    }
-
- public boolean returnTrue()
-    {
-        return true;
-    }
-
-    public NoteDestination getNoteDestination() {
-        return targetNoteDestination;
-    }
 
     public enum NoteDestination {
         SPEAKER,

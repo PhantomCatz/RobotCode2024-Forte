@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
+import frc.robot.CatzConstants.RobotMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.CatzStateMachine;
@@ -613,7 +614,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public void setRollersIn() {
     rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
-    if(CatzStateMachine.getInstance().getNoteDestination() == NoteDestination.AMP) {
+    if(CatzConstants.currentRobotMode ==  RobotMode.AMP) {
       //---------------------------------------
       // in amp state which has different roller logic
       //-------------------------------------

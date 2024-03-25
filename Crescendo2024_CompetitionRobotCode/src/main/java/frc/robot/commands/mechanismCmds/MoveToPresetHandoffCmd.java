@@ -58,17 +58,6 @@ public class MoveToPresetHandoffCmd extends Command {
   @Override
   public void initialize() {
 
-
-    if(m_noteDestination == NoteDestination.AMP &&
-       m_noteSource == NoteSource.FROM_SHOOTER) {
-        CatzStateMachine.getInstance().cmdNewNoteDestination(NoteDestination.AMP);
-    }
-
-    if(m_noteDestination == NoteDestination.SPEAKER &&
-       m_noteSource == NoteSource.FROM_INTAKE) {
-        CatzStateMachine.getInstance().cmdNewNoteDestination(NoteDestination.SPEAKER);
-    }
-
     // System.out.println("Handoff " + m_noteDestination.toString());
     // System.out.println(m_noteSource.toString());
     m_targetMechPoseStartReached = false;

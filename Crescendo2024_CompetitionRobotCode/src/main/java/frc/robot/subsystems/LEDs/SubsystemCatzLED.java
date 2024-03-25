@@ -4,7 +4,13 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.RobotMode;
+import frc.robot.subsystems.CatzStateMachine.NoteDestination;
 import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
+import frc.robot.subsystems.climb.SubsystemCatzClimb;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 
 public class SubsystemCatzLED extends SubsystemBase {
 
@@ -52,6 +58,56 @@ public class SubsystemCatzLED extends SubsystemBase {
         for(Color color: section){
             ledColors[index] = color;
             index++;
+        }
+        if (SubsystemCatzClimb.getInstance().isClimbing()) {
+            if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
+                top.colorSolid(Color.kBlue);
+                top.setMode(LEDMode.Solid);
+
+                bot.colorSolid(Color.kBlue);
+                bot.setMode(LEDMode.Solid);
+
+            } else {
+                top.colorSolid(Color.kWhite);
+                top.colorSolid2(Color.kBlue);
+                top.setMode(LEDMode.Alternating);
+                
+                bot.colorSolid(Color.kWhite);
+                bot.colorSolid2(Color.kBlue);
+                bot.setMode(LEDMode.Alternating);
+            }
+        } else if (CatzConstants.currentRobotMode == RobotMode.AMP) {
+            if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
+                top.colorSolid(Color.kYellow);
+                top.setMode(LEDMode.Solid);
+
+                bot.colorSolid(Color.kYellow);
+                bot.setMode(LEDMode.Solid);
+            } else {
+                top.colorSolid(Color.kWhite);
+                top.colorSolid2(Color.kYellow);
+                top.setMode(LEDMode.Alternating);
+                
+                bot.colorSolid(Color.kWhite);
+                bot.colorSolid2(Color.kYellow);
+                bot.setMode(LEDMode.Alternating);
+            }
+        } else if (CatzConstants.currentRobotMode == RobotMode.SPEAKER) {
+            if (SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()) {
+                top.colorSolid(Color.kOrange);
+                top.setMode(LEDMode.Solid);
+
+                bot.colorSolid(Color.kOrange);
+                bot.setMode(LEDMode.Solid);
+            } else {
+                top.colorSolid(Color.kWhite);
+                top.colorSolid2(Color.kOrange);
+                top.setMode(LEDMode.Alternating);
+                
+                bot.colorSolid(Color.kWhite);
+                bot.colorSolid2(Color.kOrange);
+                bot.setMode(LEDMode.Alternating);
+            }
         }
     }
 
