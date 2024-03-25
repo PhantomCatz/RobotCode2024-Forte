@@ -21,6 +21,7 @@ import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
+import frc.robot.commands.mechanismCmds.MoveToPreset;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIO.TurretIOInputs;
@@ -303,9 +304,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   // Flywheel Commands
   //-------------------------------------------------------------------------------------
-  public Command cmdShooterRamp() {
-    return runOnce(()->startShooterFlywheel());
-  }
 
   public void startShooterFlywheel() {
     currentShooterLoadState = ShooterLoadState.START_SHOOTER_FLYWHEEL;
@@ -347,4 +345,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
     currentShooterLoadState = state;
   }
 
+  public void hoardShootingLogic(){
+    new MoveToPreset(CatzConstants.CatzMechanismConstants.SHOOTER_HOARD_PRESET);
+    startShooterFlywheel();
+  }
+  public Command hoardShooterShot(){
+    return runOnce(()-> hoardShootingLogic());
+  }
 }
