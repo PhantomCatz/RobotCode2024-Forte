@@ -614,7 +614,19 @@ public class SubsystemCatzIntake extends SubsystemBase {
     rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
     if(CatzStateMachine.getInstance().getNoteDestination() == NoteDestination.AMP) {
-      m_currentRollerState = IntakeRollerState.ROLLERS_IN_SCORING_AMP;
+      //---------------------------------------
+      // in amp state which has different roller logic
+      //-------------------------------------
+
+      if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > 50) {
+        //-----------------------------
+        //  about to score in the amp...
+        //----------------------------
+        m_currentRollerState = IntakeRollerState.ROLLERS_IN_SCORING_AMP;
+      } else {
+        m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
+
+      }
     } else {
       m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
     }
