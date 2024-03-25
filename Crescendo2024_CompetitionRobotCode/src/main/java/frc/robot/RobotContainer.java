@@ -141,18 +141,16 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //------------------------------------------------------------------------------------
     // HOARD MODE
     //------------------------------------------------------------------------------------
-        // HOARD MODE IS NOT DONE BECAUSE WE STILL NEED TO WRITE CODE FOR IT 
-        xboxAux.y().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND));  //PICK UP GROUND TO SHOOTER
-
-        xboxAux.rightBumper().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(shooter.rampUpFlyWheels()); //RAMPING UP
+        xboxAux.y().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(shooter.hoardShooterShot());  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
           
-        xboxAux.b().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
+        xboxAux.b().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(shooter.cmdShoot());          //TO SHOOT (NEED TO RAMP UP FIRST)
 
-        xboxAux.x().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER
+        xboxAux.x().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(new MoveToPreset(CatzConstants.CatzMechanismConstants.INTAKE_HOARD_PRESET));      //TO HOARD INTAKE POS
 
-        xboxAux.a().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(intake.cmdRollerOut());               // INTAKE ROLLERS SHOOT
+        xboxAux.a().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(intake.cmdRollerOut());        // INTAKE ROLLERS SHOOT
 
-
+        xboxAux.leftBumper().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));     //NOTE IN SHOOTER TRANSFERED TO INTAKE
+        xboxAux.rightBumper().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)); //NOTE IN INTAKE TRANSFERED TO SHOOTER
 
     //------------------------------------------------------------------------------------
     // CLIMB MODE
