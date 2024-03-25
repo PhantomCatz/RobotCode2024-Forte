@@ -227,7 +227,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
               currentShooterState = ShooterState.LOAD_OFF;
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
-              
+              updateShooterServo(0.0);
             }
             
             m_iterationCounter++;
@@ -273,9 +273,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_newServoPosition = position;
   }
 
-  public Command setPositionCmd(Supplier<Double> position) {
-    return run(()->m_newServoPosition = position.get());
-  }
+  
 
   //-------------------------------------------------------------------------------------
   // Getter Methods 
