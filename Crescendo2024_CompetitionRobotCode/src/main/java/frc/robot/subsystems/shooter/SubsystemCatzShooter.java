@@ -300,6 +300,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
     currentShooterState = ShooterState.START_SHOOTER_FLYWHEEL;
   }
 
+  public Command cmdShooterRamp(){
+    return runOnce(()-> startShooterFlywheel());
+  }
+
   public Command cmdShooterDisabled() {
     return runOnce(()->disableShooter());
   }

@@ -114,13 +114,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
         xboxAux.x().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(new MoveToPreset(CatzConstants.CatzMechanismConstants.SHOOTER_DEFAULT_PRESET));
 
-        xboxAux.a().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(shooter.rampUpFlyWheels());  //RAMPING UP 
+        xboxAux.a().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(shooter.cmdShooterRamp());  //RAMPING UP 
 
         xboxAux.b().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
 
         xboxAux.y().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
-        xboxAux.rightStick().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(shooter.cmdServoPosition(xboxAux.getRightY())); //MOVE SERVO POSITION MANUAL 
+        xboxAux.rightStick().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(shooter.cmdServoPosition(()->xboxAux.getRightY())); //MOVE SERVO POSITION MANUAL 
 
         xboxAux.rightStick().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(turret.rotate(xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
 
