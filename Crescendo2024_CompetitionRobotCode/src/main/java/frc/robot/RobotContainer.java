@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.CatzColorConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
-import frc.robot.CatzConstants.CatzMechanismConstants.RobotMode;
+import frc.robot.CatzConstants.RobotMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.commands.DriveCmds.TeleopDriveCmd;
 import frc.robot.commands.mechanismCmds.MoveToPresetHandoffCmd;
@@ -27,7 +27,6 @@ import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
 import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
-import frc.robot.commands.mechanismCmds.MoveToAmpTransition;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.CatzStateMachine.NoteDestination;
@@ -55,7 +54,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
   private CatzStateMachine stateMachine;
 
-  private CatzAutonomous auton = new CatzAutonomous();
+  private CatzAutonomous auton;
 
   //xbox controller
   private CommandXboxController xboxDrv;
@@ -70,6 +69,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     turret     = SubsystemCatzTurret.getInstance();
     shooter    = SubsystemCatzShooter.getInstance();
     climb      = SubsystemCatzClimb.getInstance();
+
+    auton     = CatzAutonomous.getInstance();
 
     stateMachine = CatzStateMachine.getInstance();
     
@@ -108,83 +109,103 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //------------------------------------------------------------------------------------
     // SPEAKER MODE
     //------------------------------------------------------------------------------------
-        xboxDrv.leftStick().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
+        xboxDrv.leftStick()
+               .and(()-> isInSpeakerMode())
+               .onTrue(
+                  new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
+                      ); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
 
-        xboxAux.rightTrigger().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
+        xboxAux.rightTrigger().and(()->isInSpeakerMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
 
-        xboxAux.x().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(new MoveToPreset(CatzConstants.CatzMechanismConstants.SHOOTER_DEFAULT_PRESET));
+        xboxAux.x().and(()->isInSpeakerMode()).onTrue(new MoveToPreset(CatzMechanismConstants.SHOOTER_DEFAULT_PRESET));
 
-        xboxAux.a().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(shooter.cmdShooterRamp());  //RAMPING UP 
+        xboxAux.a().and(()->isInSpeakerMode()).onTrue(shooter.cmdShooterRamp());  //RAMPING UP 
 
-        xboxAux.b().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
+        xboxAux.b().and(()->isInSpeakerMode()).onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
 
-        xboxAux.y().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
+        xboxAux.y().and(()->isInSpeakerMode()).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
-        xboxAux.rightStick().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(shooter.cmdServoPosition(()->xboxAux.getRightY())); //MOVE SERVO POSITION MANUAL 
+        xboxAux.rightStick().and(()->isInSpeakerMode()).onTrue(shooter.cmdServoPosition(()->xboxAux.getRightY())); //MOVE SERVO POSITION MANUAL 
 
-        xboxAux.rightStick().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.SPEAKER_MODE).onTrue(turret.rotate(xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
+        xboxAux.rightStick().and(()->isInSpeakerMode()).onTrue(turret.rotate(xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
 
     //------------------------------------------------------------------------------------
     // AMP MODE
     //------------------------------------------------------------------------------------              
-        xboxDrv.leftStick().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.AMP_MODE).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE AND STOWS TO AMP SCORE DOWN POS
+        xboxDrv.leftStick().and(()->isInAmpMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE AND STOWS TO AMP SCORE DOWN POS
 
-        xboxAux.leftTrigger().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.AMP_MODE).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)); //NOTE IN SHOOTER TRANSFERED TO INTAKE
+        xboxAux.leftTrigger().and(()->isInAmpMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)); //NOTE IN SHOOTER TRANSFERED TO INTAKE
 
-        xboxAux.y().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.AMP_MODE).onTrue(new MoveToAmpTransition());                      //MOVE TO AMP TRANSITION POSITION 
+        xboxAux.y().and(()->isInAmpMode()).onTrue(new MoveToPreset(CatzMechanismConstants.AMP_TRANSITION_PRESET));                      //MOVE TO AMP TRANSITION POSITION 
 
-        xboxAux.b().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.AMP_MODE).onTrue(new ScoreAmpCmd());                              //SCORE AMP (^^ MUST BE IN AMP TRANSITION POS FIRST)
+        xboxAux.b().and(()->isInAmpMode()).onTrue(new ScoreAmpCmd());                              //SCORE AMP (^^ MUST BE IN AMP TRANSITION POS FIRST)
 
-        xboxAux.leftStick().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.AMP_MODE).onTrue(new ManualElevatorCmd((()->xboxAux.getRightY()))); //MANUAL MODE FOR ELEVATOR
+        xboxAux.leftStick().and(()->isInAmpMode()).onTrue(new ManualElevatorCmd((()->xboxAux.getRightY()))); //MANUAL MODE FOR ELEVATOR
 
 
     //------------------------------------------------------------------------------------
     // HOARD MODE
     //------------------------------------------------------------------------------------
-        xboxAux.y().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(shooter.hoardShooterShot());  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
+        xboxAux.y().and(()->isInHoardMode()).onTrue(shooter.hoardShooterShot());  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
           
-        xboxAux.b().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(shooter.cmdShoot());          //TO SHOOT (NEED TO RAMP UP FIRST)
+        xboxAux.b().and(()->isInHoardMode()).onTrue(shooter.cmdShoot());          //TO SHOOT (NEED TO RAMP UP FIRST)
 
-        xboxAux.x().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(new MoveToPreset(CatzConstants.CatzMechanismConstants.INTAKE_HOARD_PRESET));      //TO HOARD INTAKE POS
+        xboxAux.x().and(()->isInHoardMode()).onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_HOARD_PRESET));      //TO HOARD INTAKE POS
 
-        xboxAux.a().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(intake.cmdRollerOut());        // INTAKE ROLLERS SHOOT
+        xboxAux.a().and(()->isInHoardMode()).onTrue(intake.cmdRollerOut());        // INTAKE ROLLERS SHOOT
 
-        xboxAux.leftBumper().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));     //NOTE IN SHOOTER TRANSFERED TO INTAKE
-        xboxAux.rightBumper().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.HOARD_MODE).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)); //NOTE IN INTAKE TRANSFERED TO SHOOTER
+        xboxAux.leftBumper().and(()->isInHoardMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));     //NOTE IN SHOOTER TRANSFERED TO INTAKE
+        xboxAux.rightBumper().and(()->isInHoardMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)); //NOTE IN INTAKE TRANSFERED TO SHOOTER
 
     //------------------------------------------------------------------------------------
     // CLIMB MODE
     //------------------------------------------------------------------------------------
 
-        xboxAux.povUp().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.CLIMB_MODE).onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
-        xboxAux.y().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.CLIMB_MODE).onTrue(new ScoreTrapCmd());
-        xboxAux.b().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.CLIMB_MODE).onTrue(intake.cmdRollerOut());
+        xboxAux.povUp().and(()->isInClimbMode()).onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
+        xboxAux.y().and(()->isInClimbMode()).onTrue(new ScoreTrapCmd());
+        xboxAux.b().and(()->isInClimbMode()).onTrue(intake.cmdRollerOut());
 
 
     //------------------------------------------------------------------------------------
     // CLIMB MAINTANANCE MODE
     //------------------------------------------------------------------------------------
-        xboxAux.povUp().and(()->CatzConstants.CatzMechanismConstants.driverCurrentMode == RobotMode.CLIMB_MAINTENANCE_MODE).onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
+        xboxAux.povUp().and(()->CatzConstants.currentRobotMode == RobotMode.CLIMB_MAINTENANCE_MODE).onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
 
       
     //------------------------------------------------------------------------------------
     //  CHANGING MODES
     //------------------------------------------------------------------------------------
-        xboxAux.povUp().and(xboxDrv.povUp()).onTrue(Commands.runOnce(()-> CatzConstants.CatzMechanismConstants.driverCurrentMode = RobotMode.CLIMB_MODE)); // CLIMB MODE
+        xboxAux.povUp().and(xboxDrv.povUp()).onTrue(Commands.runOnce(()-> CatzConstants.currentRobotMode = RobotMode.CLIMB)); // CLIMB MODE
 
-        xboxAux.rightBumper().and(xboxAux.leftBumper()).onTrue(Commands.runOnce(()->CatzConstants.CatzMechanismConstants.driverCurrentMode = RobotMode.CLIMB_MAINTENANCE_MODE)); //CLIMB MANTAINANCE MODE
+        xboxAux.rightBumper().and(xboxAux.leftBumper()).onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.CLIMB_MAINTENANCE_MODE)); //CLIMB MANTAINANCE MODE
 
-        xboxAux.povDown().onTrue(Commands.runOnce(()->CatzConstants.CatzMechanismConstants.driverCurrentMode = RobotMode.HOARD_MODE));                     //HOARD MODE
+        xboxAux.povDown().onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.HOARD));                     //HOARD MODE
       
-        xboxAux.povLeft().onTrue(Commands.runOnce(()-> CatzConstants.CatzMechanismConstants.driverCurrentMode = RobotMode.AMP_MODE));                      //AMP MODE
+        xboxAux.povLeft().onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.AMP));                      //AMP MODE
       
-        xboxAux.povRight().onTrue(Commands.runOnce(()->CatzConstants.CatzMechanismConstants.driverCurrentMode = RobotMode.SPEAKER_MODE));                  //SPEAKER MODE
+        xboxAux.povRight().onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.SPEAKER));                  //SPEAKER MODE
     //------------------------------------------------------------------------------------
   }
 
   public void logDpadStates() {
-       SmartDashboard.putString("Scoring Mode", CatzConstants.CatzMechanismConstants.driverCurrentMode.toString());
+       SmartDashboard.putString("Scoring Mode", CatzConstants.currentRobotMode.toString());
 
+  }
+
+  private boolean isInHoardMode() {
+    return CatzConstants.currentRobotMode == RobotMode.HOARD;
+  }
+
+  private boolean isInClimbMode() {
+    return CatzConstants.currentRobotMode == RobotMode.CLIMB;
+  }
+
+  private boolean isInSpeakerMode() {
+    return CatzConstants.currentRobotMode == RobotMode.SPEAKER;
+  }
+
+  private boolean isInAmpMode() {
+    return CatzConstants.currentRobotMode == RobotMode.AMP;
   }
 
 

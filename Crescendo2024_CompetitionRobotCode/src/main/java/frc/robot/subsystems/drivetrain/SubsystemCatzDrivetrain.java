@@ -342,7 +342,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     // Reset the position of the robot with a given pose
     public void resetPosition(Pose2d pose) {
         double angle = pose.getRotation().getDegrees();
-        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+        if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
             angle += 180;
             gyroIO.setAngleAdjustmentIO(180);
             

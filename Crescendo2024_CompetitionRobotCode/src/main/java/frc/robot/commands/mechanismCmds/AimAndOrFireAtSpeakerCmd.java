@@ -146,7 +146,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());   
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
 
-    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
+    if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
       
       //translation of the blue alliance speaker
       m_targetXY = new Translation2d(0.0, FieldConstants.SPEAKER_COORD_MTRS_Y);

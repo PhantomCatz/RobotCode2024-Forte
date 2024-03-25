@@ -36,7 +36,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class CatzAutonomous {
-    private static CatzAutonomous Instance;
+    private static CatzAutonomous instance;
     
     //subsystem declaration
     private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
@@ -45,15 +45,15 @@ public class CatzAutonomous {
     private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
     private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
-    public static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
+    private AllianceColor allianceColor;
+    private static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
     PathConstraints autoPathfindingConstraints = new PathConstraints(
         3.0, 4.0, 
         Units.degreesToRadians(540), Units.degreesToRadians(720));
-    private AllianceColor allianceColor;
 
-    public CatzAutonomous() {
+    private CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", AllianceColor.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  AllianceColor.Red);
 
@@ -90,13 +90,17 @@ public class CatzAutonomous {
     }
 
     public static CatzAutonomous getInstance(){
-        if(Instance == null){
-            Instance = new CatzAutonomous();
+        if(instance == null){
+            instance = new CatzAutonomous();
         }
-        return Instance;
+        return instance;
     }
 
-    //-------------------------------------------Auton Paths--------------------------------------------
+    //--------------------------------------------------------------------------------------------
+    //  
+    //      Autonomous Paths
+    //  
+    //--------------------------------------------------------------------------------------------
 
     private Command driveRotate(){
         return new SequentialCommandGroup(
@@ -135,6 +139,7 @@ public class CatzAutonomous {
     }
 
     //https://docs.google.com/presentation/d/19F_5L03n90t7GhtzQhD4mYNEMkdFsUGoDSb4tT9HqNI/edit#slide=id.g268da342b19_1_0
+
     private Command speaker4PieceWing(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("S4PW1")),
@@ -412,7 +417,11 @@ public class CatzAutonomous {
         );
     }
 
-    //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
+    //--------------------------------------------------------------------------------------------
+    //  
+    //      Auto Trjaectories for Telop
+    //  
+    //--------------------------------------------------------------------------------------------
     public Command autoFindPathSource() {
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
                 new Pose2d(2.7, 7.5, Rotation2d.fromDegrees(0)),
@@ -511,7 +520,11 @@ public class CatzAutonomous {
     }
 
 
-    //-------------------------------------------------MISC-------------------------------------------------------
+    //--------------------------------------------------------------------------------------------
+    //  
+    //      MISC()
+    //  
+    //--------------------------------------------------------------------------------------------
 
     private Command setAutonStartPose(PathPlannerPath startPath){
     return Commands.runOnce(()->{
@@ -526,7 +539,7 @@ public class CatzAutonomous {
     }
 
     public AllianceColor getAllianceColor(){
-        return allianceColor;
+        return chosenAllianceColor.get();
     }
 
 }

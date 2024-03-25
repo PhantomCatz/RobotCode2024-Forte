@@ -261,14 +261,6 @@ public final class CatzConstants {
   
 
   public static final class CatzMechanismConstants {
-    public static RobotMode driverCurrentMode = RobotMode.SPEAKER_MODE;
-    public enum RobotMode {
-      SPEAKER_MODE,
-      AMP_MODE, 
-      HOARD_MODE, 
-      CLIMB_MAINTENANCE_MODE,
-      CLIMB_MODE
-    }
 
     public static final CatzMechanismPosition STOW_PRESET = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
@@ -356,6 +348,15 @@ public final class CatzConstants {
 
     //-10
     
+  }
+
+  public static RobotMode currentRobotMode = RobotMode.SPEAKER;
+  public enum RobotMode {
+    SPEAKER,
+    AMP, 
+    HOARD, 
+    CLIMB_MAINTENANCE_MODE,
+    CLIMB
   }
 
   //COLOR CONSTANTS::
