@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "Hoard_C4-5",
   "previewStartingState": {
-    "rotation": 145.0,
+    "rotation": -45.0,
     "velocity": 0
   },
   "useDefaultConstraints": false
