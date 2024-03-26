@@ -261,14 +261,6 @@ public final class CatzConstants {
   
 
   public static final class CatzMechanismConstants {
-    public static RobotMode driverCurrentMode = RobotMode.SPEAKER_MODE;
-    public enum RobotMode {
-      SPEAKER_MODE,
-      AMP_MODE, 
-      HOARD_MODE, 
-      CLIMB_MAINTENANCE_MODE,
-      CLIMB_MODE
-    }
 
     public static final CatzMechanismPosition STOW_PRESET = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
@@ -290,7 +282,7 @@ public final class CatzConstants {
 
     public static final CatzMechanismPosition INTAKE_HOARD_PRESET = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
-                                                        30.0, 
+                                                        SubsystemCatzIntake.INTAKE_HOARD_DEG, 
                                                         0.6, 
                                                         -30.0);
     public static final CatzMechanismPosition SHOOTER_HOARD_PRESET = 
@@ -301,7 +293,7 @@ public final class CatzConstants {
 
     public static final CatzMechanismPosition PREP_FOR_AMP_PRESET = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
-                                                        SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG, 
+                                                        SubsystemCatzIntake.INTAKE_STOW_DEG, 
                                                         SubsystemCatzShooter.SERVO_STOW_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION_DEG);
                                                         
@@ -356,6 +348,30 @@ public final class CatzConstants {
 
     //-10
     
+  }
+
+  public static RobotMode currentRobotMode = RobotMode.SPEAKER;
+  public enum RobotMode {
+    SPEAKER,
+    AMP, 
+    HOARD, 
+    CLIMB_MAINTENANCE_MODE,
+    CLIMB
+  }
+
+  public enum NoteDestination {
+    SPEAKER,
+    AMP,
+    TRAP,
+    HOARD
+  }
+
+  public enum NoteSource {
+      INTAKE_SOURCE,
+      INTAKE_GROUND,
+      FROM_SHOOTER,
+      FROM_INTAKE,
+      NULL
   }
 
   //COLOR CONSTANTS::

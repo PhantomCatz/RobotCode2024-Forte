@@ -13,11 +13,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
+import frc.robot.CatzConstants.RobotMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
-import frc.robot.subsystems.CatzStateMachine;
-import frc.robot.subsystems.CatzStateMachine.NoteDestination;
-import frc.robot.subsystems.CatzStateMachine.NoteSource;
+import frc.robot.CatzConstants.NoteDestination;
+import frc.robot.CatzConstants.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
@@ -36,11 +36,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
    * rollers
    *
    ************************************************************************************************************************/
-  private final double ROLLERS_MTR_PWR_IN_GROUND = 0.4;// 0.6;//TBD - need to handle carpet and non-carpet value or code
+  private final double ROLLERS_MTR_PWR_IN_GROUND = 0.6;//TBD - need to handle carpet and non-carpet value or code
                                                        // issue
   private final double ROLLERS_MTR_PWR_IN_SOURCE = 0.25;
   private final double ROLLERS_MTR_PWR_OUT_EJECT = -1.0; // TBD fix top rooler before testing
-  private final double ROLLERS_MTR_PWR_OUT_AMP_SCORE = -0.6;
+  private final double ROLLERS_MTR_PWR_OUT_AMP_SCORE = 0.6;
   private final double ROLLERS_MTR_PWR_OUT_HANDOFF = -0.4;
 
   public static enum IntakeRollerState {
@@ -131,6 +131,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static final double INTAKE_SOURCE_LOAD_UP_DEG =  97.0; //with drivetrain inner rail to the
                                                              // bottom inner rail 7 1/4 inches
   public static final double INTAKE_AMP_SCORE_DN_DEG   =  92.6; //90.43; 
+  public static final double INTAKE_HOARD_DEG          = 30.0;
   public static final double INTAKE_GROUND_PICKUP_DEG  = -25.0; //-22.0;
   public static final double INTAKE_AMP_SCORE_DEG      = -22.0;
   public static final double INTAKE_AMP_TRANSITION_DEG = -60.0; //TBD Change to -80 on sn2
@@ -488,6 +489,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     } else if (m_targetPositionDeg == INTAKE_GROUND_PICKUP_DEG ||
               m_targetPositionDeg == INTAKE_AMP_SCORE_DN_DEG ||
               m_targetPositionDeg == INTAKE_SOURCE_LOAD_DN_DEG ||
+              m_targetPositionDeg == INTAKE_HOARD_DEG         ||
               m_targetPositionDeg == INTAKE_AMP_SCORE_DEG) {
      // System.out.println("I-E");
 
@@ -613,8 +615,20 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public void setRollersIn() {
     rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
-    if(CatzStateMachine.getInstance().getNoteDestination() == NoteDestination.AMP) {
-      m_currentRollerState = IntakeRollerState.ROLLERS_IN_SCORING_AMP;
+    if(CatzConstants.currentRobotMode ==  RobotMode.AMP) {
+      //---------------------------------------
+      // in amp state which has different roller logic
+      //-------------------------------------
+
+      if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > 50) {
+        //-----------------------------
+        //  about to score in the amp...
+        //----------------------------
+        m_currentRollerState = IntakeRollerState.ROLLERS_IN_SCORING_AMP;
+      } else {
+        m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
+
+      }
     } else {
       m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
     }

@@ -250,7 +250,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     
     Logger.recordOutput("shooter/servopos", m_newServoPosition);
 
-  }
+  } //end of shooter periodic
 
   //-------------------------------------------------------------------------------------
   // Intake Calculation Methods

@@ -11,9 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.subsystems.CatzStateMachine;
-import frc.robot.subsystems.CatzStateMachine.NoteDestination;
-import frc.robot.subsystems.CatzStateMachine.NoteSource;
+import frc.robot.CatzConstants.NoteDestination;
+import frc.robot.CatzConstants.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorControlState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -57,17 +56,6 @@ public class MoveToPresetHandoffCmd extends Command {
 
   @Override
   public void initialize() {
-
-
-    if(m_noteDestination == NoteDestination.AMP &&
-       m_noteSource == NoteSource.FROM_SHOOTER) {
-        CatzStateMachine.getInstance().cmdNewNoteDestination(NoteDestination.AMP);
-    }
-
-    if(m_noteDestination == NoteDestination.SPEAKER &&
-       m_noteSource == NoteSource.FROM_INTAKE) {
-        CatzStateMachine.getInstance().cmdNewNoteDestination(NoteDestination.SPEAKER);
-    }
 
     // System.out.println("Handoff " + m_noteDestination.toString());
     // System.out.println(m_noteSource.toString());

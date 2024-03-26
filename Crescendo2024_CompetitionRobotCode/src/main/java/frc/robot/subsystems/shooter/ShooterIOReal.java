@@ -181,8 +181,8 @@ public class ShooterIOReal implements ShooterIO {
         // inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
         // inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
 
-        inputs.servoLeftPosition  = shooterServoLT.get();
-        inputs.servoRightPosition = shooterServoRT.get();
+        inputs.servoLeftPosition  = shooterServoLT.getPosition();
+        inputs.servoRightPosition = shooterServoRT.getPosition();
 
     }
 
@@ -254,10 +254,6 @@ public class ShooterIOReal implements ShooterIO {
     shooterServoRT.setAngle(angle);
   } 
 
-  @Override
-  public void setServoSpeed(double speed) {
-    shooterServoRT.setSpeed(speed);
-    shooterServoLT.setSpeed(speed);
-  }
+
 }
 
