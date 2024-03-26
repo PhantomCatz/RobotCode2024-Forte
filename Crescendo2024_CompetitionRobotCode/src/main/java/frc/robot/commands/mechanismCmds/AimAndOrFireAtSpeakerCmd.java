@@ -173,7 +173,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
     double servoPos = shooterPivotTable.get(newDist);
     turret.aimAtGoal(m_targetXY, false, false);    
-    shooter.updateShooterServo(servoPos);
+    shooter.setServoPos(servoPos);
 
     //in telop this boolean supplier is being evaluated to see if button was pressed
     if(m_bSupplier != null &&

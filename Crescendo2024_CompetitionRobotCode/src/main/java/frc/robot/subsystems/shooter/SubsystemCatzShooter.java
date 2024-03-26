@@ -227,7 +227,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
               currentShooterState = ShooterState.LOAD_OFF;
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
-              updateShooterServo(0.0);
+              io.setServoPosition(0.0);
             }
             
             m_iterationCounter++;
@@ -240,7 +240,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
       //
       //-------------------------------------------------------------------------------------------
       
-      io.setServoPosition(m_newServoPosition);
       
       m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
       if(Math.abs(m_servoPosError) < 0.05) {
@@ -251,6 +250,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
     Logger.recordOutput("shooter/servopos", m_newServoPosition);
 
   } //end of shooter periodic
+
+  // Testing
+  public Command setServoPos(double position) {
+    return run(()->io.setServoPosition(position));
+  }
 
   //-------------------------------------------------------------------------------------
   // Intake Calculation Methods
@@ -265,7 +269,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public Command cmdServoPosition(Supplier<Double> value) {
-    return run(()-> updateShooterServo(value.get()));
+    return run(()->io.setServoPosition(value.get()));
   }
 
   public void updateShooterServo(double position) {
