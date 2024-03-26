@@ -34,18 +34,26 @@ public class SubsystemCatzElevator extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   private static final double REV_SWITCH_POS = 0.0; 
   
+
+  private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
+
+  //-------------------------------------------------------------------------------------
+  // Elevator Gearbox def
+  //-------------------------------------------------------------------------------------
   private static final double ElEVATOR_REV_TO_INCHES = 0.0;
 
   private static final double MAXPLANETARY_GEAR_RATIO = 4.0 * 4.0;
 
+  private static final double ELEVATOR_DRIVING_PULLEY = 24.0;
+  private static final double ELEVATOR_DRIVEN_PULLEY  = 18.0;
+
+  private static final double ELEVATOR_RATIO_STAGE_ONE = ELEVATOR_DRIVING_PULLEY/ELEVATOR_DRIVEN_PULLEY;
+
+
+  private static final double ELEVATOR_GEAR_RATIO      = MAXPLANETARY_GEAR_RATIO * ELEVATOR_RATIO_STAGE_ONE;
+
   private static final double ELEVATOR_SPOOL_DIA_PULL_UP_INCHES = 0.7; //TBD on the name of the variable
   private static final double ELEVATOR_SPOOL_DIA_PULL_DN_INCHES = 1.4; //TBD on the name of the variable
-
-
-  private static final double ELEVATOR_GEAR_RATIO    = MAXPLANETARY_GEAR_RATIO;
-
-
-    private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
 
  //-----------------------------------------------------------------------------------------------
   //  Elevator CLOSED loop defs and variables

@@ -92,19 +92,19 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
       xboxDrv.rightBumper().onTrue(intake.cmdRollerOut());     // intake rollers out
       xboxDrv.b().onTrue(intake.cmdRollerOff());               // intake rollers off
    
-     
-      xboxDrv.rightStick().onTrue(Commands.parallel(new StowPoseCmd(),               //STOW INTAKE 
-                                                    driveTrain.cancelTrajectory())); //TBD LC
+    //------------------------------------------------------------------------------------
+    // POSE COMMANDS
+    //------------------------------------------------------------------------------------
+      xboxDrv.rightStick().onTrue(new StowPoseCmd()); //STOW Mechnanism 
     
       
-    //------------------------------------------------------------------------------------
-    
-        xboxAux.back().onTrue(Commands.runOnce(()-> led.signalHumanPlayerAMP())); // SIGNAL HUMAN PLAYER FOR AMP SCORING
+    //LED command
+    xboxAux.back().onTrue(Commands.runOnce(()-> led.signalHumanPlayerAMP())); // SIGNAL HUMAN PLAYER FOR AMP SCORING
 
 
     //------------------------------------------------------------------------------------
     // SPEAKER MODE
-    //------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------ 
         xboxDrv.leftStick()
                .and(()-> isInSpeakerMode())
                .onTrue(
@@ -113,13 +113,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
         xboxAux.rightTrigger().and(()->isInSpeakerMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
 
-        xboxAux.x().and(()->isInSpeakerMode()).onTrue(new MoveToPreset(CatzMechanismConstants.SHOOTER_DEFAULT_PRESET));
+        xboxAux.x()         .and(()->isInSpeakerMode()).onTrue(new MoveToPreset(CatzMechanismConstants.SHOOTER_DEFAULT_PRESET));
 
-        xboxAux.a().and(()->isInSpeakerMode()).onTrue(shooter.cmdShooterRamp());  //RAMPING UP 
+        xboxAux.a()         .and(()->isInSpeakerMode()).onTrue(shooter.cmdShooterRamp());  //RAMPING UP 
 
-        xboxAux.b().and(()->isInSpeakerMode()).onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
+        xboxAux.b()         .and(()->isInSpeakerMode()).onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
 
-        xboxAux.y().and(()->isInSpeakerMode()).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
+        xboxAux.y()         .and(()->isInSpeakerMode()).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
         xboxAux.rightStick().and(()->isInSpeakerMode()).onTrue(shooter.cmdServoPosition(()->xboxAux.getRightY())); //MOVE SERVO POSITION MANUAL 
 
@@ -153,7 +153,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
         xboxAux.leftBumper().and(()->isInHoardMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));     //NOTE IN SHOOTER TRANSFERED TO INTAKE
         xboxAux.rightBumper().and(()->isInHoardMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)); //NOTE IN INTAKE TRANSFERED TO SHOOTER
 
-    //------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------  
     // CLIMB MODE
     //------------------------------------------------------------------------------------
 

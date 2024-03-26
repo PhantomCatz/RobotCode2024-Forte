@@ -36,11 +36,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
    * rollers
    *
    ************************************************************************************************************************/
-  private final double ROLLERS_MTR_PWR_IN_GROUND = 0.4;// 0.6;//TBD - need to handle carpet and non-carpet value or code
+  private final double ROLLERS_MTR_PWR_IN_GROUND = 0.6;//TBD - need to handle carpet and non-carpet value or code
                                                        // issue
   private final double ROLLERS_MTR_PWR_IN_SOURCE = 0.25;
   private final double ROLLERS_MTR_PWR_OUT_EJECT = -1.0; // TBD fix top rooler before testing
-  private final double ROLLERS_MTR_PWR_OUT_AMP_SCORE = -0.6;
+  private final double ROLLERS_MTR_PWR_OUT_AMP_SCORE = 0.6;
   private final double ROLLERS_MTR_PWR_OUT_HANDOFF = -0.4;
 
   public static enum IntakeRollerState {
