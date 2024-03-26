@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.CatzConstants.CatzColorConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
-import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;

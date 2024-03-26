@@ -28,9 +28,8 @@ import frc.robot.commands.mechanismCmds.ClimbCmd;
 import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
-import frc.robot.subsystems.CatzStateMachine;
-import frc.robot.subsystems.CatzStateMachine.NoteDestination;
-import frc.robot.subsystems.CatzStateMachine.NoteSource;
+import frc.robot.CatzConstants.NoteDestination;
+import frc.robot.CatzConstants.NoteSource;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.climb.SubsystemCatzClimb;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -52,7 +51,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   private SubsystemCatzTurret     turret;
   private SubsystemCatzLED        led;
 
-  private CatzStateMachine stateMachine;
 
   private CatzAutonomous auton;
 
@@ -71,8 +69,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     climb      = SubsystemCatzClimb.getInstance();
 
     auton     = CatzAutonomous.getInstance();
-
-    stateMachine = CatzStateMachine.getInstance();
     
 
     xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 
