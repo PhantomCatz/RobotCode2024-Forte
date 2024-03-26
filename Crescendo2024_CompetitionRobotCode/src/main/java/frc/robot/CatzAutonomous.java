@@ -58,30 +58,35 @@ public class CatzAutonomous {
         chosenAllianceColor.addDefaultOption("Blue Alliance", AllianceColor.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  AllianceColor.Red);
 
-    //     pathChooser.addOption("mid", mid());
-    //     pathChooser.addOption("bot", bot());
-    //     pathChooser.addOption("top", top());
-    //     pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
-    //     pathChooser.addOption("Speaker 4 Piece CS Wing", speaker4PieceCSWing());
+        pathChooser.addOption("mid", mid());
+        pathChooser.addOption("bot", bot());
+        pathChooser.addOption("top", top());
+        pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
+        pathChooser.addOption("Speaker 4 Piece CS Wing", speaker4PieceCSWing());
 
-    //     pathChooser.addOption("1 Wing Bulldoze Under", WingBulldozeUnder());
-    //     pathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
+        pathChooser.addOption("1 Wing Bulldoze Under", WingBulldozeUnder());
+        pathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
 
-    //     pathChooser.addOption("ScoringC13", scoringC13());
-    //     pathChooser.addOption("ScoringC53", scoringC53());
-    //     pathChooser.addOption("Run and gun W1 C1-3", RNGC1W13());
+        pathChooser.addOption("ScoringW2", CS_W2());
+        pathChooser.addOption("Scoring US W1-3", US_W13());
+        pathChooser.addOption("Scoring LS W1-3", LS_W13());
+        pathChooser.addOption("ScoringC13", scoringC13());
+        pathChooser.addOption("ScoringC35", scoringC35());
 
-    //     pathChooser.addOption("Hoard Lower Mid", HoardLowerMid());
-    //     pathChooser.addOption("Bottom Mid Clear", BottomMidClear());
+        pathChooser.addOption("Run and gun W1 C1-3", RNGC1W13());
 
-    //    // pathChooser.addOption("Center Rush MId", CenterRushMid());
+        pathChooser.addOption("Hoard C1-2", HoardC12());
+        pathChooser.addOption("Hoard C4-5", HoardC45());
+        pathChooser.addOption("Hoard Lower Mid", HoardLowerMid());
+        pathChooser.addOption("Bottom Mid Clear", BottomMidClear());
 
-    //     pathChooser.addOption("DriveStraightRight", driveTranslateAutoRight());
-    //     pathChooser.addOption("DriveStraightMid", driveTranslateAutoMid());
-    //     pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
-    //     pathChooser.addOption("Curve", curveAuto());
+        // pathChooser.addOption("Center Rush Mid", CenterRushMid());
+        // pathChooser.addOption("DriveStraightRight", driveTranslateAutoRight());
+        // pathChooser.addOption("DriveStraightMid", driveTranslateAutoMid());
+        // pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
+        // pathChooser.addOption("Curve", curveAuto());
 
-        //HOLDEN ADD YOUR PATH!!!!!!! TBD
+        pathChooser.addOption("DriveStraightRotate", driveRotate());
     }
 
     //configured dashboard
@@ -98,6 +103,13 @@ public class CatzAutonomous {
     }
 
     //-------------------------------------------Priority Auton Paths--------------------------------------------
+    private Command driveRotate(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("Test")),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Test"))
+        );
+    }
+    
     private Command CS_W2() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("CS_W2-1")),
@@ -242,7 +254,7 @@ public class CatzAutonomous {
         );
     }
 
-    private Command Hoard_C45() {
+    private Command HoardC45() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("Hoard_C4-5_1")),
             new AimAndOrFireAtSpeakerCmd(),
