@@ -1,5 +1,11 @@
 package frc.robot.subsystems.drivetrain;
 
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -11,19 +17,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
-import frc.robot.Utils.GeometryUtils;
 import frc.robot.Utils.LocalADStarAK;
 // import frc.robot.subsystems.vision.SubsystemCatzVision;;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
@@ -59,6 +67,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     private FieldRelativeSpeed m_fieldRelVel = new FieldRelativeSpeed();
     private FieldRelativeSpeed m_lastFieldRelVel = new FieldRelativeSpeed();
     private FieldRelativeAccel m_fieldRelAccel = new FieldRelativeAccel();
+
 
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
@@ -98,7 +107,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
                 Rotation2d.fromDegrees(getGyroAngle()), 
                 getModulePositions(), 
-                new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180)), 
+                new Pose2d(2.0, 5.55, Rotation2d.fromDegrees(0.0)), 
                 VecBuilder.fill(0.1, 0.1, 0.7),  //odometry standard devs
                 VecBuilder.fill(5, 5, 500)); //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
         
@@ -114,12 +123,12 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             });
 
         gyroIO.resetNavXIO(0);
-
-        if(DriveConstants.START_FLIPPED){
-            flipGyro();
-        }
         
-        resetPosition(new Pose2d(1.23,5.49,Rotation2d.fromDegrees(0)));
+        startOdometryPeriodic();
+    }
+
+    public void resetGyroTrue(){
+        gyroIO.resetNavXIO(0);
     }
 
     // Get the singleton instance of the CatzDriveTrainSubsystem
@@ -127,30 +136,31 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         return instance;
     }
 
-    private Pose2d prevPose = new Pose2d();
-    private double prevTime = Timer.getFPGATimestamp();
+    private void startOdometryPeriodic(){
+        Thread odometryThread = new Thread(()-> {
+   
+        });
+        odometryThread.start();
+    }
+
     @Override
     public void periodic() {
+
         // Update inputs (sensors/encoders) for code logic and advantage kit
         for (CatzSwerveModule module : m_swerveModules) {
             module.periodic();
         }
-
         // Update gyro inputs and log them
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/gyroinputs ", gyroInputs);
 
-        // Update pose estimator with module encoder values + gyro
-        m_poseEstimator.update(getRotation2d(), getModulePositions());
+        //odometryLock.unlock();
+
+        m_poseEstimator.update(getRotation2d(), getModulePositions());      
         
-        // double dt = Timer.getFPGATimestamp() - prevTime;
-        // double dSpeed = m_poseEstimator.getEstimatedPosition().getTranslation().getDistance(prevPose.getTranslation()) / dt;
+
         
-        // prevPose = m_poseEstimator.getEstimatedPosition();
-        // prevTime = Timer.getFPGATimestamp();
-        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop 
         var visionOdometry = vision.getVisionOdometry();   
-        
         for (int i = 0; i < visionOdometry.size(); i++) {
             //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
             double xyStdDev = 0;
@@ -169,7 +179,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 xyStdDev = 40;
             }
 
-//            System.out.println(visionOdometry.get(i).getAvgArea());
+            //System.out.println(visionOdometry.get(i).getAvgArea());
 
 
             // dSpeed = Math.abs(dSpeed);
@@ -177,7 +187,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             //     xyStdDev *= dSpeed / 4; //account for some shaking when suddenly moving fast.
             // }
 
-            Logger.recordOutput("XYStdDev", xyStdDev);
 
             m_poseEstimator.setVisionMeasurementStdDevs(
             VecBuilder.fill(xyStdDev,xyStdDev,9)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
@@ -188,6 +197,18 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             );
 
         }
+
+        m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
+
+
+        // Update pose estimator with module encoder values + gyro
+        
+        // double dt = Timer.getFPGATimestamp() - prevTime;
+        // double dSpeed = m_poseEstimator.getEstimatedPosition().getTranslation().getDistance(prevPose.getTranslation()) / dt;
+        
+        // prevPose = m_poseEstimator.getEstimatedPosition();
+        // prevTime = Timer.getFPGATimestamp();
+        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop 
 
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 
@@ -268,6 +289,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         }, this);
     }
 
+    //command to cancel running auto trajectories
+    public Command cancelTrajectory() {
+        return new InstantCommand();
+    }
+
     public FieldRelativeSpeed getFieldRelativeSpeed() {
         return m_fieldRelVel;
       }
@@ -279,6 +305,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     public void flipGyro() {
         gyroIO.setAngleAdjustmentIO(180);
+        System.out.println("kakikukeko");
     }
 
     public Command resetGyro() {
@@ -315,15 +342,13 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     // Reset the position of the robot with a given pose
     public void resetPosition(Pose2d pose) {
         double angle = pose.getRotation().getDegrees();
-        gyroIO.resetNavXIO(-pose.getRotation().getDegrees());
-        if(DriveConstants.START_FLIPPED){
-            pose = new Pose2d(pose.getTranslation(), pose.getRotation().plus(Rotation2d.fromDegrees(180)));
-        }
-        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+        if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
             angle += 180;
+            gyroIO.setAngleAdjustmentIO(180);
+            
         }
+        pose = new Pose2d(pose.getTranslation(), Rotation2d.fromDegrees(angle));
         m_poseEstimator.resetPosition(Rotation2d.fromDegrees(angle),getModulePositions(),pose);
-        
     }
  
     // Get the current pose of the robot

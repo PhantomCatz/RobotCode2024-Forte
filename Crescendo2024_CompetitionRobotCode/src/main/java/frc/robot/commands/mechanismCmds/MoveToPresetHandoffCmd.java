@@ -11,18 +11,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.subsystems.CatzStateMachine;
-import frc.robot.subsystems.CatzStateMachine.NoteDestination;
-import frc.robot.subsystems.CatzStateMachine.NoteSource;
+import frc.robot.CatzConstants.NoteDestination;
+import frc.robot.CatzConstants.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorControlState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterLoadState;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
@@ -59,17 +57,6 @@ public class MoveToPresetHandoffCmd extends Command {
   @Override
   public void initialize() {
 
-
-    if(m_noteDestination == NoteDestination.AMP &&
-       m_noteSource == NoteSource.FROM_SHOOTER) {
-        CatzStateMachine.getInstance().cmdNewNoteDestination(NoteDestination.AMP);
-    }
-
-    if(m_noteDestination == NoteDestination.SPEAKER &&
-       m_noteSource == NoteSource.FROM_INTAKE) {
-        CatzStateMachine.getInstance().cmdNewNoteDestination(NoteDestination.SPEAKER);
-    }
-
     // System.out.println("Handoff " + m_noteDestination.toString());
     // System.out.println(m_noteSource.toString());
     m_targetMechPoseStartReached = false;
@@ -78,7 +65,7 @@ public class MoveToPresetHandoffCmd extends Command {
     switch(m_noteSource) {
       case INTAKE_GROUND:
         m_targetMechPoseStart = CatzMechanismConstants.INTAKE_GROUND_PRESET;
-        intake.setRollersGround();
+        intake.setRollersIn();
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
@@ -157,7 +144,7 @@ public class MoveToPresetHandoffCmd extends Command {
           runMechanismSetpoints(m_targetMechPoseEnd);
 
           if(m_noteDestination == NoteDestination.SPEAKER) {
-            shooter.setShooterLoadState(ShooterLoadState.LOAD_IN);
+            shooter.setShooterState(ShooterState.LOAD_IN);
           }
 
           m_targetMechPoseStartReached = true; //reached start postion and start for end position
@@ -189,7 +176,7 @@ public class MoveToPresetHandoffCmd extends Command {
       if(m_targetMechPoseStartReached == false) {
         if(areMechanismsInPosition()) {
           intake.setRollersIntakeSource();
-          shooter.setShooterLoadState(ShooterLoadState.LOAD_OUT);
+          shooter.setShooterState(ShooterState.LOAD_OUT);
           m_targetMechPoseStartReached = true;
         }
       }
@@ -215,7 +202,7 @@ public class MoveToPresetHandoffCmd extends Command {
       if(m_targetMechPoseStartReached == false) {
         if(areMechanismsInPosition()) {
             intake.setRollersOutakeHandoff();
-          shooter.setShooterLoadState(ShooterLoadState.LOAD_IN);
+          shooter.setShooterState(ShooterState.LOAD_IN);
           m_targetMechPoseStartReached = true;
         }
       }
@@ -247,7 +234,7 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean turretState   = turret.getTurretInPos();
     boolean shooterState  = shooter.getShooterServoInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-    System.out.println("i " + intakeState + "t " + turretState + "s " + shooterState + "e " + elevatorState);
+    //System.out.println("i " + intakeState + "t " + turretState + "s " + shooterState + "e " + elevatorState);
     return(intakeState && turretState && shooterState && elevatorState);
   }
 

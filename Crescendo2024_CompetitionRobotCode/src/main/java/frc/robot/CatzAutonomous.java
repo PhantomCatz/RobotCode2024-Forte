@@ -28,8 +28,8 @@ import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
 import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
 import frc.robot.commands.mechanismCmds.MoveToPresetHandoffCmd;
 import frc.robot.commands.mechanismCmds.MoveToPreset;
-import frc.robot.subsystems.CatzStateMachine.NoteDestination;
-import frc.robot.subsystems.CatzStateMachine.NoteSource;
+import frc.robot.CatzConstants.NoteDestination;
+import frc.robot.CatzConstants.NoteSource;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -37,7 +37,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class CatzAutonomous {
-    private static CatzAutonomous Instance;
+    private static CatzAutonomous instance;
     
     //subsystem declaration
     private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
@@ -46,15 +46,15 @@ public class CatzAutonomous {
     private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
     private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
-    public static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
+    private AllianceColor allianceColor;
+    private static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
     PathConstraints autoPathfindingConstraints = new PathConstraints(
         3.0, 4.0, 
         Units.degreesToRadians(540), Units.degreesToRadians(720));
-    private AllianceColor allianceColor;
 
-    public CatzAutonomous() {
+    private CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", AllianceColor.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  AllianceColor.Red);
 
@@ -96,13 +96,18 @@ public class CatzAutonomous {
     }
 
     public static CatzAutonomous getInstance(){
-        if(Instance == null){
-            Instance = new CatzAutonomous();
+        if(instance == null){
+            instance = new CatzAutonomous();
         }
-        return Instance;
+        return instance;
     }
 
-    //-------------------------------------------Priority Auton Paths--------------------------------------------
+    //--------------------------------------------------------------------------------------------
+    //  
+    //      Priority Autonomous Paths
+    //  
+    //--------------------------------------------------------------------------------------------
+    
     private Command driveRotate(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("Test")),
@@ -273,12 +278,15 @@ public class CatzAutonomous {
     }
 
 
-    //-------------------------------------------Auton Paths-----------------------------------------------------
-
+    //--------------------------------------------------------------------------------------------
+    //  
+    //      Autonomous Paths
+    //  
+    //--------------------------------------------------------------------------------------------
     private Command mid(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightMid")),
-            shooter.shootPreNote().withTimeout(1.5),
+            shooter.cmdShooterRamp().withTimeout(1.5),
             Commands.waitSeconds(1.0),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightMid"))
             );
@@ -289,7 +297,7 @@ public class CatzAutonomous {
     private Command bot(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightBot")),
-            shooter.shootPreNote().withTimeout(1.5),
+            shooter.cmdShooterRamp().withTimeout(1.5),
             Commands.waitSeconds(1.0),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightBot"))
         );
@@ -298,27 +306,28 @@ public class CatzAutonomous {
     private Command top(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightTop")),
-            shooter.shootPreNote().withTimeout(1.5),
+            shooter.cmdShooterRamp().withTimeout(1.5),
             Commands.waitSeconds(1.0),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightTop"))
         );
     }
 
     //https://docs.google.com/presentation/d/19F_5L03n90t7GhtzQhD4mYNEMkdFsUGoDSb4tT9HqNI/edit#slide=id.g268da342b19_1_0
+
     private Command speaker4PieceWing(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("S4PW1")),
-            new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            // new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET),
+            // shooter.cmdShoot(),
+            new ParallelCommandGroup(//new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                      new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW1"))),
-            new AimAndOrFireAtSpeakerCmd().withTimeout(2.0),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            // new AimAndOrFireAtSpeakerCmd().withTimeout(2.0),
+            // shooter.cmdShoot(),
+            new ParallelCommandGroup(//new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                      new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW2"))),
-            new AimAndOrFireAtSpeakerCmd().withTimeout(2.0),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            // new AimAndOrFireAtSpeakerCmd().withTimeout(2.0),
+            // shooter.cmdShoot(),
+            new ParallelCommandGroup(//new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                      new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW3")))
         );
     }
@@ -487,7 +496,11 @@ public class CatzAutonomous {
         );
     }
 
-    //---------------------------------------------------------Trajectories/Swervepathing---------------------------------------------------------
+    //--------------------------------------------------------------------------------------------
+    //  
+    //      Auto Trjaectories for Telop
+    //  
+    //--------------------------------------------------------------------------------------------
     public Command autoFindPathSource() {
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
                 new Pose2d(2.7, 7.5, Rotation2d.fromDegrees(0)),
@@ -501,6 +514,23 @@ public class CatzAutonomous {
     }
 
     public Command autoScoreAmp() {
+        
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(1.85, 7.5, Rotation2d.fromDegrees(90)),
+                new Pose2d(1.85, 7.8, Rotation2d.fromDegrees(90))
+                    );
+
+        //send path info to trajectory following command in a chained autocoring path
+        return new SequentialCommandGroup(new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
+                                                                                    .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false)), //transfer note to intake if applicable
+                                                                    new MoveToPreset(CatzMechanismConstants.AMP_TRANSITION_PRESET),                  //move to amp transition
+                                                                    new PPTrajectoryFollowingCmd(bezierPoints,                                //start auto trajectory
+                                                                                                        autoPathfindingConstraints, 
+                                                                                                            new GoalEndState(0.0, Rotation2d.fromDegrees(90))),
+                                          new MoveToPreset(CatzMechanismConstants.SCORING_AMP_PRESET));                    //move to amp scoring position
+    }
+
+    public Command autoHoardFromSource() {
 
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
                 new Pose2d(1.85, 7.5, Rotation2d.fromDegrees(90)),
@@ -508,13 +538,14 @@ public class CatzAutonomous {
                     );
 
         //send path info to trajectory following command in a chained autocoring path
-        return new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
-                                                        .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false), //transfer note to intake if applicable
-                                          new MoveToPreset(CatzMechanismConstants.AMP_TRANSITION_PRESET),                  //move to amp transition
-                                          new PPTrajectoryFollowingCmd(bezierPoints,                                //start auto trajectory
-                                                                            autoPathfindingConstraints, 
-                                                                                new GoalEndState(0.0, Rotation2d.fromDegrees(90))),
-                                          new MoveToPreset(CatzMechanismConstants.SCORING_AMP_PRESET));                    //move to amp scoring position
+        return new SequentialCommandGroup(new ParallelCommandGroup(new PPTrajectoryFollowingCmd(bezierPoints,                                //start auto trajectory
+                                                                                                    autoPathfindingConstraints, 
+                                                                                                        new GoalEndState(0.0, Rotation2d.fromDegrees(90))),
+                                                                    new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
+                                                                                                            .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false)), //transfer note to intake if applicable
+                                          new MoveToPreset(CatzMechanismConstants.INTAKE_HOARD_PRESET),                    //move to hoard preset
+                                          new AimAndOrFireAtSpeakerCmd(),
+                                          shooter.cmdShoot());                    
     }
 
     public Command autoFindPathSpeakerAW() {
@@ -568,7 +599,11 @@ public class CatzAutonomous {
     }
 
 
-    //-------------------------------------------------MISC-------------------------------------------------------
+    //--------------------------------------------------------------------------------------------
+    //  
+    //      MISC()
+    //  
+    //--------------------------------------------------------------------------------------------
 
     private Command setAutonStartPose(PathPlannerPath startPath){
     return Commands.runOnce(()->{
@@ -579,15 +614,11 @@ public class CatzAutonomous {
 
         drivetrain.resetPosition(path.getPreviewStartingHolonomicPose());
         allianceColor = chosenAllianceColor.get();
-
-        if(allianceColor == CatzConstants.AllianceColor.Red) {
-            drivetrain.flipGyro();
-        }
     });
     }
 
     public AllianceColor getAllianceColor(){
-        return allianceColor;
+        return chosenAllianceColor.get();
     }
 
 }

@@ -143,7 +143,7 @@ public class IntakeIOReal implements IntakeIO {
         } else {
             talonConfigsPivot.CurrentLimits.SupplyCurrentLimit = KRAKEN_CURRENT_LIMIT_AMPS;
         }
-        System.out.println("in squishy set " + enable);
+        // System.out.println("in squishy set " + enable);
         pivotMtr.getConfigurator().apply(talonConfigsPivot);
     }
 

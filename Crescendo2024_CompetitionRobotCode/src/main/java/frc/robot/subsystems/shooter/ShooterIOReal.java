@@ -21,8 +21,6 @@ import frc.robot.subsystems.turret.TurretIOReal;
 
 public class ShooterIOReal implements ShooterIO {
   //any type of Shooter Mtr Config Constnats/Logic Constants should go here 
-    public static int SHOOTER_MTR_ID = 53;
-    public static int TURRET_MTR_ID = 54;
     public static int ACCEPTABLE_VEL_ERROR = 20;
 /*-----------------------------------------------------------------------------------------
  * 
@@ -74,11 +72,11 @@ public class ShooterIOReal implements ShooterIO {
     private final int SERVO_LEFT_PWM_ID  = 0;
     private final int SERVO_RIGHT_PWM_ID = 1;
 
-    private final int SERVO_PW_US_MAX_POSITION          = 2000;
-    private final int SERVO_PW_US_MAX_DEADBAND_POSITION = 1800;
-    private final int SERVO_PW_US_CENTER_POSITION       = 1500;
-    private final int SERVO_PW_US_MIN_DEADBAND_POSITION = 1200;
-    private final int SERVO_PW_US_MIN_POSITION          = 1000;
+    private static final int SERVO_PW_US_MAX_POSITION          = 2000;
+    private static final int SERVO_PW_US_MAX_DEADBAND_POSITION = 1800;
+    private static final int SERVO_PW_US_CENTER_POSITION       = 1500;
+    private static final int SERVO_PW_US_MIN_DEADBAND_POSITION = 1200;
+    private static final int SERVO_PW_US_MIN_POSITION          = 1000;
 
     //Tunable motor velocities
     LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 58); // was 65
@@ -139,8 +137,8 @@ public class ShooterIOReal implements ShooterIO {
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
        // BaseStatusSignal.setUpdateFrequencyForAll(50, );
-        SHOOTER_MOTOR_LT.optimizeBusUtilization();
-        SHOOTER_MOTOR_RT.optimizeBusUtilization();
+        // SHOOTER_MOTOR_LT.optimizeBusUtilization();
+        // SHOOTER_MOTOR_RT.optimizeBusUtilization();
 
 
 
@@ -155,7 +153,7 @@ public class ShooterIOReal implements ShooterIO {
         for(int i=0;i<2;i++) {
             initializationStatus = shooterArray[i].getConfigurator().apply(talonConfigs);
              if(!initializationStatus.isOK())
-                System.out.println("Failed to Configure CAN ID for shooter "+ shooterArray.toString());
+                System.out.println("Failed to Configure CAN ID for shooter ");//+ shooterArray.toString()); // add in later
         }
     }
 
@@ -165,8 +163,8 @@ public class ShooterIOReal implements ShooterIO {
 
         inputs.shooterVelocityLT        = SHOOTER_MOTOR_LT.getVelocity().getValue();
         inputs.shooterVelocityRT        = SHOOTER_MOTOR_RT.getVelocity().getValue();
-        // inputs.velocityThresholdLT      = -shooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET; //was shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET
-        // inputs.velocityThresholdRT      =  shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
+        inputs.velocityThresholdLT      = -shooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET; //was shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET
+        inputs.velocityThresholdRT      =  shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
         // inputs.shooterVelocityErrorLT   = SHOOTER_MOTOR_LT.getClosedLoopError().getValue();
         // inputs.shooterVelocityErrorRT   = SHOOTER_MOTOR_RT.getClosedLoopError().getValue();
         // inputs.shooterMotorVoltageLT    = SHOOTER_MOTOR_LT.getMotorVoltage().getValue();
@@ -183,8 +181,8 @@ public class ShooterIOReal implements ShooterIO {
         // inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
         // inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
 
-        inputs.servoLeftPosition  = shooterServoLT.get();
-        inputs.servoRightPosition = shooterServoRT.get();
+        inputs.servoLeftPosition  = shooterServoLT.getPosition();
+        inputs.servoRightPosition = shooterServoRT.getPosition();
 
     }
 
@@ -192,8 +190,8 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setShooterEnabled() {
-        double shooterVelocityLT = 5.0;//58.0; //TBD
-        double shooterVelocityRT = 5.0;//80.0;
+        double shooterVelocityLT = 58.0;//58.0; //TBD
+        double shooterVelocityRT = 80.0;//80.0;
 
         SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-shooterVelocityLT).withEnableFOC(true));
         SHOOTER_MOTOR_RT.setControl(new VelocityVoltage( shooterVelocityRT).withEnableFOC(true));
@@ -256,10 +254,6 @@ public class ShooterIOReal implements ShooterIO {
     shooterServoRT.setAngle(angle);
   } 
 
-  @Override
-  public void setServoSpeed(double speed) {
-    shooterServoRT.setSpeed(speed);
-    shooterServoLT.setSpeed(speed);
-  }
+
 }
 

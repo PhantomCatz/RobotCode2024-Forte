@@ -9,15 +9,14 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.subsystems.CatzStateMachine;
-import frc.robot.subsystems.CatzStateMachine.NoteDestination;
+import frc.robot.CatzConstants.NoteDestination;
+import frc.robot.CatzConstants.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorControlState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterServoState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
@@ -50,7 +49,7 @@ public class ScoreAmpCmd extends Command {
   @Override
   public void execute() {
     if(intake.getWristAngle() > -30) {
-      intake.pivotFullManual(0.0);
+      intake.pivotFullManual(-0.1);
     } else {
       intake.pivotFullManual(-0.3);
     }

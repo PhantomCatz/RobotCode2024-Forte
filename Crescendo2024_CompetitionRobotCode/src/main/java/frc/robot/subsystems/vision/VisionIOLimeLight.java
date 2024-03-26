@@ -32,8 +32,8 @@ public class VisionIOLimeLight implements VisionIO {
     public VisionIOLimeLight(String name) {
         NetworkTableInstance.getDefault().getTable(name).getEntry("ledMode").setNumber(1);
         this.name = name;
-        System.out.println(name);
-        System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
+        // System.out.println(name);
+        // System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
         
         Logger.recordOutput("Obometry/VisionPose", new Pose2d());
 

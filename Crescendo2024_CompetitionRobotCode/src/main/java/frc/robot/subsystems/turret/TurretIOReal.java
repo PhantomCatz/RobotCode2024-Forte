@@ -11,12 +11,9 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkPIDController.AccelStrategy;
 
-import frc.robot.Utils.LoggedTunableNumber;
-
 public class TurretIOReal implements TurretIO {
 
     private final CANSparkMax turretMtr;
-    private final SparkPIDController smartMotionPID;
 
     public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
 
@@ -34,22 +31,11 @@ public class TurretIOReal implements TurretIO {
          turretMtr.enableSoftLimit(SoftLimitDirection.kForward, true);
          turretMtr.enableSoftLimit(SoftLimitDirection.kReverse, true);
          
-         turretMtr.setSoftLimit(SoftLimitDirection.kForward, 90);
-         turretMtr.setSoftLimit(SoftLimitDirection.kReverse, -90);
+         turretMtr.setSoftLimit(SoftLimitDirection.kForward, 80);
+         turretMtr.setSoftLimit(SoftLimitDirection.kReverse, -80);
 
         turretMtr.burnFlash(); //save configs so if pwr lost to be reapplied
 
-        smartMotionPID = turretMtr.getPIDController();
-        smartMotionPID.setP(0.01);
-        smartMotionPID.setI(0.0);
-        smartMotionPID.setD(0.0);
-
-        smartMotionPID.setSmartMotionAccelStrategy(AccelStrategy.kSCurve, 0);
-        smartMotionPID.setSmartMotionAllowedClosedLoopError(3.0, 0);
-        smartMotionPID.setSmartMotionMaxVelocity(2, 0);
-        smartMotionPID.setSmartMotionMaxAccel(5.0, 0);
-        smartMotionPID.setSmartMotionMinOutputVelocity(0,0);
-        smartMotionPID.setOutputRange(-1, 1);
 
     }
     @Override
@@ -68,11 +54,6 @@ public class TurretIOReal implements TurretIO {
     @Override 
     public void turretSetEncoderPos(double position){
         turretMtr.getEncoder().setPosition(position);
-    }
-
-    @Override
-    public void turretSetPositionSM(double reference) {
-        smartMotionPID.setReference(reference, ControlType.kSmartMotion);
     }
 
 

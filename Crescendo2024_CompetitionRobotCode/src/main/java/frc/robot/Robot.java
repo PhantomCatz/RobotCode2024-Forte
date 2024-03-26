@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.CatzConstants.CatzColorConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
-import frc.robot.subsystems.CatzStateMachine;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -63,7 +62,6 @@ public class Robot extends LoggedRobot {
 
         Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
         Logger.addDataReceiver(new NT4Publisher());
-        
        // new PowerDistribution(1, ModuleType.kRev);
         break;
 
@@ -102,6 +100,7 @@ public class Robot extends LoggedRobot {
 
     lead.mid.colorRainbow();
     lead.mid.setMode(LEDMode.Flow);
+
   }
 
   @Override
@@ -140,7 +139,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousExit() {
-    if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+    if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
       SubsystemCatzDrivetrain.getInstance().flipGyro();
     }
   }
@@ -155,6 +154,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
 
+    m_robotContainer.logDpadStates();
  
   }
 
@@ -174,4 +174,3 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
 }
-

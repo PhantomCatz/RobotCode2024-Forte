@@ -47,7 +47,6 @@ public class PPTrajectoryFollowingCmd extends Command {
     //Auto Pathplanning trajectoreies
     public PPTrajectoryFollowingCmd(List<Translation2d> bezierPoints, PathConstraints constraints, GoalEndState endRobotState) {
         PathPlannerPath newPath = new PathPlannerPath(bezierPoints, constraints, endRobotState);
-
         path = newPath;
 
         hocontroller = DriveConstants.holonomicDriveController;
@@ -59,19 +58,18 @@ public class PPTrajectoryFollowingCmd extends Command {
     public void initialize() {
         // Reset and begin timer
         timer.reset();
-        timer.start();  
-        
+        timer.start();
 
         //flip auton path to mirrored red side if we choose red alliance
-      if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+        if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
             path = path.flipPath();
             // System.out.println("flip");
         }
 
         //path debug
-        for(int i=0; i<path.getAllPathPoints().size(); i++){
-            System.out.println(path.getAllPathPoints().get(i).position);
-        }
+        // for(int i=0; i<path.getAllPathPoints().size(); i++){
+        //     System.out.println(path.getAllPathPoints().get(i).position);
+        // }
        // Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
         //create pathplanner trajectory
