@@ -134,7 +134,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static final double INTAKE_HOARD_DEG          = 30.0;
   public static final double INTAKE_GROUND_PICKUP_DEG  = -25.0; //-22.0;
   public static final double INTAKE_AMP_SCORE_DEG      = -22.0;
-  public static final double INTAKE_AMP_TRANSITION_DEG = -60.0; //TBD Change to -80 on sn2
+  public static final double INTAKE_AMP_TRANSITION_DEG = -77.0; //TBD Change to -80 on sn2
 
   public static final double INTAKE_MIN_ELEV_CLEARANCE_DEG = 110.0;
   public static final double INTAKE_TRANSITION_CHECK_DEG = -47.0;
@@ -429,6 +429,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // -------------------------------------------------------------------------------------
       if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG ||
           getIsIntakeInAmpScoring()) {
+            
         if(m_intermediatePositionReached == false) {
           m_nextTargetPositionDeg = INTAKE_STOW_DEG; 
               m_targetPositionDeg = INTAKE_AMP_SCORE_DN_DEG; // set intermediate destination

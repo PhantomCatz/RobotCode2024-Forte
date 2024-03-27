@@ -273,9 +273,16 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_newServoPosition = position;
   }
 
-  public Command setPositionCmd(Supplier<Double> position) {
-    return run(()->m_newServoPosition = position.get());
+  public Command cmdManualHoldOn(Supplier<Double> pwr) {
+    return run(()-> setServoManualHold(pwr.get()));
   }
+
+  public void setServoManualHold(double power) {
+    if(Math.abs(power) > 0.1) {
+      m_newServoPosition = m_newServoPosition + (power * 0.005);
+    }
+
+  } 
 
   //-------------------------------------------------------------------------------------
   // Getter Methods 
