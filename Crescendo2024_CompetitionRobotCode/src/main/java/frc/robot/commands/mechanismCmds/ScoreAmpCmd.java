@@ -31,6 +31,8 @@ public class ScoreAmpCmd extends Command {
   private boolean m_targetMechPoseStartReached = false;
   private boolean m_targetMechPoseEndReached   = false;
 
+  private double m_previousTargetPositionDeg;
+
   public ScoreAmpCmd() {
     addRequirements(intake, elevator, shooter, turret);
   }
@@ -49,7 +51,11 @@ public class ScoreAmpCmd extends Command {
   @Override
   public void execute() {
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.SCORING_AMP_PRESET.getIntakePivotTargetAngle());
+    if((Math.abs(m_previousTargetPositionDeg) - Math.abs(intake.getWristAngle()) < 5.0)) {
+      intake.setRollersOutakeHandoff();
+    } 
 
+    m_previousTargetPositionDeg = intake.getWristAngle();
   }
 
   // Called once the command ends or is interrupted.

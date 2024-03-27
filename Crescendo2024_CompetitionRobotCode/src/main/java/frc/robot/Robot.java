@@ -113,7 +113,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
-    CatzAutonomous.allianceColor = CatzAutonomous.getInstance().getAllianceColor();
   }
 
   @Override

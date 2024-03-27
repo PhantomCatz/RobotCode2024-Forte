@@ -45,6 +45,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //Servo SetPositions
   public static final double SERVO_STOW_POS = 0.0;
   public static final double SERVO_OPTIMAL_HANDOFF_HIGH_POS = 0.4;
+  public static final double SERVO_NULL_POSITION  = -999.0;
 
 
   private double m_newServoPosition;
@@ -239,7 +240,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
               currentShooterState = ShooterState.LOAD_OFF;
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
-              updateShooterServo(0.0);
+              io.setServoPosition(0.0);
             }
             
             m_iterationCounter++;
@@ -254,13 +255,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
       // servo periodic logic
       //
       //-------------------------------------------------------------------------------------------
-
-
-      if(currentServoState == ShooterServoState.SET_POSITION) {  
-        io.setServoPosition(m_newServoPosition);
-      } else {
-        io.setServoPosition(m_newServoPosition);
-      }
+      io.setServoPosition(m_newServoPosition);
       
       m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
       if(Math.abs(m_servoPosError) < 0.05) {
@@ -272,12 +267,21 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   } //end of shooter periodic
 
+  // Testing
+  public Command setServoPos(double position) {
+    return run(()->io.setServoPosition(position));
+  }
+
   //-------------------------------------------------------------------------------------
   // Intake Calculation Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
+    double previousServoPosition = m_newServoPosition;
     m_shooterServoInPos = false;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
+    if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
+      m_newServoPosition = previousServoPosition;
+    }
   }
 
   public double getScuffedShootingSpeed(){
@@ -285,7 +289,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public Command cmdServoPosition(Supplier<Double> value) {
-    return run(()-> updateShooterServo(value.get()));
+    return run(()->io.setServoPosition(value.get()));
   }
 
   public void updateShooterServo(double position) {
