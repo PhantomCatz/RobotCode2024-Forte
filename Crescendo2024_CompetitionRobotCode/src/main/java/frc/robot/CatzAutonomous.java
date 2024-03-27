@@ -603,17 +603,17 @@ public class CatzAutonomous {
     private Command setAutonStartPose(PathPlannerPath startPath){
     return Commands.runOnce(()->{
         PathPlannerPath path = startPath;
-        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+        if(CatzAutonomous.chosenAllianceColor.getSelected() == CatzConstants.AllianceColor.Red) {
             path = startPath.flipPath();
         }
 
         drivetrain.resetPosition(path.getPreviewStartingHolonomicPose());
-        allianceColor = chosenAllianceColor.get();
+        allianceColor = chosenAllianceColor.getSelected();
     });
     }
 
     public AllianceColor getAllianceColor(){
-        return chosenAllianceColor.get();
+        return chosenAllianceColor.getSelected();
     }
 
 }
