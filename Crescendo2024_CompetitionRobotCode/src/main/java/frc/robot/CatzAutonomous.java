@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.CatzConstants.AllianceColor;
@@ -68,6 +67,8 @@ public class CatzAutonomous {
         pathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
 
         pathChooser.addOption("ScoringW2", CS_W2());
+        pathChooser.addOption("Scoring US W1-3", US_W13());
+        pathChooser.addOption("Scoring LS W1-3", LS_W13());
         pathChooser.addOption("ScoringC13", scoringC13());
         pathChooser.addOption("ScoringC35", scoringC35());
 
@@ -125,6 +126,56 @@ public class CatzAutonomous {
             shooter.cmdShooterRamp(),
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
                                         new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("CS_W2-1")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShooterRamp()
+        );
+    }
+
+    /*
+     * Robot Starting Position: Upper Speaker
+     * Seems to be redundant with 4 piece auton, only advantage is having code for different starting positions depending on
+     * alliance's capabilities
+     */
+    private Command US_W13() {
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("US_W1-3_1")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShooterRamp(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_1"))),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShooterRamp(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_2"))),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShooterRamp(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_3"))),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShooterRamp()
+        );
+    }
+
+    /*
+     * Robot Starting Position: Upper Speaker
+     * Seems to be redundant with 4 piece auton, only advantage is having code for different starting positions depending on
+     * alliance's capabilities
+     */
+    private Command LS_W13() {
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("LS_W1-3_1")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShooterRamp(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource. INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("LS_W1-3_1"))),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShooterRamp(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("LS_W1-3_2"))),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShooterRamp(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("LS_W1-3_3"))),
             new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShooterRamp()
         );
@@ -234,24 +285,24 @@ public class CatzAutonomous {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("Hoard_C4-5_1")),
             new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
+            shooter.cmdShooterRamp(),
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_1"))),
+                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_1"))),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_2")),
             new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
-            new ParallelRaceGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_3"))),
+            shooter.cmdShooterRamp(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                    new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_3"))),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_4")),
             new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot()
+            shooter.cmdShooterRamp()
             );
-        }
+    }
         
     /*
         * PathPlanner does not show past the center line, so this bulldozing path cannot be done effectively
         * The robot will follow the center line in a straight line instead of a squiggly line
-        */
+    */
     private Command WingBulldozeUnder() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeUnder-1")),
@@ -263,13 +314,13 @@ public class CatzAutonomous {
             shooter.cmdShooterRamp(),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-2")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-3"))
-            );
+        );
     }
     
     /*
         * PathPlanner does not show past the center line, so this bulldozing path cannot be done effectively
         * The robot will follow the center line in a straight line instead of a squiggly line
-        */
+    */
     private Command WingBulldozeAbove() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
@@ -283,28 +334,10 @@ public class CatzAutonomous {
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-3"))
         );
     }
-
-    private Command HoardC45() {
-        return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("Hoard_C4-5_1")),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShooterRamp(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_1"))),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_2")),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShooterRamp(),
-            new ParallelRaceGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                    new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_3"))),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_4")),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShooterRamp()
-        );
-    }
         
-        //--------------------------------------------------------------------------------------------
-        //  
-        //      Autonomous Paths
+    //--------------------------------------------------------------------------------------------
+    //  
+    //      Autonomous Paths
     //  
     //--------------------------------------------------------------------------------------------
     private Command mid(){
