@@ -68,8 +68,6 @@ public class CatzAutonomous {
         pathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
 
         pathChooser.addOption("ScoringW2", CS_W2());
-        pathChooser.addOption("Scoring US W1-3", US_W13());
-        pathChooser.addOption("Scoring LS W1-3", LS_W13());
         pathChooser.addOption("ScoringC13", scoringC13());
         pathChooser.addOption("ScoringC35", scoringC35());
 
@@ -115,6 +113,11 @@ public class CatzAutonomous {
         );
     }
     
+    /*
+     * Robot Starting Position: Center Speaker
+     * Sequence: Shoots preload into speaker
+     *           Picks up note in front of it (W2) and shoots into speaker
+     */
     private Command CS_W2() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("CS_W2-1")),
@@ -126,47 +129,17 @@ public class CatzAutonomous {
             shooter.cmdShoot()
         );
     }
-
-    private Command US_W13() {
-        return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("US_W1-3_1")),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_1"))),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_2"))),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_3"))),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot()
-        );
-    }
-
-    private Command LS_W13() {
-        return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("LS_W1-3_1")),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource. INTAKE_GROUND),
-                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("LS_W1-3_1"))),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("LS_W1-3_2"))),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("LS_W1-3_3"))),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot()
-        );
-    }
     
+    /*
+     * Robot Starting Position: Lower Speaker
+     * Sequence: Shoots preload into speaker
+     *           Drives to center line to pick up note at the very bottom in Pathplanner (C5)
+     *           Goes near stage to shoot into speaker
+     *           Drives to center line to pick up note above previous note (C4)
+     *           Goes under stage to shoot into speaker
+     *           Drives to center line to pick up note above previous note (C3)
+     *           Goes to same spot under stage to shoot into speaker
+     */
     private Command scoringC35() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("Scoring_C3-5_1")),
@@ -190,6 +163,16 @@ public class CatzAutonomous {
         );
     }
 
+    /*
+     * Robot Starting Position: Upper Speaker
+     * Sequence: Shoots preload into speaker
+     *           Drives to center line to pick up note at the very top in PathPlanner (C1)
+     *           Goes near stage to shoot into speaker
+     *           Drives to center line to pick up note below previous note (C2)
+     *           Goes near stage to shoot into speaker
+     *           Drives to center line to pick up note below previous note (C3)
+     *           Goes under stage to shoot into speaker
+     */
     private Command scoringC13() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
@@ -215,6 +198,14 @@ public class CatzAutonomous {
         );
     }
 
+    /*
+     * Robot Starting Position: Upper Speaker
+     * Sequence: Shoots preload into speaker
+     *           Drives to center line to pick up note at the very top in PathPlanner (C1)
+     *           Goes near stage to hoard by shooting near speaker
+     *           Drives to center line to pick up note below previous note (C2)
+     *           Goes near stage to hoard by shooting near speaker
+     */
     private Command HoardC12() {
         return new SequentialCommandGroup( 
             setAutonStartPose(PathPlannerPath.fromPathFile("Hoard_C1-2_1")),
@@ -231,6 +222,36 @@ public class CatzAutonomous {
         );
     }
 
+    /*
+     * Robot Starting Position: Lower Speaker
+     * Sequence: Shoots preload into speaker
+     *           Drives to center line to pick up note at the very bottom in Pathplanner (C5)
+     *           Goes near stage to hoard by shooting near speaker
+     *           Drives to center line to pick up note above previous note (C4)
+     *           Goes under stage to hoard by shooting near speaker
+     */
+    private Command HoardC45() {
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("Hoard_C4-5_1")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_1"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_2")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot(),
+            new ParallelRaceGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_3"))),
+            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_4")),
+            new AimAndOrFireAtSpeakerCmd(),
+            shooter.cmdShoot()
+            );
+        }
+        
+    /*
+        * PathPlanner does not show past the center line, so this bulldozing path cannot be done effectively
+        * The robot will follow the center line in a straight line instead of a squiggly line
+        */
     private Command WingBulldozeUnder() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeUnder-1")),
@@ -242,9 +263,13 @@ public class CatzAutonomous {
             shooter.cmdShoot(),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-2")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-3"))
-        );
+            );
     }
-
+    
+    /*
+        * PathPlanner does not show past the center line, so this bulldozing path cannot be done effectively
+        * The robot will follow the center line in a straight line instead of a squiggly line
+        */
     private Command WingBulldozeAbove() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeAbove-1")),
@@ -256,31 +281,12 @@ public class CatzAutonomous {
             shooter.cmdShoot(),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-2")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeAbove-3"))
-        );
+            );
     }
-
-    private Command HoardC45() {
-        return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("Hoard_C4-5_1")),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_1"))),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_2")),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
-            new ParallelRaceGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                    new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_3"))),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C4-5_4")),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot()
-        );
-    }
-
-
-    //--------------------------------------------------------------------------------------------
-    //  
-    //      Autonomous Paths
+        
+        //--------------------------------------------------------------------------------------------
+        //  
+        //      Autonomous Paths
     //  
     //--------------------------------------------------------------------------------------------
     private Command mid(){
