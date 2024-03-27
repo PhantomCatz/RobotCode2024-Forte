@@ -428,7 +428,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // STOW position
       // -------------------------------------------------------------------------------------
       if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG ||
-          getIsIntakeInAmpScoring()) {
+          getIsIntakeInAmpScoring() ||
+          SubsystemCatzElevator.getInstance().getElevatorRevPos() > INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV) {
             
         if(m_intermediatePositionReached == false) {
           m_nextTargetPositionDeg = INTAKE_STOW_DEG; 
