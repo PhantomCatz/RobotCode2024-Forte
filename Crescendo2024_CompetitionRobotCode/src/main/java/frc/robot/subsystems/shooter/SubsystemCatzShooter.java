@@ -62,7 +62,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
    * States
    *-----------------------------------------------------------------------------------------*/
 
-  private static ShooterState currentShooterState;
+  private static ShooterState currentShooterState = ShooterState.NONE;
   public static enum ShooterState {
     LOAD_IN,
     FINE_TUNE,
@@ -72,7 +72,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     START_SHOOTER_FLYWHEEL,
     SHOOTING,
     LOAD_OFF,
-    LOAD_OUT
+    LOAD_OUT,
+    NONE;
   }
  
   //shooter note state for determining when other mechanism should turn off
@@ -130,15 +131,18 @@ public class SubsystemCatzShooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
 
-    if(DriverStation.isDisabled()) {
-      disableShooter();
-    } else {
+    // if(DriverStation.isDisabled()) { //this thing delayed the start of auton by more than a second
+    //   disableShooter();
+    // } else {
       switch(currentShooterState) {
           //-------------------------------------------------------------------------------------------
           //
           // feeder roller periodic logic
           //
           //-------------------------------------------------------------------------------------------
+          case NONE:
+            System.out.println("heheheha");
+          break;
           case LOAD_IN:
             io.loadNote();
             currentShooterState = ShooterState.LOAD_IN_DONE;
@@ -232,6 +236,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
             
             m_iterationCounter++;
           break;
+
+          default:
+            System.out.println("wut");
+          break;
       }
   
       //-------------------------------------------------------------------------------------------
@@ -246,7 +254,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
       if(Math.abs(m_servoPosError) < 0.05) {
         m_shooterServoInPos = true;
       }
-    } // End of Enabled
+    // } // End of Enabled
     
     Logger.recordOutput("shooter/servopos", m_newServoPosition);
 

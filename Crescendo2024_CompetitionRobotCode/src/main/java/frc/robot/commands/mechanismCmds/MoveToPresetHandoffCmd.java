@@ -243,6 +243,6 @@ public class MoveToPresetHandoffCmd extends Command {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return m_targetMechPoseEndReached;
   }
 }

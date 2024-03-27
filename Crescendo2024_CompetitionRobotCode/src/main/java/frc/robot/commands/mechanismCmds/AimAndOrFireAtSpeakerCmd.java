@@ -30,6 +30,7 @@ import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorControlState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
@@ -140,13 +141,12 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   //------------------------------------------------------------------------------------------------
   @Override
   public void initialize() {
-
     shooter.startShooterFlywheel();
 
-    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());   
+    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
 
-    if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
+    if(CatzAutonomous.allianceColor == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
       
       //translation of the blue alliance speaker
       m_targetXY = new Translation2d(0.0, FieldConstants.SPEAKER_COORD_MTRS_Y);
@@ -184,6 +184,11 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     Logger.recordOutput("ShooterCalcs/NewDist",           newDist);
     Logger.recordOutput("servoCmdPos",                    servoPos);
 
+  }
+
+  @Override
+  public boolean isFinished(){
+    return shooter.getShooterNoteState() == ShooterNoteState.NOTE_HAS_BEEN_SHOT;
   }
 
 

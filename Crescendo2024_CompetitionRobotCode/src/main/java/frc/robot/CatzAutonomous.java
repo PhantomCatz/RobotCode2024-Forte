@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.CatzConstants.AllianceColor;
@@ -46,8 +47,8 @@ public class CatzAutonomous {
     private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
     private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
-    private AllianceColor allianceColor;
-    private static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
+    public static AllianceColor allianceColor;
+    private static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector"); //TODO this most likely causes a second delay when auton starts.
     private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
     PathConstraints autoPathfindingConstraints = new PathConstraints(
@@ -57,7 +58,6 @@ public class CatzAutonomous {
     private CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", AllianceColor.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  AllianceColor.Red);
-
         pathChooser.addOption("mid", mid());
         pathChooser.addOption("bot", bot());
         pathChooser.addOption("top", top());
@@ -86,7 +86,7 @@ public class CatzAutonomous {
         // pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
         // pathChooser.addOption("Curve", curveAuto());
 
-        pathChooser.addOption("DriveStraightRotate", driveRotate());
+
     }
 
     //configured dashboard
@@ -107,23 +107,16 @@ public class CatzAutonomous {
     //      Priority Autonomous Paths
     //  
     //--------------------------------------------------------------------------------------------
-    
-    private Command driveRotate(){
-        return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("Test")),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Test"))
-        );
-    }
+    private PathPlannerPath CS_W2_1 = PathPlannerPath.fromPathFile("CS_W2-1");
     
     private Command CS_W2() {
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("CS_W2-1")),
+            setAutonStartPose(CS_W2_1),
             new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
-            new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
-                                        new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("CS_W2-1")),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot()
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(CS_W2_1),
+                                        new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+                                        
+            new AimAndOrFireAtSpeakerCmd()
         );
     }
 
@@ -131,19 +124,15 @@ public class CatzAutonomous {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("US_W1-3_1")),
             new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                         new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_1"))),
             new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                         new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_2"))),
             new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot(),
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                         new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_3"))),
-            new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdShoot()
+            new AimAndOrFireAtSpeakerCmd()
         );
     }
 

@@ -132,7 +132,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
                                                              // bottom inner rail 7 1/4 inches
   public static final double INTAKE_AMP_SCORE_DN_DEG   =  92.6; //90.43; 
   public static final double INTAKE_HOARD_DEG          = 30.0;
-  public static final double INTAKE_GROUND_PICKUP_DEG  = -25.0; //-22.0;
+  public static final double INTAKE_GROUND_PICKUP_DEG  = -22.0; //-22.0;
   public static final double INTAKE_AMP_SCORE_DEG      = -22.0;
   public static final double INTAKE_AMP_TRANSITION_DEG = -60.0; //TBD Change to -80 on sn2
 

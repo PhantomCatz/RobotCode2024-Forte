@@ -112,7 +112,9 @@ public class Robot extends LoggedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    CatzAutonomous.allianceColor = CatzAutonomous.getInstance().getAllianceColor();
+  }
 
   @Override
   public void disabledExit() {}
