@@ -176,16 +176,16 @@ public final class CatzConstants {
   //--------------------------------------Drivetrain-------------------------------
   public static final class DriveConstants {
     //sn2
-    public static final double LT_FRNT_OFFSET = 0.7364;             //mag encoder 0
-    public static final double LT_BACK_OFFSET = -0.2732+0.5 ;      //mag encoder 1
-    public static final double RT_BACK_OFFSET = 0.138439;          //mag encoder 2
-    public static final double RT_FRNT_OFFSET = 0.8088+0.5;        //mag encoder 3
+    // public static final double LT_FRNT_OFFSET = 0.7364;             //mag encoder 0
+    // public static final double LT_BACK_OFFSET = -0.2732+0.5 ;      //mag encoder 1
+    // public static final double RT_BACK_OFFSET = 0.138439;          //mag encoder 2
+    // public static final double RT_FRNT_OFFSET = 0.8088+0.5;        //mag encoder 3
 
     //sn1
-    // public static final double LT_FRNT_OFFSET =  0.21317;
-    // public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
-    // public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
-    // public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
+    public static final double LT_FRNT_OFFSET =  0.21317;
+    public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
+    public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
+    public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
 
     // public static final double LT_FRNT_OFFSET = 0.00406; // sn1
     // public static final double LT_BACK_OFFSET = 0.0395;
@@ -265,7 +265,7 @@ public final class CatzConstants {
     public static final CatzMechanismPosition STOW_PRESET = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
                                                         SubsystemCatzIntake.INTAKE_STOW_DEG, 
-                                                        SubsystemCatzShooter.SERVO_STOW_POS, 
+                                                        SubsystemCatzShooter.SERVO_NULL_POSITION, 
                                                         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition SUBWOOFER_PRESET = 
@@ -293,7 +293,7 @@ public final class CatzConstants {
 
     public static final CatzMechanismPosition PREP_FOR_AMP_PRESET = 
                               new CatzMechanismPosition(SubsystemCatzElevator.ELEVATOR_STOW, 
-                                                        SubsystemCatzIntake.INTAKE_STOW_DEG, 
+                                                        SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG, 
                                                         SubsystemCatzShooter.SERVO_STOW_POS, 
                                                         SubsystemCatzTurret.HOME_POSITION_DEG);
                                                         
