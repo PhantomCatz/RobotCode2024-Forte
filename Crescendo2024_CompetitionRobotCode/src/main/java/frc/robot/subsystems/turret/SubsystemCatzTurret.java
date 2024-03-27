@@ -338,23 +338,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return run(()->{
       m_currentTurretState = TurretState.FULL_MANUAL;
       manualTurretPwr = power.get() * TURRET_POWER_SCALE;
-      
     }).alongWith(Commands.runOnce(
                   ()->SubsystemCatzIntake.getInstance().updateAutoTargetPositionIntake(
                             CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle())));
-  }
-
-  public double perioidicTurretManual(double pwrLT, double pwrRT) {
-
-      if(pwrLT < -0.1) {
-        manualTurretPwr = pwrLT;
-      } else if(pwrRT > 0.1) {
-        manualTurretPwr = pwrRT;
-      } else {
-        manualTurretPwr = 0.0;
-      }
-
-      return manualTurretPwr;
   }
 
   //-------------------------------------------------------------------------------------------------
