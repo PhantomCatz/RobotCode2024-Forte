@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.64,
-        "y": 6.66
+        "x": 5.86,
+        "y": 1.74
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.085660473207739,
-        "y": 6.114843750220242
+        "x": 5.86272249467576,
+        "y": 1.736581934702332
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.85,
-        "y": 5.784400647602627
+        "x": 7.826244114026691,
+        "y": 2.4371348742697485
       },
       "prevControl": {
-        "x": 6.170247561693791,
-        "y": 5.8211165478934745
+        "x": 7.826244114026691,
+        "y": 2.4371348742697485
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,10 +32,10 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
-    "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 360.0
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -43,10 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Hoard_C1-2",
-  "previewStartingState": {
-    "rotation": 10.360972382489427,
-    "velocity": 0
-  },
-  "useDefaultConstraints": true
+  "folder": "Scoring_C3-5",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
 }

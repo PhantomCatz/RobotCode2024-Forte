@@ -56,7 +56,7 @@ public class MoveToPresetHandoffCmd extends Command {
 
   @Override
   public void initialize() {
-    intake.setWasIntakeInAmpScoring(false);
+    intake.setWasIntakeInAmpScoring(false); // flag for determining whether to move to a transition state during sequencing
 
     // System.out.println("Handoff " + m_noteDestination.toString());
     // System.out.println(m_noteSource.toString());
@@ -244,6 +244,6 @@ public class MoveToPresetHandoffCmd extends Command {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return m_targetMechPoseEndReached;
   }
 }

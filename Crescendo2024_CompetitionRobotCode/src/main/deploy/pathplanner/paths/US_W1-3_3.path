@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.64,
-        "y": 6.66
+        "x": 2.89,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.085660473207739,
-        "y": 6.114843750220242
+        "x": 2.89,
+        "y": 4.607482130268902
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.85,
-        "y": 5.784400647602627
+        "x": 2.89,
+        "y": 4.1046482092964185
       },
       "prevControl": {
-        "x": 6.170247561693791,
-        "y": 5.8211165478934745
+        "x": 2.89,
+        "y": 5.086799507578142
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
-    "rotateFast": false
+    "rotation": -90.0,
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": "Hoard_C1-2",
+  "folder": "US_W1-3",
   "previewStartingState": {
-    "rotation": 10.360972382489427,
+    "rotation": -90.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

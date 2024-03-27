@@ -48,11 +48,7 @@ public class ScoreAmpCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(intake.getWristAngle() > -30) {
-      intake.pivotFullManual(-0.1);
-    } else {
-      intake.pivotFullManual(-0.3);
-    }
+    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.SCORING_AMP_PRESET.getIntakePivotTargetAngle());
 
   }
 
@@ -60,7 +56,7 @@ public class ScoreAmpCmd extends Command {
   @Override
   public void end(boolean interrupted) {
     intake.setSquishyMode(false);
-      runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION_PRESET);
+     // runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION_PRESET);
     intake.setWasIntakeInAmpScoring(true);
 
   }

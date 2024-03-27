@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController;
@@ -62,7 +63,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
    * States
    *-----------------------------------------------------------------------------------------*/
 
-  private static ShooterState currentShooterState;
+  private static ShooterState currentShooterState = ShooterState.NONE;
   public static enum ShooterState {
     LOAD_IN,
     FINE_TUNE,
@@ -72,8 +73,16 @@ public class SubsystemCatzShooter extends SubsystemBase {
     START_SHOOTER_FLYWHEEL,
     SHOOTING,
     LOAD_OFF,
-    LOAD_OUT
+    LOAD_OUT,
+    NONE;
   }
+
+  private static ShooterServoState currentServoState;
+  public static enum ShooterServoState {
+    SET_POSITION,
+    AUTO_AIM
+  }
+
  
   //shooter note state for determining when other mechanism should turn off
   private ShooterNoteState currentNoteState;
@@ -130,7 +139,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
 
-    if(DriverStation.isDisabled()) {
+    if(DriverStation.isDisabled()) { //TBD this thing delayed the start of auton by more than a second 
       disableShooter();
     } else {
       switch(currentShooterState) {
@@ -139,6 +148,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
           // feeder roller periodic logic
           //
           //-------------------------------------------------------------------------------------------
+          case NONE:
+            System.out.println("heheheha");
+          break;
           case LOAD_IN:
             io.loadNote();
             currentShooterState = ShooterState.LOAD_IN_DONE;
@@ -227,10 +239,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
               currentShooterState = ShooterState.LOAD_OFF;
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
-              
+              updateShooterServo(0.0);
             }
             
             m_iterationCounter++;
+          break;
+
+          default:
           break;
       }
   
@@ -239,8 +254,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
       // servo periodic logic
       //
       //-------------------------------------------------------------------------------------------
-      
-      io.setServoPosition(m_newServoPosition);
+
+
+      if(currentServoState == ShooterServoState.SET_POSITION) {  
+        io.setServoPosition(m_newServoPosition);
+      } else {
+        io.setServoPosition(m_newServoPosition);
+      }
       
       m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
       if(Math.abs(m_servoPosError) < 0.05) {
