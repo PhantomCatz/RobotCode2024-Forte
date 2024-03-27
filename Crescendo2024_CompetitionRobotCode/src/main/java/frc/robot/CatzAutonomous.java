@@ -97,7 +97,7 @@ public class CatzAutonomous {
 
     //configured dashboard
     public Command getCommand() {
-        return pathChooser.get(); 
+        return pathChooser.getSelected(); 
 
     }
 
