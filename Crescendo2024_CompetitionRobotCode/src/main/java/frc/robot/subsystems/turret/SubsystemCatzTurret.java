@@ -191,19 +191,24 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //------------------------------------------------------------------------------------------
         //  Manual Mode - Use Operator input to set turret motor power % output
         //------------------------------------------------------------------------------------------
-        io.turretSetPwr(perioidicTurretManual(manualTurretPwrLT, manualTurretPwrRT));
+        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {   //TBD add back 
+          //------------------------------------------------------------------------------------------    
+          //  Intake angle is wihin valid range.
+          //------------------------------------------------------------------------------------------
+          io.turretSetPwr(manualTurretPwr);
+        }
 
       } else if(m_currentTurretState == TurretState.AUTO) {
         //------------------------------------------------------------------------------------------
         //  Auto Mode - Use PID to go to specified angle
         //------------------------------------------------------------------------------------------
 
-        //if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {   TBD add back 
+        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {   //TBD add back 
           //------------------------------------------------------------------------------------------    
           //  Intake angle is wihin valid range.
           //------------------------------------------------------------------------------------------
           io.turretSetPwr(setPositionPower);
-        //}
+        }
    
 
       } else if (m_currentTurretState == TurretState.TRACKING_APRILTAG) {
@@ -329,25 +334,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
     manualTurretPwrRT  = power * TURRET_POWER_SCALE;
   }
 
-  public Command rotate(double power){
-    return runOnce(()->{
+  public Command cmdRotateTurretManualOn(Supplier<Double> power){
+    return run(()->{
       m_currentTurretState = TurretState.FULL_MANUAL;
-      manualTurretPwr = power * TURRET_POWER_SCALE;
-      System.out.println("roatating");
-    });
-  }
-
-  public double perioidicTurretManual(double pwrLT, double pwrRT) {
-
-      if(pwrLT < -0.1) {
-        manualTurretPwr = pwrLT;
-      } else if(pwrRT > 0.1) {
-        manualTurretPwr = pwrRT;
-      } else {
-        manualTurretPwr = 0.0;
-      }
-
-      return manualTurretPwr;
+      manualTurretPwr = power.get() * TURRET_POWER_SCALE;
+    }).alongWith(Commands.runOnce(
+                  ()->SubsystemCatzIntake.getInstance().updateAutoTargetPositionIntake(
+                            CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle())));
   }
 
   //-------------------------------------------------------------------------------------------------

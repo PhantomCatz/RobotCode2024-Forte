@@ -31,6 +31,8 @@ public class ScoreAmpCmd extends Command {
   private boolean m_targetMechPoseStartReached = false;
   private boolean m_targetMechPoseEndReached   = false;
 
+  private double m_previousTargetPositionDeg;
+
   public ScoreAmpCmd() {
     addRequirements(intake, elevator, shooter, turret);
   }
@@ -48,19 +50,19 @@ public class ScoreAmpCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(intake.getWristAngle() > -30) {
-      intake.pivotFullManual(-0.1);
-    } else {
-      intake.pivotFullManual(-0.3);
-    }
+    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.SCORING_AMP_PRESET.getIntakePivotTargetAngle());
+    if((Math.abs(m_previousTargetPositionDeg) - Math.abs(intake.getWristAngle()) < 5.0)) {
+      intake.setRollersOutakeHandoff();
+    } 
 
+    m_previousTargetPositionDeg = intake.getWristAngle();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     intake.setSquishyMode(false);
-      runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION_PRESET);
+     // runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION_PRESET);
     intake.setWasIntakeInAmpScoring(true);
 
   }

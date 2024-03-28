@@ -96,6 +96,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // POSE COMMANDS
     //------------------------------------------------------------------------------------
       xboxDrv.rightStick().onTrue(new StowPoseCmd()); //STOW Mechnanism 
+      xboxAux.rightStick().onTrue(new StowPoseCmd()); //STOW Mechnanism 
+
     
       
     //LED command
@@ -111,7 +113,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                   new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
                       ); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
 
-        xboxAux.rightTrigger().and(()->isInSpeakerMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
+        xboxAux.leftTrigger().and(()->isInSpeakerMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
 
         xboxAux.x()         .and(()->isInSpeakerMode()).onTrue(new MoveToPreset(CatzMechanismConstants.SHOOTER_DEFAULT_PRESET));
 
@@ -121,9 +123,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
         xboxAux.y()         .and(()->isInSpeakerMode()).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
-        xboxAux.rightStick().and(()->isInSpeakerMode()).onTrue(shooter.cmdServoPosition(()->xboxAux.getRightY())); //MOVE SERVO POSITION MANUAL 
+        xboxAux.povRight().and(()->isInSpeakerMode()).onTrue(shooter.cmdManualHoldOn(()->-xboxAux.getLeftY())); //MOVE SERVO POSITION MANUAL 
 
-        xboxAux.rightStick().and(()->isInSpeakerMode()).onTrue(turret.rotate(xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
+        xboxAux.povRight().and(()->isInSpeakerMode()).onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
 
     //------------------------------------------------------------------------------------
     // AMP MODE

@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController;
@@ -44,6 +45,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //Servo SetPositions
   public static final double SERVO_STOW_POS = 0.0;
   public static final double SERVO_OPTIMAL_HANDOFF_HIGH_POS = 0.4;
+  public static final double SERVO_NULL_POSITION  = -999.0;
 
 
   private double m_newServoPosition;
@@ -75,6 +77,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
     LOAD_OUT,
     NONE;
   }
+
+  private static ShooterServoState currentServoState;
+  public static enum ShooterServoState {
+    SET_POSITION,
+    AUTO_AIM
+  }
+
  
   //shooter note state for determining when other mechanism should turn off
   private ShooterNoteState currentNoteState;
@@ -132,9 +141,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
 
-    // if(DriverStation.isDisabled()) { //this thing delayed the start of auton by more than a second
-    //   disableShooter();
-    // } else {
+    if(DriverStation.isDisabled()) { //TBD this thing delayed the start of auton by more than a second 
+      disableShooter();
+    } else {
       switch(currentShooterState) {
           //-------------------------------------------------------------------------------------------
           //
@@ -234,13 +243,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
               updateShooterServo(0.0);
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
+              io.setServoPosition(0.0);
             }
             
             m_iterationCounter++;
           break;
 
           default:
-            System.out.println("wut");
           break;
       }
   
@@ -249,25 +258,33 @@ public class SubsystemCatzShooter extends SubsystemBase {
       // servo periodic logic
       //
       //-------------------------------------------------------------------------------------------
-      
       io.setServoPosition(m_newServoPosition);
       
       m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
       if(Math.abs(m_servoPosError) < 0.05) {
         m_shooterServoInPos = true;
       }
-    // } // End of Enabled
+    } // End of Enabled
     
     Logger.recordOutput("shooter/servopos", m_newServoPosition);
 
   } //end of shooter periodic
 
+  // Testing
+  public Command setServoPos(double position) {
+    return run(()->io.setServoPosition(position));
+  }
+
   //-------------------------------------------------------------------------------------
   // Intake Calculation Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
+    double previousServoPosition = m_newServoPosition;
     m_shooterServoInPos = false;
     m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
+    if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
+      m_newServoPosition = previousServoPosition;
+    }
   }
 
   public double getScuffedShootingSpeed(){
@@ -275,7 +292,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public Command cmdServoPosition(Supplier<Double> value) {
-    return run(()-> updateShooterServo(value.get()));
+    return run(()->io.setServoPosition(value.get()));
   }
 
   public void updateShooterServo(double position) {
@@ -283,11 +300,16 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_newServoPosition = position;
   }
 
-  public Command cmdSetRampShooterForAuton(boolean state){
-    return runOnce(()->{
-      rampShooterForAuton = state;
-    });
+  public Command cmdManualHoldOn(Supplier<Double> pwr) {
+    return run(()-> setServoManualHold(pwr.get()));
   }
+
+  public void setServoManualHold(double power) {
+    if(Math.abs(power) > 0.1) {
+      m_newServoPosition = m_newServoPosition + (power * 0.005);
+    }
+
+  } 
 
   //-------------------------------------------------------------------------------------
   // Getter Methods 

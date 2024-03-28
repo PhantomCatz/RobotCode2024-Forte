@@ -56,6 +56,7 @@ public class MoveToPresetHandoffCmd extends Command {
 
   @Override
   public void initialize() {
+    intake.setWasIntakeInAmpScoring(false); // flag for determining whether to move to a transition state during sequencing
 
     // System.out.println("Handoff " + m_noteDestination.toString());
     // System.out.println(m_noteSource.toString());
