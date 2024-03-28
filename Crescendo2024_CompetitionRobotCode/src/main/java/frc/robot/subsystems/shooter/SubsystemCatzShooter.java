@@ -276,12 +276,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Intake Calculation Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
-    double previousServoPosition = m_newServoPosition;
-    m_shooterServoInPos = false;
-    m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
-    if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
-      m_newServoPosition = previousServoPosition;
-    }
+    // double previousServoPosition = m_newServoPosition;
+    // m_shooterServoInPos = false;
+    // m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
+    // if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
+    //   m_newServoPosition = previousServoPosition;
+    // }
   }
 
   public double getScuffedShootingSpeed(){
@@ -303,7 +303,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   public void setServoManualHold(double power) {
     if(Math.abs(power) > 0.1) {
-      m_newServoPosition = m_newServoPosition + (power * 0.005);
+      m_newServoPosition = m_newServoPosition + (power * 0.01);
     }
 
   } 
@@ -312,7 +312,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Getter Methods 
   //------------------------------------------------------------------------------------- 
 
-  public boolean getShooterServoInPos() {
+  private boolean getShooterServoInPos() {
     return m_shooterServoInPos;
   }
   public ShooterNoteState getShooterNoteState() {

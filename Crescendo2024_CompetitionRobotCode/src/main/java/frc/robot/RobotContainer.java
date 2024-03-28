@@ -123,9 +123,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
         xboxAux.y()         .and(()->isInSpeakerMode()).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
-        xboxAux.povRight().and(()->isInSpeakerMode()).onTrue(shooter.cmdManualHoldOn(()->-xboxAux.getLeftY())); //MOVE SERVO POSITION MANUAL 
+        Trigger auxJoystickTriggerRightX = new Trigger(()->xboxAux.getLeftY() > 0.1);
+        auxJoystickTriggerRightX.and(()->isInSpeakerMode()).onTrue(shooter.cmdManualHoldOn(()->-xboxAux.getLeftY())); //MOVE SERVO POSITION MANUAL 
 
-        xboxAux.povRight().and(()->isInSpeakerMode()).onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
+        Trigger auxJoystickTriggerRightY = new Trigger(()->xboxAux.getRightX() > 0.1);
+        auxJoystickTriggerRightY.and(()->isInSpeakerMode()).onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
 
     //------------------------------------------------------------------------------------
     // AMP MODE
