@@ -82,6 +82,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double LIMELIGHT_kI = 0.0;
   private static final double LIMELIGHT_kD = 0.0001;
 
+  private final double TURRET_ANGLE_THRESHOLD_DEG = 3.0;
+
   private double m_turretTargetDegree;
   private double m_closedLoopError;
   private double setPositionPower;
@@ -318,6 +320,10 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   public boolean getTurretInPos() {
     return m_turretInPos;
+  }
+
+  public boolean isTurretAtTarget(){
+    return Math.abs(m_closedLoopError) < TURRET_ANGLE_THRESHOLD_DEG;
   }
 
   //-------------------------------------------------------------------------------------------------

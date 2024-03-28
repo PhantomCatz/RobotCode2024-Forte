@@ -122,13 +122,17 @@ public class CatzAutonomous {
     private Command CS_W2() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("CS_W2-1")),
-            shooter.cmdSetRampShooterForAuton(true),
+            
+            shooter.cmdSetKeepShooterOn(true),
+
             new AimAndOrFireAtSpeakerCmd(),
+
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("CS_W2-1")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
                                         
             new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdSetRampShooterForAuton(false)
+
+            shooter.cmdSetKeepShooterOn(false)
         );
     }
 
@@ -140,7 +144,7 @@ public class CatzAutonomous {
     private Command US_W13() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("US_W1-3_1")),
-            shooter.cmdSetRampShooterForAuton(true),
+            shooter.cmdSetKeepShooterOn(true),
             new AimAndOrFireAtSpeakerCmd(),
             shooter.cmdShooterRamp(),
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
@@ -154,7 +158,7 @@ public class CatzAutonomous {
             new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                         new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_3"))),
             new AimAndOrFireAtSpeakerCmd(),
-            shooter.cmdSetRampShooterForAuton(false)
+            shooter.cmdSetKeepShooterOn(false)
         );
     }
 
@@ -666,15 +670,14 @@ public class CatzAutonomous {
     //--------------------------------------------------------------------------------------------
 
     private Command setAutonStartPose(PathPlannerPath startPath){
-    return Commands.runOnce(()->{
-        PathPlannerPath path = startPath;
-        if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
-            path = startPath.flipPath();
-        }
+        return Commands.runOnce(()->{
+            PathPlannerPath path = startPath;
+            if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+                path = startPath.flipPath();
+            }
 
-        drivetrain.resetPosition(path.getPreviewStartingHolonomicPose());
-        allianceColor = chosenAllianceColor.get();
-    });
+            drivetrain.resetPosition(path.getPreviewStartingHolonomicPose());
+        });
     }
 
     public AllianceColor getAllianceColor(){
