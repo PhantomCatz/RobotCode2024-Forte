@@ -95,6 +95,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private int     m_iterationCounter;
 
   private boolean m_shooterServoInPos = false;
+  private boolean rampShooterForAuton = false;
   
   //XboxController for rumbling
   private XboxController xboxAuxRumble;
@@ -141,7 +142,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
           //
           //-------------------------------------------------------------------------------------------
           case NONE:
-            System.out.println("heheheha");
           break;
           case LOAD_IN:
             io.loadNote();
@@ -227,11 +227,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
             }
 
             if(m_iterationCounter >= SHOOTING_TIMEOUT) {
-              io.setShooterDisabled();
+              if(!rampShooterForAuton || !DriverStation.isAutonomous()){
+                io.setShooterDisabled();
+              }
               currentShooterState = ShooterState.LOAD_OFF;
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
-              SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
               updateShooterServo(0.0);
+              SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
             }
             
             m_iterationCounter++;
@@ -281,7 +283,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_newServoPosition = position;
   }
 
-  
+  public Command cmdSetRampShooterForAuton(boolean state){
+    return runOnce(()->{
+      rampShooterForAuton = state;
+    });
+  }
 
   //-------------------------------------------------------------------------------------
   // Getter Methods 

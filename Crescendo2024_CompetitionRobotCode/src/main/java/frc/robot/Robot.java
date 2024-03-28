@@ -26,6 +26,7 @@ import frc.robot.Utils.LocalADStarAK;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 import frc.robot.CatzAutonomous;
 
@@ -113,7 +114,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
-    CatzAutonomous.allianceColor = CatzAutonomous.getInstance().getAllianceColor();
   }
 
   @Override
@@ -144,6 +144,7 @@ public class Robot extends LoggedRobot {
     if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
       SubsystemCatzDrivetrain.getInstance().flipGyro();
     }
+    SubsystemCatzShooter.getInstance().cmdSetRampShooterForAuton(false).execute();
   }
 
   @Override

@@ -333,6 +333,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return runOnce(()->{
       m_currentTurretState = TurretState.FULL_MANUAL;
       manualTurretPwr = power * TURRET_POWER_SCALE;
+      System.out.println("roatating");
     });
   }
 
