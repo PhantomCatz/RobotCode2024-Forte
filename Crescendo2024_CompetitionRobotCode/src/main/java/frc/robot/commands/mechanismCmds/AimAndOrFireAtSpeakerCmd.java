@@ -31,6 +31,7 @@ import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
@@ -177,13 +178,13 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
 
     if(DriverStation.isAutonomous()){
       if(shooter.getShooterServoInPos() && turret.isTurretAtTarget()){ //TBD why do we need the servo in position?
-        shooter.cmdShoot().execute();
+        shooter.setShooterState(ShooterState.SHOOTING);
       }
     }
 
     if(m_bSupplier != null &&
        m_bSupplier.get() == true) {     
-        shooter.cmdShoot();
+        shooter.setShooterState(ShooterState.SHOOTING);
     }
 
     Logger.recordOutput("ShooterCalcs/NewDist",           newDist);

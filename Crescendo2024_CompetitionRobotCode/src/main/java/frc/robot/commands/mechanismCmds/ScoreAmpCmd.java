@@ -49,7 +49,7 @@ public class ScoreAmpCmd extends Command {
     // }
     intakeNoteTimer.reset();
     intake.setWasIntakeInAmpScoring(false);
-  }
+  } 
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

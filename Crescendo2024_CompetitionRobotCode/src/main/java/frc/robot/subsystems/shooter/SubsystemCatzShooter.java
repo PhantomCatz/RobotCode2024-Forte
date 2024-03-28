@@ -329,7 +329,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Getter Methods 
   //------------------------------------------------------------------------------------- 
 
-  private boolean getShooterServoInPos() {
+  public boolean getShooterServoInPos() {
     return m_shooterServoInPos;
   }
   public ShooterNoteState getShooterNoteState() {

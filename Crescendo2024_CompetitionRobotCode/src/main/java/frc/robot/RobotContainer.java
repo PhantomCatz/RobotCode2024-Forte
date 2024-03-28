@@ -36,6 +36,8 @@ import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
@@ -112,6 +114,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                .onTrue(
                   new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
                       ); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
+        
 
         xboxAux.leftTrigger().and(()->isInSpeakerMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
 
@@ -119,7 +122,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
         xboxAux.a()         .and(()->isInSpeakerMode()).onTrue(shooter.cmdShooterRamp());  //RAMPING UP 
 
-        xboxAux.b()         .and(()->isInSpeakerMode()).onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
+        xboxAux.b()         .and(()->isInSpeakerMode()).onTrue(Commands.runOnce(shooter.setShooterState(ShooterState.SHOOTING)));  //TO SHOOT (NEED TO RAMP UP FIRST)
 
         xboxAux.y()         .and(()->isInSpeakerMode()).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
