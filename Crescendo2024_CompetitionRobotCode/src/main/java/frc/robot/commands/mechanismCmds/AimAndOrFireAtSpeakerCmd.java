@@ -176,7 +176,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     //in telop this boolean supplier is being evaluated to see if button was pressed
 
     if(DriverStation.isAutonomous()){
-      if(shooter.getShooterServoInPos() && turret.isTurretAtTarget()){
+      if(shooter.getShooterServoInPos() && turret.isTurretAtTarget()){ //TBD why do we need the servo in position?
         shooter.cmdShoot().execute();
       }
     }

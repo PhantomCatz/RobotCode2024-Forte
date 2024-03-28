@@ -41,7 +41,7 @@ public class ScoreAmpCmd extends Command {
   @Override
   public void initialize() {
     velocityCounter = 0;
-    intake.setSquishyMode(true);
+    //intake.setSquishyMode(true);
     // if(intake.getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
       runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP_PRESET);
       intake.updateAutoTargetPositionIntake(CatzMechanismConstants.SCORING_AMP_PRESET.getIntakePivotTargetAngle());
@@ -69,7 +69,7 @@ public class ScoreAmpCmd extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.setSquishyMode(false);
+    //intake.setSquishyMode(false);
      // runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION_PRESET);
     intake.setWasIntakeInAmpScoring(true);
 
