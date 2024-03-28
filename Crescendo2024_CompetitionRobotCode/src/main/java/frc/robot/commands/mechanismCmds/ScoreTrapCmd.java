@@ -49,7 +49,6 @@ public class ScoreTrapCmd extends Command {
   private boolean areMechanismsInPosition() {
     return (intake.getIntakeInPos() && 
             turret.getTurretInPos() &&
-            shooter.getShooterServoInPos() &&
             elevator.getElevatorInPos());
   }
 }

@@ -36,7 +36,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
    * rollers
    *
    ************************************************************************************************************************/
-  private final double ROLLERS_MTR_PWR_IN_GROUND = 0.6;//TBD - need to handle carpet and non-carpet value or code
+  private final double ROLLERS_MTR_PWR_IN_GROUND = 0.45;//0.6//TBD - need to handle carpet and non-carpet value or code
                                                        // issue
   private final double ROLLERS_MTR_PWR_IN_SOURCE = 0.25;
   private final double ROLLERS_MTR_PWR_OUT_EJECT = -1.0; // TBD fix top rooler before testing
@@ -132,11 +132,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
                                                              // bottom inner rail 7 1/4 inches
   public static final double INTAKE_AMP_SCORE_DN_DEG   =  92.6; //90.43; 
   public static final double INTAKE_HOARD_DEG          = 30.0;
-  public static final double INTAKE_GROUND_PICKUP_DEG  = -24.0; //-22.0;
-  public static final double INTAKE_AMP_SCORE_DEG      = -45.0;
+  public static final double INTAKE_GROUND_PICKUP_DEG  = -25.0; //-22.0;
+  public static final double INTAKE_AMP_SCORE_DEG      = 80.0;
   public static final double INTAKE_AMP_TRANSITION_DEG = -77.0; //TBD Change to -80 on sn2
 
-  public static final double INTAKE_MIN_ELEV_CLEARANCE_DEG = 110.0;
+  public static final double INTAKE_MIN_ELEV_CLEARANCE_DEG = 100.0;
   public static final double INTAKE_TRANSITION_CHECK_DEG = -47.0;
 
   private static final double INTAKE_NULL_DEG = -999.0;
@@ -575,6 +575,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
   // -------------------------------------------------------------------------------------
   public double getWristAngle() {
     return m_currentPositionDeg;
+  }
+
+  public double getWristVelocity() {
+    return inputs.pivotMtrVelocityRPS;
+  }
+
+  public double getWristCurrent() {
+    return inputs.pivotMtrCurrent;
   }
 
   public boolean getIntakeInPos() {

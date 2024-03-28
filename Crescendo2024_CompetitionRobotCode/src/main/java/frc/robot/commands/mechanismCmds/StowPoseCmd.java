@@ -55,7 +55,6 @@ public class StowPoseCmd extends Command {
   private boolean areMechanismsInPosition() {
     return (intake.getIntakeInPos() && 
             turret.getTurretInPos() &&
-            shooter.getShooterServoInPos() &&
             elevator.getElevatorInPos());
   }
 }

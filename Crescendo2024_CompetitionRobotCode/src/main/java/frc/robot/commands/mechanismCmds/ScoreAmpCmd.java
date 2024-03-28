@@ -32,6 +32,7 @@ public class ScoreAmpCmd extends Command {
   private boolean m_targetMechPoseEndReached   = false;
 
   private double m_previousTargetPositionDeg;
+  private int velocityCounter;
 
   public ScoreAmpCmd() {
     addRequirements(intake, elevator, shooter, turret);
@@ -39,10 +40,13 @@ public class ScoreAmpCmd extends Command {
 
   @Override
   public void initialize() {
+    velocityCounter = 0;
     intake.setSquishyMode(true);
-    if(intake.getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
+    // if(intake.getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
       runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP_PRESET);
-    }
+      intake.updateAutoTargetPositionIntake(CatzMechanismConstants.SCORING_AMP_PRESET.getIntakePivotTargetAngle());
+
+    // }
     intakeNoteTimer.reset();
     intake.setWasIntakeInAmpScoring(false);
   }
@@ -50,12 +54,16 @@ public class ScoreAmpCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.updateAutoTargetPositionIntake(CatzMechanismConstants.SCORING_AMP_PRESET.getIntakePivotTargetAngle());
-    if((Math.abs(m_previousTargetPositionDeg) - Math.abs(intake.getWristAngle()) < 5.0)) {
-      intake.setRollersOutakeHandoff();
-    } 
+
+    // if(intake.getWristCurrent() > 55.0) {
+    //     velocityCounter++;
+    //     if(velocityCounter > 5) {
+    //             intake.setRollersOutakeHandoff();
+    //   }
+    // } 
 
     m_previousTargetPositionDeg = intake.getWristAngle();
+
   }
 
   // Called once the command ends or is interrupted.
@@ -81,9 +89,7 @@ public class ScoreAmpCmd extends Command {
   }
 
   private boolean areMechanismsInPosition() {
-    return (intake.getIntakeInPos() && 
-            turret.getTurretInPos() &&
-            shooter.getShooterServoInPos() &&
+    return (turret.getTurretInPos() &&
             elevator.getElevatorInPos());
   }
 }
