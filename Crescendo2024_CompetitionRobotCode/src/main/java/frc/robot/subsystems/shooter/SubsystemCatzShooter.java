@@ -104,6 +104,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private int     m_iterationCounter;
 
   private boolean m_shooterServoInPos = false;
+  private boolean autonKeepFlywheelOn = false;
   
   //XboxController for rumbling
   private XboxController xboxAuxRumble;
@@ -150,7 +151,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
           //
           //-------------------------------------------------------------------------------------------
           case NONE:
-            System.out.println("heheheha");
           break;
           case LOAD_IN:
             io.loadNote();
@@ -210,18 +210,20 @@ public class SubsystemCatzShooter extends SubsystemBase {
             if(inputs.shooterVelocityRT >= inputs.velocityThresholdRT &&
                inputs.shooterVelocityLT >= inputs.velocityThresholdLT) {
 
-              if(DriverStation.isAutonomous()) {
-                currentShooterState = ShooterState.SHOOTING;
-              } else {
-                xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
-              }
-            
+                  if(DriverStation.isAutonomous()) {
+                      
+                  } else {
+                    xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
+                  }
 
             } else {
+
               if(DriverStation.isAutonomous()) {
                 if(m_iterationCounter > WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT) {
-                  m_iterationCounter = 0;
-                  currentShooterState = ShooterState.SHOOTING;
+                  if(!autonKeepFlywheelOn){
+                    m_iterationCounter = 0;
+                    currentShooterState = ShooterState.SHOOTING;
+                  }
                 }
                 m_iterationCounter++;
               }
@@ -231,15 +233,24 @@ public class SubsystemCatzShooter extends SubsystemBase {
           case SHOOTING:
             io.feedShooter();
             
-            if(DriverStation.isTeleop() == true) {
-              xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
-            }
+            xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
 
             if(m_iterationCounter >= SHOOTING_TIMEOUT) {
-              io.setShooterDisabled();
-              currentShooterState = ShooterState.LOAD_OFF;
+              if(DriverStation.isAutonomous()) {
+
+                if(autonKeepFlywheelOn == true) {
+                  currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
+;
+                } else {
+                  io.setShooterDisabled();
+                  currentShooterState = ShooterState.LOAD_OFF;
+                }
+
+              }
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
+
+              // TBD Shouldn't need this anymore    updateShooterServo(0.0);
               io.setServoPosition(0.0);
             }
             
@@ -282,6 +293,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
     // if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
     //   m_newServoPosition = previousServoPosition;
     // }
+  }
+
+  public Command cmdSetKeepShooterOn(boolean state){
+    return runOnce(() -> {
+      autonKeepFlywheelOn = state;
+    });
   }
 
   public double getScuffedShootingSpeed(){
