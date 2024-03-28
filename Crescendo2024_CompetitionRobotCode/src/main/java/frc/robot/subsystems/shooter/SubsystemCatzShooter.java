@@ -287,6 +287,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
   }
 
+  public Command cmdSetRampShooterForAuton(boolean state){
+    return runOnce(() -> {
+      rampShooterForAuton = state;
+    });
+  }
+
   public double getScuffedShootingSpeed(){
     return ((inputs.shooterVelocityRT + inputs.shooterVelocityLT)/2+2) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink) TBD
   }

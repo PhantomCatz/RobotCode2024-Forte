@@ -187,11 +187,6 @@ public final class CatzConstants {
     public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
     public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
 
-    // public static final double LT_FRNT_OFFSET = 0.00406; // sn1
-    // public static final double LT_BACK_OFFSET = 0.0395;
-    // public static final double RT_BACK_OFFSET = -0.75084;
-    // public static final double RT_FRNT_OFFSET = 0.55098;
-
     public static final int LT_FRNT_DRIVE_ID = 1;
     public static final int LT_BACK_DRIVE_ID = 3;
     public static final int RT_BACK_DRIVE_ID = 5;
