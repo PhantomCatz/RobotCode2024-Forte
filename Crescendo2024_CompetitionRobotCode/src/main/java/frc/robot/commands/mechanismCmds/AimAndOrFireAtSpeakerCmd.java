@@ -129,7 +129,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
 
   //for autonomous
   public AimAndOrFireAtSpeakerCmd() {                     
-    addRequirements(turret, shooter, intake, elevator);
+    // addRequirements(turret, shooter, intake, elevator);
   }
 
   
@@ -176,7 +176,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
     //in telop this boolean supplier is being evaluated to see if button was pressed
 
     if(DriverStation.isAutonomous()){
-      if(shooter.getShooterServoInPos() && turret.isTurretAtTarget()){
+      if(shooter.shooterLoadBeamBrkBroken() && shooter.isAutonShooterRamped() && turret.isTurretAtTarget()/*&& shooter.getShooterServoInPos() */){
         shooter.cmdShoot().execute();
       }
     }

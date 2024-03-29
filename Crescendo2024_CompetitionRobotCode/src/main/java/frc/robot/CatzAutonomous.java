@@ -128,9 +128,9 @@ public class CatzAutonomous {
             new AimAndOrFireAtSpeakerCmd(),
 
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("CS_W2-1")),
-                                        new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+                                        new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+                                        new AimAndOrFireAtSpeakerCmd()),
                                         
-            new AimAndOrFireAtSpeakerCmd(),
 
             shooter.cmdSetKeepShooterOn(false)
         );
