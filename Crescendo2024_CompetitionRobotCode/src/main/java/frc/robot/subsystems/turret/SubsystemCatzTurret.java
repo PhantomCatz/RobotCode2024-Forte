@@ -226,7 +226,11 @@ public class SubsystemCatzTurret extends SubsystemBase {
     }
 
     if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 3) {     
-      m_turretInPos = true;
+      if(DriverStation.isAutonomous()) {
+        //counter++
+      } else {      
+        m_turretInPos = true;
+      }
     }
 
 

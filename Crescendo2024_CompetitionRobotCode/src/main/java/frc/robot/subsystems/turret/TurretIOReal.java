@@ -28,11 +28,11 @@ public class TurretIOReal implements TurretIO {
 
         turretMtr.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 32767);
 
-         turretMtr.enableSoftLimit(SoftLimitDirection.kForward, true);
-         turretMtr.enableSoftLimit(SoftLimitDirection.kReverse, true);
-         
-         turretMtr.setSoftLimit(SoftLimitDirection.kForward, 80);
-         turretMtr.setSoftLimit(SoftLimitDirection.kReverse, -80);
+        turretMtr.enableSoftLimit(SoftLimitDirection.kForward, true);
+        turretMtr.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        
+        turretMtr.setSoftLimit(SoftLimitDirection.kForward, 80);
+        turretMtr.setSoftLimit(SoftLimitDirection.kReverse, -80);
 
         turretMtr.burnFlash(); //save configs so if pwr lost to be reapplied
 
