@@ -3,38 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.89,
+        "x": 2.49,
         "y": 4.1046482092964185
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.89,
-        "y": 5.104648209296421
+        "x": 1.5500000000000003,
+        "y": 4.1046482092964185
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.89,
+        "x": 2.49,
         "y": 5.55
       },
       "prevControl": {
-        "x": 2.89,
-        "y": 4.527018179537804
+        "x": 1.5500000000000003,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 90.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -45,8 +39,8 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0,
-    "rotateFast": true
+    "rotation": 0.0,
+    "rotateFast": false
   },
   "reversed": false,
   "folder": "LS_W1-3",
