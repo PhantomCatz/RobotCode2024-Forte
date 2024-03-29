@@ -58,8 +58,18 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   // TBD - explain why two distance values
   //------------------------------------------------------------------------------------------------
   private static final InterpolatingDoubleTreeMap shooterPivotTable = new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap newShooterPivotTable = new InterpolatingDoubleTreeMap();
 
-  static { 
+  static {
+    newShooterPivotTable.put(1.478, 1.0);
+    newShooterPivotTable.put(1.875, 0.82);
+    newShooterPivotTable.put(1.478, 1.0);
+    // newShooterPivotTable.put(1.478, 1.0);
+    // newShooterPivotTable.put(1.478, 1.0);
+    // newShooterPivotTable.put(1.478, 1.0);
+    // newShooterPivotTable.put(1.478, 1.0);
+  }
+  static {   //servo distances currently invalid upon testing on 03/28/24
     shooterPivotTable.put(1.37, 0.650);     //53.93701 inches     Shooted from lining up against the subwoofer
     //shooterPivotTable.put(1.37, 0.600);     
     //shooterPivotTable.put(1.37, 0.700);
@@ -170,7 +180,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   public void execute() {
 
     double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
-    double servoPos = shooterPivotTable.get(newDist);
+    double servoPos = newShooterPivotTable.get(newDist);
     turret.aimAtGoal(m_targetXY, false, false);    
     shooter.updateShooterServo(servoPos);
 

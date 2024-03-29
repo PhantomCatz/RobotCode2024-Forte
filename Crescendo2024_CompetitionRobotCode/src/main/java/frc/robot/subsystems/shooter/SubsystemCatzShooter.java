@@ -266,7 +266,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
       // servo periodic logic
       //
       //-------------------------------------------------------------------------------------------
-      io.setServoPosition(m_newServoPosition);
+      io.setServoPosition(servoPosTunning.get());
       
       m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
       if(Math.abs(m_servoPosError) < 0.05) {

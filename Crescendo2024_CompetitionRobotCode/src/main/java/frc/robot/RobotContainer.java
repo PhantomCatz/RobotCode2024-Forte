@@ -122,7 +122,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
         xboxAux.a()         .and(()->isInSpeakerMode()).onTrue(shooter.cmdShooterRamp());  //RAMPING UP 
 
-        xboxAux.b()         .and(()->isInSpeakerMode()).onTrue(Commands.runOnce(shooter.setShooterState(ShooterState.SHOOTING)));  //TO SHOOT (NEED TO RAMP UP FIRST)
+        xboxAux.b()         .and(()->isInSpeakerMode()).onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.SHOOTING)));  //TO SHOOT (NEED TO RAMP UP FIRST)
 
         xboxAux.y()         .and(()->isInSpeakerMode()).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
@@ -132,6 +132,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
         Trigger auxJoystickTriggerRightY = new Trigger(()->xboxAux.getRightX() > 0.1);
         auxJoystickTriggerRightY.and(()->isInSpeakerMode()).onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
 
+        
     //------------------------------------------------------------------------------------
     // AMP MODE
     //------------------------------------------------------------------------------------              
