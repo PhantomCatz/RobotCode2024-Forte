@@ -36,7 +36,7 @@ import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
-public class AimAndOrFireAtSpeakerCmd extends Command {
+public class HomeToSpeakerCmd extends Command {
 
   //subsystem declaration
   private SubsystemCatzElevator   elevator   = SubsystemCatzElevator.getInstance();
@@ -103,13 +103,9 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   
 
   //for telop
-  public AimAndOrFireAtSpeakerCmd(Supplier<Boolean> supplierButtonB) {
-    m_supplierButtonB = supplierButtonB;
-    addRequirements(turret, shooter, intake, elevator);
-  }
 
   //for autonomous
-  public AimAndOrFireAtSpeakerCmd() {                     
+  public HomeToSpeakerCmd() {                     
     addRequirements(turret, shooter, intake, elevator);
   }
 
@@ -159,11 +155,6 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
       if(shooter.getShooterServoInPos() && turret.isTurretAtTarget()){ //TBD add the timer code for shooter pivot
         shooter.setShooterState(ShooterState.SHOOTING);
       }
-    }
-
-    if(m_supplierButtonB != null &&
-       m_supplierButtonB.get() == true) {     
-        shooter.setShooterState(ShooterState.SHOOTING);
     }
 
     Logger.recordOutput("ShooterCalcs/NewDist",           newDist);

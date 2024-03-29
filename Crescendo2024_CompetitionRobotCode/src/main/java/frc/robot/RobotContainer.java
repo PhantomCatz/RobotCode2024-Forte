@@ -24,7 +24,7 @@ import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
 import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
-import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
+import frc.robot.commands.mechanismCmds.HomeToSpeakerCmd;
 import frc.robot.CatzConstants.NoteDestination;
 import frc.robot.CatzConstants.NoteSource;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
@@ -123,7 +123,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                           .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.SHOOTING)));  //TO SHOOT (NEED TO RAMP UP FIRST)
 
         triggerModeSpeaker.and(xboxAux.y())
-                          .onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
+                          .onTrue(new HomeToSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
         Trigger auxJoystickTriggerRightX = new Trigger(()->xboxAux.getLeftY() > 0.1);
         auxJoystickTriggerRightX.and(()->isInSpeakerMode()).onTrue(shooter.cmdManualHoldOn(()->-xboxAux.getLeftY())); //MOVE SERVO POSITION MANUAL 
