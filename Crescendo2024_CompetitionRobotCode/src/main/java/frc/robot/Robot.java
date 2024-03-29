@@ -144,7 +144,7 @@ public class Robot extends LoggedRobot {
     if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
       SubsystemCatzDrivetrain.getInstance().flipGyro();
     }
-    SubsystemCatzShooter.getInstance().cmdSetRampShooterForAuton(false).execute();
+    SubsystemCatzShooter.getInstance().cmdSetKeepShooterOn(false).execute();
   }
 
   @Override
