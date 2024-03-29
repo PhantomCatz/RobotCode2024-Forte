@@ -40,7 +40,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   /*-----------------------------------------------------------------------------------------
    * Linear Servo Values
    *-----------------------------------------------------------------------------------------*/
-  LoggedTunableNumber servoPosTunning = new LoggedTunableNumber("ServoPos", 0);
+  LoggedTunableNumber servoPosTuning = new LoggedTunableNumber("ServoPos", 0);
   
   //Servo SetPositions
   public static final double SERVO_STOW_POS = 0.0;
@@ -48,7 +48,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public static final double SERVO_NULL_POSITION  = -999.0;
 
 
-  private double m_newServoPosition;
+  private double m_targetServoPosition;
   private double m_servoPosError;
 
   /*-----------------------------------------------------------------------------------------
@@ -104,6 +104,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private int     m_iterationCounter;
 
   private boolean m_shooterServoInPos = false;
+  private boolean autonKeepFlywheelOn = false;
   
   //XboxController for rumbling
   private XboxController xboxAuxRumble;
@@ -150,7 +151,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
           //
           //-------------------------------------------------------------------------------------------
           case NONE:
-            System.out.println("heheheha");
           break;
           case LOAD_IN:
             io.loadNote();
@@ -210,18 +210,20 @@ public class SubsystemCatzShooter extends SubsystemBase {
             if(inputs.shooterVelocityRT >= inputs.velocityThresholdRT &&
                inputs.shooterVelocityLT >= inputs.velocityThresholdLT) {
 
-              if(DriverStation.isAutonomous()) {
-                currentShooterState = ShooterState.SHOOTING;
-              } else {
-                xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
-              }
-            
+                  if(DriverStation.isAutonomous()) {
+                      
+                  } else {
+                    xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
+                  }
 
             } else {
+
               if(DriverStation.isAutonomous()) {
                 if(m_iterationCounter > WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT) {
-                  m_iterationCounter = 0;
-                  currentShooterState = ShooterState.SHOOTING;
+                  if(!autonKeepFlywheelOn){
+                    m_iterationCounter = 0;
+                    currentShooterState = ShooterState.SHOOTING;
+                  }
                 }
                 m_iterationCounter++;
               }
@@ -231,15 +233,29 @@ public class SubsystemCatzShooter extends SubsystemBase {
           case SHOOTING:
             io.feedShooter();
             
-            if(DriverStation.isTeleop() == true) {
-              xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
-            }
+            xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
 
-            if(m_iterationCounter >= SHOOTING_TIMEOUT) {
-              io.setShooterDisabled();
-              currentShooterState = ShooterState.LOAD_OFF;
+            if(m_iterationCounter >= SHOOTING_TIMEOUT) 
+            {
+                if(DriverStation.isAutonomous()) 
+                {
+                  if(autonKeepFlywheelOn == true) 
+                  {
+                    currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
+                  } 
+
+                } 
+                
+                else 
+                {
+                    io.setShooterDisabled();
+                    currentShooterState = ShooterState.LOAD_OFF;
+                }
+
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
+
+              // TBD Shouldn't need this anymore    updateShooterServo(0.0);
               io.setServoPosition(0.0);
             }
             
@@ -255,33 +271,30 @@ public class SubsystemCatzShooter extends SubsystemBase {
       // servo periodic logic
       //
       //-------------------------------------------------------------------------------------------
-      io.setServoPosition(m_newServoPosition);
-      
-      m_servoPosError = inputs.servoLeftPosition - m_newServoPosition;
-      if(Math.abs(m_servoPosError) < 0.05) {
-        m_shooterServoInPos = true;
-      }
-    } // End of Enabled
+      io.setServoPosition(m_targetServoPosition);
     
-    Logger.recordOutput("shooter/servopos", m_newServoPosition);
+    } // End of Enabled loop
+    
+    Logger.recordOutput("shooter/servopos", m_targetServoPosition);
 
   } //end of shooter periodic
 
-  // Testing
-  public Command setServoPos(double position) {
-    return run(()->io.setServoPosition(position));
-  }
-
   //-------------------------------------------------------------------------------------
-  // Intake Calculation Methods
+  // Shooter Calculation Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
-    // double previousServoPosition = m_newServoPosition;
-    // m_shooterServoInPos = false;
-    // m_newServoPosition = newPosition.getShooterVerticalTargetAngle();
-    // if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
-    //   m_newServoPosition = previousServoPosition;
-    // }
+    double previousServoPosition = m_targetServoPosition;
+    m_shooterServoInPos = false;
+    m_targetServoPosition = newPosition.getShooterVerticalTargetAngle();
+    if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
+      m_targetServoPosition = previousServoPosition;
+    }
+  }
+
+  public Command cmdSetKeepShooterOn(boolean state){
+    return runOnce(() -> {
+      autonKeepFlywheelOn = state;
+    });
   }
 
   public double getScuffedShootingSpeed(){
@@ -294,7 +307,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   public void updateShooterServo(double position) {
     m_shooterServoInPos = false;
-    m_newServoPosition = position;
+    m_targetServoPosition = position;
   }
 
   public Command cmdManualHoldOn(Supplier<Double> pwr) {
@@ -303,7 +316,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   public void setServoManualHold(double power) {
     if(Math.abs(power) > 0.1) {
-      m_newServoPosition = m_newServoPosition + (power * 0.01);
+      m_targetServoPosition = m_targetServoPosition + (power * 0.01);
     }
 
   } 
@@ -312,7 +325,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Getter Methods 
   //------------------------------------------------------------------------------------- 
 
-  private boolean getShooterServoInPos() {
+  public boolean getShooterServoInPos() {
     return m_shooterServoInPos;
   }
   public ShooterNoteState getShooterNoteState() {

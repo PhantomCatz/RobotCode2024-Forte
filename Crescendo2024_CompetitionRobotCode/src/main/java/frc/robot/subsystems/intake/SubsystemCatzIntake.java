@@ -215,8 +215,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
     // collect ff variables and pid variables
     m_currentPositionDeg = calcWristAngleDeg();
     positionErrorDeg = m_currentPositionDeg - m_targetPositionDeg;
-    // pivotVelRadPerSec = Math.toRadians(m_currentPositionDeg -
-    // m_previousCurrentDeg)/0.02;
 
     // voltage control calculation
     m_ffVolts = calculatePivotFeedFoward(Math.toRadians(m_currentPositionDeg), pivotVelRadPerSec, 0);
@@ -446,48 +444,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
           //System.out.println("I-B");
         }
       }
-    } else if (m_targetPositionDeg == INTAKE_AMP_TRANSITION_DEG) {
-      // System.out.println("I-C");
-      // -------------------------------------------------------------------------------------
-      // There are two cases to consider based on where Note is coming from:
-      // 1. SRC/Gnd Pickup
-      // 2. Shooter/Stow
-      //
-      // Case 1: intake is already in front of the elevator so we don't need to worry
-      // about clearing elevator cross bar. We only need to make sure that the
-      // elevator is
-      // high enough such that we don't hit robot chassis/bumpers
-      //
-      // Case 2: We are doing a Handoff so Intake, Turret AND Elevator should all be
-      // in
-      // STOW position. So this means the intake can pivot past the elevator cross bar
-      // but MUST then wait for Elevator to raise up high enough to allow the intake
-      // to go
-      // to AMP_TRANS angle without hitting the robot chassis. We will save a 'next'
-      // target
-      // position
-      //
-      // save desired target pos (maybe nextTargetAngleDeg) and then set target pos to
-      // INTAKE_SRC_DN_PICKUP_ANGLE_DEG
-      // when we get to this pos, we can then check if nextTargetAngleDeg is valid and
-      // if so set a new target angle
-      // and elev threshold. Will also need a flag to determine if check is '>' or '<'
-      // than for elev
-      // (elev periodic will be waiting for intake to clear before starting to move
-      // up)
-      // -------------------------------------------------------------------------------------
-      if(m_intermediatePositionReached == false) {
-        //System.out.println("I-D");
-        m_nextTargetPositionDeg = INTAKE_AMP_TRANSITION_DEG; // set intermediate destination
-            m_targetPositionDeg = INTAKE_AMP_SCORE_DN_DEG;
-        
-            elevatorThresholdRev = INTAKE_ELEV_MIN_HEIGHT_FOR_AMP_TRANS_REV;
-        nextElevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
-      } 
-      // -----------------------------------------------------------------------------------
-      // Source/ground
-      // -----------------------------------------------------------------------------------
-
     } else if (m_targetPositionDeg == INTAKE_GROUND_PICKUP_DEG ||
               m_targetPositionDeg == INTAKE_AMP_SCORE_DN_DEG ||
               m_targetPositionDeg == INTAKE_SOURCE_LOAD_DN_DEG ||
@@ -559,9 +515,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private double calculatePivotFeedFoward(double positionRadians, double velocityRadPerSec,
       double accelRadPerSecSquared) {
     double finalFF = PIVOT_FF_kS * Math.signum(velocityRadPerSec)
-        + PIVOT_FF_kG * Math.cos(positionRadians)
-        + PIVOT_FF_kV * velocityRadPerSec
-        + PIVOT_FF_kA * accelRadPerSecSquared;
+                  + PIVOT_FF_kG * Math.cos(positionRadians)
+                  + PIVOT_FF_kV * velocityRadPerSec
+                  + PIVOT_FF_kA * accelRadPerSecSquared;
     return finalFF;
   };
 
@@ -625,23 +581,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public void setRollersIn() {
     rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
-    if(CatzConstants.currentRobotMode ==  RobotMode.AMP) {
-      //---------------------------------------
-      // in amp state which has different roller logic
-      //-------------------------------------
-
-      if(SubsystemCatzElevator.getInstance().getElevatorRevPos() > 50) {
-        //-----------------------------
-        //  about to score in the amp...
-        //----------------------------
-        m_currentRollerState = IntakeRollerState.ROLLERS_IN_SCORING_AMP;
-      } else {
-        m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
-
-      }
-    } else {
-      m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
-    }
+    m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
   }
 
   public void setRollersIntakeSource() {

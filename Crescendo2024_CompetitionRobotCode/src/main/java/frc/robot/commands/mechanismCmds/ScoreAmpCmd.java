@@ -41,37 +41,21 @@ public class ScoreAmpCmd extends Command {
   @Override
   public void initialize() {
     velocityCounter = 0;
-    intake.setSquishyMode(true);
-    // if(intake.getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
-      runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP_PRESET);
-      intake.updateAutoTargetPositionIntake(CatzMechanismConstants.SCORING_AMP_PRESET.getIntakePivotTargetAngle());
 
-    // }
+    runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP_PRESET);
     intakeNoteTimer.reset();
     intake.setWasIntakeInAmpScoring(false);
-  }
+  } 
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    // if(intake.getWristCurrent() > 55.0) {
-    //     velocityCounter++;
-    //     if(velocityCounter > 5) {
-    //             intake.setRollersOutakeHandoff();
-    //   }
-    // } 
-
-    m_previousTargetPositionDeg = intake.getWristAngle();
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.setSquishyMode(false);
-     // runMechanismSetpoints(CatzMechanismConstants.AMP_TRANSITION_PRESET);
-    intake.setWasIntakeInAmpScoring(true);
 
   }
 
@@ -84,6 +68,7 @@ public class ScoreAmpCmd extends Command {
   //factory for updating all mechanisms with the packaged target info associated with the new postion
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
     elevator.updateTargetPositionElevator(pose.getElevatorTargetRev());
+    intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
     shooter.updateTargetPositionShooter(pose);
     turret.updateTargetPositionTurret(pose);
   }

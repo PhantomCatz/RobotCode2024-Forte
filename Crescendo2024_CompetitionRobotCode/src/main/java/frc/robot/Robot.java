@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.revrobotics.ColorSensorV3.LEDCurrent;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,6 +27,7 @@ import frc.robot.Utils.LocalADStarAK;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 import frc.robot.CatzAutonomous;
 
@@ -143,6 +145,7 @@ public class Robot extends LoggedRobot {
     if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
       SubsystemCatzDrivetrain.getInstance().flipGyro();
     }
+    SubsystemCatzShooter.getInstance().cmdSetKeepShooterOn(false).execute();
   }
 
   @Override

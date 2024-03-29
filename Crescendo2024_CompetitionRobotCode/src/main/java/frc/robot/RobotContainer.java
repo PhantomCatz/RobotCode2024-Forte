@@ -9,9 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.CatzColorConstants;
@@ -36,6 +33,7 @@ import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
@@ -107,21 +105,25 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //------------------------------------------------------------------------------------
     // SPEAKER MODE
     //------------------------------------------------------------------------------------ 
-        xboxDrv.leftStick()
-               .and(()-> isInSpeakerMode())
-               .onTrue(
-                  new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
-                      ); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
+        Trigger triggerModeSpeaker = new Trigger(()->isInSpeakerMode());
 
-        xboxAux.leftTrigger().and(()->isInSpeakerMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
+        triggerModeSpeaker.and(xboxAux.leftTrigger())
+                          .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
+                    
+        triggerModeSpeaker.and(xboxAux.leftTrigger())
+                          .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
 
-        xboxAux.x()         .and(()->isInSpeakerMode()).onTrue(new MoveToPreset(CatzMechanismConstants.SHOOTER_DEFAULT_PRESET));
+        triggerModeSpeaker.and(xboxAux.x())
+                          .onTrue(new MoveToPreset(CatzMechanismConstants.SHOOTER_DEFAULT_PRESET));
 
-        xboxAux.a()         .and(()->isInSpeakerMode()).onTrue(shooter.cmdShooterRamp());  //RAMPING UP 
+        triggerModeSpeaker.and(xboxAux.a())
+                          .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL)));  //RAMPING UP 
 
-        xboxAux.b()         .and(()->isInSpeakerMode()).onTrue(shooter.cmdShoot());                  //TO SHOOT (NEED TO RAMP UP FIRST)
+        triggerModeSpeaker.and(xboxAux.b())
+                          .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.SHOOTING)));  //TO SHOOT (NEED TO RAMP UP FIRST)
 
-        xboxAux.y()         .and(()->isInSpeakerMode()).onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
+        triggerModeSpeaker.and(xboxAux.y())
+                          .onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
         Trigger auxJoystickTriggerRightX = new Trigger(()->xboxAux.getLeftY() > 0.1);
         auxJoystickTriggerRightX.and(()->isInSpeakerMode()).onTrue(shooter.cmdManualHoldOn(()->-xboxAux.getLeftY())); //MOVE SERVO POSITION MANUAL 
@@ -129,33 +131,47 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
         Trigger auxJoystickTriggerRightY = new Trigger(()->xboxAux.getRightX() > 0.1);
         auxJoystickTriggerRightY.and(()->isInSpeakerMode()).onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
 
+        
     //------------------------------------------------------------------------------------
     // AMP MODE
-    //------------------------------------------------------------------------------------              
-        xboxDrv.leftStick().and(()->isInAmpMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE AND STOWS TO AMP SCORE DOWN POS
+    //------------------------------------------------------------------------------------  
+        Trigger triggerModeAmp = new Trigger(()->isInAmpMode());
+            
+        triggerModeAmp.and(xboxDrv.leftStick())
+                      .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE AND STOWS TO AMP SCORE DOWN POS
 
-        xboxAux.leftTrigger().and(()->isInAmpMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)); //NOTE IN SHOOTER TRANSFERED TO INTAKE
+        triggerModeAmp.and(xboxAux.leftTrigger())
+                      .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)); //NOTE IN SHOOTER TRANSFERED TO INTAKE
 
-        xboxAux.y().and(()->isInAmpMode()).onTrue(new MoveToPreset(CatzMechanismConstants.AMP_TRANSITION_PRESET));                      //MOVE TO AMP TRANSITION POSITION 
-
-        xboxAux.b().and(()->isInAmpMode()).onTrue(new ScoreAmpCmd());                              //SCORE AMP (^^ MUST BE IN AMP TRANSITION POS FIRST)
-
-        xboxAux.leftStick().and(()->isInAmpMode()).onTrue(new ManualElevatorCmd((()->xboxAux.getRightY()))); //MANUAL MODE FOR ELEVATOR
+        triggerModeAmp.and(xboxAux.b())
+                      .onTrue(new MoveToPreset(CatzMechanismConstants.SCORING_AMP_PRESET));                              //SCORE AMP (^^ MUST BE IN AMP TRANSITION POS FIRST)
+        
+        triggerModeAmp.and(xboxAux.leftStick())
+                      .onTrue(new ManualElevatorCmd((()->xboxAux.getRightY()))); //MANUAL MODE FOR ELEVATOR
 
 
     //------------------------------------------------------------------------------------
     // HOARD MODE
     //------------------------------------------------------------------------------------
-        xboxAux.y().and(()->isInHoardMode()).onTrue(shooter.hoardShooterShot());  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
+
+        Trigger triggerModeHoard = new Trigger(()->isInHoardMode());
+
+        triggerModeHoard.and(xboxAux.y())
+                        .onTrue(shooter.hoardShooterShot());  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
           
-        xboxAux.b().and(()->isInHoardMode()).onTrue(shooter.cmdShoot());          //TO SHOOT (NEED TO RAMP UP FIRST)
+        triggerModeHoard.and(xboxAux.b())
+                        .onTrue(shooter.cmdShoot());          //TO SHOOT (NEED TO RAMP UP FIRST)
 
-        xboxAux.x().and(()->isInHoardMode()).onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_HOARD_PRESET));      //TO HOARD INTAKE POS
+        triggerModeHoard.and(xboxAux.x())
+                        .onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_HOARD_PRESET));      //TO HOARD INTAKE POS
 
-        xboxAux.a().and(()->isInHoardMode()).onTrue(intake.cmdRollerOut());        // INTAKE ROLLERS SHOOT
+        triggerModeHoard.and(xboxAux.a())
+                        .onTrue(intake.cmdRollerOut());        // INTAKE ROLLERS SHOOT
 
-        xboxAux.leftBumper().and(()->isInHoardMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));     //NOTE IN SHOOTER TRANSFERED TO INTAKE
-        xboxAux.rightBumper().and(()->isInHoardMode()).onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)); //NOTE IN INTAKE TRANSFERED TO SHOOTER
+        triggerModeHoard.and(xboxAux.leftBumper())
+                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));     //NOTE IN SHOOTER TRANSFERED TO INTAKE
+        triggerModeHoard.and(xboxAux.rightBumper())
+                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)); //NOTE IN INTAKE TRANSFERED TO SHOOTER
 
     //------------------------------------------------------------------------------------  
     // CLIMB MODE

@@ -13,7 +13,6 @@ public class TeleopDriveCmd extends Command {
   //subystem declaration collection
   private SubsystemCatzDrivetrain m_driveTrain = SubsystemCatzDrivetrain.getInstance();
 
-  //
   private Supplier<Double> m_supplierLeftJoyX;
   private Supplier<Double> m_supplierLeftJoyY;
   private Supplier<Double> m_supplierRightJoyX;
@@ -29,8 +28,6 @@ public class TeleopDriveCmd extends Command {
     this.m_isFieldOrientedDisabled = supplierFieldOriented;
 
     addRequirements(m_driveTrain);
-    //note:this addRequirements method is required to use the defaultcommands
-    //in robotcontainer 
   }
 
   @Override

@@ -243,17 +243,18 @@ public class SubsystemCatzElevator extends SubsystemBase {
         //----------------------------------------------------------------------------------
         m_elevatorIntakeInSafetyZone = true;
       }
-    // } else if(m_targetPositionRev == ELEVATOR_AMP_SCORE) {
-    //     // System.out.println("E-D");
+    } else if(m_targetPositionRev == ELEVATOR_AMP_SCORE) {
+        // System.out.println("E-D");
 
-    //   currentElevatorDirection = ElevatorDirection.UP;
-    //   intakeClearanceAngle = SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG;
-    //   if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
-    //     //-------------------------------------------------------------------------------------
-    //     //  intake is in front of elevator
-    //     //----------------------------------------------------------------------------------
-    //     m_elevatorIntakeInSafetyZone = true;
-    //   } 
+      currentElevatorDirection = ElevatorDirection.UP;
+      intakeClearanceAngle = SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG;
+      if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
+        //-------------------------------------------------------------------------------------
+        //  intake is in front of elevator
+        //-------------------------------------------------------------------------------------
+        m_elevatorIntakeInSafetyZone = true;
+      } 
+
     } else {
       System.out.println("Invalid elevator target Angle");
     }

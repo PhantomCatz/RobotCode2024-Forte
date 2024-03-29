@@ -31,6 +31,7 @@ import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
@@ -56,56 +57,36 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   // TBD - how did we determine distance interval?
   // TBD - explain why two distance values
   //------------------------------------------------------------------------------------------------
-  private static final InterpolatingDoubleTreeMap shooterPivotTable = new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap newShooterPivotTable = new InterpolatingDoubleTreeMap();
 
-  static { 
-    shooterPivotTable.put(1.37, 0.650);     //53.93701 inches     Shooted from lining up against the subwoofer
-    //shooterPivotTable.put(1.37, 0.600);     
-    //shooterPivotTable.put(1.37, 0.700);
+  static {
+    newShooterPivotTable.put(1.478, 1.0);
+    newShooterPivotTable.put(1.875, 0.82);
 
-    shooterPivotTable.put(1.87, 0.575);    
-    //shooterPivotTable.put(1.87, 0.650);     //73.62205
-    //shooterPivotTable.put(1.87, 0.500);
-
-    shooterPivotTable.put(2.37, 0.325);
+    newShooterPivotTable.put(1.875, 9.5);
+    
+    //UNTESTED VALUES
+    newShooterPivotTable.put(2.37, 0.625);
     //shooterPivotTable.put(2.37, 0.350);     //93.30709
     //shooterPivotTable.put(2.37, 0.300);
 
-    shooterPivotTable.put(2.87, 0.290); 
+    newShooterPivotTable.put(2.87, 0.590); 
     //shooterPivotTable.put(2.87, 0.300);     //112.9921
     //shooterPivotTable.put(2.87, 0.280); 
 
-    shooterPivotTable.put(3.37, 0.225);
+    newShooterPivotTable.put(3.37, 0.525);
     //shooterPivotTable.put(3.37, 0.250);     //132.6772
     //shooterPivotTable.put(3.37, 0.200);
 
-    shooterPivotTable.put(3.87, 0.112);
+    newShooterPivotTable.put(3.87, 0.412);
     //shooterPivotTable.put(3.87, 0.125);     //152.3622  
     //shooterPivotTable.put(3.87, 0.100);
 
-    shooterPivotTable.put(4.87, 0.070);
+    newShooterPivotTable.put(4.87, 0.370);
     //shooterPivotTable.put(4.87, 0.100);     //191.7323
     //shooterPivotTable.put(4.87, 0.050);
 
-    shooterPivotTable.put(5.87, 0.000);     //231.1024
-
-  }
-
-  //------------------------------------------------------------------------------------------------    TBD
-  //  time table look up for calculating how long it takes to get note into speaker
-  //  angle to time look up table key: ty angle, values: time */
-  //  Currently NOT IN USE
-  //------------------------------------------------------------------------------------------------
-  private static final InterpolatingDoubleTreeMap timeTable = new InterpolatingDoubleTreeMap();
-      // (distance, time seconds)
-  static { 
-        // (ty-angle,time)              TBD - indent
-        timeTable.put(1.37, 0.780);
-        timeTable.put(2.37, 0.800);
-        timeTable.put(2.87, 0.810);
-        timeTable.put(3.37, 0.820);
-        timeTable.put(4.87, 0.825);
-        timeTable.put(5.87, 0.830);
+    newShooterPivotTable.put(5.87, 0.300);     //231.1024
   }
 
 
@@ -118,12 +99,12 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   //  
   //
   //------------------------------------------------------------------------------------------------
-  private Supplier<Boolean> m_bSupplier;
+  private Supplier<Boolean> m_supplierButtonB;
   
 
   //for telop
-  public AimAndOrFireAtSpeakerCmd(Supplier<Boolean> bSupplier) {
-    m_bSupplier = bSupplier;
+  public AimAndOrFireAtSpeakerCmd(Supplier<Boolean> supplierButtonB) {
+    m_supplierButtonB = supplierButtonB;
     addRequirements(turret, shooter, intake, elevator);
   }
 
@@ -141,21 +122,18 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   //------------------------------------------------------------------------------------------------
   @Override
   public void initialize() {
-    shooter.startShooterFlywheel();
 
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
-
+    
     if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
       
       //translation of the blue alliance speaker
       m_targetXY = new Translation2d(0.0, FieldConstants.SPEAKER_COORD_MTRS_Y);
-      System.out.println("blue tracking");
+
     } else {
-      
       //translation of the Red alliance speaker
       m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);      //TBD - Magic #'s, what about defining Red & Blue constants, using IF to select and have 1 translation2D() call
-      System.out.println("red tracking");
     }
 
 
@@ -171,14 +149,21 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   public void execute() {
 
     double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
-    double servoPos = shooterPivotTable.get(newDist);
+    double servoPos = newShooterPivotTable.get(newDist);
     turret.aimAtGoal(m_targetXY, false, false);    
     shooter.updateShooterServo(servoPos);
 
     //in telop this boolean supplier is being evaluated to see if button was pressed
-    if(m_bSupplier != null &&
-       m_bSupplier.get() == true) {     
-        shooter.cmdShoot();
+
+    if(DriverStation.isAutonomous()){
+      if(shooter.getShooterServoInPos() && turret.isTurretAtTarget()){ //TBD add the timer code for shooter pivot
+        shooter.setShooterState(ShooterState.SHOOTING);
+      }
+    }
+
+    if(m_supplierButtonB != null &&
+       m_supplierButtonB.get() == true) {     
+        shooter.setShooterState(ShooterState.SHOOTING);
     }
 
     Logger.recordOutput("ShooterCalcs/NewDist",           newDist);

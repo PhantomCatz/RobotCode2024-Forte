@@ -26,7 +26,7 @@ public class ManualElevatorCmd extends Command {
   @Override
   public void execute() {
 
-      elevator.setElevatorPercentOutput(m_supplierLeftY.get());
+    elevator.setElevatorPercentOutput(m_supplierLeftY.get());
   }
 
   @Override

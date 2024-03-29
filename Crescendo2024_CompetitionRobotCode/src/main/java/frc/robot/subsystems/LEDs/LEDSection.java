@@ -10,6 +10,8 @@ public class LEDSection {
         Flow;
     }
 
+    
+
     private final int LED_COUNT;
     private int iteration;
     private int currentIteration = 0;
