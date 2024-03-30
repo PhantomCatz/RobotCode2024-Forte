@@ -287,14 +287,15 @@ public class SubsystemCatzShooter extends SubsystemBase {
       }
 
       //turret clamping
-      if(Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle()) > 80) {
+      if(Math.abs(SubsystemCatzTurret.getInstance
+      ().getTurretAngle()) > 80) {
         if(m_targetServoPosition > SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT) {
           m_targetServoPosition = SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT;
         } 
       } 
     
       //cmd final output
-      io.setServoPosition(servoPosTuning.get());
+      io.setServoPosition(m_targetServoPosition);
 
       
       

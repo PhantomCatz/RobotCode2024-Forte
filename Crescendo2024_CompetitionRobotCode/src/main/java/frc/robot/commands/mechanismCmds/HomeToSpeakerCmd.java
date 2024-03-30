@@ -59,7 +59,7 @@ public class HomeToSpeakerCmd extends Command {
     // newShooterPivotTable.put(3.875, 0.21);
     // newShooterPivotTable.put(3.875, 0.31);
     
-    shooterPivotTable.put(4.875, 0.95);
+    shooterPivotTable.put(4.875, 0.095);
     // newShooterPivotTable.put(4.875, 0.09);
     // newShooterPivotTable.put(4.875, 0.1);
 
@@ -69,28 +69,28 @@ public class HomeToSpeakerCmd extends Command {
 
     shooterPivotTable.put(6.813, 0.0);
 
-    //UNTESTED VALUES
-    shooterPivotTable.put(2.37, 0.625);
-    //shooterPivotTable.put(2.37, 0.350);     //93.30709
-    //shooterPivotTable.put(2.37, 0.300);
+    // //UNTESTED VALUES
+    // shooterPivotTable.put(2.37, 0.625);
+    // //shooterPivotTable.put(2.37, 0.350);     //93.30709
+    // //shooterPivotTable.put(2.37, 0.300);
 
-    shooterPivotTable.put(2.87, 0.590); 
-    //shooterPivotTable.put(2.87, 0.300);     //112.9921
-    //shooterPivotTable.put(2.87, 0.280); 
+    // shooterPivotTable.put(2.87, 0.590); 
+    // //shooterPivotTable.put(2.87, 0.300);     //112.9921
+    // //shooterPivotTable.put(2.87, 0.280); 
 
-    shooterPivotTable.put(3.37, 0.525);
-    //shooterPivotTable.put(3.37, 0.250);     //132.6772
-    //shooterPivotTable.put(3.37, 0.200);
+    // shooterPivotTable.put(3.37, 0.525);
+    // //shooterPivotTable.put(3.37, 0.250);     //132.6772
+    // //shooterPivotTable.put(3.37, 0.200);
 
-    shooterPivotTable.put(3.87, 0.412);
-    //shooterPivotTable.put(3.87, 0.125);     //152.3622  
-    //shooterPivotTable.put(3.87, 0.100);
+    // shooterPivotTable.put(3.87, 0.412);
+    // //shooterPivotTable.put(3.87, 0.125);     //152.3622  
+    // //shooterPivotTable.put(3.87, 0.100);
 
-    shooterPivotTable.put(4.87, 0.370);
-    //shooterPivotTable.put(4.87, 0.100);     //191.7323
-    //shooterPivotTable.put(4.87, 0.050);
+    // shooterPivotTable.put(4.87, 0.370);
+    // //shooterPivotTable.put(4.87, 0.100);     //191.7323
+    // //shooterPivotTable.put(4.87, 0.050);
 
-    shooterPivotTable.put(5.87, 0.300);     //231.1024
+    // shooterPivotTable.put(5.87, 0.300);     //231.1024
   }
 
 

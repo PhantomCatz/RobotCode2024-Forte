@@ -96,7 +96,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // POSE COMMANDS
     //------------------------------------------------------------------------------------
       xboxDrv.rightStick().onTrue(new StowPoseCmd()); //STOW Mechnanism 
-      xboxAux.rightStick().onTrue(new StowPoseCmd()); //STOW Mechnanism 
+      xboxAux.rightTrigger().onTrue(new StowPoseCmd()); //STOW Mechnanism 
 
     
       
