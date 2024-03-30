@@ -187,10 +187,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     } 
 
     //set targetturret degree if note has exited shooter
-    if(SubsystemCatzShooter.getInstance().getShooterNoteState() == ShooterNoteState.NOTE_HAS_BEEN_SHOT &&
-       DriverStation.isTeleop()) {
-      m_turretTargetDegree = HOME_POSITION_DEG;
-    }
+
 
     //obtain calculation values
     setPositionPower  =  -m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
@@ -337,7 +334,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
 
   public boolean getTurretInPos() {
-    return m_turretInPos;
+    return Math.abs(m_turretTargetDegree - currentTurretDegree)<3;
   }
 
   public void setTurretInPose(boolean state){

@@ -275,7 +275,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
                 }
                 
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT; //ends autoaim sequence
-              SubsystemCatzTurret.getInstance().setTurretTargetDegree(-999); //
+              SubsystemCatzTurret.getInstance().setTurretTargetDegree(0);
               m_iterationCounter = 0;
             }
             m_iterationCounter++;
@@ -444,6 +444,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     currentShooterState = ShooterState.LOAD_OFF;
     io.setShooterDisabled(); 
     io.loadDisabled();
+    autonIsShooterRamped = false;
   }
 
   public void setShooterState(ShooterState state) {

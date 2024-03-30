@@ -78,8 +78,8 @@ public class ShooterIOReal implements ShooterIO {
     private static final int SERVO_PW_US_MIN_DEADBAND_POSITION = 1200;
     private static final int SERVO_PW_US_MIN_POSITION          = 1000;
 
-    //Tunable motor velocities
-    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 58); // was 65
+    //Tunable motor velocities SHOOTER SPEEDS
+    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 57); // was 65
     LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 80); // was 85
 
     TalonFX[] shooterArray = new TalonFX[2];
