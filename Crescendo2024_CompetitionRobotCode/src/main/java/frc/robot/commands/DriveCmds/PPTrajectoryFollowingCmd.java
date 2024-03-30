@@ -73,6 +73,7 @@ public class PPTrajectoryFollowingCmd extends Command {
        // Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
         //create pathplanner trajectory
+
         this.trajectory = new PathPlannerTrajectory(
                                 path, 
                                 DriveConstants.
@@ -91,6 +92,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
         Rotation2d targetOrientation     = goal.targetHolonomicRotation;
         Pose2d currentPose               = m_driveTrain.getPose();
+
 
         //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         
@@ -142,11 +144,11 @@ public class PPTrajectoryFollowingCmd extends Command {
         //System.out.println("X error " + xError);
         //System.out.println("Y error " + yError);
         //System.out.println("Angle error " + rotationError);
-
-        return (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
+        boolean inPose = (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
                 yError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
                 rotationError < TrajectoryConstants.ALLOWABLE_ROTATION_ERROR) || 
                 timer.hasElapsed(trajectory.getTotalTimeSeconds() * TIMEOUT_RATIO);
+        return inPose;
     }
 
 }

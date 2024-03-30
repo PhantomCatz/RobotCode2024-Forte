@@ -5,7 +5,6 @@
 package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -29,7 +28,6 @@ public class MoveToPreset extends Command {
   @Override
   public void initialize() {
     runMechanismSetpoints(m_preset);
-
   }
 
   @Override

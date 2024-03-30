@@ -36,7 +36,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
    * rollers
    *
    ************************************************************************************************************************/
-  private final double ROLLERS_MTR_PWR_IN_GROUND = 0.45;//0.6//TBD - need to handle carpet and non-carpet value or code
+  private final double ROLLERS_MTR_PWR_IN_GROUND = 0.50;//0.45;//0.6//TBD - need to handle carpet and non-carpet value or code
                                                        // issue
   private final double ROLLERS_MTR_PWR_IN_SOURCE = 0.25;
   private final double ROLLERS_MTR_PWR_OUT_EJECT = -1.0; // TBD fix top rooler before testing
@@ -112,7 +112,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   // -----------------------------------------------------------------------------------------------
   public static enum IntakeControlState {
     AUTO,
-    SEMI_MANUAL, // TBD or Manual Hold?
+    SEMI_MANUAL,
     FULL_MANUAL,
     VOLTAGE_CONTROL
   }
@@ -132,8 +132,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
                                                              // bottom inner rail 7 1/4 inches
   public static final double INTAKE_AMP_SCORE_DN_DEG   =  92.6; //90.43; 
   public static final double INTAKE_HOARD_DEG          = 30.0;
-  public static final double INTAKE_GROUND_PICKUP_DEG  = -25.0; //-22.0;
   public static final double INTAKE_AMP_SCORE_DEG      = 80.0;
+  public static final double INTAKE_GROUND_PICKUP_DEG  = -22.0; //-25.0;
   public static final double INTAKE_AMP_TRANSITION_DEG = -77.0; //TBD Change to -80 on sn2
 
   public static final double INTAKE_MIN_ELEV_CLEARANCE_DEG = 100.0;
@@ -142,7 +142,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private static final double INTAKE_NULL_DEG = -999.0;
 
   private final static double INTAKE_TURRET_MAX_ANGLE_FOR_HANDOFF_DEG = 17.0;
-  public final static double INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV = 40.0;
+  public final static double  INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV = 40.0;
   private final static double INTAKE_ELEV_MIN_HEIGHT_FOR_AMP_TRANS_REV = 32.0;
 
   public final static double INTAKE_STOW_ELEV_CLEARED_DEG = 120.0;
@@ -199,8 +199,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static SubsystemCatzIntake getInstance() {
     return instance;
   }
-
-  boolean isTransferingToHighPosition = false;
 
   // -------------------------------------------------------------------------------------
   //
@@ -396,7 +394,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
     // Initialize Variables
     // -------------------------------------------------------------------------------------
     m_nextTargetPositionDeg = INTAKE_NULL_DEG;
-    isTransferingToHighPosition = false;
     m_currentIntakeControlState = IntakeControlState.AUTO;
 
     m_iterationCounter = 0; // reset counter for intake in position

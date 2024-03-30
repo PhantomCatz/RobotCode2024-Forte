@@ -27,7 +27,7 @@ public class ElevatorIOReal implements ElevatorIO {
     private TalonFXConfiguration elevatorTalonConfigs = new TalonFXConfiguration();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
-    private DigitalInput m_bottomLimit = new DigitalInput(3);
+    private DigitalInput m_bottomLimit = new DigitalInput(2);
 
     private final TalonFX ElevatorMtr;
 
@@ -57,7 +57,7 @@ public class ElevatorIOReal implements ElevatorIO {
 
         //ElevatorMtr.optimizeBusUtilization();
 
-        ElevatorMtr.setPosition(0);
+        ElevatorMtr.setPosition(SubsystemCatzElevator.ELEVATOR_STOW);
 
 
         //check if elevator motor is initialized correctly
@@ -77,7 +77,7 @@ public class ElevatorIOReal implements ElevatorIO {
         inputs.elevatorPosRev           = ElevatorMtr.getPosition().getValue();
         inputs.elevatorPositionError    = ElevatorMtr.getClosedLoopError().getValue();
 
-        // inputs.bottomSwitchTripped      = m_bottomLimit.get();
+        inputs.bottomSwitchTripped      = m_bottomLimit.get();
     }
     
     @Override

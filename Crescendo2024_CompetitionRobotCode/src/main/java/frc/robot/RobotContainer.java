@@ -2,6 +2,8 @@ package frc.robot;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -24,7 +26,7 @@ import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
 import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
-import frc.robot.commands.mechanismCmds.AimAndOrFireAtSpeakerCmd;
+import frc.robot.commands.mechanismCmds.HomeToSpeakerCmd;
 import frc.robot.CatzConstants.NoteDestination;
 import frc.robot.CatzConstants.NoteSource;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
@@ -81,7 +83,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   private void configureBindings() {    
     
     //RESET GYRO
-    xboxDrv.start().onTrue(driveTrain.resetGyro());
+   // xboxDrv.start().onTrue(driveTrain.resetGyro());
 
     //------------------------------------------------------------------------------------
     // INTAKE COMMANDS
@@ -94,7 +96,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // POSE COMMANDS
     //------------------------------------------------------------------------------------
       xboxDrv.rightStick().onTrue(new StowPoseCmd()); //STOW Mechnanism 
-      xboxAux.rightStick().onTrue(new StowPoseCmd()); //STOW Mechnanism 
+      xboxAux.rightTrigger().onTrue(new StowPoseCmd()); //STOW Mechnanism 
 
     
       
@@ -107,15 +109,17 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //------------------------------------------------------------------------------------ 
         Trigger triggerModeSpeaker = new Trigger(()->isInSpeakerMode());
 
-        triggerModeSpeaker.and(xboxAux.leftTrigger())
+        triggerModeSpeaker.and(xboxDrv.leftStick())
                           .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
                     
         triggerModeSpeaker.and(xboxAux.leftTrigger())
                           .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
 
         triggerModeSpeaker.and(xboxAux.x())
-                          .onTrue(new MoveToPreset(CatzMechanismConstants.SHOOTER_DEFAULT_PRESET));
+                          .onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET));
 
+        triggerModeSpeaker.and(xboxAux.rightTrigger()).onTrue(Commands.runOnce(()->shooter.disableShooter()));
+        
         triggerModeSpeaker.and(xboxAux.a())
                           .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL)));  //RAMPING UP 
 
@@ -123,13 +127,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                           .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.SHOOTING)));  //TO SHOOT (NEED TO RAMP UP FIRST)
 
         triggerModeSpeaker.and(xboxAux.y())
-                          .onTrue(new AimAndOrFireAtSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
+                          .onTrue(new HomeToSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
-        Trigger auxJoystickTriggerRightX = new Trigger(()->xboxAux.getLeftY() > 0.1);
-        auxJoystickTriggerRightX.and(()->isInSpeakerMode()).onTrue(shooter.cmdManualHoldOn(()->-xboxAux.getLeftY())); //MOVE SERVO POSITION MANUAL 
+        Trigger auxJoystickTriggerRightX = new Trigger(()->Math.abs(xboxAux.getLeftY()) > 0.1);
+        triggerModeSpeaker.and(auxJoystickTriggerRightX).onTrue(shooter.cmdManualHoldOn(()->xboxAux.getLeftY())); //MOVE SERVO POSITION MANUAL 
 
-        Trigger auxJoystickTriggerRightY = new Trigger(()->xboxAux.getRightX() > 0.1);
-        auxJoystickTriggerRightY.and(()->isInSpeakerMode()).onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
+        Trigger auxJoystickTriggerRightY = new Trigger(()->Math.abs(xboxAux.getRightX()) > 0.1);
+        triggerModeSpeaker.and(auxJoystickTriggerRightY).onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
 
         
     //------------------------------------------------------------------------------------
@@ -176,22 +180,20 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //------------------------------------------------------------------------------------  
     // CLIMB MODE
     //------------------------------------------------------------------------------------
-
-        xboxAux.povUp().and(()->isInClimbMode()).onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
-        xboxAux.y().and(()->isInClimbMode()).onTrue(new ScoreTrapCmd());
-        xboxAux.b().and(()->isInClimbMode()).onTrue(intake.cmdRollerOut());
+        Trigger triggerModeClimb = new Trigger(()->isInClimbMode());
+        triggerModeClimb.and(xboxDrv.povUp()).onTrue(new ClimbCmd(()-> xboxAux.getLeftY(), ()-> xboxAux.getRightY()));
+        triggerModeClimb.and(xboxAux.y()).onTrue(new ScoreTrapCmd());
+        triggerModeClimb.and(xboxAux.b()).onTrue(intake.cmdRollerOut());
 
 
     //------------------------------------------------------------------------------------
-    // CLIMB MAINTANANCE MODE
-    //------------------------------------------------------------------------------------
-        xboxAux.povUp().and(()->CatzConstants.currentRobotMode == RobotMode.CLIMB_MAINTENANCE_MODE).onTrue(new ClimbCmd(()-> xboxDrv.getLeftY(), ()-> xboxDrv.getRightY()));
+        xboxAux.povUp().and(()->CatzConstants.currentRobotMode == RobotMode.CLIMB_MAINTENANCE_MODE).onTrue(new ClimbCmd(()-> xboxAux.getLeftY(), ()-> xboxAux.getRightY()));
 
       
     //------------------------------------------------------------------------------------
     //  CHANGING MODES
     //------------------------------------------------------------------------------------
-        xboxAux.povUp().and(xboxDrv.povUp()).onTrue(Commands.runOnce(()-> CatzConstants.currentRobotMode = RobotMode.CLIMB)); // CLIMB MODE
+        xboxAux.povUp().onTrue(Commands.runOnce(()-> CatzConstants.currentRobotMode = RobotMode.CLIMB)); // CLIMB MODE
 
         xboxAux.rightBumper().and(xboxAux.leftBumper()).onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.CLIMB_MAINTENANCE_MODE)); //CLIMB MANTAINANCE MODE
 
@@ -205,6 +207,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
   public void logDpadStates() {
        SmartDashboard.putString("Scoring Mode", CatzConstants.currentRobotMode.toString());
+       Logger.recordOutput("Robot Control State", CatzConstants.currentRobotMode.toString());
 
   }
 

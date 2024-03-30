@@ -144,11 +144,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
     m_ffVolts = elevatorFeedforward.calculate(0.0); //calculating while disabled for advantage scope logging
 
     if(DriverStation.isDisabled()) {
-      io.setElevatorPercentOutput(0);
-      currentElevatorState = ElevatorControlState.FULL_MANUAL;
-      m_elevatorPercentOutput = 0.0;
+      setElevatorOff();
     }
     else {
+
       if(inputs.bottomSwitchTripped) {
         io.setSelectedSensorPosition(0.0);
       }
@@ -243,18 +242,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
         //----------------------------------------------------------------------------------
         m_elevatorIntakeInSafetyZone = true;
       }
-    } else if(m_targetPositionRev == ELEVATOR_AMP_SCORE) {
-        // System.out.println("E-D");
-
-      currentElevatorDirection = ElevatorDirection.UP;
-      intakeClearanceAngle = SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG;
-      if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TRANSITION_CHECK_DEG) {
-        //-------------------------------------------------------------------------------------
-        //  intake is in front of elevator
-        //-------------------------------------------------------------------------------------
-        m_elevatorIntakeInSafetyZone = true;
-      } 
-
     } else {
       System.out.println("Invalid elevator target Angle");
     }
@@ -274,7 +261,9 @@ public class SubsystemCatzElevator extends SubsystemBase {
   }
 
   public void setElevatorOff() {
-    
+    io.setElevatorPercentOutput(0.0);
+    currentElevatorState = ElevatorControlState.FULL_MANUAL;
+    m_elevatorPercentOutput = 0.0;
   }
 
   // ----------------------------------------------------------------------------------

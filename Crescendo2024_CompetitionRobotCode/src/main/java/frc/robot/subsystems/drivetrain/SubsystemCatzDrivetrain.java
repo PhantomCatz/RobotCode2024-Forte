@@ -68,6 +68,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     private FieldRelativeSpeed m_lastFieldRelVel = new FieldRelativeSpeed();
     private FieldRelativeAccel m_fieldRelAccel = new FieldRelativeAccel();
 
+    private final double AUTON_SPEED_SLOWDOWN_FACTOR = 0.1;
+    private boolean isAutonSlowedDown = false;
 
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
@@ -154,8 +156,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/gyroinputs ", gyroInputs);
 
-        //odometryLock.unlock();
-
         m_poseEstimator.update(getRotation2d(), getModulePositions());      
         
 
@@ -227,7 +227,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     public void driveRobotWithDescritizeDynamics(ChassisSpeeds chassisSpeeds) {
         //correct dynamics with wpilib internal "2nd order kinematics"
         ChassisSpeeds descreteSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
-                                                 
+        if(isAutonSlowedDown){
+            descreteSpeeds = descreteSpeeds.times(AUTON_SPEED_SLOWDOWN_FACTOR);
+        }
         // Convert chassis speeds to individual module states and set module states
         SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(descreteSpeeds);
         setModuleStates(moduleStates);
@@ -292,6 +294,10 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     //command to cancel running auto trajectories
     public Command cancelTrajectory() {
         return new InstantCommand();
+    }
+
+    public Command cmdSetAutonSlowdown(boolean state){
+        return runOnce(()->isAutonSlowedDown = state);
     }
 
     public FieldRelativeSpeed getFieldRelativeSpeed() {

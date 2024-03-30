@@ -2,41 +2,26 @@ package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import org.littletonrobotics.junction.Logger;
 
-import java.awt.geom.Point2D;
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.util.Units;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.FieldConstants;
-import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.Utils.FieldRelativeAccel;
-import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorControlState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
-import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
-public class AimAndOrFireAtSpeakerCmd extends Command {
+public class HomeToSpeakerCmd extends Command {
 
   //subsystem declaration
   private SubsystemCatzElevator   elevator   = SubsystemCatzElevator.getInstance();
@@ -57,36 +42,55 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   // TBD - how did we determine distance interval?
   // TBD - explain why two distance values
   //------------------------------------------------------------------------------------------------
-  private static final InterpolatingDoubleTreeMap newShooterPivotTable = new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap shooterPivotTable = new InterpolatingDoubleTreeMap();
 
   static {
-    newShooterPivotTable.put(1.478, 1.0);
-    newShooterPivotTable.put(1.875, 0.82);
+    shooterPivotTable.put(1.478, 1.0);
 
-    newShooterPivotTable.put(1.875, 9.5);
+    shooterPivotTable.put(1.875, 0.885);
+    // newShooterPivotTable.put(1.875, 0.82);
+    // newShooterPivotTable.put(1.875, 0.95);
+
+    shooterPivotTable.put(2.875, 0.485);
+    // newShooterPivotTable.put(2.875, 0.42);
+    // newShooterPivotTable.put(2.875, 0.55);
     
-    //UNTESTED VALUES
-    newShooterPivotTable.put(2.37, 0.625);
-    //shooterPivotTable.put(2.37, 0.350);     //93.30709
-    //shooterPivotTable.put(2.37, 0.300);
+    shooterPivotTable.put(3.875, 0.26);
+    // newShooterPivotTable.put(3.875, 0.21);
+    // newShooterPivotTable.put(3.875, 0.31);
+    
+    shooterPivotTable.put(4.875, 0.095);
+    // newShooterPivotTable.put(4.875, 0.09);
+    // newShooterPivotTable.put(4.875, 0.1);
 
-    newShooterPivotTable.put(2.87, 0.590); 
-    //shooterPivotTable.put(2.87, 0.300);     //112.9921
-    //shooterPivotTable.put(2.87, 0.280); 
+    shooterPivotTable.put(5.875, 0.02);
+    // newShooterPivotTable.put(5.875, 0.0);
+    // newShooterPivotTable.put(5.875, 0.04);
 
-    newShooterPivotTable.put(3.37, 0.525);
-    //shooterPivotTable.put(3.37, 0.250);     //132.6772
-    //shooterPivotTable.put(3.37, 0.200);
+    shooterPivotTable.put(6.813, 0.0);
 
-    newShooterPivotTable.put(3.87, 0.412);
-    //shooterPivotTable.put(3.87, 0.125);     //152.3622  
-    //shooterPivotTable.put(3.87, 0.100);
+    // //UNTESTED VALUES
+    // shooterPivotTable.put(2.37, 0.625);
+    // //shooterPivotTable.put(2.37, 0.350);     //93.30709
+    // //shooterPivotTable.put(2.37, 0.300);
 
-    newShooterPivotTable.put(4.87, 0.370);
-    //shooterPivotTable.put(4.87, 0.100);     //191.7323
-    //shooterPivotTable.put(4.87, 0.050);
+    // shooterPivotTable.put(2.87, 0.590); 
+    // //shooterPivotTable.put(2.87, 0.300);     //112.9921
+    // //shooterPivotTable.put(2.87, 0.280); 
 
-    newShooterPivotTable.put(5.87, 0.300);     //231.1024
+    // shooterPivotTable.put(3.37, 0.525);
+    // //shooterPivotTable.put(3.37, 0.250);     //132.6772
+    // //shooterPivotTable.put(3.37, 0.200);
+
+    // shooterPivotTable.put(3.87, 0.412);
+    // //shooterPivotTable.put(3.87, 0.125);     //152.3622  
+    // //shooterPivotTable.put(3.87, 0.100);
+
+    // shooterPivotTable.put(4.87, 0.370);
+    // //shooterPivotTable.put(4.87, 0.100);     //191.7323
+    // //shooterPivotTable.put(4.87, 0.050);
+
+    // shooterPivotTable.put(5.87, 0.300);     //231.1024
   }
 
 
@@ -99,17 +103,9 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   //  
   //
   //------------------------------------------------------------------------------------------------
-  private Supplier<Boolean> m_supplierButtonB;
-  
+  private Timer timer = new Timer();
 
-  //for telop
-  public AimAndOrFireAtSpeakerCmd(Supplier<Boolean> supplierButtonB) {
-    m_supplierButtonB = supplierButtonB;
-    addRequirements(turret, shooter, intake, elevator);
-  }
-
-  //for autonomous
-  public AimAndOrFireAtSpeakerCmd() {                     
+  public HomeToSpeakerCmd() {                     
     addRequirements(turret, shooter, intake, elevator);
   }
 
@@ -122,6 +118,8 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   //------------------------------------------------------------------------------------------------
   @Override
   public void initialize() {
+    timer.reset();
+    timer.start();
 
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
@@ -135,7 +133,7 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
       //translation of the Red alliance speaker
       m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);      //TBD - Magic #'s, what about defining Red & Blue constants, using IF to select and have 1 translation2D() call
     }
-
+    turret.setTurretInPose(false);
 
   }
 
@@ -149,21 +147,20 @@ public class AimAndOrFireAtSpeakerCmd extends Command {
   public void execute() {
 
     double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
-    double servoPos = newShooterPivotTable.get(newDist);
+    double servoPos = shooterPivotTable.get(newDist);
     turret.aimAtGoal(m_targetXY, false, false);    
     shooter.updateShooterServo(servoPos);
 
     //in telop this boolean supplier is being evaluated to see if button was pressed
 
+    // System.out.println("turret:"+turret.isTurretAtTarget());
+    // System.out.println("shooter:"+shooter.isAutonShooterRamped());
+    // System.out.println("timer:"+timer.hasElapsed(AUTON_TIMEOUT_SEC));
+
     if(DriverStation.isAutonomous()){
-      if(shooter.getShooterServoInPos() && turret.isTurretAtTarget()){ //TBD add the timer code for shooter pivot
+      if((shooter.getShooterServoInPos() && turret.getTurretInPos() && shooter.isAutonShooterRamped()) /*|| timer.hasElapsed(AUTON_TIMEOUT_SEC)*/){ //TBD add the timer code for shooter pivot
         shooter.setShooterState(ShooterState.SHOOTING);
       }
-    }
-
-    if(m_supplierButtonB != null &&
-       m_supplierButtonB.get() == true) {     
-        shooter.setShooterState(ShooterState.SHOOTING);
     }
 
     Logger.recordOutput("ShooterCalcs/NewDist",           newDist);

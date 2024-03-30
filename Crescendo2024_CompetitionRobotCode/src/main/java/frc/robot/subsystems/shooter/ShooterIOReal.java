@@ -190,7 +190,7 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setShooterEnabled() {
-        double shooterVelocityLT = 58.0;//58.0; //TBD
+        double shooterVelocityLT = 57.0;//58.0; //TBD
         double shooterVelocityRT = 80.0;//80.0;
 
         SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-shooterVelocityLT).withEnableFOC(true));

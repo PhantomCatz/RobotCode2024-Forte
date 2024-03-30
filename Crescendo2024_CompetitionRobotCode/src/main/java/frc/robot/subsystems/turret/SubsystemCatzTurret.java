@@ -68,6 +68,11 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public static final double HOME_POSITION_DEG    =    0.0;  
   public static final double TURRET_MIN_ANGLE_DEG = -120.0;
 
+  public static final double TURRET_MAX_SERVO_LIMIT_DEG =  60.0;
+  public static final double TURRET_MIN_SERVO_LIMIT_DEG = -60.0;  
+
+  public static final double SERVO_TURRET_CONSTRAINT = 0.5;
+
   public static double currentTurretDegree = 0.0; 
 
 
@@ -172,14 +177,24 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
     currentTurretDegree = -inputs.turretEncValue; 
     
+    //set turret constraint if shooter is greater than threshold
+    if(SubsystemCatzShooter.getInstance().getServoCommandedPosition() > SERVO_TURRET_CONSTRAINT) {
+      if(m_turretTargetDegree > TURRET_MAX_SERVO_LIMIT_DEG) {
+        m_turretTargetDegree = TURRET_MAX_SERVO_LIMIT_DEG;
+      } else if(m_turretTargetDegree < TURRET_MIN_SERVO_LIMIT_DEG) {
+        m_turretTargetDegree = TURRET_MIN_SERVO_LIMIT_DEG;
+      }
+    } 
+
     //set targetturret degree if note has exited shooter
-    if(SubsystemCatzShooter.getInstance().getShooterNoteState() == ShooterNoteState.NOTE_HAS_BEEN_SHOT) {
+    if(SubsystemCatzShooter.getInstance().getShooterNoteState() == ShooterNoteState.NOTE_HAS_BEEN_SHOT &&
+       DriverStation.isTeleop()) {
       m_turretTargetDegree = HOME_POSITION_DEG;
     }
 
     //obtain calculation values
     setPositionPower  =  -m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
-    m_closedLoopError = currentTurretDegree - m_turretTargetDegree;
+    m_closedLoopError = Math.abs(m_turretTargetDegree - currentTurretDegree);
 
     apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0);
     //offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
@@ -212,7 +227,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
           io.turretSetPwr(setPositionPower);
         }
    
-
       } else if (m_currentTurretState == TurretState.TRACKING_APRILTAG) {
         //------------------------------------------------------------------------------------------   
         //  TRACKING_APRILTAG Mode - Use shooter limelight to track April Tag 7 to determine
@@ -225,12 +239,12 @@ public class SubsystemCatzTurret extends SubsystemBase {
       } 
     }
 
-    if(Math.abs(currentTurretDegree - m_turretTargetDegree) < 3) {     
-      if(DriverStation.isAutonomous()) {
-        //counter++
-      } else {      
+
+    //In position check
+    if(m_closedLoopError < TURRET_ANGLE_THRESHOLD_DEG) {     
         m_turretInPos = true;
-      }
+    }else{
+      m_turretInPos = false;
     }
 
 
@@ -241,6 +255,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     Logger.recordOutput("turret/closedlooperror",      m_closedLoopError);
     Logger.recordOutput("turret/m_TurretTargetDegree", m_turretTargetDegree);
     Logger.recordOutput("turret/setpositionpwr", setPositionPower);
+    Logger.recordOutput("turret/m_TurretinPos", m_turretInPos);
   }   //End of periodic()
 
 
@@ -276,12 +291,12 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //--------------------------------------------------------------------------------------------
       //  If we are trying to aim while moving, then we need to take into account robot velocity
       //--------------------------------------------------------------------------------------------
-      roboDistanceFromSpeaker.div(Math.hypot(roboDistanceFromSpeaker.getX(), roboDistanceFromSpeaker.getY())); //direction
       
-      double shootingSpeedVelocity = SubsystemCatzShooter.getInstance().getScuffedShootingSpeed();
-      roboDistanceFromSpeaker.times(shootingSpeedVelocity);  //magnitude
-     
+      
       if(accountRobotVel){
+        roboDistanceFromSpeaker.div(Math.hypot(roboDistanceFromSpeaker.getX(), roboDistanceFromSpeaker.getY())); //direction
+        double shootingSpeedVelocity = SubsystemCatzShooter.getInstance().getScuffedShootingSpeed();
+        roboDistanceFromSpeaker.times(shootingSpeedVelocity);  //magnitude
         roboDistanceFromSpeaker.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx, 
                                                         drivetrain.getFieldRelativeSpeed().vy));
       }
@@ -310,7 +325,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
       m_currentTurretState   = TurretState.AUTO;
     }
 
-    m_turretInPos = false;
 
   }   //End of aimAtGoal()
 
@@ -326,8 +340,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
     return m_turretInPos;
   }
 
-  public boolean isTurretAtTarget(){
-    return Math.abs(m_closedLoopError) < TURRET_ANGLE_THRESHOLD_DEG;
+  public void setTurretInPose(boolean state){
+    m_turretInPos = state;
   }
 
   //-------------------------------------------------------------------------------------------------
