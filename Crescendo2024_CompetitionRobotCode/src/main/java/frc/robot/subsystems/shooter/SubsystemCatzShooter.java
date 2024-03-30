@@ -58,7 +58,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
    *-----------------------------------------------------------------------------------------*/
   private final double LOOP_CYCLE_SECONDS = 0.02;
 
-  private final int WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT = (int) (Math.round(1.0/LOOP_CYCLE_SECONDS) + 1.0); 
+  private final int WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT = (int) (Math.round(5.0/LOOP_CYCLE_SECONDS) + 1.0); 
   private final int SHOOTING_TIMEOUT                  = (int) (Math.round(0.5/LOOP_CYCLE_SECONDS) + 1.0);
   private final int LOAD_OUT_TIMEOUT                  = (int) (Math.round(0.5/LOOP_CYCLE_SECONDS) + 1.0);
 
@@ -139,6 +139,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
       return instance;
   }
 
+  private boolean shooterTimeout = false;
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -211,8 +213,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
           
           
           case WAIT_FOR_MOTORS_TO_REV_UP:
+          // System.out.println(inputs.shooterVelocityRT + " " + inputs.velocityThresholdRT);
+          // System.out.println(inputs.shooterVelocityLT + " " + inputs.velocityThresholdLT);
             if(inputs.shooterVelocityRT >= inputs.velocityThresholdRT &&
-               inputs.shooterVelocityLT >= inputs.velocityThresholdLT) {
+               Math.abs(inputs.shooterVelocityLT) >= Math.abs(inputs.velocityThresholdLT)) {
 
                   if(DriverStation.isAutonomous()) {
                       autonIsShooterRamped = true;
@@ -224,9 +228,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
               if(DriverStation.isAutonomous()) {
                 if(m_iterationCounter > WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT) {
+                    shooterTimeout = true;
                     m_iterationCounter = 0;
                     currentShooterState = ShooterState.SHOOTING;
-
+                    autonIsShooterRamped = true;
                 }
                 m_iterationCounter++;
               }
@@ -242,30 +247,26 @@ public class SubsystemCatzShooter extends SubsystemBase {
             {
               if(DriverStation.isAutonomous()) 
               {
-                if(autonKeepFlywheelOn == true) 
-                {
-                  currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
-                } 
-
-                if(autonKeepFlywheelOn == true) {
-                  currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
-
-                } else {
-                  io.setShooterDisabled();
-                  currentShooterState = ShooterState.LOAD_OFF;
-                  autonIsShooterRamped = false;
+                if (autonKeepFlywheelOn == true) 
+                  {
+                    currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
+                  } 
+                else if (autonKeepFlywheelOn == false)
+                  {
+                    io.setShooterDisabled();
+                    autonIsShooterRamped = false;
+                    currentShooterState = ShooterState.LOAD_OFF;
+                  }
+                  // TBD Shouldn't need this anymore    updateShooterServo(0.0);
                 }
-
-                currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT;
-                SubsystemCatzTurret.getInstance().setTurretTargetDegree(0.0);
-
-                // TBD Shouldn't need this anymore    updateShooterServo(0.0);
-                io.setServoPosition(0.0);
-              }else{
-                
+              else {
                   io.setShooterDisabled();
                   currentShooterState = ShooterState.LOAD_OFF;
-              }
+                }
+                
+              currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT; //ends autoaim sequence
+              SubsystemCatzTurret.getInstance().setTurretTargetDegree(-999);
+              m_iterationCounter = 0;
             }
             m_iterationCounter++;
           break;
@@ -302,6 +303,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
     } // End of Enabled loop
     
     Logger.recordOutput("shooter/servopos", m_targetServoPosition);
+    Logger.recordOutput("shooter/isAutonRamped", isAutonShooterRamped());
+    Logger.recordOutput("shooter/isShooting", currentShooterState == ShooterState.SHOOTING);
+    Logger.recordOutput("shooter/shooterTimeuot",shooterTimeout);
 
   } //end of shooter periodic
 
