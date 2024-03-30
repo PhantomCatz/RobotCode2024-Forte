@@ -4,25 +4,18 @@
 
 package frc.robot.commands.mechanismCmds;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.CatzConstants.NoteDestination;
 import frc.robot.CatzConstants.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorControlState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeRollerState;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
-import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
 public class MoveToPresetHandoffCmd extends Command {
   
@@ -133,7 +126,8 @@ public class MoveToPresetHandoffCmd extends Command {
   
   @Override
   public void execute() {
-  boolean mechInPos = false;
+    boolean mechInPos = false;
+    areMechanismsInPosition();
 
     if(m_noteSource == NoteSource.INTAKE_GROUND ||
        m_noteSource == NoteSource.INTAKE_SOURCE) {
@@ -234,7 +228,7 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean intakeState   = intake.getIntakeInPos(); 
     boolean turretState   = turret.getTurretInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-    //System.out.println("i " + intakeState + "t " + turretState + "s " + shooterState + "e " + elevatorState);
+    // System.out.println("i " + intakeState + "t " + turretState + "e " + elevatorState);
     return(intakeState && turretState && elevatorState);
   }
 

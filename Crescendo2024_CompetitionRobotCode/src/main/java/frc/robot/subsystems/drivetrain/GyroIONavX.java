@@ -3,7 +3,7 @@ package frc.robot.subsystems.drivetrain;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.I2C.Port;
-import frc.robot.CatzConstants.DriveConstants;
+
 public class GyroIONavX implements GyroIO 
 {
     private final AHRS navX;

@@ -2,38 +2,25 @@ package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 import org.littletonrobotics.junction.Logger;
 
-import java.awt.geom.Point2D;
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.util.Units;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.FieldConstants;
-import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.Utils.FieldRelativeAccel;
-import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
-import frc.robot.subsystems.elevator.SubsystemCatzElevator.ElevatorControlState;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
-import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
 public class HomeToSpeakerCmd extends Command {
@@ -100,7 +87,8 @@ public class HomeToSpeakerCmd extends Command {
   //
   //------------------------------------------------------------------------------------------------
   private Supplier<Boolean> m_supplierButtonB;
-  
+  private final double AUTON_TIMEOUT_SEC = 2.0;
+  private Timer timer = new Timer();
 
   //for telop
 
@@ -118,6 +106,8 @@ public class HomeToSpeakerCmd extends Command {
   //------------------------------------------------------------------------------------------------
   @Override
   public void initialize() {
+    timer.reset();
+    timer.start();
 
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
@@ -131,7 +121,7 @@ public class HomeToSpeakerCmd extends Command {
       //translation of the Red alliance speaker
       m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);      //TBD - Magic #'s, what about defining Red & Blue constants, using IF to select and have 1 translation2D() call
     }
-
+    turret.setTurretInPose(false);
 
   }
 
@@ -151,8 +141,12 @@ public class HomeToSpeakerCmd extends Command {
 
     //in telop this boolean supplier is being evaluated to see if button was pressed
 
+    // System.out.println("turret:"+turret.isTurretAtTarget());
+    // System.out.println("shooter:"+shooter.isAutonShooterRamped());
+    // System.out.println("timer:"+timer.hasElapsed(AUTON_TIMEOUT_SEC));
+
     if(DriverStation.isAutonomous()){
-      if(shooter.getShooterServoInPos() && turret.isTurretAtTarget()){ //TBD add the timer code for shooter pivot
+      if((/*shooter.getShooterServoInPos() && */turret.getTurretInPos() && shooter.isAutonShooterRamped()) /*|| timer.hasElapsed(AUTON_TIMEOUT_SEC)*/){ //TBD add the timer code for shooter pivot
         shooter.setShooterState(ShooterState.SHOOTING);
       }
     }
