@@ -280,7 +280,7 @@ public final class CatzConstants {
     public static final CatzMechanismPosition SHOOTER_HOARD_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_STOW_DEG,
-        -999.0,
+        SubsystemCatzShooter.SERVO_MAX_POS,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition PREP_FOR_AMP_PRESET = new CatzMechanismPosition(

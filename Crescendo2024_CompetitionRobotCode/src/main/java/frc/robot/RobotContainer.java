@@ -160,7 +160,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
         Trigger triggerModeHoard = new Trigger(()->isInHoardMode());
 
         triggerModeHoard.and(xboxAux.y())
-                        .onTrue(shooter.hoardShooterShot());  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
+                        .onTrue(shooter.hoardShooterMode());  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
           
         triggerModeHoard.and(xboxAux.b())
                         .onTrue(shooter.cmdShoot());          //TO SHOOT (NEED TO RAMP UP FIRST)

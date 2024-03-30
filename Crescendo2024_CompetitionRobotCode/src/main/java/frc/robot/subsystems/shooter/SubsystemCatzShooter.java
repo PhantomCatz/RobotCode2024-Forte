@@ -435,9 +435,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   public void hoardShootingLogic(){
     new MoveToPreset(CatzConstants.CatzMechanismConstants.SHOOTER_HOARD_PRESET);
-    startShooterFlywheel();
+    currentShooterState = ShooterState.START_SHOOTER_FLYWHEEL;  
   }
-  public Command hoardShooterShot(){
+  public Command hoardShooterMode(){
     return runOnce(()-> hoardShootingLogic());
   }
 }
