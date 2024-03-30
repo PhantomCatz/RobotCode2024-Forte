@@ -73,6 +73,7 @@ public class PPTrajectoryFollowingCmd extends Command {
        // Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
         //create pathplanner trajectory
+
         this.trajectory = new PathPlannerTrajectory(
                                 path, 
                                 DriveConstants.
@@ -91,6 +92,8 @@ public class PPTrajectoryFollowingCmd extends Command {
         PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
         Rotation2d targetOrientation     = goal.targetHolonomicRotation;
         Pose2d currentPose               = m_driveTrain.getPose();
+
+        trajectory.eve
 
         //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         

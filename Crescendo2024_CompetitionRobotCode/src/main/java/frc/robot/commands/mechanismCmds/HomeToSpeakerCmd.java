@@ -6,8 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import org.littletonrobotics.junction.Logger;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.CatzAutonomous;
@@ -86,13 +84,8 @@ public class HomeToSpeakerCmd extends Command {
   //  
   //
   //------------------------------------------------------------------------------------------------
-  private Supplier<Boolean> m_supplierButtonB;
-  private final double AUTON_TIMEOUT_SEC = 2.0;
   private Timer timer = new Timer();
 
-  //for telop
-
-  //for autonomous
   public HomeToSpeakerCmd() {                     
     addRequirements(turret, shooter, intake, elevator);
   }
@@ -146,7 +139,7 @@ public class HomeToSpeakerCmd extends Command {
     // System.out.println("timer:"+timer.hasElapsed(AUTON_TIMEOUT_SEC));
 
     if(DriverStation.isAutonomous()){
-      if((/*shooter.getShooterServoInPos() && */turret.getTurretInPos() && shooter.isAutonShooterRamped()) /*|| timer.hasElapsed(AUTON_TIMEOUT_SEC)*/){ //TBD add the timer code for shooter pivot
+      if((shooter.getShooterServoInPos() && turret.getTurretInPos() && shooter.isAutonShooterRamped()) /*|| timer.hasElapsed(AUTON_TIMEOUT_SEC)*/){ //TBD add the timer code for shooter pivot
         shooter.setShooterState(ShooterState.SHOOTING);
       }
     }

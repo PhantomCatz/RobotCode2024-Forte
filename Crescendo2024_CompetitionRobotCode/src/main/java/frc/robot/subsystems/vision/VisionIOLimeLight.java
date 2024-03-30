@@ -46,7 +46,6 @@ public class VisionIOLimeLight implements VisionIO {
     public void updateInputs(VisionIOInputs inputs) {
             //load up raw apriltag values for distance calculations
         LimelightResults llresults = LimelightHelpers.getLatestResults(name);
-
         inputs.ty = NetworkTableInstance.getDefault().getTable(name).getEntry("ty").getDouble(0); //vertical offset from crosshair to target in degrees
         inputs.tx = NetworkTableInstance.getDefault().getTable(name).getEntry("tx").getDouble(0); //horizontal offset from crosshair to target
         inputs.tv = NetworkTableInstance.getDefault().getTable(name).getEntry("tv").getDouble(0); //whether the limelight has any vaild targets

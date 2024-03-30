@@ -10,9 +10,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -265,7 +263,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
                 }
                 
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT; //ends autoaim sequence
-              SubsystemCatzTurret.getInstance().setTurretTargetDegree(-999);
+              SubsystemCatzTurret.getInstance().setTurretTargetDegree(-999); //
               m_iterationCounter = 0;
             }
             m_iterationCounter++;

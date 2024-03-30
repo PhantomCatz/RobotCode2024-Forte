@@ -112,7 +112,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   // -----------------------------------------------------------------------------------------------
   public static enum IntakeControlState {
     AUTO,
-    SEMI_MANUAL, // TBD or Manual Hold?
+    SEMI_MANUAL,
     FULL_MANUAL,
     VOLTAGE_CONTROL
   }
@@ -199,8 +199,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static SubsystemCatzIntake getInstance() {
     return instance;
   }
-
-  boolean isTransferingToHighPosition = false;
 
   // -------------------------------------------------------------------------------------
   //
@@ -396,7 +394,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
     // Initialize Variables
     // -------------------------------------------------------------------------------------
     m_nextTargetPositionDeg = INTAKE_NULL_DEG;
-    isTransferingToHighPosition = false;
     m_currentIntakeControlState = IntakeControlState.AUTO;
 
     m_iterationCounter = 0; // reset counter for intake in position

@@ -156,8 +156,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/gyroinputs ", gyroInputs);
 
-        //odometryLock.unlock();
-
         m_poseEstimator.update(getRotation2d(), getModulePositions());      
         
 

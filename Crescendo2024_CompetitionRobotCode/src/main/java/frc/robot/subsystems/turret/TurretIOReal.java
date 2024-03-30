@@ -58,21 +58,6 @@ public class TurretIOReal implements TurretIO {
         turretMtr.getEncoder().setPosition(position);
     }
 
-    @Override
-    public void shooterExtensionSoftLimit(boolean enabled) {
-        if (previousSoftLimitEnable != enabled) {
-            if (enabled) {
-                System.out.println("original soft limt");
-                turretMtr.setSoftLimit(SoftLimitDirection.kForward, 80);
-                turretMtr.setSoftLimit(SoftLimitDirection.kReverse, -80);
-            } else {
-                System.out.println("shooter extention soft limt");
-                turretMtr.setSoftLimit(SoftLimitDirection.kForward, 60);
-                turretMtr.setSoftLimit(SoftLimitDirection.kReverse, -60);
-            }
-        }
-        previousSoftLimitEnable = enabled;
-    }
 
 
 }

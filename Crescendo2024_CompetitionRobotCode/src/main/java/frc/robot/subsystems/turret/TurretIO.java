@@ -22,6 +22,4 @@ public interface TurretIO {
 
     public default void turretSetPositionSM(double position) {}
 
-    public default void shooterExtensionSoftLimit(boolean enable) {}
-
 }
