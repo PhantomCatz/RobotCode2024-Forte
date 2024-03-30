@@ -83,8 +83,8 @@ public class ShooterIOReal implements ShooterIO {
     public final double SHOOTER_VELOCITY_RT = 80.0;
 
     //Will be changed to a final double when confirmed speed, right now those speeds are made up
-    LoggedTunableNumber hoardShooterVelLT = new LoggedTunableNumber("HoardLTVelShooter", 60); // TBD
-    LoggedTunableNumber hoardShooterVelRT = new LoggedTunableNumber("HoardRTVelShooter", 70); // ^^These are made-up numbers 
+    LoggedTunableNumber hoardShooterVelLT = new LoggedTunableNumber("HoardLTVelShooter", 20); // TBD
+    LoggedTunableNumber hoardShooterVelRT = new LoggedTunableNumber("HoardRTVelShooter", 65); // ^^These are made-up numbers 
 
     public static int ACCEPTABLE_VEL_ERROR = 20;
     public double velocityThresholdLT;
