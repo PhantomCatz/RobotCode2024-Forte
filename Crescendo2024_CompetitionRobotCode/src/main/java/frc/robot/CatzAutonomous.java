@@ -50,7 +50,7 @@ public class CatzAutonomous {
     private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
     PathConstraints autoPathfindingConstraints = new PathConstraints(
-        3.0, 4.0, 
+        4.8, 4.0, 
         Units.degreesToRadians(540), Units.degreesToRadians(720));
 
     private CatzAutonomous() {
