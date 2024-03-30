@@ -68,6 +68,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public static final double HOME_POSITION_DEG    =    0.0;  
   public static final double TURRET_MIN_ANGLE_DEG = -120.0;
 
+  public static final double SERVO_TURRET_CONSTRAINT = 0.5;
+
   public static double currentTurretDegree = 0.0; 
 
 
@@ -172,6 +174,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
     currentTurretDegree = -inputs.turretEncValue; 
     
+    //set turret constraint if shooter is greater than threshold
+    if(SubsystemCatzShooter.getInstance().getServoCommandedPosition() > SERVO_TURRET_CONSTRAINT) {
+      io.shooterExtensionSoftLimit(true);
+    } else {
+      io.shooterExtensionSoftLimit(false);
+    }
+
     //set targetturret degree if note has exited shooter
     if(SubsystemCatzShooter.getInstance().getShooterNoteState() == ShooterNoteState.NOTE_HAS_BEEN_SHOT) {
       m_turretTargetDegree = HOME_POSITION_DEG;

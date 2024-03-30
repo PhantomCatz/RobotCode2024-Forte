@@ -24,6 +24,7 @@ import frc.robot.CatzConstants.OIConstants;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.commands.mechanismCmds.MoveToPreset;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIO.TurretIOInputs;
@@ -43,8 +44,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
   LoggedTunableNumber servoPosTuning = new LoggedTunableNumber("ServoPos", 0);
   
   //Servo SetPositions
-  public static final double SERVO_STOW_POS = 0.0;
+  public static final double SERVO_MIN_POS = 0.0;
   public static final double SERVO_OPTIMAL_HANDOFF_HIGH_POS = 0.4;
+  public static final double SERVO_MAX_POS = 1.0;
   public static final double SERVO_NULL_POSITION  = -999.0;
 
 
@@ -141,6 +143,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
+
 
     if(DriverStation.isDisabled()) { //TBD this thing delayed the start of auton by more than a second 
       disableShooter();
@@ -258,6 +261,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
                 // TBD Shouldn't need this anymore    updateShooterServo(0.0);
                 io.setServoPosition(0.0);
+              }else{
+                
+                  io.setShooterDisabled();
+                  currentShooterState = ShooterState.LOAD_OFF;
               }
             }
             m_iterationCounter++;
@@ -272,7 +279,25 @@ public class SubsystemCatzShooter extends SubsystemBase {
       // servo periodic logic
       //
       //-------------------------------------------------------------------------------------------
-      io.setServoPosition(m_targetServoPosition);
+      
+      //clamp logic for servos
+      if(m_targetServoPosition > SERVO_MAX_POS) {
+        m_targetServoPosition = SERVO_MAX_POS;
+      } else if(m_targetServoPosition < SERVO_MIN_POS) {
+        m_targetServoPosition = SERVO_MIN_POS;
+      }
+
+
+      if(Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle()) > 80) {
+          if(m_targetServoPosition > SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT) {
+            io.setServoPosition(SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT);
+          } else {
+            io.setServoPosition(m_targetServoPosition);
+          }
+      } else {
+        io.setServoPosition(m_targetServoPosition);
+      }
+
     
     } // End of Enabled loop
     
@@ -284,12 +309,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Shooter Calculation Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
-    double previousServoPosition = m_targetServoPosition;
-    m_shooterServoInPos = false;
-    m_targetServoPosition = newPosition.getShooterVerticalTargetAngle();
-    if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
-      m_targetServoPosition = previousServoPosition;
-    }
+    // double previousServoPosition = m_targetServoPosition;
+    // m_shooterServoInPos = false;
+    // m_targetServoPosition = newPosition.getShooterVerticalTargetAngle();
+    // if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
+    //   m_targetServoPosition = previousServoPosition;
+    // }
   }
 
   public Command cmdSetKeepShooterOn(boolean state){
@@ -319,11 +344,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return run(()-> setServoManualHold(pwr.get()));
   }
 
-  public void setServoManualHold(double power) {
-    if(Math.abs(power) > 0.1) {
-      m_targetServoPosition = m_targetServoPosition + (power * 0.01);
-    }
-
+  public void setServoManualHold(double position) {
+    //reverse direction so Up on the joystick is upward direction on servo
+    position = -position;
+    
+    m_targetServoPosition = m_targetServoPosition + (position * 0.01);
+  
   } 
 
   //-------------------------------------------------------------------------------------
@@ -339,6 +365,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   public boolean shooterLoadBeamBrkBroken() {
     return inputs.shooterLoadBeamBreakState;
+  }
+
+  public double getServoCommandedPosition() {
+    return m_targetServoPosition;
   }
   
   //-------------------------------------------------------------------------------------

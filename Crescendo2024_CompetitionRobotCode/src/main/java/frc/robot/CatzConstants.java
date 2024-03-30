@@ -202,8 +202,7 @@ public final class CatzConstants {
     public static final int RT_BACK_ENC_PORT = 7;
     public static final int RT_FRNT_ENC_PORT = 6; // SN1 6 //atlas 8
 
-    // --------------------------------------MTR
-    // CONFIGS------------------------------------
+    // --------------------------------------MTR CONFIGS------------------------------------
 
     public static final Rotation2d defaultRot = new Rotation2d(0.0);
     private static final double ROBOT_WIDTH = Units.inchesToMeters(23.5); // 29 atlas
@@ -236,12 +235,10 @@ public final class CatzConstants {
 
     public static final double SDS_L1_GEAR_RATIO = 8.14; // SDS mk4i L1 ratio reduction
     public static final double SDS_L2_GEAR_RATIO = 6.75; // SDS mk4i L2 ratio reduction
-    public static final double SDS_L2_PLUS_GEAR_RATIO = 6.75 * (14.0 / 16.0); // SDS mk4i L2 ratio reduction plud random
-                                                                              // numbers from eddy
+    public static final double SDS_L2_PLUS_GEAR_RATIO = 6.75 * (14.0 / 16.0); // SDS mk4i L2 ratio reduction plus 16 tooth pinion
 
     // overtime
-    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(4.0);// 0.095;//
-                                                                                          // mUnits.inchesToMeters(4);
+    public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(4.0);
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
     public static final boolean START_FLIPPED = true;
@@ -272,63 +269,53 @@ public final class CatzConstants {
         1.0,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
-    public static final CatzMechanismPosition SUBWOOFER_DEFENSE_PRESET = new CatzMechanismPosition(
-        SubsystemCatzElevator.ELEVATOR_STOW,
-        SubsystemCatzIntake.INTAKE_STOW_DEG,
-        0.6,
-        SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition INTAKE_HOARD_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_HOARD_DEG,
         0.6,
         -30.0);
+
     public static final CatzMechanismPosition SHOOTER_HOARD_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_STOW_DEG,
-        1.0,
+        -999.0,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition PREP_FOR_AMP_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
-        SubsystemCatzShooter.SERVO_STOW_POS,
-        SubsystemCatzTurret.HOME_POSITION_DEG);
-
-    public static final CatzMechanismPosition AMP_TRANSITION_PRESET = new CatzMechanismPosition(
-        SubsystemCatzElevator.ELEVATOR_AMP_TRANSITION,
-        SubsystemCatzIntake.INTAKE_AMP_TRANSITION_DEG,
-        SubsystemCatzShooter.SERVO_STOW_POS,
+        SubsystemCatzShooter.SERVO_MIN_POS,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition SCORING_SPEAKER_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
-        SubsystemCatzShooter.SERVO_STOW_POS,
+        SubsystemCatzShooter.SERVO_MIN_POS,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition SCORING_AMP_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_AMP_SCORE,
         SubsystemCatzIntake.INTAKE_AMP_SCORE_DEG,
-        SubsystemCatzShooter.SERVO_STOW_POS,
+        SubsystemCatzShooter.SERVO_MIN_POS,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition INTAKE_GROUND_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG,
-        SubsystemCatzShooter.SERVO_STOW_POS,
+        SubsystemCatzShooter.SERVO_MIN_POS,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition INTAKE_SOURCE_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_SOURCE_PICKUP,
         SubsystemCatzIntake.INTAKE_SOURCE_LOAD_UP_DEG,
-        SubsystemCatzShooter.SERVO_STOW_POS,
+        SubsystemCatzShooter.SERVO_MIN_POS,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition SCORING_TRAP_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_SCORE_TRAP,
         119.0,
-        SubsystemCatzShooter.SERVO_STOW_POS,
+        SubsystemCatzShooter.SERVO_MIN_POS,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition AUTO_AIM_PRESET = new CatzMechanismPosition(
@@ -336,12 +323,6 @@ public final class CatzConstants {
         SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
         -999.0,
         -999.0);
-
-    public static final CatzMechanismPosition SHOOTER_DEFAULT_PRESET = new CatzMechanismPosition(
-        SubsystemCatzElevator.ELEVATOR_STOW,
-        SubsystemCatzIntake.INTAKE_STOW_DEG,
-        1.0,
-        SubsystemCatzTurret.HOME_POSITION_DEG);
 
     // -10
 
