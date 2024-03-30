@@ -20,8 +20,6 @@ import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.turret.TurretIOReal;
 
 public class ShooterIOReal implements ShooterIO {
-  //any type of Shooter Mtr Config Constnats/Logic Constants should go here 
-    public static int ACCEPTABLE_VEL_ERROR = 20;
 /*-----------------------------------------------------------------------------------------
  * 
  * Shooter Motors
@@ -78,9 +76,19 @@ public class ShooterIOReal implements ShooterIO {
     private static final int SERVO_PW_US_MIN_DEADBAND_POSITION = 1200;
     private static final int SERVO_PW_US_MIN_POSITION          = 1000;
 
-    //Tunable motor velocities
-    LoggedTunableNumber shooterVelLT = new LoggedTunableNumber("LTVelShooter", 58); // was 65
-    LoggedTunableNumber shooterVelRT = new LoggedTunableNumber("RTVelShooter", 80); // was 85
+/*---------------------------------------------------------------------------------------
+ * Motor Velocities
+ *-------------------------------------------------------------------------------------*/  
+    public final double SHOOTER_VELOCITY_LT = 57.0;
+    public final double SHOOTER_VELOCITY_RT = 80.0;
+
+    //Will be changed to a final double when confirmed speed, right now those speeds are made up
+    LoggedTunableNumber hoardShooterVelLT = new LoggedTunableNumber("HoardLTVelShooter", 60); // TBD
+    LoggedTunableNumber hoardShooterVelRT = new LoggedTunableNumber("HoardRTVelShooter", 70); // ^^These are made-up numbers 
+
+    public static int ACCEPTABLE_VEL_ERROR = 20;
+    public double velocityThresholdLT;
+    public double velocityThresholdRT;
 
     TalonFX[] shooterArray = new TalonFX[2];
 
@@ -161,10 +169,11 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
 
-        inputs.shooterVelocityLT        = SHOOTER_MOTOR_LT.getVelocity().getValue();
-        inputs.shooterVelocityRT        = SHOOTER_MOTOR_RT.getVelocity().getValue();
-        inputs.velocityThresholdLT      = -shooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET; //was shooterVelLT.get() - FLYWHEEL_THRESHOLD_OFFSET
-        inputs.velocityThresholdRT      =  shooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
+        inputs.shooterVelocityLT   =  SHOOTER_MOTOR_LT.getVelocity().getValue();
+        inputs.shooterVelocityRT   =  SHOOTER_MOTOR_RT.getVelocity().getValue();
+        
+        inputs.velocityThresholdLT = velocityThresholdLT;
+        inputs.velocityThresholdRT = velocityThresholdRT;
         // inputs.shooterVelocityErrorLT   = SHOOTER_MOTOR_LT.getClosedLoopError().getValue();
         // inputs.shooterVelocityErrorRT   = SHOOTER_MOTOR_RT.getClosedLoopError().getValue();
         // inputs.shooterMotorVoltageLT    = SHOOTER_MOTOR_LT.getMotorVoltage().getValue();
@@ -190,12 +199,16 @@ public class ShooterIOReal implements ShooterIO {
 
     @Override
     public void setShooterEnabled() {
-        double shooterVelocityLT = 57.0;//58.0; //TBD
-        double shooterVelocityRT = 80.0;//80.0;
-
-        SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-shooterVelocityLT).withEnableFOC(true));
-        SHOOTER_MOTOR_RT.setControl(new VelocityVoltage( shooterVelocityRT).withEnableFOC(true));
+        SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-SHOOTER_VELOCITY_LT).withEnableFOC(true));
+        SHOOTER_MOTOR_RT.setControl(new VelocityVoltage( SHOOTER_VELOCITY_RT).withEnableFOC(true));
     }
+
+    @Override
+    public void setShooterEnabled_Hoard() {
+        SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-hoardShooterVelLT.get()).withEnableFOC(true));
+        SHOOTER_MOTOR_RT.setControl(new VelocityVoltage( hoardShooterVelRT.get()).withEnableFOC(true));
+    }
+
     @Override
     public void setShooterDisabled() {
         SHOOTER_MOTOR_LT.setControl(new DutyCycleOut(0));
@@ -203,6 +216,16 @@ public class ShooterIOReal implements ShooterIO {
         loadDisabled();
     }
 
+    @Override
+    public void toggleHoardVelocityThreshold(Boolean toggle) {
+        if(toggle = true) {
+            velocityThresholdLT = -hoardShooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET;
+            velocityThresholdRT =  hoardShooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
+        } else {
+            velocityThresholdLT = -SHOOTER_VELOCITY_LT + FLYWHEEL_THRESHOLD_OFFSET;
+            velocityThresholdRT =  SHOOTER_VELOCITY_RT - FLYWHEEL_THRESHOLD_OFFSET;
+        }
+    }
   //-------------------------------------------Load Methods------------------------------------------
 
     @Override
