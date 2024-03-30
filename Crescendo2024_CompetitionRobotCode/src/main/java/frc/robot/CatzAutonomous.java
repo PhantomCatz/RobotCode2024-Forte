@@ -573,6 +573,18 @@ public class CatzAutonomous {
     //      Auto Trjaectories for Telop
     //  
     //--------------------------------------------------------------------------------------------
+    public Command autoFindClimbFar() {
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+        new Pose2d(5.90, 4.15, Rotation2d.fromDegrees(180.0)),
+        new Pose2d(5.81, 4.15, Rotation2d.fromDegrees(180.0))
+            );
+
+        //send path info to trajectory following command in a chained autocoring path
+        return new PPTrajectoryFollowingCmd(bezierPoints,
+                                            autoPathfindingConstraints,
+                                            new GoalEndState(0.0, Rotation2d.fromDegrees(180.0))); 
+    }
+
     public Command autoFindPathSource() {
         List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
                 new Pose2d(2.7, 7.5, Rotation2d.fromDegrees(0)),
@@ -595,7 +607,6 @@ public class CatzAutonomous {
         //send path info to trajectory following command in a chained autocoring path
         return new SequentialCommandGroup(new ParallelCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
                                                                                     .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false)), //transfer note to intake if applicable
-                                                                    new MoveToPreset(CatzMechanismConstants.AMP_TRANSITION_PRESET),                  //move to amp transition
                                                                     new PPTrajectoryFollowingCmd(bezierPoints,                                //start auto trajectory
                                                                                                         autoPathfindingConstraints, 
                                                                                                             new GoalEndState(0.0, Rotation2d.fromDegrees(90))),
@@ -611,11 +622,11 @@ public class CatzAutonomous {
 
         //send path info to trajectory following command in a chained autocoring path
         return new SequentialCommandGroup(new ParallelCommandGroup(new PPTrajectoryFollowingCmd(bezierPoints,                                //start auto trajectory
-                                                                                                    autoPathfindingConstraints, 
-                                                                                                        new GoalEndState(0.0, Rotation2d.fromDegrees(90))),
+                                                                                                autoPathfindingConstraints, 
+                                                                                                new GoalEndState(0.0, Rotation2d.fromDegrees(90))),
                                                                     new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
                                                                                                             .onlyWhile(()->intake.getIntakeBeamBreakBroken() == false)), //transfer note to intake if applicable
-                                          new MoveToPreset(CatzMechanismConstants.INTAKE_HOARD_PRESET),                    //move to hoard preset
+                                          new MoveToPreset(CatzMechanismConstants.INTAKE_HOARD_PRESET),                                                                 //move to hoard preset
                                           new HomeToSpeakerCmd(),
                                           shooter.cmdShooterRamp());                    
     }

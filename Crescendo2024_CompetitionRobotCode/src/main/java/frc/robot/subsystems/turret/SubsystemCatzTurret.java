@@ -68,6 +68,11 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public static final double HOME_POSITION_DEG    =    0.0;  
   public static final double TURRET_MIN_ANGLE_DEG = -120.0;
 
+  public static final double TURRET_MAX_SERVO_LIMIT_DEG =  60.0;
+  public static final double TURRET_MIN_SERVO_LIMIT_DEG = -60.0;  
+
+  public static final double SERVO_TURRET_CONSTRAINT = 0.5;
+
   public static double currentTurretDegree = 0.0; 
 
 
@@ -172,10 +177,16 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
     currentTurretDegree = -inputs.turretEncValue; 
     
+    //set turret constraint if shooter is greater than threshold
+    if(SubsystemCatzShooter.getInstance().getServoCommandedPosition() > SERVO_TURRET_CONSTRAINT) {
+      if(m_turretTargetDegree > TURRET_MAX_SERVO_LIMIT_DEG) {
+        m_turretTargetDegree = TURRET_MAX_SERVO_LIMIT_DEG;
+      } else if(m_turretTargetDegree < TURRET_MIN_SERVO_LIMIT_DEG) {
+        m_turretTargetDegree = TURRET_MIN_SERVO_LIMIT_DEG;
+      }
+    } 
+
     //set targetturret degree if note has exited shooter
-    // if(SubsystemCatzShooter.getInstance().getShooterNoteState() == ShooterNoteState.NOTE_HAS_BEEN_SHOT) {
-    //   m_turretTargetDegree = HOME_POSITION_DEG;
-    // }
 
 
     //obtain calculation values
@@ -213,7 +224,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
           io.turretSetPwr(setPositionPower);
         }
    
-
       } else if (m_currentTurretState == TurretState.TRACKING_APRILTAG) {
         //------------------------------------------------------------------------------------------   
         //  TRACKING_APRILTAG Mode - Use shooter limelight to track April Tag 7 to determine
@@ -226,7 +236,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
       } 
     }
 
-    if(m_closedLoopError < 3) {     
+
+    //In position check
+    if(m_closedLoopError < TURRET_ANGLE_THRESHOLD_DEG) {     
         m_turretInPos = true;
     }else{
       m_turretInPos = false;

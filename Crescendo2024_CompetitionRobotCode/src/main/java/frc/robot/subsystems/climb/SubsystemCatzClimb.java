@@ -20,10 +20,6 @@ public class SubsystemCatzClimb extends SubsystemBase {
   private final ClimbIO io;
   private final ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
 
-  //CLIMB Constants
-  private static double CLIMB_EXTEND_SET_POS = 10.0;
-  private static double CLIMB_RETRACT_SET_POS = 0.0;
-
 
   //climb variables
   private double climbPercentOutputLT = 0.0;

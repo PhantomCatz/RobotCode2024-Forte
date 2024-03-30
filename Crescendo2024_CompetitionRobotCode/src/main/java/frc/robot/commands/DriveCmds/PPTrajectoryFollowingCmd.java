@@ -74,6 +74,7 @@ public class PPTrajectoryFollowingCmd extends Command {
        // Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
         //create pathplanner trajectory
+
         this.trajectory = new PathPlannerTrajectory(
                                 path, 
                                 DriveConstants.
@@ -98,6 +99,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         if(distance > MAX_DISTANCE){
             displacement = displacement.times(MAX_DISTANCE/distance);
         }
+
 
         //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         

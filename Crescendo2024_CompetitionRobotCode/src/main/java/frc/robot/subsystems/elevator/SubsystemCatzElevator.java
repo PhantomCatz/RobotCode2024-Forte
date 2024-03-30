@@ -144,11 +144,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
     m_ffVolts = elevatorFeedforward.calculate(0.0); //calculating while disabled for advantage scope logging
 
     if(DriverStation.isDisabled()) {
-      io.setElevatorPercentOutput(0);
-      currentElevatorState = ElevatorControlState.FULL_MANUAL;
-      m_elevatorPercentOutput = 0.0;
+      setElevatorOff();
     }
     else {
+
       if(inputs.bottomSwitchTripped) {
         io.setSelectedSensorPosition(0.0);
       }
@@ -262,7 +261,9 @@ public class SubsystemCatzElevator extends SubsystemBase {
   }
 
   public void setElevatorOff() {
-    
+    io.setElevatorPercentOutput(0.0);
+    currentElevatorState = ElevatorControlState.FULL_MANUAL;
+    m_elevatorPercentOutput = 0.0;
   }
 
   // ----------------------------------------------------------------------------------

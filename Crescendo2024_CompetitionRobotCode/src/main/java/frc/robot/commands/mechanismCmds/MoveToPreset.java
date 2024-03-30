@@ -28,7 +28,6 @@ public class MoveToPreset extends Command {
   @Override
   public void initialize() {
     runMechanismSetpoints(m_preset);
-
   }
 
   @Override

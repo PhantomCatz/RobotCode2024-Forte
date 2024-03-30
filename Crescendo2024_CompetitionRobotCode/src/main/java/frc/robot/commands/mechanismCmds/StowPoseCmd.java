@@ -16,9 +16,9 @@ import frc.robot.subsystems.turret.SubsystemCatzTurret;
 public class StowPoseCmd extends Command {
   //subsystem declaration
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
-  private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
-  private SubsystemCatzShooter shooter = SubsystemCatzShooter.getInstance();
-  private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();  
+  private SubsystemCatzIntake   intake   = SubsystemCatzIntake.getInstance();
+  private SubsystemCatzShooter  shooter  = SubsystemCatzShooter.getInstance();
+  private SubsystemCatzTurret   turret   = SubsystemCatzTurret.getInstance();  
   
   public StowPoseCmd() {
     addRequirements(elevator, intake, shooter, turret);
