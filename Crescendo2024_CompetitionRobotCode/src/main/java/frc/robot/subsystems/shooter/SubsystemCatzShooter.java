@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -49,8 +50,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public static final double SERVO_MAX_POS = 1.0;
   public static final double SERVO_NULL_POSITION  = -999.0;
 
+  private static final double SERVO_DEADBAND = 0.05;
+
 
   private double m_targetServoPosition;
+  private double m_previousServoPosition;
   private double m_servoPosError;
 
   /*-----------------------------------------------------------------------------------------
@@ -61,6 +65,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private final int WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT = (int) (Math.round(5.0/LOOP_CYCLE_SECONDS) + 1.0); 
   private final int SHOOTING_TIMEOUT                  = (int) (Math.round(0.5/LOOP_CYCLE_SECONDS) + 1.0);
   private final int LOAD_OUT_TIMEOUT                  = (int) (Math.round(0.5/LOOP_CYCLE_SECONDS) + 1.0);
+
+  private Timer servoTimer = new Timer();
+
+  private final double SERVO_MAX_SET_POSITION_TIME = 2.0;
 
   /*-----------------------------------------------------------------------------------------
    * States
@@ -79,13 +87,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
     LOAD_OUT,
     NONE;
   }
-
-  private static ShooterServoState currentServoState;
-  public static enum ShooterServoState {
-    SET_POSITION,
-    AUTO_AIM
-  }
-
  
   //shooter note state for determining when other mechanism should turn off
   private ShooterNoteState currentNoteState;
@@ -257,7 +258,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
                     autonIsShooterRamped = false;
                     currentShooterState = ShooterState.LOAD_OFF;
                   }
-                  // TBD Shouldn't need this anymore    updateShooterServo(0.0);
                 }
               else {
                   io.setShooterDisabled();
@@ -281,31 +281,44 @@ public class SubsystemCatzShooter extends SubsystemBase {
       //
       //-------------------------------------------------------------------------------------------
       
-      //clamp logic for servos
+      //min max clamping
       if(m_targetServoPosition > SERVO_MAX_POS) {
         m_targetServoPosition = SERVO_MAX_POS;
       } else if(m_targetServoPosition < SERVO_MIN_POS) {
         m_targetServoPosition = SERVO_MIN_POS;
       }
 
-
+      //turret clamping
       if(Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle()) > 80) {
-          if(m_targetServoPosition > SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT) {
-            io.setServoPosition(SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT);
-          } else {
-            io.setServoPosition(m_targetServoPosition);
-          }
-      } else {
-        io.setServoPosition(m_targetServoPosition);
+        if(m_targetServoPosition > SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT) {
+          m_targetServoPosition = SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT;
+        } 
+      } 
+    
+      //cmd final output
+      io.setServoPosition(m_targetServoPosition);
+
+      
+      
+      //servos in position
+      m_servoPosError = Math.abs(m_previousServoPosition - m_targetServoPosition);
+      if(m_servoPosError > SERVO_DEADBAND) {
+        m_shooterServoInPos = false;
+        servoTimer.restart();
       }
 
-    
+      if(servoTimer.hasElapsed(SERVO_MAX_SET_POSITION_TIME)) {
+        m_shooterServoInPos = true;
+      }
+
+      m_previousServoPosition = m_targetServoPosition;
     } // End of Enabled loop
     
     Logger.recordOutput("shooter/servopos", m_targetServoPosition);
     Logger.recordOutput("shooter/isAutonRamped", isAutonShooterRamped());
     Logger.recordOutput("shooter/isShooting", currentShooterState == ShooterState.SHOOTING);
     Logger.recordOutput("shooter/shooterTimeuot",shooterTimeout);
+    Logger.recordOutput("shooter/servoTimer", servoTimer.get());
 
   } //end of shooter periodic
 
@@ -313,12 +326,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Shooter Calculation Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
-    // double previousServoPosition = m_targetServoPosition;
-    // m_shooterServoInPos = false;
-    // m_targetServoPosition = newPosition.getShooterVerticalTargetAngle();
-    // if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
-    //   m_targetServoPosition = previousServoPosition;
-    // }
+    double previousServoPosition = m_targetServoPosition;
+    m_shooterServoInPos = false;
+    m_targetServoPosition = newPosition.getShooterVerticalTargetAngle();
+    if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
+      m_targetServoPosition = previousServoPosition;
+    }
   }
 
   public Command cmdSetKeepShooterOn(boolean state){
