@@ -31,6 +31,7 @@ public class PPTrajectoryFollowingCmd extends Command {
     
     private final Timer timer = new Timer();
     private final double TIMEOUT_RATIO = 5;
+    private final double MAX_DISTANCE = 0.3;
     private PathPlannerPath path;
 
     /**
@@ -91,6 +92,12 @@ public class PPTrajectoryFollowingCmd extends Command {
         PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
         Rotation2d targetOrientation     = goal.targetHolonomicRotation;
         Pose2d currentPose               = m_driveTrain.getPose();
+        Translation2d displacement = goal.positionMeters.minus(currentPose.getTranslation());
+        double distance = displacement.getDistance(new Translation2d());
+        System.out.println(distance);
+        if(distance > MAX_DISTANCE){
+            displacement = displacement.times(MAX_DISTANCE/distance);
+        }
 
         //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         
@@ -99,11 +106,12 @@ public class PPTrajectoryFollowingCmd extends Command {
         * Only takes in the current robot position 
         * Does not take acceleration to be used with the internal WPILIB trajectory library
         */
+
         Trajectory.State state = new Trajectory.State(currentTime, 
-                                                      0,  //made the holonomic drive controller only rely on its current position, not its velocity because the target velocity is used as a ff
-                                                      0, 
-                                                      new Pose2d(goal.positionMeters, new Rotation2d()), 
-                                                      0);
+                                                      0.0,  //made the holonomic drive controller only rely on its current position, not its velocity because the target velocity is used as a ff
+                                                      0.0, 
+                                                      new Pose2d(currentPose.getTranslation().plus(displacement), new Rotation2d()), 
+                                                      0.0);
 
         //debug
         //System.out.println(goal.getTargetHolonomicPose());

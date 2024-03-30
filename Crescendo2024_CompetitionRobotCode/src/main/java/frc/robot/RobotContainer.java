@@ -2,6 +2,8 @@ package frc.robot;
 
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -75,6 +77,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // Configure the trigger bindings and default cmds
     defaultCommands();
     configureBindings();
+    FollowPathCommand.warmupCommand().schedule();
   }
   
 

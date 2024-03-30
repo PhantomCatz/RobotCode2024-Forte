@@ -173,18 +173,14 @@ public class SubsystemCatzTurret extends SubsystemBase {
     currentTurretDegree = -inputs.turretEncValue; 
     
     //set targetturret degree if note has exited shooter
-    if(SubsystemCatzShooter.getInstance().getShooterNoteState() == ShooterNoteState.NOTE_HAS_BEEN_SHOT &&
-       DriverStation.isTeleop()) {
-      m_turretTargetDegree = HOME_POSITION_DEG;
-    }
-    double turretTargetDegree = 0;
-    if(Math.abs(m_turretTargetDegree) < 500){
-      turretTargetDegree = m_turretTargetDegree;
-    }
+    // if(SubsystemCatzShooter.getInstance().getShooterNoteState() == ShooterNoteState.NOTE_HAS_BEEN_SHOT) {
+    //   m_turretTargetDegree = HOME_POSITION_DEG;
+    // }
+
 
     //obtain calculation values
-    setPositionPower  =  -m_setPositionPID.calculate(currentTurretDegree, turretTargetDegree);
-    m_closedLoopError = Math.abs(turretTargetDegree - currentTurretDegree);
+    setPositionPower  =  -m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
+    m_closedLoopError = Math.abs(m_turretTargetDegree - currentTurretDegree);
 
     apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0);
     //offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
@@ -242,7 +238,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     // Logger.recordOutput("turret/currentTurretState", currentTurretState);
     Logger.recordOutput("turret/currentTurretDegee",   currentTurretDegree);
     Logger.recordOutput("turret/closedlooperror",      m_closedLoopError);
-    Logger.recordOutput("turret/m_TurretTargetDegree", turretTargetDegree);
+    Logger.recordOutput("turret/m_TurretTargetDegree", m_turretTargetDegree);
     Logger.recordOutput("turret/setpositionpwr", setPositionPower);
     Logger.recordOutput("turret/m_TurretinPos", m_turretInPos);
   }   //End of periodic()
@@ -326,7 +322,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
 
   public boolean getTurretInPos() {
-    return m_turretInPos;
+    return Math.abs(m_turretTargetDegree - currentTurretDegree)<3;
   }
 
   public void setTurretInPose(boolean state){
