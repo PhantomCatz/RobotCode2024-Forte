@@ -119,6 +119,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                           .onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET));
 
         triggerModeSpeaker.and(xboxAux.rightTrigger()).onTrue(Commands.runOnce(()->shooter.disableShooter()));
+        
         triggerModeSpeaker.and(xboxAux.a())
                           .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL)));  //RAMPING UP 
 
