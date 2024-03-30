@@ -86,8 +86,8 @@ public class ModuleIOReal implements ModuleIO {
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.0;
  
-        driveRotorPosition = DRIVE_MOTOR.getRotorPosition();
-        BaseStatusSignal.setUpdateFrequencyForAll(250.0, driveRotorPosition);
+        // driveRotorPosition = DRIVE_MOTOR.getRotorPosition();
+        // BaseStatusSignal.setUpdateFrequencyForAll(250.0, driveRotorPosition);
 
         //DRIVE_MOTOR.optimizeBusUtilization (1.0);
 
@@ -104,7 +104,7 @@ public class ModuleIOReal implements ModuleIO {
     public void updateInputs(ModuleIOInputs inputs) {
 
         inputs.driveMtrVelocity       = DRIVE_MOTOR.getRotorVelocity().getValue();
-        inputs.driveMtrSensorPosition = driveRotorPosition.getValue();
+        inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
         inputs.driveAppliedVolts      = DRIVE_MOTOR.getMotorVoltage().getValueAsDouble();
         inputs.magEncoderValue        = magEnc.get();
         inputs.steerAppliedVolts      = STEER_MOTOR.getOutputCurrent();

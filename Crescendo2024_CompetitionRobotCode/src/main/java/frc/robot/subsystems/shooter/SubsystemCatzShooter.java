@@ -40,7 +40,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   /*-----------------------------------------------------------------------------------------
    * Linear Servo Values
    *-----------------------------------------------------------------------------------------*/
-  LoggedTunableNumber servoPosTuning = new LoggedTunableNumber("ServoPos", 0);
+  LoggedTunableNumber servoPosTuning = new LoggedTunableNumber("ServoPosition", 0);
   
   //Servo SetPositions
   public static final double SERVO_MIN_POS = 0.0;
@@ -294,7 +294,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
       } 
     
       //cmd final output
-      io.setServoPosition(m_targetServoPosition);
+      io.setServoPosition(servoPosTuning.get());
 
       
       

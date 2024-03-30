@@ -42,36 +42,55 @@ public class HomeToSpeakerCmd extends Command {
   // TBD - how did we determine distance interval?
   // TBD - explain why two distance values
   //------------------------------------------------------------------------------------------------
-  private static final InterpolatingDoubleTreeMap newShooterPivotTable = new InterpolatingDoubleTreeMap();
+  private static final InterpolatingDoubleTreeMap shooterPivotTable = new InterpolatingDoubleTreeMap();
 
   static {
-    newShooterPivotTable.put(1.478, 1.0);
-    newShooterPivotTable.put(1.875, 0.82);
+    shooterPivotTable.put(1.478, 1.0);
 
-    newShooterPivotTable.put(1.875, 9.5);
+    shooterPivotTable.put(1.875, 0.885);
+    // newShooterPivotTable.put(1.875, 0.82);
+    // newShooterPivotTable.put(1.875, 0.95);
+
+    shooterPivotTable.put(2.875, 0.485);
+    // newShooterPivotTable.put(2.875, 0.42);
+    // newShooterPivotTable.put(2.875, 0.55);
     
+    shooterPivotTable.put(3.875, 0.26);
+    // newShooterPivotTable.put(3.875, 0.21);
+    // newShooterPivotTable.put(3.875, 0.31);
+    
+    shooterPivotTable.put(4.875, 0.95);
+    // newShooterPivotTable.put(4.875, 0.09);
+    // newShooterPivotTable.put(4.875, 0.1);
+
+    shooterPivotTable.put(5.875, 0.02);
+    // newShooterPivotTable.put(5.875, 0.0);
+    // newShooterPivotTable.put(5.875, 0.04);
+
+    shooterPivotTable.put(6.813, 0.0);
+
     //UNTESTED VALUES
-    newShooterPivotTable.put(2.37, 0.625);
+    shooterPivotTable.put(2.37, 0.625);
     //shooterPivotTable.put(2.37, 0.350);     //93.30709
     //shooterPivotTable.put(2.37, 0.300);
 
-    newShooterPivotTable.put(2.87, 0.590); 
+    shooterPivotTable.put(2.87, 0.590); 
     //shooterPivotTable.put(2.87, 0.300);     //112.9921
     //shooterPivotTable.put(2.87, 0.280); 
 
-    newShooterPivotTable.put(3.37, 0.525);
+    shooterPivotTable.put(3.37, 0.525);
     //shooterPivotTable.put(3.37, 0.250);     //132.6772
     //shooterPivotTable.put(3.37, 0.200);
 
-    newShooterPivotTable.put(3.87, 0.412);
+    shooterPivotTable.put(3.87, 0.412);
     //shooterPivotTable.put(3.87, 0.125);     //152.3622  
     //shooterPivotTable.put(3.87, 0.100);
 
-    newShooterPivotTable.put(4.87, 0.370);
+    shooterPivotTable.put(4.87, 0.370);
     //shooterPivotTable.put(4.87, 0.100);     //191.7323
     //shooterPivotTable.put(4.87, 0.050);
 
-    newShooterPivotTable.put(5.87, 0.300);     //231.1024
+    shooterPivotTable.put(5.87, 0.300);     //231.1024
   }
 
 
@@ -128,7 +147,7 @@ public class HomeToSpeakerCmd extends Command {
   public void execute() {
 
     double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
-    double servoPos = newShooterPivotTable.get(newDist);
+    double servoPos = shooterPivotTable.get(newDist);
     turret.aimAtGoal(m_targetXY, false, false);    
     shooter.updateShooterServo(servoPos);
 

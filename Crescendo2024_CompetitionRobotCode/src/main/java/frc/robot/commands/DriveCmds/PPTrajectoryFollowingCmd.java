@@ -93,7 +93,6 @@ public class PPTrajectoryFollowingCmd extends Command {
         Rotation2d targetOrientation     = goal.targetHolonomicRotation;
         Pose2d currentPose               = m_driveTrain.getPose();
 
-        trajectory.eve
 
         //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
         
