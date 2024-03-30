@@ -32,7 +32,7 @@ public class ShooterIOReal implements ShooterIO {
     private final int SHOOTER_MOTOR_LT_CAN_ID = 21;
     private final int SHOOTER_MOTOR_RT_CAN_ID = 20;
 
-    private final double FLYWHEEL_THRESHOLD_OFFSET = 4;
+    private final double FLYWHEEL_THRESHOLD_OFFSET = 5;
 
     //Kraken configuration constants
     public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
