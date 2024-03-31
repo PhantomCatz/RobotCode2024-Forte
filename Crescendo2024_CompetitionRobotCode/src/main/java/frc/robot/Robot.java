@@ -135,6 +135,8 @@ public class Robot extends LoggedRobot {
     lead.top.setMode(LEDMode.Flow);
     lead.mid.setMode(LEDMode.Flow);
     lead.bot.setMode(LEDMode.Flow);
+
+    lead.mid.setIteration(20);
   }
 
   @Override
@@ -153,6 +155,8 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    lead.mid.colorRainbow();
+    lead.mid.setMode(LEDMode.Flow);
   }
 
   @Override
