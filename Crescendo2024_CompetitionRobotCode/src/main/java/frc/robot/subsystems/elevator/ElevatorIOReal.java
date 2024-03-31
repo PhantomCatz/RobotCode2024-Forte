@@ -57,7 +57,7 @@ public class ElevatorIOReal implements ElevatorIO {
 
         //ElevatorMtr.optimizeBusUtilization();
 
-        ElevatorMtr.setPosition(0);
+        ElevatorMtr.setPosition(SubsystemCatzElevator.ELEVATOR_STOW);
 
 
         //check if elevator motor is initialized correctly

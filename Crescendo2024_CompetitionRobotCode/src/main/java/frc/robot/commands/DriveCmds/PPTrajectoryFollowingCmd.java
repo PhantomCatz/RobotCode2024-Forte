@@ -31,6 +31,7 @@ public class PPTrajectoryFollowingCmd extends Command {
     
     private final Timer timer = new Timer();
     private final double TIMEOUT_RATIO = 5;
+    private final double MAX_DISTANCE = 0.3;
     private PathPlannerPath path;
 
     /**
@@ -53,6 +54,8 @@ public class PPTrajectoryFollowingCmd extends Command {
 
         addRequirements(m_driveTrain);
     }
+
+    private boolean atTarget = false;
 
     @Override
     public void initialize() {
@@ -86,38 +89,50 @@ public class PPTrajectoryFollowingCmd extends Command {
 
     @Override
     public void execute() {
-        double currentTime = this.timer.get();
+        if(!atTarget){
 
-        //getters from pathplanner and current robot pose
-        PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
-        Rotation2d targetOrientation     = goal.targetHolonomicRotation;
-        Pose2d currentPose               = m_driveTrain.getPose();
+            double currentTime = this.timer.get();
+    
+            //getters from pathplanner and current robot pose
+            PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
+            Rotation2d targetOrientation     = goal.targetHolonomicRotation;
+            Pose2d currentPose               = m_driveTrain.getPose();
+            Translation2d displacement = goal.positionMeters.minus(currentPose.getTranslation());
+            double distance = displacement.getDistance(new Translation2d());
+            // System.out.println(distance);
+            if(distance > MAX_DISTANCE){
+                displacement = displacement.times(MAX_DISTANCE/distance);
+            }
+    
+    
+            //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
+            
+            /* 
+            * Convert PP trajectory into a wpilib trajectory type 
+            * Only takes in the current robot position 
+            * Does not take acceleration to be used with the internal WPILIB trajectory library
+            */
+    
+            Trajectory.State state = new Trajectory.State(currentTime, 
+                                                          0.0,  //made the holonomic drive controller only rely on its current position, not its velocity because the target velocity is used as a ff
+                                                          0.0, 
+                                                          new Pose2d(currentPose.getTranslation().plus(displacement), new Rotation2d()), 
+                                                          0.0);
+    
+            //debug
+            //System.out.println(goal.getTargetHolonomicPose());
+            //Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
+            //construct chassisspeeds
+            ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
+            //Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
+            //Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
+            //send to drivetrain
+            m_driveTrain.driveRobotWithDescritizeDynamics(adjustedSpeeds);
+            Logger.recordOutput("Desired Auto Pose", new Pose2d(state.poseMeters.getTranslation(), goal.targetHolonomicRotation));
+        }else{
+            m_driveTrain.stopDriving();
+        }
 
-
-        //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
-        
-        /* 
-        * Convert PP trajectory into a wpilib trajectory type 
-        * Only takes in the current robot position 
-        * Does not take acceleration to be used with the internal WPILIB trajectory library
-        */
-        Trajectory.State state = new Trajectory.State(currentTime, 
-                                                      0,  //made the holonomic drive controller only rely on its current position, not its velocity because the target velocity is used as a ff
-                                                      0, 
-                                                      new Pose2d(goal.positionMeters, new Rotation2d()), 
-                                                      0);
-
-        //debug
-        //System.out.println(goal.getTargetHolonomicPose());
-        //Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
-        //construct chassisspeeds
-        ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
-        //Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
-        //Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
-        //send to drivetrain
-        m_driveTrain.driveRobotWithDescritizeDynamics(adjustedSpeeds);
-
-        Logger.recordOutput("Desired Auto Pose", new Pose2d(state.poseMeters.getTranslation(), goal.targetHolonomicRotation));
     }
 
     @Override
@@ -144,11 +159,11 @@ public class PPTrajectoryFollowingCmd extends Command {
         //System.out.println("X error " + xError);
         //System.out.println("Y error " + yError);
         //System.out.println("Angle error " + rotationError);
-        boolean inPose = (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
+        atTarget = (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
                 yError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
                 rotationError < TrajectoryConstants.ALLOWABLE_ROTATION_ERROR) || 
                 timer.hasElapsed(trajectory.getTotalTimeSeconds() * TIMEOUT_RATIO);
-        return inPose;
+        return atTarget;
     }
 
 }

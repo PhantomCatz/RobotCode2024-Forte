@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -77,6 +78,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // Configure the trigger bindings and default cmds
     defaultCommands();
     configureBindings();
+    FollowPathCommand.warmupCommand().schedule();
   }
   
 
@@ -96,7 +98,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // POSE COMMANDS
     //------------------------------------------------------------------------------------
       xboxDrv.rightStick().onTrue(new StowPoseCmd()); //STOW Mechnanism 
-      xboxAux.rightStick().onTrue(new StowPoseCmd()); //STOW Mechnanism 
+      xboxAux.rightTrigger().onTrue(new StowPoseCmd()); //STOW Mechnanism 
 
     
       
@@ -119,6 +121,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                           .onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET));
 
         triggerModeSpeaker.and(xboxAux.rightTrigger()).onTrue(Commands.runOnce(()->shooter.disableShooter()));
+        
         triggerModeSpeaker.and(xboxAux.a())
                           .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL)));  //RAMPING UP 
 

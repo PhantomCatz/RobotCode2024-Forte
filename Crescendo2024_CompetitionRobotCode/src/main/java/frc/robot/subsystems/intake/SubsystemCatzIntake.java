@@ -41,7 +41,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private final double ROLLERS_MTR_PWR_IN_SOURCE = 0.25;
   private final double ROLLERS_MTR_PWR_OUT_EJECT = -1.0; // TBD fix top rooler before testing
   private final double ROLLERS_MTR_PWR_OUT_AMP_SCORE = 0.6;
-  private final double ROLLERS_MTR_PWR_OUT_HANDOFF = -0.4;
+  private final double ROLLERS_MTR_PWR_OUT_HANDOFF = -0.2;//-0.3;
 
   public static enum IntakeRollerState {
     ROLLERS_IN_SOURCE,

@@ -59,7 +59,7 @@ public class HomeToSpeakerCmd extends Command {
     // newShooterPivotTable.put(3.875, 0.21);
     // newShooterPivotTable.put(3.875, 0.31);
     
-    shooterPivotTable.put(4.875, 0.95);
+    shooterPivotTable.put(4.875, 0.095);
     // newShooterPivotTable.put(4.875, 0.09);
     // newShooterPivotTable.put(4.875, 0.1);
 
@@ -68,35 +68,14 @@ public class HomeToSpeakerCmd extends Command {
     // newShooterPivotTable.put(5.875, 0.04);
 
     shooterPivotTable.put(6.813, 0.0);
-
-    //UNTESTED VALUES
-    shooterPivotTable.put(2.37, 0.625);
-    //shooterPivotTable.put(2.37, 0.350);     //93.30709
-    //shooterPivotTable.put(2.37, 0.300);
-
-    shooterPivotTable.put(2.87, 0.590); 
-    //shooterPivotTable.put(2.87, 0.300);     //112.9921
-    //shooterPivotTable.put(2.87, 0.280); 
-
-    shooterPivotTable.put(3.37, 0.525);
-    //shooterPivotTable.put(3.37, 0.250);     //132.6772
-    //shooterPivotTable.put(3.37, 0.200);
-
-    shooterPivotTable.put(3.87, 0.412);
-    //shooterPivotTable.put(3.87, 0.125);     //152.3622  
-    //shooterPivotTable.put(3.87, 0.100);
-
-    shooterPivotTable.put(4.87, 0.370);
-    //shooterPivotTable.put(4.87, 0.100);     //191.7323
-    //shooterPivotTable.put(4.87, 0.050);
-
-    shooterPivotTable.put(5.87, 0.300);     //231.1024
   }
 
 
   public static final double k_ACCEL_COMP_FACTOR = 0.100; // in units of seconds    TBD Where is this used?
 
   private Translation2d m_targetXY;
+
+  private static final double AUTON_TIMEOUT_SEC = 1.0;
 
   //------------------------------------------------------------------------------------------------
   //
@@ -116,6 +95,8 @@ public class HomeToSpeakerCmd extends Command {
   //
   // Called when the command is initially scheduled.
   //------------------------------------------------------------------------------------------------
+
+  private double prevTime = 0.0;
   @Override
   public void initialize() {
     timer.reset();
@@ -146,25 +127,71 @@ public class HomeToSpeakerCmd extends Command {
   @Override 
   public void execute() {
 
-    double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
-    double servoPos = shooterPivotTable.get(newDist);
-    turret.aimAtGoal(m_targetXY, false, false);    
-    shooter.updateShooterServo(servoPos);
+    if(CatzAutonomous.test == false){
 
-    //in telop this boolean supplier is being evaluated to see if button was pressed
-
-    // System.out.println("turret:"+turret.isTurretAtTarget());
-    // System.out.println("shooter:"+shooter.isAutonShooterRamped());
-    // System.out.println("timer:"+timer.hasElapsed(AUTON_TIMEOUT_SEC));
-
-    if(DriverStation.isAutonomous()){
-      if((shooter.getShooterServoInPos() && turret.getTurretInPos() && shooter.isAutonShooterRamped()) /*|| timer.hasElapsed(AUTON_TIMEOUT_SEC)*/){ //TBD add the timer code for shooter pivot
-        shooter.setShooterState(ShooterState.SHOOTING);
+      prevTime = timer.get();
+      double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
+      System.out.println(timer.get()-prevTime + " newDist");
+  
+      prevTime = timer.get();
+      double servoPos = shooterPivotTable.get(newDist);
+      System.out.println(timer.get()-prevTime + " servoPos");
+  
+      prevTime = timer.get();
+      turret.aimAtGoal(m_targetXY, false, false);
+      System.out.println(timer.get()-prevTime + " aimAtGoal");
+  
+      prevTime = timer.get();
+      shooter.updateShooterServo(servoPos);
+      System.out.println(timer.get()-prevTime + " updateServo");
+  
+      //in telop this boolean supplier is being evaluated to see if button was pressed
+  
+      // System.out.println("turret:"+turret.isTurretAtTarget());
+      // System.out.println("shooter:"+shooter.isAutonShooterRamped());
+      // System.out.println("timer:"+timer.hasElapsed(AUTON_TIMEOUT_SEC));
+  
+      prevTime = timer.get();
+      if(DriverStation.isAutonomous()){
+        System.out.println(timer.get()-prevTime + " isAutonomous");
+  
+        prevTime = timer.get();
+        if((/*shooter.getShooterServoInPos() && */ turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(AUTON_TIMEOUT_SEC))) { //TBD add the timer code for shooter pivot
+          System.out.println(timer.get()-prevTime + " checkForShoot");
+  
+          prevTime = timer.get();
+          shooter.setShooterState(ShooterState.SHOOTING);
+          System.out.println(timer.get()-prevTime + " SHOOT!");
+        }
       }
+      CatzAutonomous.test = true;
+    }else{
+      double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
+  
+      double servoPos = shooterPivotTable.get(newDist);
+  
+      turret.aimAtGoal(m_targetXY, false, false);
+  
+      shooter.updateShooterServo(servoPos);
+  
+      //in telop this boolean supplier is being evaluated to see if button was pressed
+  
+      // System.out.println("turret:"+turret.isTurretAtTarget());
+      // System.out.println("shooter:"+shooter.isAutonShooterRamped());
+      // System.out.println("timer:"+timer.hasElapsed(AUTON_TIMEOUT_SEC));
+  
+      if(DriverStation.isAutonomous()){
+  
+        if((/*shooter.getShooterServoInPos() && */ turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(AUTON_TIMEOUT_SEC))) { //TBD add the timer code for shooter pivot
+  
+          shooter.setShooterState(ShooterState.SHOOTING);
+        }
+      }
+      Logger.recordOutput("ShooterCalcs/NewDist",           newDist);
+      Logger.recordOutput("servoCmdPos",                    servoPos);
     }
 
-    Logger.recordOutput("ShooterCalcs/NewDist",           newDist);
-    Logger.recordOutput("servoCmdPos",                    servoPos);
+
 
   }
 

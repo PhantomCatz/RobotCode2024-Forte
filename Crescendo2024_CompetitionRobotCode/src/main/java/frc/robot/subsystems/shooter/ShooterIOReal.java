@@ -49,7 +49,7 @@ public class ShooterIOReal implements ShooterIO {
 
     //Load motor speeds 
     private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
-    private final double LOAD_MOTOR_LOADING_SPEED    = 0.6; //was 0.4
+    private final double LOAD_MOTOR_LOADING_SPEED    = 0.3;//0.6; //was 0.4
     private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.2;
     private final double LOAD_MOTOR_ADJUST_SPEED     = 0.04;
 
@@ -79,12 +79,12 @@ public class ShooterIOReal implements ShooterIO {
 /*---------------------------------------------------------------------------------------
  * Motor Velocities
  *-------------------------------------------------------------------------------------*/  
-    public final double SHOOTER_VELOCITY_LT = 57.0;
+    public final double SHOOTER_VELOCITY_LT = 57.0; //For Shooting Speaker
     public final double SHOOTER_VELOCITY_RT = 80.0;
 
     //Will be changed to a final double when confirmed speed, right now those speeds are made up
-    LoggedTunableNumber hoardShooterVelLT = new LoggedTunableNumber("HoardLTVelShooter", 20); // TBD
-    LoggedTunableNumber hoardShooterVelRT = new LoggedTunableNumber("HoardRTVelShooter", 65); // ^^These are made-up numbers 
+    LoggedTunableNumber hoardShooterVelLT = new LoggedTunableNumber("HoardLTVelShooter", 20); // For Hoarding 
+    LoggedTunableNumber hoardShooterVelRT = new LoggedTunableNumber("HoardRTVelShooter", 65); 
 
     public static int ACCEPTABLE_VEL_ERROR = 20;
     public double velocityThresholdLT;
