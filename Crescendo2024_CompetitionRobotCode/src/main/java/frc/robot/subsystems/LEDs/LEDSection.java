@@ -31,6 +31,10 @@ public class LEDSection {
         this.iteration = iteration;
     }
 
+    public void setUpdatePeriod(double second){
+        this.iteration = (int)Math.round(second*1000/20);
+    }
+
     public void setMode(LEDMode mode) {
         ledMode = mode;
     }

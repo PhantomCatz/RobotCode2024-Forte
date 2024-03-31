@@ -334,7 +334,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
 
   public boolean getTurretInPos() {
-    return Math.abs(m_turretTargetDegree - currentTurretDegree)<3;
+    return Math.abs(m_turretTargetDegree - currentTurretDegree) < 3;
   }
 
   public void setTurretInPose(boolean state){

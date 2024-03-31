@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -52,7 +54,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final double SERVO_DEADBAND = 0.05;
 
 
-  private double m_targetServoPosition;
+  private double m_targetServoPosition = 1.0;
   private double m_previousServoPosition;
   private double m_servoPosError;
 
@@ -64,7 +66,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
    *-----------------------------------------------------------------------------------------*/
   private final double LOOP_CYCLE_SECONDS = 0.02;
 
-  private final int WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT = (int) (Math.round(1.0/LOOP_CYCLE_SECONDS) + 1.0); 
+  private final int WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT = (int) (Math.round(5.0/LOOP_CYCLE_SECONDS) + 1.0); 
   private final int SHOOTING_TIMEOUT                  = (int) (Math.round(0.5/LOOP_CYCLE_SECONDS) + 1.0);
   private final int LOAD_OUT_TIMEOUT                  = (int) (Math.round(0.5/LOOP_CYCLE_SECONDS) + 1.0);
 
@@ -90,7 +92,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     NONE;
   }
 
-  private static ServoState currentServoState;
+  private static ServoState currentServoState = ServoState.IDLE;
   public static enum ServoState {
     IDLE,
     WAIT_FOR_SERVO_IN_POSITION
@@ -368,6 +370,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
       m_targetServoPosition = previousServoPosition;
     }
+    currentServoState = ServoState.IDLE;
   }
 
   public Command cmdSetKeepShooterOn(boolean state){
@@ -384,13 +387,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return ((inputs.shooterVelocityRT + inputs.shooterVelocityLT)/2+2) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink) TBD
   }
 
-  public Command cmdServoPosition(Supplier<Double> value) {
-    return run(()->io.setServoPosition(value.get()));
-  }
-
   public void updateShooterServo(double position) {
     m_shooterServoInPos = false;
     m_targetServoPosition = position;
+    currentServoState = ServoState.IDLE;
   }
 
   public Command cmdManualHoldOn(Supplier<Double> pwr) {
@@ -402,7 +402,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     position = -position;
     
     m_targetServoPosition = m_targetServoPosition + (position * 0.01);
-  
+    currentServoState = ServoState.IDLE;
   } 
 
   //-------------------------------------------------------------------------------------

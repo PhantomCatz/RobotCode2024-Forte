@@ -89,44 +89,44 @@ public class SubsystemCatzVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("useSingleTag", useSingleTag); //set by driverstation
+        // Logger.recordOutput("useSingleTag", useSingleTag); //set by driverstation
 
-        // clear results from last periodic
-        results.clear();
+        // // clear results from last periodic
+        // results.clear();
         
-        //for every limlight camera process vision with according logic
-        for (int i = 0; i < inputs.length; i++) {
-            // update and process new inputs[cameraNum] for camera
-            cameras[i].updateInputs(inputs[i]);
-            Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);
+        // //for every limlight camera process vision with according logic
+        // for (int i = 0; i < inputs.length; i++) {
+        //     // update and process new inputs[cameraNum] for camera
+        //     cameras[i].updateInputs(inputs[i]);
+        //     Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);
                     
-            //checks for when to process vision
-            if (inputs[i].hasTarget && 
-                inputs[i].isNewVisionPose &&  
-                inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
-                useSingleTag = false;
-                if (useSingleTag) {
-                    if (inputs[i].singleIDUsed == acceptableTagID) {
-                        processVision(i);
-                    }
-                } 
-                else {
-                    processVision(i);
-                }
-            }
-        }
+        //     //checks for when to process vision
+        //     if (inputs[i].hasTarget && 
+        //         inputs[i].isNewVisionPose &&  
+        //         inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
+        //         useSingleTag = false;
+        //         if (useSingleTag) {
+        //             if (inputs[i].singleIDUsed == acceptableTagID) {
+        //                 processVision(i);
+        //             }
+        //         } 
+        //         else {
+        //             processVision(i);
+        //         }
+        //     }
+        // }
 
-        // limelightRangeFinder(1);
+        // // limelightRangeFinder(1);
         
 
-        //Logging
-        Logger.recordOutput("Vision/ResultCount", results.size());
+        // //Logging
+        // Logger.recordOutput("Vision/ResultCount", results.size());
 
-        //log data
-        Logger.recordOutput("AprilTagID", primaryAprilTag);
-        Logger.recordOutput("Vertical Degrees to Apriltag", inputs[0].ty);
-        Logger.recordOutput("Distance to Apriltag", distanceToAprilTag);
-        Logger.recordOutput("Distance to Wall", aprilTagDistanceToWall);
+        // //log data
+        // Logger.recordOutput("AprilTagID", primaryAprilTag);
+        // Logger.recordOutput("Vertical Degrees to Apriltag", inputs[0].ty);
+        // Logger.recordOutput("Distance to Apriltag", distanceToAprilTag);
+        // Logger.recordOutput("Distance to Wall", aprilTagDistanceToWall);
     }
 
     static int camNum;
