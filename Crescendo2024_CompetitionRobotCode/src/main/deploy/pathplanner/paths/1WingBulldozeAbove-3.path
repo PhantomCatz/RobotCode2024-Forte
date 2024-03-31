@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 8.3,
-        "y": 7.43
+        "y": 7.45
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.299999999989195,
-        "y": 7.430000000012174
+        "x": 8.3,
+        "y": 7.450000000016279
       },
       "isLocked": false,
       "linkedName": null
@@ -44,6 +44,9 @@
   },
   "reversed": false,
   "folder": "1WingBulldozeAbove",
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

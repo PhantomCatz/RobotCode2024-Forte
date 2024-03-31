@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 1.3816657704914457,
-        "y": 6.986408244892862
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3816657704806397,
-        "y": 6.986408244905037
+        "x": 1.3816657704751674,
+        "y": 7.0
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.596764424301262,
-        "y": 6.986408244892862
+        "x": 2.49,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 2.596764424301262,
-        "y": 6.976541302082054
+        "x": 2.49,
+        "y": 6.990133057189191
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 360.0
   },
@@ -44,6 +44,9 @@
   },
   "reversed": false,
   "folder": "1WingBulldozeAbove",
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6,
-        "y": 6.986408244892862
+        "x": 2.49,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.599999999989194,
-        "y": 6.986408244905037
+        "x": 2.489999999983722,
+        "y": 7.0
       },
       "isLocked": false,
       "linkedName": null
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 8.299857368945508,
-        "y": 7.429807936538951
+        "y": 7.45
       },
       "prevControl": {
         "x": 8.299857368945508,
-        "y": 7.419940993728143
+        "y": 7.440133057189192
       },
       "nextControl": null,
       "isLocked": false,
@@ -44,6 +44,9 @@
   },
   "reversed": false,
   "folder": "1WingBulldozeAbove",
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }
