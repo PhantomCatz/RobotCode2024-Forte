@@ -33,7 +33,11 @@ public interface ShooterIO {
 
     public default void setShooterEnabled() {}
 
+    public default void setShooterEnabled_Hoard() {}
+
     public default void setShooterDisabled() {}
+
+    public default void toggleHoardVelocityThreshold(Boolean toggle) {}
 
     public default void loadBackward() {}
 

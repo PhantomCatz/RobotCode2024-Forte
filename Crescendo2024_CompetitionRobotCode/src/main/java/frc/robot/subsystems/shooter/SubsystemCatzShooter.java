@@ -86,6 +86,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     WAIT_FOR_NOTE_TO_SETTLE,
     WAIT_FOR_MOTORS_TO_REV_UP,
     START_SHOOTER_FLYWHEEL,
+    START_SHOOTER_FLYWHEEL_HOARD_MODE,
     SHOOTING,
     LOAD_OFF,
     LOAD_OUT,
@@ -221,33 +222,32 @@ public class SubsystemCatzShooter extends SubsystemBase {
           
           case START_SHOOTER_FLYWHEEL:
             io.setShooterEnabled();
+            io.toggleHoardVelocityThreshold(false);
             currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
           break;
           
-          
+          case START_SHOOTER_FLYWHEEL_HOARD_MODE:
+            io.setShooterEnabled_Hoard();
+            io.toggleHoardVelocityThreshold(true);
+            currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
+          break;
+
           case WAIT_FOR_MOTORS_TO_REV_UP:
-          // System.out.println(inputs.shooterVelocityRT + " " + inputs.velocityThresholdRT);
-          // System.out.println(inputs.shooterVelocityLT + " " + inputs.velocityThresholdLT);
             if(inputs.shooterVelocityRT >= inputs.velocityThresholdRT &&
                Math.abs(inputs.shooterVelocityLT) >= Math.abs(inputs.velocityThresholdLT)) {
-
-                  if(DriverStation.isAutonomous()) {
-                      autonIsShooterRamped = true;
-                  } else {
-                    xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
-                  }
-
-            } else {
-
               if(DriverStation.isAutonomous()) {
-                if(m_iterationCounter > WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT) {
-                    shooterTimeout = true;
-                    m_iterationCounter = 0;
-                    currentShooterState = ShooterState.SHOOTING;
-                    autonIsShooterRamped = true;
-                }
-                m_iterationCounter++;
+                autonIsShooterRamped = true;
+              } else {
+                xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
               }
+            } else if(DriverStation.isAutonomous()) {
+              if(m_iterationCounter > WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT) {
+                shooterTimeout = true;
+                m_iterationCounter = 0;
+                currentShooterState = ShooterState.SHOOTING;
+                autonIsShooterRamped = true;
+              }
+                m_iterationCounter++;
             }
             break;
 
@@ -472,11 +472,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   }
 
-  public void hoardShootingLogic(){
+  public void hoardShootingLogic() {
     new MoveToPreset(CatzConstants.CatzMechanismConstants.SHOOTER_HOARD_PRESET);
-    startShooterFlywheel();
+    currentShooterState = ShooterState.START_SHOOTER_FLYWHEEL_HOARD_MODE;
   }
-  public Command hoardShooterShot(){
+  public Command hoardShooterMode(){
     return runOnce(()-> hoardShootingLogic());
   }
 }
