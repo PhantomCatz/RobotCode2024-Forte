@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.revrobotics.ColorSensorV3.LEDCurrent;
 
@@ -89,16 +90,16 @@ public class Robot extends LoggedRobot {
 
     DriverStation.silenceJoystickConnectionWarning(true);
     // SubsystemCatzVision.getInstance().setUseSingleTag(true, 4);
-    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263) { 
-      lead.mid.colorSolid(Color.kGreen);
-      lead.top.colorSolid(Color.kGreen);
-      lead.bot.colorSolid(Color.kGreen);
+    // if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263) { 
+    //   lead.mid.colorSolid(Color.kGreen);
+    //   lead.top.colorSolid(Color.kGreen);
+    //   lead.bot.colorSolid(Color.kGreen);
       
-    } else {
-      lead.mid.colorSolid(Color.kRed);
-      lead.top.colorSolid(Color.kRed);
-      lead.bot.colorSolid(Color.kRed);    
-    }
+    // } else {
+    //   lead.mid.colorSolid(Color.kRed);
+    //   lead.top.colorSolid(Color.kRed);
+    //   lead.bot.colorSolid(Color.kRed);    
+    // }
 
     lead.mid.colorRainbow();
     lead.mid.setMode(LEDMode.Solid);
@@ -123,6 +124,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    FollowPathCommand.warmupCommand().schedule();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

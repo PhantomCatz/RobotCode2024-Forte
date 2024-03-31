@@ -78,7 +78,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // Configure the trigger bindings and default cmds
     defaultCommands();
     configureBindings();
-    FollowPathCommand.warmupCommand().schedule();
+    
   }
   
 
