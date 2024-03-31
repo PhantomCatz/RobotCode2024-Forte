@@ -133,7 +133,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
         Trigger auxJoystickTriggerRightY = new Trigger(()->Math.abs(xboxAux.getRightX()) > 0.1);
         triggerModeSpeaker.and(auxJoystickTriggerRightY).onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
-
         
     //------------------------------------------------------------------------------------
     // AMP MODE
@@ -151,7 +150,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
         
         triggerModeAmp.and(xboxAux.leftStick())
                       .onTrue(new ManualElevatorCmd((()->xboxAux.getRightY()))); //MANUAL MODE FOR ELEVATOR
-
 
     //------------------------------------------------------------------------------------
     // HOARD MODE

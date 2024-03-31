@@ -12,6 +12,10 @@ import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.climb.SubsystemCatzClimb;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.turret.TurretIO;
+import frc.robot.subsystems.turret.TurretIOReal;
+import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 
 public class SubsystemCatzLED extends SubsystemBase {
 
@@ -62,28 +66,68 @@ public class SubsystemCatzLED extends SubsystemBase {
         }
         if (SubsystemCatzClimb.getInstance().isClimbing()) {
             if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
-                top.colorSolid(Color.kBlue);
+                top.colorSolid(Color.kRoyalBlue);
                 top.setMode(LEDMode.Solid);
 
-                bot.colorSolid(Color.kBlue);
+                bot.colorSolid(Color.kRoyalBlue);
                 bot.setMode(LEDMode.Solid);
+
+                mid.colorSolid(Color.kRoyalBlue);
+                mid.setMode(LEDMode.Solid);
 
             } else {
                 top.colorSolid(Color.kWhite);
-                top.colorSolid2(Color.kBlue);
+                top.colorSolid2(Color.kRoyalBlue);
                 top.setMode(LEDMode.Alternating);
                 
                 bot.colorSolid(Color.kWhite);
-                bot.colorSolid2(Color.kBlue);
+                bot.colorSolid2(Color.kRoyalBlue);
                 bot.setMode(LEDMode.Alternating);
+
+                mid.colorSolid(Color.kWhite);
+                mid.colorSolid2(Color.kRoyalBlue);
+                mid.setMode(LEDMode.Alternating);
             }
         } else if (CatzConstants.currentRobotMode == RobotMode.AMP) {
             if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
-                top.colorSolid(Color.kYellow);
+                top.colorSolid(Color.kHotPink);
                 top.setMode(LEDMode.Solid);
 
+                bot.colorSolid(Color.kHotPink);
+                bot.setMode(LEDMode.Solid);
+
+                if(SubsystemCatzIntake.getInstance().getIntakeInPos() == true && SubsystemCatzElevator.getInstance().getElevatorInPos() == true) {
+                    mid.colorSolid(Color.kOrange);
+                    mid.setMode(LEDMode.Solid);
+                }
+                
+            } else {
+                top.colorSolid(Color.kWhite);
+                top.colorSolid2(Color.kHotPink);
+                top.setMode(LEDMode.Alternating);
+                
+                bot.colorSolid(Color.kWhite);
+                bot.colorSolid2(Color.kHotPink);
+                bot.setMode(LEDMode.Alternating);
+
+                mid.colorSolid(Color.kWhite);
+                mid.colorSolid2(Color.kHotPink);
+                mid.setMode(LEDMode.Alternating);
+                
+            }
+        } else if (CatzConstants.currentRobotMode == RobotMode.SPEAKER) {
+            if (SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()) {
+                top.colorSolid(Color.kYellow);
+                top.setMode(LEDMode.Solid);
+                
                 bot.colorSolid(Color.kYellow);
                 bot.setMode(LEDMode.Solid);
+
+                if(SubsystemCatzTurret.getInstance().getTurretInPos() == true) {
+                    mid.colorSolid(Color.kOrange);
+                    mid.setMode(LEDMode.Solid);
+                }
+
             } else {
                 top.colorSolid(Color.kWhite);
                 top.colorSolid2(Color.kYellow);
@@ -92,24 +136,35 @@ public class SubsystemCatzLED extends SubsystemBase {
                 bot.colorSolid(Color.kWhite);
                 bot.colorSolid2(Color.kYellow);
                 bot.setMode(LEDMode.Alternating);
+
+                mid.colorSolid(Color.kWhite);
+                mid.colorSolid2(Color.kYellow);
+                mid.setMode(LEDMode.Alternating);
             }
-        } else if (CatzConstants.currentRobotMode == RobotMode.SPEAKER) {
+        } else if (CatzConstants.currentRobotMode == RobotMode.HOARD) {
             if (SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()) {
-                top.colorSolid(Color.kOrange);
+                top.colorSolid(Color.kPurple);
                 top.setMode(LEDMode.Solid);
 
-                bot.colorSolid(Color.kOrange);
+                bot.colorSolid(Color.kPurple);
                 bot.setMode(LEDMode.Solid);
+
+                mid.colorSolid(Color.kPurple);
+                mid.setMode(LEDMode.Solid);
             } else {
                 top.colorSolid(Color.kWhite);
-                top.colorSolid2(Color.kOrange);
+                top.colorSolid2(Color.kPurple);
                 top.setMode(LEDMode.Alternating);
                 
                 bot.colorSolid(Color.kWhite);
-                bot.colorSolid2(Color.kOrange);
+                bot.colorSolid2(Color.kPurple);
                 bot.setMode(LEDMode.Alternating);
+
+                mid.colorSolid(Color.kWhite);
+                mid.colorSolid2(Color.kPurple);
+                mid.setMode(LEDMode.Alternating);
             }
-        }
+        } 
     }
 
     for(int i=0; i<LED_COUNT_HALF; i++){
@@ -132,9 +187,9 @@ public class SubsystemCatzLED extends SubsystemBase {
     }
 
     public void signalHumanPlayerAMP() {
-        top.colorSolid(Color.kRed);
-        mid.colorSolid(Color.kRed);
-        bot.colorSolid(Color.kRed);
+        top.colorSolid(Color.kGreen);
+        mid.colorSolid(Color.kGreen);
+        bot.colorSolid(Color.kGreen);
         top.setMode(LEDMode.Blink);
         mid.setMode(LEDMode.Blink);
         bot.setMode(LEDMode.Blink);

@@ -7,7 +7,8 @@ public class LEDSection {
         Solid,
         Blink,
         Alternating,
-        Flow;
+        Flow,
+        Flow2;
     }
 
     
@@ -114,6 +115,13 @@ public class LEDSection {
                         ledColors[i] = ledColors[(i + 1) % LED_COUNT];
                     }
                     return ledColors;
+                
+                case Flow2: //flow up or down, opposite of the first
+                    for (int i = LED_COUNT; i > 0; i--) {
+                        ledColors[i] = ledColors[(i + 1) % LED_COUNT];
+                    }
+                    return ledColors;
+                
             }    
         }
         return ledColors;

@@ -341,7 +341,7 @@ public final class CatzConstants {
     AMP,
     HOARD,
     CLIMB_MAINTENANCE_MODE,
-    CLIMB
+    CLIMB,
   }
 
   public enum NoteDestination {

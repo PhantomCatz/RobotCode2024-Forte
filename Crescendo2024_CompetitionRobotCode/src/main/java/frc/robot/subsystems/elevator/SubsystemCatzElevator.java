@@ -76,7 +76,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
   public static final double ELEVATOR_AMP_SCORE_DN   = 0.0;
   public static final double ELEVATOR_AMP_TRANSITION = 60.0;
   public static final double ELEVATOR_SOURCE_PICKUP  = 60.0;
-  public static final double ELEVATOR_AMP_SCORE      = 58.0;
+  public static final double ELEVATOR_AMP_SCORE      = 60.0;//78.0;//58.0;
   public static final double ELEVATOR_SCORE_TRAP     = 98.0;
 
   private static final double ELEVATOR_NULL_POSITION = -999.0;
