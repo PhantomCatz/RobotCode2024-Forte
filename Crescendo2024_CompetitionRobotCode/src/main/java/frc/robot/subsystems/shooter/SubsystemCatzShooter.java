@@ -55,7 +55,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final double SERVO_DEADBAND = 0.05;
 
 
-  private double m_targetServoPosition = 1.0;
+  private double m_targetServoPosition = 7.0;
   private double m_previousServoPosition;
   private double m_servoPosError;
 

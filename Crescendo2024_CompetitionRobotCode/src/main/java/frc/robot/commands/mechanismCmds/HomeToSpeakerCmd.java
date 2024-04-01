@@ -126,46 +126,6 @@ public class HomeToSpeakerCmd extends Command {
   //------------------------------------------------------------------------------------------------
   @Override 
   public void execute() {
-
-    if(CatzAutonomous.test == false){
-
-      prevTime = timer.get();
-      double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
-      System.out.println(timer.get()-prevTime + " newDist");
-  
-      prevTime = timer.get();
-      double servoPos = shooterPivotTable.get(newDist);
-      System.out.println(timer.get()-prevTime + " servoPos");
-  
-      prevTime = timer.get();
-      turret.aimAtGoal(m_targetXY, false, false);
-      System.out.println(timer.get()-prevTime + " aimAtGoal");
-  
-      prevTime = timer.get();
-      shooter.updateShooterServo(servoPos);
-      System.out.println(timer.get()-prevTime + " updateServo");
-  
-      //in telop this boolean supplier is being evaluated to see if button was pressed
-  
-      // System.out.println("turret:"+turret.isTurretAtTarget());
-      // System.out.println("shooter:"+shooter.isAutonShooterRamped());
-      // System.out.println("timer:"+timer.hasElapsed(AUTON_TIMEOUT_SEC));
-  
-      prevTime = timer.get();
-      if(DriverStation.isAutonomous()){
-        System.out.println(timer.get()-prevTime + " isAutonomous");
-  
-        prevTime = timer.get();
-        if((/*shooter.getShooterServoInPos() && */ turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(AUTON_TIMEOUT_SEC))) { //TBD add the timer code for shooter pivot
-          System.out.println(timer.get()-prevTime + " checkForShoot");
-  
-          prevTime = timer.get();
-          shooter.setShooterState(ShooterState.SHOOTING);
-          System.out.println(timer.get()-prevTime + " SHOOT!");
-        }
-      }
-      CatzAutonomous.test = true;
-    }else{
       double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
   
       double servoPos = shooterPivotTable.get(newDist);
@@ -187,12 +147,6 @@ public class HomeToSpeakerCmd extends Command {
           shooter.setShooterState(ShooterState.SHOOTING);
         }
       }
-      Logger.recordOutput("ShooterCalcs/NewDist",           newDist);
-      Logger.recordOutput("servoCmdPos",                    servoPos);
-    }
-
-
-
   }
 
   @Override
