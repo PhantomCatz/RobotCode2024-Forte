@@ -90,20 +90,30 @@ public class Robot extends LoggedRobot {
 
     DriverStation.silenceJoystickConnectionWarning(true);
     // SubsystemCatzVision.getInstance().setUseSingleTag(true, 4);
-    // if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263) { 
-    //   lead.mid.colorSolid(Color.kGreen);
-    //   lead.top.colorSolid(Color.kGreen);
-    //   lead.bot.colorSolid(Color.kGreen);
+
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263) { 
+      lead.mid.colorSolid(Color.kGreen);
+      lead.top.colorSolid(Color.kGreen);
+      lead.bot.colorSolid(Color.kGreen);
+
+      lead.mid.setMode(LEDMode.Solid);
+      lead.top.setMode(LEDMode.Solid);
+      lead.bot.setMode(LEDMode.Solid);
       
-    // } else {
-    //   lead.mid.colorSolid(Color.kRed);
-    //   lead.top.colorSolid(Color.kRed);
-    //   lead.bot.colorSolid(Color.kRed);    
-    // }
+      
+    } else {
+      lead.mid.colorSolid(Color.kRed);
+      lead.top.colorSolid(Color.kRed);
+      lead.bot.colorSolid(Color.kRed);    
 
-    lead.mid.colorRainbow();
-    lead.mid.setMode(LEDMode.Solid);
+      lead.mid.setMode(LEDMode.Solid);
+      lead.top.setMode(LEDMode.Solid);
+      lead.bot.setMode(LEDMode.Solid);
+      
+    }
 
+    // lead.mid.colorRainbow();
+    // lead.mid.setMode(LEDMode.Solid);
   }
 
   @Override
@@ -157,6 +167,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    //mid led's flow constantly, top and bot are controlled by other subsystems
     lead.mid.colorRainbow();
     lead.mid.setMode(LEDMode.Flow);
   }
