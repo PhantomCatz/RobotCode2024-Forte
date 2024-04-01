@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3952042110521514,
+        "x": 2.49,
         "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3952042110521528,
+        "x": 1.4400000000000002,
         "y": 7.0
       },
       "isLocked": false,
@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.49,
-        "y": 7.0
+        "x": 2.60221165235483,
+        "y": 5.492382339971527
       },
       "prevControl": {
-        "x": 1.4900000000000002,
-        "y": 7.0
+        "x": 1.5522116523548302,
+        "y": 5.492382339971527
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,14 +38,14 @@
     "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0,
+    "velocity": 0.0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "US_W1-3",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 0.0,
     "velocity": 0
   },
   "useDefaultConstraints": false
