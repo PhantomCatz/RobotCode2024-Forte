@@ -128,10 +128,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         
     }
 
-    public void resetGyroTrue(){
-        gyroIO.resetNavXIO(0);
-    }
-
     // Get the singleton instance of the CatzDriveTrainSubsystem
     public static SubsystemCatzDrivetrain getInstance() {
         return instance;
