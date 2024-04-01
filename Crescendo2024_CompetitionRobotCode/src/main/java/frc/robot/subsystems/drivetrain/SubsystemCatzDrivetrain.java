@@ -126,23 +126,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         gyroIO.resetNavXIO(0);
         
-        startOdometryPeriodic();
-    }
-
-    public void resetGyroTrue(){
-        gyroIO.resetNavXIO(0);
     }
 
     // Get the singleton instance of the CatzDriveTrainSubsystem
     public static SubsystemCatzDrivetrain getInstance() {
         return instance;
-    }
-
-    private void startOdometryPeriodic(){
-        Thread odometryThread = new Thread(()-> {
-   
-        });
-        odometryThread.start();
     }
 
     @Override
@@ -157,8 +145,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         Logger.processInputs("Drive/gyroinputs ", gyroInputs);
 
         m_poseEstimator.update(getRotation2d(), getModulePositions());      
-        
-
         
         var visionOdometry = vision.getVisionOdometry();   
         for (int i = 0; i < visionOdometry.size(); i++) {

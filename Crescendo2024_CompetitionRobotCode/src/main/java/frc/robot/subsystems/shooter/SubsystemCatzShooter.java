@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
@@ -54,7 +55,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final double SERVO_DEADBAND = 0.05;
 
 
-  private double m_targetServoPosition = 1.0;
+  private double m_targetServoPosition = 7.0;
   private double m_previousServoPosition;
   private double m_servoPosError;
 
@@ -473,7 +474,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
 
   public void hoardShootingLogic() {
-    new MoveToPreset(CatzConstants.CatzMechanismConstants.SHOOTER_HOARD_PRESET);
+    CommandScheduler.getInstance().schedule(new MoveToPreset(CatzConstants.CatzMechanismConstants.SHOOTER_HOARD_PRESET));
     currentShooterState = ShooterState.START_SHOOTER_FLYWHEEL_HOARD_MODE;
   }
   public Command hoardShooterMode(){

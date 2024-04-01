@@ -47,8 +47,6 @@ public class CatzAutonomous {
     PathConstraints autoPathfindingConstraints = new PathConstraints(
         4.8, 4.0, 
         Units.degreesToRadians(540), Units.degreesToRadians(720));
-
-    public static boolean test = false;
     
     private CatzAutonomous() {
         chosenAllianceColor.addDefaultOption("Blue Alliance", AllianceColor.Blue);
@@ -137,20 +135,26 @@ public class CatzAutonomous {
      * Seems to be redundant with 4 piece auton, only advantage is having code for different starting positions depending on
      * alliance's capabilities
      */
+
+    private PathPlannerPath US_W1_3_1 = PathPlannerPath.fromPathFile("US_W1-3_1");
+    private PathPlannerPath US_W1_3_2 = PathPlannerPath.fromPathFile("ver2 US_W1-3_2");
+    private PathPlannerPath US_W1_3_3 = PathPlannerPath.fromPathFile("ver2 US_W1-3_3");
+
+
     private Command US_W13() {
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("US_W1-3_1")),
+            setAutonStartPose(US_W1_3_1),
             shooter.cmdShooterRamp(),
             shooter.cmdSetKeepShooterOn(true),
             new HomeToSpeakerCmd(),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_1")),
-                                    new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_1),
+                                     new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0),
                                                                new HomeToSpeakerCmd())),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_2")),
-                                    new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_2),
+                                    new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0),
                                                                 new HomeToSpeakerCmd())),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_3")),
-                                        new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_3),
+                                        new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0),
                                                                     new HomeToSpeakerCmd())),
             shooter.cmdSetKeepShooterOn(false),
             Commands.runOnce(()->shooter.disableShooter())
@@ -171,19 +175,23 @@ public class CatzAutonomous {
      * Seems to be redundant with 4 piece auton, only advantage is having code for different starting positions depending on
      * alliance's capabilities
      */
+    private PathPlannerPath LS3_1 = PathPlannerPath.fromPathFile("LS_W1-3_1");
+    private PathPlannerPath LS3_2 = PathPlannerPath.fromPathFile("LS_W1-3_2");
+    private PathPlannerPath LS3_3 = PathPlannerPath.fromPathFile("LS_W1-3_3");
+
     private Command LS_W13() {
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("LS_W1-3_1")),
+            setAutonStartPose(LS3_1),
             shooter.cmdShooterRamp(),
             shooter.cmdSetKeepShooterOn(true),
             new HomeToSpeakerCmd(),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("LS_W1-3_1")),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS3_1),
                                         new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                                                     new HomeToSpeakerCmd())),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("LS_W1-3_2")),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS3_2),
                                         new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                                                     new HomeToSpeakerCmd())),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("LS_W1-3_3")),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS3_3),
                                         new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
                                                                     new HomeToSpeakerCmd())),
             shooter.cmdSetKeepShooterOn(false),
@@ -201,27 +209,34 @@ public class CatzAutonomous {
      *           Drives to center line to pick up note above previous note (C3)
      *           Goes to same spot under stage to shoot into speaker
      */
+
+    private PathPlannerPath C35_1 = PathPlannerPath.fromPathFile("Scoring_C3-5_1");
+    private PathPlannerPath C35_2 = PathPlannerPath.fromPathFile("Scoring_C3-5_2");
+    private PathPlannerPath C35_3 = PathPlannerPath.fromPathFile("Scoring_C3-5_3");
+    private PathPlannerPath C35_4 = PathPlannerPath.fromPathFile("Scoring_C3-5_4");
+    private PathPlannerPath C35_5 = PathPlannerPath.fromPathFile("Scoring_C3-5_5");
+    private PathPlannerPath C35_6 = PathPlannerPath.fromPathFile("Scoring_C3-5_6");
+
     private Command scoringC35() {
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("Scoring_C3-5_1")),
+            setAutonStartPose(C35_1),
             shooter.cmdShooterRamp(),
             shooter.cmdSetKeepShooterOn(true),
             new HomeToSpeakerCmd(),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_1")),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(C35_1),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_2")),
+            new PPTrajectoryFollowingCmd(C35_2),
             new HomeToSpeakerCmd(),
-            shooter.cmdShooterRamp(),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_3")),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(C35_3),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_4")),
+            new PPTrajectoryFollowingCmd(C35_4),
             new HomeToSpeakerCmd(),
-            shooter.cmdShooterRamp(),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_5")),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(C35_5),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C3-5_6")),
+            new PPTrajectoryFollowingCmd(C35_6),
             new HomeToSpeakerCmd(),
-            shooter.cmdShooterRamp()
+            shooter.cmdSetKeepShooterOn(false),
+            Commands.runOnce(()->shooter.disableShooter())
         );
     }
 

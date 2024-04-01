@@ -78,7 +78,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     // Configure the trigger bindings and default cmds
     defaultCommands();
     configureBindings();
-    FollowPathCommand.warmupCommand().schedule();
+    
   }
   
 
@@ -180,6 +180,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                         .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));     //NOTE IN SHOOTER TRANSFERED TO INTAKE
         triggerModeHoard.and(xboxAux.rightBumper())
                         .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)); //NOTE IN INTAKE TRANSFERED TO SHOOTER
+
+        triggerModeHoard.and(xboxDrv.leftStick())
+                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
+                    
 
     //------------------------------------------------------------------------------------  
     // CLIMB MODE

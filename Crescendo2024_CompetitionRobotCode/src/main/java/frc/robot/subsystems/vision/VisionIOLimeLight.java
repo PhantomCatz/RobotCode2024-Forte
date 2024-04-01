@@ -69,6 +69,7 @@ public class VisionIOLimeLight implements VisionIO {
         double latency = (llresults.targetingResults.latency_capture + llresults.targetingResults.latency_pipeline) / 1000; //data[6] or latency is recorded in ms; divide by 1000 to get s
         inputs.latency = latency;
         //shoves in new pose2d from pose3d object estimate depending on if new apriltag detected
+        
         if (inputs.hasTarget) {
             // sets input timestamp
             inputs.timestamp = Timer.getFPGATimestamp() - latency;
