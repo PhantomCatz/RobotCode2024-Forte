@@ -198,7 +198,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Logging
         //------------------------------------------------------------------------------------------------
         Logger.recordOutput("Obometry/Pose", getPose()); 
-        Logger.recordOutput("Obometry/LimelightPose " , vision.getVisionOdometry().get(0).getPose()); 
+        Logger.recordOutput("Obometry/LimelightPose Soba" , vision.getVisionOdometry().get(1).getPose()); 
+        Logger.recordOutput("Obometry/LimelightPose Udon" , vision.getVisionOdometry().get(2).getPose()); 
+
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
 
         // Update SmartDashboard with the gyro angle
