@@ -270,13 +270,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
          SubsystemCatzVision.getInstance().getAprilTagID(0) == 4){
           
         m_currentTurretState = TurretState.TRACKING_APRILTAG;
-        //System.out.println("apriltag");
+        System.out.println("apriltag");
       }else{
         //--------------------------------------------------------------------------------------------
         //  We are aiming using Odometry
         //  collect drivetrain pose
         //--------------------------------------------------------------------------------------------
-        //System.out.println("pose");
+        System.out.println("pose");
         Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
   
         //take difference between speaker and the currnet robot translation
@@ -390,7 +390,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {     //TBD conver to top method and deletee after converting
     m_turretInPos       = false;
     m_currentTurretState = TurretState.AUTO;
-    System.out.println(newPosition.getTurretTargetAngle());
+    // System.out.println(newPosition.getTurretTargetAngle());
     m_turretTargetDegree = newPosition.getTurretTargetAngle();
   }
 

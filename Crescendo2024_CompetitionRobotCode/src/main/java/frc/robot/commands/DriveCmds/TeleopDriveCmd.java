@@ -8,6 +8,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzAutonomous;
+import frc.robot.Robot;
 import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.OIConstants;
@@ -23,8 +24,6 @@ public class TeleopDriveCmd extends Command {
   private Supplier<Boolean> m_isFieldOrientedDisabled;
 
   private SlewRateLimiter slewRateLimiter = new SlewRateLimiter(1.0);
-
-  private double flipDirection = 0.0;
 
   //drive variables
   private double xSpeed;
@@ -47,22 +46,14 @@ public class TeleopDriveCmd extends Command {
   }
 
   @Override
-  public void initialize() {
-    if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Red) {
-
-      flipDirection = -1.0;
-    } else {
-
-      flipDirection = 1.0;
-    }
-  }
+  public void initialize() {}
 
   @Override
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
-    xSpeed =       -m_supplierLeftJoyY.get() * flipDirection;
-    ySpeed =       -m_supplierLeftJoyX.get() * flipDirection; 
-    turningSpeed =  m_supplierRightJoyX.get() * flipDirection;
+    xSpeed =       -m_supplierLeftJoyY.get() * Robot.flipDirection;
+    ySpeed =       -m_supplierLeftJoyX.get() * Robot.flipDirection; 
+    turningSpeed =  m_supplierRightJoyX.get();
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
@@ -70,9 +61,9 @@ public class TeleopDriveCmd extends Command {
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed * DriveConstants.MAX_ANGSPEED_RAD_PER_SEC: 0.0;
 
     //apply slew rate limiting
-    xSpeed =       slewRateLimiter.calculate(turningSpeed);
-    ySpeed =       slewRateLimiter.calculate(turningSpeed);
-    turningSpeed = slewRateLimiter.calculate(turningSpeed);
+    // xSpeed =       slewRateLimiter.calculate(turningSpeed);
+    // ySpeed =       slewRateLimiter.calculate(turningSpeed);
+    // turningSpeed = slewRateLimiter.calculate(turningSpeed);
 
     //Construct desired chassis speeds
     if (m_isFieldOrientedDisabled.get()) {

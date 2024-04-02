@@ -43,7 +43,8 @@ public class IntakeIOReal implements IntakeIO {
     private TalonFXConfiguration talonConfigsPivot  = new TalonFXConfiguration();
     private TalonFXConfiguration talonConfigsRoller = new TalonFXConfiguration();
 
-    private final DigitalInput intakeBeamBreak = new DigitalInput(5);
+    private final DigitalInput loadBeamBreak = new DigitalInput(5);
+    private final DigitalInput adjustBeamBreak = new DigitalInput(4);
 
 
     public IntakeIOReal() {
@@ -113,7 +114,8 @@ public class IntakeIOReal implements IntakeIO {
         // inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
         inputs.pivotMtrVelocityRPS =    pivotMtr.getVelocity().getValue();
         // //true if beambreak is broken \/ \/
-        inputs.isIntakeBeamBrkBroken =   !intakeBeamBreak.get(); //TBD add method for controling inputs
+        //inputs.AdjustBeamBrkState =   !adjustBeamBreak.get(); //TBD dd method for controling inputs
+        inputs.LoadBeamBrkState =       !loadBeamBreak.get();
         inputs.closedLoopPivotMtr =     pivotMtr.getClosedLoopError().getValue();
         inputs.pivotMtrCurrent =         pivotMtr.getStatorCurrent().getValue();
     }

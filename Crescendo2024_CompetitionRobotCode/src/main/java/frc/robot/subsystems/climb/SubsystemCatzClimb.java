@@ -55,21 +55,21 @@ public class SubsystemCatzClimb extends SubsystemBase {
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("climb/inputs", inputs);
+    // io.updateInputs(inputs);
+    // Logger.processInputs("climb/inputs", inputs);
 
-    if(DriverStation.isDisabled()) {
-      io.setClimbMtrPercentOutputLT(0.0);
-      io.setClimbMtrPercentOutputRT(0.0);
-      climbPercentOutputLT = 0.0;
-      climbPercentOutputRT = 0.0;
+    // if(DriverStation.isDisabled()) {
+    //   io.setClimbMtrPercentOutputLT(0.0);
+    //   io.setClimbMtrPercentOutputRT(0.0);
+    //   climbPercentOutputLT = 0.0;
+    //   climbPercentOutputRT = 0.0;
 
-    } else {
+    // } else {
       
-        io.setClimbMtrPercentOutputLT(climbPercentOutputLT);
-        io.setClimbMtrPercentOutputRT(climbPercentOutputRT);
+    //     io.setClimbMtrPercentOutputLT(climbPercentOutputLT);
+    //     io.setClimbMtrPercentOutputRT(climbPercentOutputRT);
 
-    }
+    // }
   }
 
   public void setClimbModeEnabled(boolean set) {

@@ -39,19 +39,20 @@ public class VisionIOLimeLight implements VisionIO {
         
     }
 
-    private Pose2d prevPos = null;
+    private Pose2d prevVisionPos = null;
+    private Pose2d visionPose2d = null;
     private boolean badData = false;
 
     @Override
     public void updateInputs(VisionIOInputs inputs) {
         
-        if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) { 
-            primaryTrackingApriltag = 7;
-        } else {
-            primaryTrackingApriltag = 4;
-        }
+        // if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) { 
+        //     primaryTrackingApriltag = 7;
+        // } else {
+        //     primaryTrackingApriltag = 4;
+        // }
 
-        NetworkTableInstance.getDefault().getTable("limelight-ramen").getEntry("priorityid").setNumber(primaryTrackingApriltag);
+        // NetworkTableInstance.getDefault().getTable("limelight-ramen").getEntry("priorityid").setNumber(primaryTrackingApriltag);
 
 
             //load up raw apriltag values for distance calculations
@@ -88,18 +89,19 @@ public class VisionIOLimeLight implements VisionIO {
             inputs.isNewVisionPose = true;
 
             
-            Pose2d visionPose2d = new Pose2d(visionPoseInfo[0],visionPoseInfo[1], new Rotation2d());
-            if(prevPos == null){
-                prevPos = visionPose2d;
+            visionPose2d = new Pose2d(visionPoseInfo[0],visionPoseInfo[1], new Rotation2d());
+            if(prevVisionPos == null){
+                prevVisionPos = visionPose2d;
             }
 
-            if(visionPose2d.getTranslation().getDistance(prevPos.getTranslation()) > 0.3){
+            if(visionPose2d.getTranslation().getDistance(prevVisionPos.getTranslation()) > 0.3){
                 badData = true;
                 visionPose2d = SubsystemCatzDrivetrain.getInstance().getPose();
+                prevVisionPos = SubsystemCatzDrivetrain.getInstance().getPose();
             }
 
             if(!badData){
-                prevPos = visionPose2d;
+                prevVisionPos = visionPose2d;
             }
 
             badData = false;
@@ -111,6 +113,8 @@ public class VisionIOLimeLight implements VisionIO {
         } 
         else {
             inputs.isNewVisionPose = false;
+            visionPose2d = SubsystemCatzDrivetrain.getInstance().getPose();
+            prevVisionPos = null;
         }
 
     } 

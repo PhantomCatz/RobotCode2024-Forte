@@ -48,9 +48,16 @@ public class SubsystemCatzIntake extends SubsystemBase {
     ROLLERS_IN_SCORING_AMP,
     ROLLERS_OUT_EJECT,
     ROLLERS_OUT_SHOOTER_HANDOFF,
-    ROLLERS_OFF
+    ROLLERS_OFF, NOTE_ADJUST, BEAM_BREAK_CHECK
   }
 
+  private static final boolean BEAM_IS_BROKEN     = true;
+  private static final boolean BEAM_IS_NOT_BROKEN = false;
+
+  private final double ROLLER_ADJUST_BACK    = -0.1;
+  private final double ROLLER_ADJUST_FORWARD =  0.1;
+
+  private boolean m_desiredBeamBreakState;
   private IntakeRollerState m_currentRollerState;
 
   // -----------------------------------------------------------------------------------------------
@@ -220,17 +227,35 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // ---------------------------------------Intake Roller logic -------------------------------------------
       switch (m_currentRollerState) {
         case ROLLERS_IN_SOURCE:
-          if (inputs.isIntakeBeamBrkBroken) {
+          if (inputs.LoadBeamBrkState) {
             setRollersOff();
           }
           break;
         case ROLLERS_IN_GROUND:
-          if (inputs.isIntakeBeamBrkBroken) {
+          if (inputs.LoadBeamBrkState) {
             setRollersOff();
+            //m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
           }
           break;
-        case ROLLERS_IN_SCORING_AMP:
+
+        case BEAM_BREAK_CHECK:
+          if(inputs.AdjustBeamBrkState == BEAM_IS_BROKEN) {
+            m_desiredBeamBreakState = BEAM_IS_NOT_BROKEN;
+            io.setRollerPercentOutput(ROLLER_ADJUST_BACK);
+          } else {
+            m_desiredBeamBreakState = BEAM_IS_BROKEN;
+            io.setRollerPercentOutput(ROLLER_ADJUST_FORWARD);
+          }
+          m_currentRollerState = IntakeRollerState.NOTE_ADJUST;
           break;
+
+        case NOTE_ADJUST:
+          if(inputs.AdjustBeamBrkState == m_desiredBeamBreakState) {
+            setRollersOff();
+            m_currentRollerState = IntakeRollerState.ROLLERS_OFF;
+          }
+          break;
+
         case ROLLERS_OUT_EJECT:
 
           if (rollerTimer.hasElapsed(0.5)) {
@@ -535,7 +560,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   public boolean getIntakeBeamBreakBroken() {
-    return inputs.isIntakeBeamBrkBroken;
+    return inputs.LoadBeamBrkState;
   }
 
   public void setWasIntakeInAmpScoring(boolean set) {
