@@ -200,7 +200,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
               m_desiredBeamBreakState = BEAM_IS_BROKEN;
               io.fineAdjustFwd();
             }
-                currentShooterState = ShooterState.FINE_TUNE;
+            currentShooterState = ShooterState.FINE_TUNE;
           break;
 
           case FINE_TUNE:
