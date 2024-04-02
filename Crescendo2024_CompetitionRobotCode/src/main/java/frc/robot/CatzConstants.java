@@ -234,7 +234,7 @@ public final class CatzConstants {
         SWERVE_RIGHT_FRONT_LOCATION);
 
     // data has been referenced using recalc calculator https://www.reca.lc/drive
-    public static final double MAX_SPEED = Units.feetToMeters(17.4); // meters per second 4.81
+    public static final double MAX_SPEED = Units.feetToMeters(25.0); // meters per second 4.81
 
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 12.0; // radians per second
     public static final double MAX_SPEED_DESATURATION = MAX_SPEED;

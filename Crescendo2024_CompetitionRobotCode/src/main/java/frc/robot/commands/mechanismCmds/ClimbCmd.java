@@ -41,6 +41,7 @@ public class ClimbCmd extends Command {
     System.out.println("in clmb");
     climb.setClimbModeEnabled(true);
     turret.cmdTurretDegree(SubsystemCatzTurret.HOME_POSITION_DEG);
+    shooter.setServoManualHold(1.0);
 
   }
 

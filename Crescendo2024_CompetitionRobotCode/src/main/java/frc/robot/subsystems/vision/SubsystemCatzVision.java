@@ -90,7 +90,6 @@ public class SubsystemCatzVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("useSingleTag", useSingleTag); //set by driverstation
 
         // clear results from last periodic
         results.clear();
@@ -115,19 +114,10 @@ public class SubsystemCatzVision extends SubsystemBase {
                     processVision(i);
                 }
             }
-        }
-
-        // limelightRangeFinder(1);
-        
+        }        
 
         //Logging
         Logger.recordOutput("Vision/ResultCount", results.size());
-
-        //log data
-        Logger.recordOutput("AprilTagID", primaryAprilTag);
-        Logger.recordOutput("Vertical Degrees to Apriltag", inputs[0].ty);
-        Logger.recordOutput("Distance to Apriltag", distanceToAprilTag);
-        Logger.recordOutput("Distance to Wall", aprilTagDistanceToWall);
     }
 
     static int camNum;

@@ -31,9 +31,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
   //-------------------------------------------------------------------------------------
   // Elevator Constants
-  //-------------------------------------------------------------------------------------
-  private static final double REV_SWITCH_POS = 0.0; 
-  
+  //-------------------------------------------------------------------------------------  
 
   private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
 
@@ -200,7 +198,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // Elevator Access Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionElevator(double targetPositionRev) {
-    // System.out.println("EUP" + targetPosition.getElevatorTargetRev());
     m_elevatorInPos = false;
     currentElevatorState = ElevatorControlState.AUTO;
 
@@ -210,7 +207,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
     if(m_targetPositionRev == ELEVATOR_STOW ||
        m_targetPositionRev == ELEVATOR_GROUND_PICKUP ||
        m_targetPositionRev == ELEVATOR_AMP_SCORE_DN) {
-                // System.out.println("E-Z");
       //-------------------------------------------------------------------------------------
       //  If elevator is below the stow clearance. No change
       //  If elevator is above the stow clearance. No change
@@ -220,7 +216,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
       // System.out.println(SubsystemCatzIntake.getInstance().getWristAngle());
       if(SubsystemCatzIntake.getInstance().getWristAngle() > SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG) {
         
-        // System.out.println("E-A");
            //-------------------------------------------------------------------------------------
           //  intake is above bumpers
           //----------------------------------------------------------------------------------
@@ -230,12 +225,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
               m_targetPositionRev == ELEVATOR_AMP_TRANSITION||
               m_targetPositionRev == ELEVATOR_SCORE_TRAP    ||
               m_targetPositionRev == ELEVATOR_AMP_SCORE) {        
-        // System.out.println("E-B");
 
       currentElevatorDirection = ElevatorDirection.UP;
       intakeClearanceAngle = SubsystemCatzIntake.INTAKE_MIN_ELEV_CLEARANCE_DEG;
       if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_MIN_ELEV_CLEARANCE_DEG) {
-        // System.out.println("E-C");
 
         //-------------------------------------------------------------------------------------
         //  intake is in front of elevator
@@ -271,10 +264,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // ----------------------------------------------------------------------------------
   public double getElevatorRevPos() {
     return inputs.elevatorPosRev;
-  }
-
-  private ElevatorControlState getElevatorState() {
-    return currentElevatorState;
   }
 
   public boolean getElevatorInPos() {

@@ -98,7 +98,6 @@ public class VisionIOLimeLight implements VisionIO {
             inputs.x = pose2d.getX();
             inputs.y = pose2d.getY();
             inputs.rotation = pose2d.getRotation().getRadians();
-            Logger.recordOutput("Obometry/VisionPose", new Pose2d(inputs.x,inputs.y,Rotation2d.fromRadians(inputs.rotation)));
         } 
         else {
             inputs.isNewVisionPose = false;

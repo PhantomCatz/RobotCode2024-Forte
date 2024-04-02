@@ -19,6 +19,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
 public class HomeToSpeakerCmd extends Command {
@@ -96,7 +97,6 @@ public class HomeToSpeakerCmd extends Command {
   // Called when the command is initially scheduled.
   //------------------------------------------------------------------------------------------------
 
-  private double prevTime = 0.0;
   @Override
   public void initialize() {
     timer.reset();
@@ -112,7 +112,7 @@ public class HomeToSpeakerCmd extends Command {
 
     } else {
       //translation of the Red alliance speaker
-      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);      //TBD - Magic #'s, what about defining Red & Blue constants, using IF to select and have 1 translation2D() call
+      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);     
     }
     turret.setTurretInPose(false);
 
@@ -130,11 +130,11 @@ public class HomeToSpeakerCmd extends Command {
   
       double servoPos = shooterPivotTable.get(newDist);
       
-      // if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7) {
-      //   shooter.aprilTagVerticalTargeting();
-      // } else {
-      //   shooter.updateShooterServo(servoPos);
-      // }
+      if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7) {
+        shooter.aprilTagVerticalTargeting();
+      } else {
+        shooter.updateShooterServo(servoPos);
+      }
 
       turret.aimAtGoal(m_targetXY,false, false);
       
@@ -148,7 +148,7 @@ public class HomeToSpeakerCmd extends Command {
   
       if(DriverStation.isAutonomous()){
   
-        if((/*shooter.getShooterServoInPos() && */ turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(AUTON_TIMEOUT_SEC))) { //TBD add the timer code for shooter pivot
+        if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(AUTON_TIMEOUT_SEC))) { 
   
           shooter.setShooterState(ShooterState.SHOOTING);
         }

@@ -32,14 +32,6 @@ public class ClimbIOReal implements ClimbIO {
         climbMtrLT.getConfigurator().apply(new TalonFXConfiguration());
         climbMtrRT.getConfigurator().apply(new TalonFXConfiguration());
 
-                // set Motion Magic settings
-        climbTalonConfigs.MotionMagic.MotionMagicCruiseVelocity = 30; // Target cruise velocity of 80 rps
-        climbTalonConfigs.MotionMagic.MotionMagicAcceleration   = 160; // Target acceleration of 160 rps/s (0.5 seconds)
-        climbTalonConfigs.MotionMagic.MotionMagicJerk           = 16000; // Target jerk of 1600 rps/s/s (0.1 seconds)
-
-        climbTalonConfigs.Slot0.kP = 2.0;
-        climbTalonConfigs.Slot0.kI = 0.0;
-        climbTalonConfigs.Slot0.kD = 0.0;
             //current limit
         climbTalonConfigs.CurrentLimits = new CurrentLimitsConfigs();
         climbTalonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
@@ -48,9 +40,6 @@ public class ClimbIOReal implements ClimbIO {
         climbTalonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
         climbTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        climbMtrLT.optimizeBusUtilization();
-        climbMtrRT.optimizeBusUtilization();
 
         //check if climb motor is initialized correctly
         initializationStatus = climbMtrRT.getConfigurator().apply(climbTalonConfigs);

@@ -89,17 +89,6 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     DriverStation.silenceJoystickConnectionWarning(true);
-    // SubsystemCatzVision.getInstance().setUseSingleTag(true, 4);
-    // if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263) { 
-    //   lead.mid.colorSolid(Color.kGreen);
-    //   lead.top.colorSolid(Color.kGreen);
-    //   lead.bot.colorSolid(Color.kGreen);
-      
-    // } else {
-    //   lead.mid.colorSolid(Color.kRed);
-    //   lead.top.colorSolid(Color.kRed);
-    //   lead.bot.colorSolid(Color.kRed);    
-    // }
 
     lead.mid.colorRainbow();
     lead.mid.setMode(LEDMode.Solid);
@@ -116,6 +105,18 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
+    //checklist done leds
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263) { 
+      lead.mid.colorSolid(Color.kGreen);
+      lead.top.colorSolid(Color.kGreen);
+      lead.bot.colorSolid(Color.kGreen);
+      
+    } else {
+      lead.mid.colorSolid(Color.kRed);
+      lead.top.colorSolid(Color.kRed);
+      lead.bot.colorSolid(Color.kRed);    
+    }
+
   }
 
   @Override

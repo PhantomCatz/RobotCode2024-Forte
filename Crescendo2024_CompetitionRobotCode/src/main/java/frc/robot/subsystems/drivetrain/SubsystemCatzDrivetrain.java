@@ -71,6 +71,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     private final double AUTON_SPEED_SLOWDOWN_FACTOR = 0.1;
     private boolean isAutonSlowedDown = false;
 
+    private double xyStdDev;
+
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
         // Determine gyro input/output based on the robot mode
@@ -142,10 +144,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         }
         // Update gyro inputs and log them
         gyroIO.updateInputs(gyroInputs);
-        Logger.processInputs("Drive/gyroinputs ", gyroInputs);
-
-        //update with wheel encoder values
-        m_poseEstimator.update(getRotation2d(), getModulePositions());      
+        Logger.processInputs("Drive/gyroinputs ", gyroInputs);  
         
         var visionOdometry = vision.getVisionOdometry();   
         for (int i = 0; i < visionOdometry.size(); i++) {
@@ -153,11 +152,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 continue;
             }
             //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
-            double xyStdDev = 0;
-
-            // if(visionOdometry.get(i).getPose().getX() == -1 && visionOdometry.get(i).getPose().getY() == -1){
-            //     break;
-            // }
+            xyStdDev = 0;
 
             if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
                 xyStdDev = 3;
@@ -169,49 +164,31 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 xyStdDev = 40;
             }
 
-            //System.out.println(visionOdometry.get(i).getAvgArea());
-
-
-            // dSpeed = Math.abs(dSpeed);
-            // if (dSpeed > 10){
-            //     xyStdDev *= dSpeed / 4; //account for some shaking when suddenly moving fast.
-            // }
-
-
             m_poseEstimator.setVisionMeasurementStdDevs(
-            VecBuilder.fill(0.7,0.7,99999999)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
+            VecBuilder.fill(xyStdDev, xyStdDev,99999999)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
         
             m_poseEstimator.addVisionMeasurement(
                 new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
                 visionOdometry.get(i).getTimestamp()
             );
-
         }
+
+        //update with wheel encoder values
+        m_poseEstimator.update(getRotation2d(), getModulePositions());    
 
         m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
 
 
-        // Update pose estimator with module encoder values + gyro
-        
-        // double dt = Timer.getFPGATimestamp() - prevTime;
-        // double dSpeed = m_poseEstimator.getEstimatedPosition().getTranslation().getDistance(prevPose.getTranslation()) / dt;
-        
-        // prevPose = m_poseEstimator.getEstimatedPosition();
-        // prevTime = Timer.getFPGATimestamp();
-        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop 
-
         //logging
         Logger.recordOutput("Obometry/Pose", getPose()); 
-        //Logger.recordOutput("Obometry/LimelightPose", vision.getVisionOdometry().get(0).getPose()); 
+        Logger.recordOutput("Obometry/LimelightPose " , vision.getVisionOdometry().get(0).getPose()); 
 
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
-        // Logger.recordOutput("Obometry/pose", getPose());
 
         // Update SmartDashboard with the gyro angle
         SmartDashboard.putNumber("gyroAngle", getGyroAngle());
         m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
-        // m_fieldRelAccel = new FieldRelativeAccel(m_fieldRelVel, m_lastFieldRelVel, 0.02);
-        // m_lastFieldRelVel = m_fieldRelVel;
+
     }
 
     public void driveRobotWithDescritizeDynamics(ChassisSpeeds chassisSpeeds) {

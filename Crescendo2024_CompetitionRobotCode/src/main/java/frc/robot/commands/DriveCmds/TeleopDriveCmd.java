@@ -3,6 +3,8 @@ package frc.robot.commands.DriveCmds;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants.DriveConstants;
@@ -17,6 +19,8 @@ public class TeleopDriveCmd extends Command {
   private Supplier<Double> m_supplierLeftJoyY;
   private Supplier<Double> m_supplierRightJoyX;
   private Supplier<Boolean> m_isFieldOrientedDisabled;
+
+  private SlewRateLimiter slewRateLimiter = new SlewRateLimiter(0.5);
 
   public TeleopDriveCmd(Supplier<Double> supplierLeftJoyX,
                         Supplier<Double> supplierLeftJoyY,
@@ -44,6 +48,11 @@ public class TeleopDriveCmd extends Command {
     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
     ySpeed =       Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed * DriveConstants.MAX_SPEED: 0.0;
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed * DriveConstants.MAX_ANGSPEED_RAD_PER_SEC: 0.0;
+
+    //apply slew rate limiting
+    xSpeed =       slewRateLimiter.calculate(turningSpeed);
+    ySpeed =       slewRateLimiter.calculate(turningSpeed);
+    turningSpeed = slewRateLimiter.calculate(turningSpeed);
 
     //Construct desired chassis speeds
     ChassisSpeeds chassisSpeeds;

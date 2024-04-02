@@ -71,8 +71,6 @@ public class IntakeIOReal implements IntakeIO {
         talonConfigsPivot.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
 
         talonConfigsPivot.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        //pivotMtr.optimizeBusUtilization();
         
         pivotMtr.setPosition(SubsystemCatzIntake.INTAKE_PIVOT_MTR_POS_OFFSET_IN_REV);
 
@@ -134,18 +132,6 @@ public class IntakeIOReal implements IntakeIO {
     @Override
     public void setIntakePivotVoltage(double volts) {
         pivotMtr.setControl(new VoltageOut(volts));
-    }
-
-    @Override
-    public void setSquishyMode(boolean enable) {
-        double limit;
-        if(enable) {
-            talonConfigsPivot.CurrentLimits.SupplyCurrentLimit = 10; 
-        } else {
-            talonConfigsPivot.CurrentLimits.SupplyCurrentLimit = KRAKEN_CURRENT_LIMIT_AMPS;
-        }
-        System.out.println("in squishy set " + enable);
-        pivotMtr.getConfigurator().apply(talonConfigsPivot);
     }
 
     @Override

@@ -127,9 +127,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private final double TURRET_POWER_SCALE = 0.5;
 
   private double  manualTurretPwr;
-  
-  private double manualTurretPwrRT;
-  private double manualTurretPwrLT;
 
   //-----------------------------------------------------------------------------------------------
   //
@@ -194,7 +191,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
     m_closedLoopError = Math.abs(m_turretTargetDegree - currentTurretDegree);
 
     apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0);
-    //offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(1);
 
 
     if(DriverStation.isDisabled()) {
@@ -205,7 +201,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //------------------------------------------------------------------------------------------
         //  Manual Mode - Use Operator input to set turret motor power % output
         //------------------------------------------------------------------------------------------
-        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {   //TBD add back 
+        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {    
           //------------------------------------------------------------------------------------------    
           //  Intake angle is wihin valid range.
           //------------------------------------------------------------------------------------------
@@ -217,7 +213,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //  Auto Mode - Use PID to go to specified angle
         //------------------------------------------------------------------------------------------
 
-        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {   //TBD add back 
+        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {   
           //------------------------------------------------------------------------------------------    
           //  Intake angle is wihin valid range.
           //------------------------------------------------------------------------------------------
@@ -344,16 +340,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //-------------------------------------------------------------------------------------------------
   //    Manual Rotate Methods
   //-------------------------------------------------------------------------------------------------
-  public void rotateLeft(double power){
-    m_currentTurretState = TurretState.FULL_MANUAL; 
-    manualTurretPwrLT  = -power * TURRET_POWER_SCALE;    
-
-  }
-
-  public void rotateRight(double power){
-    m_currentTurretState = TurretState.FULL_MANUAL;         
-    manualTurretPwrRT  = power * TURRET_POWER_SCALE;
-  }
 
   public Command cmdRotateTurretManualOn(Supplier<Double> power){
     return run(()->{
@@ -367,13 +353,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //-------------------------------------------------------------------------------------------------
   //    Manual Methods
   //-------------------------------------------------------------------------------------------------
-  public Command cmdTurretLT(Supplier<Double> manualPower) {
-    return run(() -> rotateLeft(manualPower.get()));
-  }
-  
-  public Command cmdTurretRT(Supplier<Double> manualPower) {
-    return run(() -> rotateRight(manualPower.get()));
-  }
   
   public Command cmdTurretOff() {
     return run(() -> setTurretDisabled());
@@ -406,19 +385,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {     //TBD conver to top method and deletee after converting
     m_turretInPos       = false;
     m_currentTurretState = TurretState.AUTO;
-    System.out.println(newPosition.getTurretTargetAngle());
     m_turretTargetDegree = newPosition.getTurretTargetAngle();
-  }
-
-  public Command testTurretAngles(){   
-    return run(()->{
-      m_currentTurretState = TurretState.AUTO;
-      if(Math.abs(m_turretTargetDegree) != 40){
-        m_turretTargetDegree = 40;
-        return;
-      }
-      m_turretTargetDegree *= -1;
-    });
   }
 
 

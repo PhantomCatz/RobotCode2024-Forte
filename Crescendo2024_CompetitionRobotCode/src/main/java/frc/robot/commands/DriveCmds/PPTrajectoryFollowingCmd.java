@@ -69,11 +69,6 @@ public class PPTrajectoryFollowingCmd extends Command {
             // System.out.println("flip");
         }
 
-        //path debug
-        // for(int i=0; i<path.getAllPathPoints().size(); i++){
-        //     System.out.println(path.getAllPathPoints().get(i).position);
-        // }
-       // Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
         //create pathplanner trajectory
 
