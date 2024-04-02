@@ -66,6 +66,7 @@ public class VisionIOLimeLight implements VisionIO {
         //creating new pose3d object based of pose from network tables
         Pose3d pose = llresults.targetingResults.getBotPose3d_wpiBlue();
         inputs.tagCount = llresults.targetingResults.targets_Fiducials.length;
+        inputs.maxDistance = llresults.targetingResults.botpose_avgdist;
 
         // set if the Limelight has a target to loggable boolean
         if (inputs.tv == 1) {
