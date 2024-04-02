@@ -26,7 +26,7 @@ public class ClimbIOReal implements ClimbIO {
 
 
     public ClimbIOReal() {
-        climbMtrLT = new TalonFX(40); //TBD
+        climbMtrLT = new TalonFX(40); 
         climbMtrRT = new TalonFX(41);
 
         climbMtrLT.getConfigurator().apply(new TalonFXConfiguration());
@@ -79,11 +79,6 @@ public class ClimbIOReal implements ClimbIO {
         climbMtrLT.set(output);
     }
 
-    @Override
-    public void setClimbSelectedSensorPositionLT(double readPosition) {
-        climbMtrLT.setPosition(readPosition);
-    }
-
     
     @Override
     public void setClimbPositionRT(double climbPosition) {
@@ -94,13 +89,6 @@ public class ClimbIOReal implements ClimbIO {
     public void setClimbMtrPercentOutputRT(double output) {
         climbMtrRT.set(output);
     }
-
-    @Override
-    public void setClimbSelectedSensorPositionRT(double readPosition) {
-        climbMtrRT.setPosition(readPosition);
-    }
-
-
 
     
 }

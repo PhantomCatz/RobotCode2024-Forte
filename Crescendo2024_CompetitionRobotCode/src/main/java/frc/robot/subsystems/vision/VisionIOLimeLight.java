@@ -7,12 +7,14 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.FieldConstants;
 import frc.robot.Utils.LimelightHelpers;
 import frc.robot.Utils.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -23,6 +25,8 @@ public class VisionIOLimeLight implements VisionIO {
     public boolean getTarget;
     private double[] lastData = new double[6];
 
+    private int primaryTrackingApriltag;
+
      /**
      * Implements Limelight camera
      *
@@ -32,11 +36,8 @@ public class VisionIOLimeLight implements VisionIO {
     public VisionIOLimeLight(String name) {
         NetworkTableInstance.getDefault().getTable(name).getEntry("ledMode").setNumber(1);
         this.name = name;
-        // System.out.println(name);
-        // System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
+        System.out.println("Limeilight " + name + " instantiated");
         
-        Logger.recordOutput("Obometry/VisionPose", new Pose2d());
-
     }
 
     private Pose2d prevPos = null;
@@ -44,6 +45,16 @@ public class VisionIOLimeLight implements VisionIO {
 
     @Override
     public void updateInputs(VisionIOInputs inputs) {
+        
+        if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
+            primaryTrackingApriltag = 7;
+        } else {
+            primaryTrackingApriltag = 4;
+        }
+
+        NetworkTableInstance.getDefault().getTable(name).getEntry("priorityid").setNumber(primaryTrackingApriltag);
+
+
             //load up raw apriltag values for distance calculations
         LimelightResults llresults = LimelightHelpers.getLatestResults(name);
         inputs.ty = NetworkTableInstance.getDefault().getTable(name).getEntry("ty").getDouble(0); //vertical offset from crosshair to target in degrees

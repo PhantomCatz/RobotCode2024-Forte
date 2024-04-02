@@ -7,11 +7,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.VisionConstants;
@@ -31,31 +27,7 @@ public class SubsystemCatzVision extends SubsystemBase {
 
     private final List<SubsystemCatzVision.PoseAndTimestamp> results = new ArrayList<>(); //in a list to account for multiple cameras
 
-    //All Apriltag heights are measured from ground level to the center of the Apriltag
-    //- Actually all values will be the centimeter recorded values because the inches are in fractions :(
-    //Apriltag height values converted from inches
-
-    final double LIMELIGHT_PLACEMENT_HEIGHT_METERS = (50.2/100);//Units.feetToMeters(1.0); 
-
-    //CENTIMETERS 
-    final double SOURCE_APRILTAG_HEIGHT_METERS = (130.5/100);//Units.feetToMeters(4.01); 
-    final double SPEAKER_APRILTAG_HEIGHT_METERS = (140.5/100);//Units.feetToMeters(4.33071);
-    final double STAGE_APRILTAG_HEIGHT_METERS = (129.5/100);//Units.feetToMeters(3.9583);
-    final double AMP_APRILTAG_HEIGHT_METERS = (130.5/100);//Units.feetToMeters(4.01);
-    final double SPEAKER_HOOD_HEIGHT_METERS = (202/100);
-    
-    static double aprilTagDistanceToWall;
-    static double aprilTagDistanceToSource;
-    static double aprilTagDistanceToTrap;
-    static double aprilTagDistanceToSpeaker;
-    static double aprilTagDistanceToAmp;
-    static double distanceToAprilTag;
-    static String primaryAprilTag;
-    static boolean horizontallyAllignedWithAprilTag;
-
-    double targetID;
-    static double horizontalTargetOffset;
-
+    private double targetID;
     private int acceptableTagID;
     private boolean useSingleTag = false;
 
@@ -77,7 +49,7 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight-ramen"), //index 0
+                new VisionIOLimeLight("limelight-ramen"),   //index 0
                 new VisionIOLimeLight("limelight-soba"),    //index 1
                 new VisionIOLimeLight("limelight-udon")     //index 2
             });

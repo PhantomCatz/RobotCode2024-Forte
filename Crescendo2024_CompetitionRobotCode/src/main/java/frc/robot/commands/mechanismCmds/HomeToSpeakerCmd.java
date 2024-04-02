@@ -71,10 +71,9 @@ public class HomeToSpeakerCmd extends Command {
     shooterPivotTable.put(6.813, 0.0);
   }
 
-
-  public static final double k_ACCEL_COMP_FACTOR = 0.100; // in units of seconds    TBD Where is this used?
-
   private Translation2d m_targetXY;
+  private double newDist;
+  private double servoPos;
 
   private static final double AUTON_TIMEOUT_SEC = 1.0;
 
@@ -126,11 +125,12 @@ public class HomeToSpeakerCmd extends Command {
   //------------------------------------------------------------------------------------------------
   @Override 
   public void execute() {
-      double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
+      newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
   
-      double servoPos = shooterPivotTable.get(newDist);
+      servoPos = shooterPivotTable.get(newDist);
       
-      if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7) {
+      if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
+         SubsystemCatzVision.getInstance().getAprilTagID(0) == 4) {
         shooter.aprilTagVerticalTargeting();
       } else {
         shooter.updateShooterServo(servoPos);

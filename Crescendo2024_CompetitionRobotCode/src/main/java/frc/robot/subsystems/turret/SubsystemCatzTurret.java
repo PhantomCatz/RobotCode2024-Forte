@@ -93,6 +93,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private double m_closedLoopError;
   private double setPositionPower;
 
+  private boolean m_trackTarget = false;
+
   private double apriltagTrackingPower;
 
   private double offsetAprilTagX;   //TBD
@@ -100,7 +102,10 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private PIDController m_setPositionPID;
   private PIDController m_trackingApriltagPID;
 
+
   private boolean m_turretInPos;
+
+  private XboxController driveRumbleController;   //TBD - How does this work with Shooter rumble?
 
   private final SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();   //TBD - How does this work?
 
@@ -122,6 +127,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private final double TURRET_POWER_SCALE = 0.5;
 
   private double  manualTurretPwr;
+  
+  private double manualTurretPwrRT;
+  private double manualTurretPwrLT;
 
   //-----------------------------------------------------------------------------------------------
   //
@@ -178,14 +186,10 @@ public class SubsystemCatzTurret extends SubsystemBase {
       }
     } 
 
-    //set targetturret degree if note has exited shooter
-
-
     //obtain calculation values
     setPositionPower  =  -m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);
     m_closedLoopError = Math.abs(m_turretTargetDegree - currentTurretDegree);
 
-    apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0);
 
 
     if(DriverStation.isDisabled()) {
@@ -196,7 +200,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //------------------------------------------------------------------------------------------
         //  Manual Mode - Use Operator input to set turret motor power % output
         //------------------------------------------------------------------------------------------
-        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {    
+        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {   
           //------------------------------------------------------------------------------------------    
           //  Intake angle is wihin valid range.
           //------------------------------------------------------------------------------------------
@@ -208,7 +212,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //  Auto Mode - Use PID to go to specified angle
         //------------------------------------------------------------------------------------------
 
-        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {   
+        if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {  
           //------------------------------------------------------------------------------------------    
           //  Intake angle is wihin valid range.
           //------------------------------------------------------------------------------------------
@@ -217,13 +221,17 @@ public class SubsystemCatzTurret extends SubsystemBase {
    
       } else if (m_currentTurretState == TurretState.TRACKING_APRILTAG) {
         //------------------------------------------------------------------------------------------   
-        //  TRACKING_APRILTAG Mode - Use shooter limelight to track April Tag 7 to determine
+        //  TRACKING_APRILTAG Mode - Use shooter limelight to track April Tag 7 or 4 to determine
         //  turret angle go to specified angle
         //  only track the shooterlimelight to the speaker apriltag  
         //------------------------------------------------------------------------------------------
-        // if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {
-        //   io.turretSetPwr(apriltagTrackingPower);
-        // }
+        if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
+           SubsystemCatzVision.getInstance().getAprilTagID(0) == 4) {
+          
+          offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(0);
+          apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0.0);
+          io.turretSetPwr(apriltagTrackingPower);
+        }
       } 
     }
 
@@ -252,66 +260,63 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //  aimAtGoal()
   //
   //-------------------------------------------------------------------------------------------------
-  public void aimAtGoal(Translation2d goal, boolean aimUsingSpeakerAprilTag, boolean accountRobotVel) {
+  public void aimAtGoal(Translation2d goal, boolean accountRobotVel) {
 
-    if (aimUsingSpeakerAprilTag) {
-      // --------------------------------------------------------------------------------------------
+      //--------------------------------------------------------------------------------------------
       //  We are aiming using April Tags - Check if we are looking at he April Tag on the Speaker.
       //  If we are then we will TBD.  Otherwise we will TBD
-      // --------------------------------------------------------------------------------------------
-      if (SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {     //TBD 
-      
+      //--------------------------------------------------------------------------------------------
+      if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
+         SubsystemCatzVision.getInstance().getAprilTagID(0) == 4){
         m_currentTurretState = TurretState.TRACKING_APRILTAG;
-      } else {
-
-        //TBD add operator notification.
+        //System.out.println("apriltag");
+      }else{
+        //--------------------------------------------------------------------------------------------
+        //  We are aiming using Odometry
+        //  collect drivetrain pose
+        //--------------------------------------------------------------------------------------------
+        //System.out.println("pose");
+        Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
+  
+        //take difference between speaker and the currnet robot translation
+        Translation2d roboDistanceFromSpeaker = goal.minus(robotPose.getTranslation());
+        //--------------------------------------------------------------------------------------------
+        //  If we are trying to aim while moving, then we need to take into account robot velocity
+        //--------------------------------------------------------------------------------------------
+        
+        
+        if(accountRobotVel){
+          roboDistanceFromSpeaker.div(Math.hypot(roboDistanceFromSpeaker.getX(), roboDistanceFromSpeaker.getY())); //direction
+          double shootingSpeedVelocity = SubsystemCatzShooter.getInstance().getScuffedShootingSpeed();
+          roboDistanceFromSpeaker.times(shootingSpeedVelocity);  //magnitude
+          roboDistanceFromSpeaker.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx, 
+                                                          drivetrain.getFieldRelativeSpeed().vy));
+        }
+  
+        //--------------------------------------------------------------------------------------------
+        //  Calculate new turret target angle in deg based off:
+        //    - Current robot position
+        //    - Current robot rotation
+        //---------------------------------------------------------------------------------  -----------
+        double angle = Math.atan2(roboDistanceFromSpeaker.getY(), roboDistanceFromSpeaker.getX());
+  
+        Logger.recordOutput("AutoAim/local turret target angle", angle);
+  
+        angle = CatzMathUtils.toUnitCircAngle(angle - robotPose.getRotation().getRadians() - 3.14); 
+        Logger.recordOutput("AutoAim/global turret target angle", angle);
+  
+        m_turretTargetDegree = Math.toDegrees(angle);    //Convert from radians to deg
+        if(m_turretTargetDegree > 180) {
+          m_turretTargetDegree = m_turretTargetDegree - 360;
+        } else if(m_turretTargetDegree < -180) {
+          m_turretTargetDegree = m_turretTargetDegree + 360;
+        }
+  
+  
+        Logger.recordOutput("AutoAim/targetTurretDeg", m_turretTargetDegree);
+        m_currentTurretState   = TurretState.AUTO;
       }
 
-    } else {
-      //--------------------------------------------------------------------------------------------
-      //  We are aiming using Odometry
-      //  collect drivetrain pose
-      //--------------------------------------------------------------------------------------------
-      Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
-
-      //take difference between speaker and the currnet robot translation
-      Translation2d roboDistanceFromSpeaker = goal.minus(robotPose.getTranslation());
-      //--------------------------------------------------------------------------------------------
-      //  If we are trying to aim while moving, then we need to take into account robot velocity
-      //--------------------------------------------------------------------------------------------
-      
-      
-      if(accountRobotVel){
-        roboDistanceFromSpeaker.div(Math.hypot(roboDistanceFromSpeaker.getX(), roboDistanceFromSpeaker.getY())); //direction
-        double shootingSpeedVelocity = SubsystemCatzShooter.getInstance().getScuffedShootingSpeed();
-        roboDistanceFromSpeaker.times(shootingSpeedVelocity);  //magnitude
-        roboDistanceFromSpeaker.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx, 
-                                                        drivetrain.getFieldRelativeSpeed().vy));
-      }
-
-      //--------------------------------------------------------------------------------------------
-      //  Calculate new turret target angle in deg based off:
-      //    - Current robot position
-      //    - Current robot rotation
-      //---------------------------------------------------------------------------------  -----------
-      double angle = Math.atan2(roboDistanceFromSpeaker.getY(), roboDistanceFromSpeaker.getX());
-
-      Logger.recordOutput("AutoAim/local turret target angle", angle);
-
-      angle = CatzMathUtils.toUnitCircAngle(angle - robotPose.getRotation().getRadians() - 3.14); 
-      Logger.recordOutput("AutoAim/global turret target angle", angle);
-
-      m_turretTargetDegree = Math.toDegrees(angle);    //Convert from radians to deg
-      if(m_turretTargetDegree > 180) {
-        m_turretTargetDegree = m_turretTargetDegree - 360;
-      } else if(m_turretTargetDegree < -180) {
-        m_turretTargetDegree = m_turretTargetDegree + 360;
-      }
-
-
-      Logger.recordOutput("AutoAim/targetTurretDeg", m_turretTargetDegree);
-      m_currentTurretState   = TurretState.AUTO;
-    }
 
 
   }   //End of aimAtGoal()
@@ -332,9 +337,23 @@ public class SubsystemCatzTurret extends SubsystemBase {
     m_turretInPos = state;
   }
 
+  public void setTurretState(TurretState state){
+    m_currentTurretState = state;
+  }
+
   //-------------------------------------------------------------------------------------------------
   //    Manual Rotate Methods
   //-------------------------------------------------------------------------------------------------
+  public void rotateLeft(double power){
+    m_currentTurretState = TurretState.FULL_MANUAL; 
+    manualTurretPwrLT  = -power * TURRET_POWER_SCALE;    
+
+  }
+
+  public void rotateRight(double power){
+    m_currentTurretState = TurretState.FULL_MANUAL;         
+    manualTurretPwrRT  = power * TURRET_POWER_SCALE;
+  }
 
   public Command cmdRotateTurretManualOn(Supplier<Double> power){
     return run(()->{
@@ -348,6 +367,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //-------------------------------------------------------------------------------------------------
   //    Manual Methods
   //-------------------------------------------------------------------------------------------------
+  public Command cmdTurretLT(Supplier<Double> manualPower) {
+    return run(() -> rotateLeft(manualPower.get()));
+  }
+  
+  public Command cmdTurretRT(Supplier<Double> manualPower) {
+    return run(() -> rotateRight(manualPower.get()));
+  }
   
   public Command cmdTurretOff() {
     return run(() -> setTurretDisabled());
@@ -380,7 +406,19 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public void updateTargetPositionTurret(CatzMechanismPosition newPosition) {     //TBD conver to top method and deletee after converting
     m_turretInPos       = false;
     m_currentTurretState = TurretState.AUTO;
+    System.out.println(newPosition.getTurretTargetAngle());
     m_turretTargetDegree = newPosition.getTurretTargetAngle();
+  }
+
+  public Command testTurretAngles(){   
+    return run(()->{
+      m_currentTurretState = TurretState.AUTO;
+      if(Math.abs(m_turretTargetDegree) != 40){
+        m_turretTargetDegree = 40;
+        return;
+      }
+      m_turretTargetDegree *= -1;
+    });
   }
 
 

@@ -123,6 +123,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   private double m_startingLoadEncoderHandoff;
 
+  private double previousServoPosition;
+
   private boolean m_shooterServoInPos = false;
   private boolean autonKeepFlywheelOn = false;
   private boolean autonIsShooterRamped = false;
@@ -325,12 +327,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
       if(Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle()) > SubsystemCatzTurret.TURRET_MAX_SERVO_LIMIT_DEG) {
 
         if(m_targetServoPosition > SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT) {
-            m_targetServoPosition = SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT;
+           m_targetServoPosition = SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT;
         } 
       } 
     
       //cmd final output
-      io.setServoPosition(servoPosTuning.get());
+      io.setServoPosition(m_targetServoPosition);
 
       //-------------------------------------------------------------------------------------------
       //  Servos are commanded from 0.0 to 1.0 where 0.0 represents 0% of max extension and 1.0
@@ -387,7 +389,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Shooter Calculation Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
-    double previousServoPosition = m_targetServoPosition;
+    previousServoPosition = m_targetServoPosition;
     m_targetServoPosition = newPosition.getShooterVerticalTargetAngle();
     if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
       m_targetServoPosition = previousServoPosition;

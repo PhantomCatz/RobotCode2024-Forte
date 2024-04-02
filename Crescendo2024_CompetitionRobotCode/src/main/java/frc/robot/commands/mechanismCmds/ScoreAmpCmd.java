@@ -21,20 +21,12 @@ public class ScoreAmpCmd extends Command {
   private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
 
   private static Timer intakeNoteTimer = new Timer();
-
-  private boolean m_targetMechPoseStartReached = false;
-  private boolean m_targetMechPoseEndReached   = false;
-
-  private double m_previousTargetPositionDeg;
-  private int velocityCounter;
-
   public ScoreAmpCmd() {
     addRequirements(intake, elevator, shooter, turret);
   }
 
   @Override
   public void initialize() {
-    velocityCounter = 0;
 
     runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP_PRESET);
     intakeNoteTimer.reset();

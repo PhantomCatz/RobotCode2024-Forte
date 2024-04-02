@@ -124,6 +124,8 @@ public class ShooterIOReal implements ShooterIO {
         LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.enableVoltageCompensation(12.0); 
         LOAD_MOTOR.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 32767);
+        LOAD_MOTOR.burnFlash(); //save configs so if pwr lost to be reapplied
+
 
         
         //Create shooter mtr array for easier calls
@@ -143,11 +145,6 @@ public class ShooterIOReal implements ShooterIO {
         talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
 
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-
-       // BaseStatusSignal.setUpdateFrequencyForAll(50, );
-        // SHOOTER_MOTOR_LT.optimizeBusUtilization();
-        // SHOOTER_MOTOR_RT.optimizeBusUtilization();
-
 
 
         //pid

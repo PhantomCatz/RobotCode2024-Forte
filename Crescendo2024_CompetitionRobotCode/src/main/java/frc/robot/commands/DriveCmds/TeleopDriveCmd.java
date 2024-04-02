@@ -22,6 +22,14 @@ public class TeleopDriveCmd extends Command {
 
   private SlewRateLimiter slewRateLimiter = new SlewRateLimiter(0.5);
 
+  //drive variables
+  private double xSpeed;
+  private double ySpeed;
+  private double turningSpeed;
+
+  private ChassisSpeeds chassisSpeeds;
+
+
   public TeleopDriveCmd(Supplier<Double> supplierLeftJoyX,
                         Supplier<Double> supplierLeftJoyY,
                         Supplier<Double> supplierRightJoyX,
@@ -40,9 +48,9 @@ public class TeleopDriveCmd extends Command {
   @Override
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
-    double xSpeed =       -m_supplierLeftJoyY.get();
-    double ySpeed =       -m_supplierLeftJoyX.get(); 
-    double turningSpeed =  m_supplierRightJoyX.get();
+    xSpeed =       -m_supplierLeftJoyY.get();
+    ySpeed =       -m_supplierLeftJoyX.get(); 
+    turningSpeed =  m_supplierRightJoyX.get();
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
@@ -55,7 +63,6 @@ public class TeleopDriveCmd extends Command {
     turningSpeed = slewRateLimiter.calculate(turningSpeed);
 
     //Construct desired chassis speeds
-    ChassisSpeeds chassisSpeeds;
     if (m_isFieldOrientedDisabled.get()) {
         // Relative to robot
         chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);

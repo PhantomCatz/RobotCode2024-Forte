@@ -84,9 +84,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
   private void configureBindings() {    
     
-    //RESET GYRO
-   // xboxDrv.start().onTrue(driveTrain.resetGyro());
-
     //------------------------------------------------------------------------------------
     // INTAKE COMMANDS
     //------------------------------------------------------------------------------------
