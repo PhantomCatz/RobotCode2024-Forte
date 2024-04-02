@@ -266,11 +266,12 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //  We are aiming using April Tags - Check if we are looking at he April Tag on the Speaker.
       //  If we are then we will TBD.  Otherwise we will TBD
       //--------------------------------------------------------------------------------------------
+      System.out.println(SubsystemCatzVision.getInstance().getAprilTagID(0));
       if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
          SubsystemCatzVision.getInstance().getAprilTagID(0) == 4){
           
         m_currentTurretState = TurretState.TRACKING_APRILTAG;
-        System.out.println("apriltag");
+        // System.out.println("apriltag");
       }else{
         //--------------------------------------------------------------------------------------------
         //  We are aiming using Odometry
