@@ -50,7 +50,6 @@ public class SubsystemCatzVision extends SubsystemBase {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
                 new VisionIOLimeLight("limelight-ramen"),   //index 0
-                new VisionIOLimeLight("limelight-soba"),    //index 1
                 new VisionIOLimeLight("limelight-udon")     //index 2
             });
         }

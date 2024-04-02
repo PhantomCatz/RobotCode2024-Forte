@@ -64,7 +64,7 @@ public class VisionIOLimeLight implements VisionIO {
 
         // collects pose information based off network tables and orients itself depending on alliance side
         //creating new pose3d object based of pose from network tables
-        Pose3d pose = llresults.targetingResults.getBotPose3d_wpiBlue();
+        double[] visionPoseInfo = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
         inputs.tagCount = llresults.targetingResults.targets_Fiducials.length;
         inputs.maxDistance = llresults.targetingResults.botpose_avgdist;
 
@@ -88,27 +88,26 @@ public class VisionIOLimeLight implements VisionIO {
             inputs.isNewVisionPose = true;
 
             
-            Pose2d pose2d = pose.toPose2d();
-            
+            Pose2d visionPose2d = new Pose2d(visionPoseInfo[0],visionPoseInfo[1], new Rotation2d());
             if(prevPos == null){
-                prevPos = pose.toPose2d();
+                prevPos = visionPose2d;
             }
 
-            if(pose2d.getTranslation().getDistance(prevPos.getTranslation()) > 0.3){
+            if(visionPose2d.getTranslation().getDistance(prevPos.getTranslation()) > 0.3){
                 badData = true;
-                pose2d = SubsystemCatzDrivetrain.getInstance().getPose();
+                visionPose2d = SubsystemCatzDrivetrain.getInstance().getPose();
             }
 
             if(!badData){
-                prevPos = pose2d;
+                prevPos = visionPose2d;
             }
 
             badData = false;
 
             //data used for pose estimator
-            inputs.x = pose2d.getX();
-            inputs.y = pose2d.getY();
-            inputs.rotation = pose2d.getRotation().getRadians();
+            inputs.x = visionPose2d.getX();
+            inputs.y = visionPose2d.getY();
+            inputs.rotation = visionPose2d.getRotation().getRadians();
         } 
         else {
             inputs.isNewVisionPose = false;
