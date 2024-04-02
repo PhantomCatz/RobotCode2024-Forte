@@ -129,13 +129,19 @@ public class HomeToSpeakerCmd extends Command {
       double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
   
       double servoPos = shooterPivotTable.get(newDist);
-  
-      turret.aimAtGoal(m_targetXY, false, false);
-  
+      
+      // if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7) {
+      //   shooter.aprilTagVerticalTargeting();
+      // } else {
+      //   shooter.updateShooterServo(servoPos);
+      // }
+
+      turret.aimAtGoal(m_targetXY,false, false);
+      
       shooter.updateShooterServo(servoPos);
-  
+      
       //in telop this boolean supplier is being evaluated to see if button was pressed
-  
+      
       // System.out.println("turret:"+turret.isTurretAtTarget());
       // System.out.println("shooter:"+shooter.isAutonShooterRamped());
       // System.out.println("timer:"+timer.hasElapsed(AUTON_TIMEOUT_SEC));
