@@ -59,9 +59,6 @@ public class SubsystemCatzVision extends SubsystemBase {
     private int acceptableTagID;
     private boolean useSingleTag = false;
 
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    NetworkTableEntry tid = table.getEntry("tid");
-
     //constructor for vision subsystem that creates new vision input objects for each camera set in the singleton implementation
     private SubsystemCatzVision(VisionIO[] cameras) {
         this.cameras = cameras;
@@ -80,9 +77,9 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight-ramen"),
-                new VisionIOLimeLight("limelight-soba")
-
+                new VisionIOLimeLight("limelight-ramen"), //index 0
+                new VisionIOLimeLight("limelight-soba"),    //index 1
+                new VisionIOLimeLight("limelight-udon")     //index 2
             });
         }
         return instance;

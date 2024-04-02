@@ -93,8 +93,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private double m_closedLoopError;
   private double setPositionPower;
 
-  private boolean m_trackTarget = false;
-
   private double apriltagTrackingPower;
 
   private double offsetAprilTagX;   //TBD
@@ -102,10 +100,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private PIDController m_setPositionPID;
   private PIDController m_trackingApriltagPID;
 
-
   private boolean m_turretInPos;
-
-  private XboxController driveRumbleController;   //TBD - How does this work with Shooter rumble?
 
   private final SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();   //TBD - How does this work?
 

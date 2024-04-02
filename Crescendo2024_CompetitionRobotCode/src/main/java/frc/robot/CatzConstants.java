@@ -93,6 +93,7 @@ public final class CatzConstants {
   public class FieldConstants {
 
     public static final double SPEAKER_COORD_MTRS_Y = Units.inchesToMeters(219.277);
+    public static final double HOARD_LOCATION_Y = Units.inchesToMeters(219.277) + 2.0;
     public static double FIELD_LENGTH_MTRS = Units.inchesToMeters(651.223);
     public static double fieldWidth = Units.inchesToMeters(323.277);
     public static double wingX = Units.inchesToMeters(229.201);

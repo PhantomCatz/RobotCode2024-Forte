@@ -41,11 +41,11 @@ public class HomeToHoardShotCmd extends Command {
     if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
       
       //translation of the blue alliance speaker
-      m_targetXY = new Translation2d(0.0, FieldConstants.SPEAKER_COORD_MTRS_Y);
+      m_targetXY = new Translation2d(0.0, FieldConstants.HOARD_LOCATION_Y);
 
     } else {
       //translation of the Red alliance speaker
-      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);     
+      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.HOARD_LOCATION_Y);     
     }
   }
 
@@ -53,7 +53,7 @@ public class HomeToHoardShotCmd extends Command {
   @Override
   public void execute() {
     
-    turret.aimAtGoal(m_targetXY,false, false);
+    turret.aimAtGoal(m_targetXY, false);
 
   }
 

@@ -52,7 +52,7 @@ public class VisionIOLimeLight implements VisionIO {
         inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0); //target area of the limelight from 0%-100%...how much does the apirltage take up on the frame
         inputs.primaryApriltagID = NetworkTableInstance.getDefault().getTable(name).getEntry("tid").getDouble(0);
 
-        // collects pose information based off network tables and orients itself depending on alliance sid
+        // collects pose information based off network tables and orients itself depending on alliance side
         //creating new pose3d object based of pose from network tables
         Pose3d pose = llresults.targetingResults.getBotPose3d_wpiBlue();
         inputs.tagCount = llresults.targetingResults.targets_Fiducials.length;
