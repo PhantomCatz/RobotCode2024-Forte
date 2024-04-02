@@ -171,7 +171,7 @@ public class MoveToPresetHandoffCmd extends Command {
       if(m_targetMechPoseStartReached == false) {
         if(areMechanismsInPosition()) {
           intake.setRollersIntakeSource();
-          shooter.setShooterState(ShooterState.LOAD_OUT);
+          shooter.setShooterState(ShooterState.PREP_FOR_HANDOFF_SHIFT);
           m_targetMechPoseStartReached = true;
         }
       }
