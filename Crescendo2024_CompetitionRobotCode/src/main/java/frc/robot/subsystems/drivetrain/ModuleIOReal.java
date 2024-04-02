@@ -74,7 +74,7 @@ public class ModuleIOReal implements ModuleIO {
         talonConfigs.CurrentLimits.StatorCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
 
         talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
-        talonConfigs.CurrentLimits.SupplyCurrentLimit       =  KRAKEN_CURRENT_LIMIT_AMPS;
+        talonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
         talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
         talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
 
@@ -82,14 +82,10 @@ public class ModuleIOReal implements ModuleIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 0.03;//0.039//2.0;//2.4; //TBD 0.3 has a better graph but it jitters the auton.
+        driveConfigs.kP = 0.03;
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.0;
  
-        // driveRotorPosition = DRIVE_MOTOR.getRotorPosition();
-        // BaseStatusSignal.setUpdateFrequencyForAll(250.0, driveRotorPosition);
-
-        //DRIVE_MOTOR.optimizeBusUtilization (1.0);
 
         //check if drive motor is initialized correctly
         for(int i=0;i<5;i++){

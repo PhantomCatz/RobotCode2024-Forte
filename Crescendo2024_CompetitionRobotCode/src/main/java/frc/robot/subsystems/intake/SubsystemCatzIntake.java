@@ -162,11 +162,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   private Timer rollerTimer = new Timer();
 
-  // tunning numbers
-  LoggedTunableNumber speednumber = new LoggedTunableNumber("roller speed out", 0.0);
-  LoggedTunableNumber kgtunning = new LoggedTunableNumber("kgtunningVolts", 0.0);
-  LoggedTunableNumber kftunning = new LoggedTunableNumber("kFtunningVolts", 0.0);
-
   // -------------------------------------------------------------------------------------
   //
   // SubsystemCatzIntake()
@@ -282,7 +277,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
               // -----------------------------------------------------------------------------------
               if (SubsystemCatzElevator.getInstance().getElevatorRevPos() > elevatorThresholdRev) {
                 m_intakeElevatorInSafetyZone = true;
-               // System.out.println("reserve for intake amp transition");
               }
             } else {
               // -----------------------------------------------------------------------------------
@@ -291,7 +285,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
               if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < elevatorThresholdRev) {
                 m_intakeElevatorInSafetyZone = true;
 
-                //System.out.println("Coming from stow");
               }
             }
 
@@ -336,7 +329,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
                 // -----------------------------------------------------------------------------------
                 if (m_nextTargetPositionDeg == INTAKE_AMP_TRANSITION_DEG ||
                     m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
-                     // System.out.println("updating to transition" + m_nextTargetPositionDeg);
 
                   m_targetPositionDeg = m_nextTargetPositionDeg;
                   m_intermediatePositionReached = true;
@@ -367,7 +359,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         // -------------------------------------------------------------------------------------
         // Manual Control Mode - Use operator input to change intake angle
         // -------------------------------------------------------------------------------------
-        io.setIntakePivotPercentOutput(m_pivotManualPwr); // TBD Call method?
+        io.setIntakePivotPercentOutput(m_pivotManualPwr);
 
       }
     }
@@ -433,11 +425,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
           nextElevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
         } 
       } else {
-          //System.out.println("I-BA");
         elevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
         if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV) {
           m_intakeElevatorInSafetyZone = true;
-          //System.out.println("I-B");
         }
       }
     } else if (m_targetPositionDeg == INTAKE_GROUND_PICKUP_DEG ||
@@ -445,7 +435,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
               m_targetPositionDeg == INTAKE_SOURCE_LOAD_DN_DEG ||
               m_targetPositionDeg == INTAKE_HOARD_DEG         ||
               m_targetPositionDeg == INTAKE_AMP_SCORE_DEG) {
-     // System.out.println("I-E");
 
       // -------------------------------------------------------------------------------------
       // If intake is already in front of the elevator then elevator is already in a
@@ -551,11 +540,9 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
   public void setWasIntakeInAmpScoring(boolean set) {
     isIntakeInScoreAmp = set;
-    // System.out.println("is intake in amp score" + set);
   }
 
   public boolean getIsIntakeInAmpScoring() {
-    // System.out.println(isIntakeInScoreAmp);
     return isIntakeInScoreAmp;
   }
 

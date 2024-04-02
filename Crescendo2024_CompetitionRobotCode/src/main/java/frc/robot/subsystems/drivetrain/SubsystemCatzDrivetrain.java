@@ -71,8 +71,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     private final double AUTON_SPEED_SLOWDOWN_FACTOR = 0.1;
     private boolean isAutonSlowedDown = false;
 
+    private double xyStdDev;
+
     // Private constructor for the singleton instance
     private SubsystemCatzDrivetrain() {
+        
         // Determine gyro input/output based on the robot mode
         switch (CatzConstants.currentMode) {
             case REAL:
@@ -106,12 +109,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         m_swerveModules[3] = RT_FRNT_MODULE;
 
         // Initialize the swerve drive pose estimator
-        m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.swerveDriveKinematics,
-                Rotation2d.fromDegrees(getGyroAngle()), 
-                getModulePositions(), 
-                new Pose2d(1.5, 5.55, Rotation2d.fromDegrees(0.0)), 
-                VecBuilder.fill(1, 1, 0.7),  //odometry standard devs
-                VecBuilder.fill(5, 5, 500)); //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
+        m_poseEstimator = new SwerveDrivePoseEstimator(
+            DriveConstants.swerveDriveKinematics,
+            Rotation2d.fromDegrees(getGyroAngle()), 
+            getModulePositions(), 
+            new Pose2d(1.5, 5.55, Rotation2d.fromDegrees(0.0)), 
+            VecBuilder.fill(1, 1, 0.7),  //odometry standard devs
+            VecBuilder.fill(5, 5, 99999.0) //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
+        ); 
         
         //Configure logging trajectories to advantage kit
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -124,7 +129,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
             });
 
-        gyroIO.resetNavXIO(0);
+        gyroIO.resetNavXIO(0); //start gyro on the blue alliance side 
         
     }
 
@@ -142,84 +147,77 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         }
         // Update gyro inputs and log them
         gyroIO.updateInputs(gyroInputs);
-        Logger.processInputs("Drive/gyroinputs ", gyroInputs);
-
-        //update with wheel encoder values
-        m_poseEstimator.update(getRotation2d(), getModulePositions());      
+        Logger.processInputs("Drive/gyroinputs ", gyroInputs);  
         
+        //------------------------------------------------------------------------------------------------
+        // Vison pose updating
+        //------------------------------------------------------------------------------------------------
         var visionOdometry = vision.getVisionOdometry();   
         for (int i = 0; i < visionOdometry.size(); i++) {
             if(visionOdometry.get(i).getName().equals("limelight-soba")){
                 continue;
-            }
-            //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
-            double xyStdDev = 0;
+            } 
 
-            // if(visionOdometry.get(i).getPose().getX() == -1 && visionOdometry.get(i).getPose().getY() == -1){
-            //     break;
-            // }
+            //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
+            xyStdDev = 0;
 
             if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
-                xyStdDev = 3;
+
+                //vision is trusted more with more tags visible
+                xyStdDev = 0.3; //3
             }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
-                xyStdDev = 5;
-            }else if(visionOdometry.get(i).getAvgArea() >= 0.12){
-                xyStdDev = 10;
+
+                //vision is trusted more with tags that are closer to the target
+                xyStdDev = 0.5; //5
+            }else if(visionOdometry.get(i).getAvgArea() >= 0.12){ //TBD doesn't this do the same as the above
+
+                xyStdDev = 1.0; //10
             }else{
-                xyStdDev = 40;
+                
+                //Do not trust vision inputs
+                xyStdDev = 4.0; //40
             }
 
-            //System.out.println(visionOdometry.get(i).getAvgArea());
-
-
-            // dSpeed = Math.abs(dSpeed);
-            // if (dSpeed > 10){
-            //     xyStdDev *= dSpeed / 4; //account for some shaking when suddenly moving fast.
-            // }
-
-
             m_poseEstimator.setVisionMeasurementStdDevs(
-            VecBuilder.fill(0.7,0.7,99999999)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
+                VecBuilder.fill(xyStdDev, xyStdDev,99999999.0)
+            ); //gyro can be purely trusted for pose calculations so always trust it more than vision
         
             m_poseEstimator.addVisionMeasurement(
                 new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
                 visionOdometry.get(i).getTimestamp()
             );
-
         }
 
-        m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
+        //------------------------------------------------------------------------------------------------
+        // Odometry pose updating
+        //------------------------------------------------------------------------------------------------
+        m_poseEstimator.update(getRotation2d(), getModulePositions());    
 
 
-        // Update pose estimator with module encoder values + gyro
-        
-        // double dt = Timer.getFPGATimestamp() - prevTime;
-        // double dSpeed = m_poseEstimator.getEstimatedPosition().getTranslation().getDistance(prevPose.getTranslation()) / dt;
-        
-        // prevPose = m_poseEstimator.getEstimatedPosition();
-        // prevTime = Timer.getFPGATimestamp();
-        // AprilTag logic to possibly update pose estimator with all the updates obtained within a single loop 
-
-        //logging
+        //------------------------------------------------------------------------------------------------
+        // Logging
+        //------------------------------------------------------------------------------------------------
         Logger.recordOutput("Obometry/Pose", getPose()); 
-        //Logger.recordOutput("Obometry/LimelightPose", vision.getVisionOdometry().get(0).getPose()); 
+        Logger.recordOutput("Obometry/LimelightPose Soba" , vision.getVisionOdometry().get(1).getPose()); 
+        Logger.recordOutput("Obometry/LimelightPose Udon" , vision.getVisionOdometry().get(2).getPose()); 
 
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
-        // Logger.recordOutput("Obometry/pose", getPose());
 
         // Update SmartDashboard with the gyro angle
         SmartDashboard.putNumber("gyroAngle", getGyroAngle());
-        m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), Rotation2d.fromDegrees(getGyroAngle()));
-        // m_fieldRelAccel = new FieldRelativeAccel(m_fieldRelVel, m_lastFieldRelVel, 0.02);
-        // m_lastFieldRelVel = m_fieldRelVel;
-    }
+
+    }   //end of drivetrain periodic
 
     public void driveRobotWithDescritizeDynamics(ChassisSpeeds chassisSpeeds) {
+
         //correct dynamics with wpilib internal "2nd order kinematics"
         ChassisSpeeds descreteSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
+
         if(isAutonSlowedDown){
+
             descreteSpeeds = descreteSpeeds.times(AUTON_SPEED_SLOWDOWN_FACTOR);
         }
+
         // Convert chassis speeds to individual module states and set module states
         SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(descreteSpeeds);
         setModuleStates(moduleStates);
@@ -227,12 +225,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Set individual module states to each of the swerve modules
     private void setModuleStates(SwerveModuleState[] desiredStates) {
+
         // Scale down wheel speeds
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.MAX_SPEED_DESATURATION);
 
         //optimize wheel angles
         SwerveModuleState[] optimizedDesiredStates = new SwerveModuleState[4];
         for (int i = 0; i < 4; i++) {  
+
             // The module returns the optimized state, useful for logging
             optimizedDesiredStates[i] = m_swerveModules[i].optimizeWheelAngles(desiredStates[i]);
         }
@@ -273,7 +273,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     // Create a command to stop driving
     public Command stopDriving() {
-        return Commands.run(() -> {
+        return Commands.runOnce(() -> {
             for (CatzSwerveModule module : m_swerveModules) {
                 module.stopDriving();
                 module.setSteerPower(0.0);
@@ -299,9 +299,10 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
       }
     //----------------------------------------------Gyro methods----------------------------------------------
 
+
+    //TBD do not use unless autoaim does not work anymore
     public void flipGyro() {
         gyroIO.setAngleAdjustmentIO(180);
-        System.out.println("kakikukeko");
     }
 
     public Command resetGyro() {

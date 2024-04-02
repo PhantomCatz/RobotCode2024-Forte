@@ -41,7 +41,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   private static SubsystemCatzShooter instance = new SubsystemCatzShooter();
 
-      
   /*-----------------------------------------------------------------------------------------
    * Linear Servo Values
    *-----------------------------------------------------------------------------------------*/
@@ -118,10 +117,14 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final boolean BEAM_IS_BROKEN     = true;
   private static final boolean BEAM_IS_NOT_BROKEN = false;
 
+  private static final double HANDOFF_TRANSFER_CNT_SHIFT = 20.0;
+
   private boolean m_desiredBeamBreakState;
   private int     m_iterationCounter;
 
   private double m_startingLoadEncoderHandoff;
+
+  private double previousServoPosition;
 
   private boolean m_shooterServoInPos = false;
   private boolean autonKeepFlywheelOn = false;
@@ -223,7 +226,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
           case HANDOFF_SHIFT:
             io.loadNote();
-            if(Math.abs(inputs.loadMotorEncCnts - m_startingLoadEncoderHandoff) < 20.0) { //absoulte value because encoder cnts are in negative
+            if(Math.abs(inputs.loadMotorEncCnts - m_startingLoadEncoderHandoff) < HANDOFF_TRANSFER_CNT_SHIFT) { //absoulte value because encoder cnts are in negative
 
               io.loadDisabled();
               currentShooterState = ShooterState.LOAD_OUT;
@@ -293,6 +296,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
                   }
                 }
               else {
+
                   io.setShooterDisabled();
                   currentShooterState = ShooterState.LOAD_OFF;
                 }
@@ -316,8 +320,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
       
       //min max servo value clamping
       if(m_targetServoPosition > SERVO_MAX_POS) {
+
         m_targetServoPosition = SERVO_MAX_POS;
       } else if(m_targetServoPosition < SERVO_MIN_POS) {
+
         m_targetServoPosition = SERVO_MIN_POS;
       }
 
@@ -325,12 +331,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
       if(Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle()) > SubsystemCatzTurret.TURRET_MAX_SERVO_LIMIT_DEG) {
 
         if(m_targetServoPosition > SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT) {
-            m_targetServoPosition = SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT;
+
+           m_targetServoPosition = SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT;
         } 
       } 
     
       //cmd final output
-      io.setServoPosition(servoPosTuning.get());
+      io.setServoPosition(m_targetServoPosition);
 
       //-------------------------------------------------------------------------------------------
       //  Servos are commanded from 0.0 to 1.0 where 0.0 represents 0% of max extension and 1.0
@@ -387,7 +394,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   // Shooter Calculation Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
-    double previousServoPosition = m_targetServoPosition;
+    previousServoPosition = m_targetServoPosition;
     m_targetServoPosition = newPosition.getShooterVerticalTargetAngle();
     if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
       m_targetServoPosition = previousServoPosition;
@@ -430,13 +437,17 @@ public class SubsystemCatzShooter extends SubsystemBase {
   } 
 
   public void aprilTagVerticalTargeting() {
+
     if(SubsystemCatzVision.getInstance().getOffsetY(0) > 1) {
+
       setServoManualHold(1.0);
       m_shooterServoInPos = false;      
-    } else if (SubsystemCatzVision.getInstance().getOffsetY(0) < -1) {
+    } else if (SubsystemCatzVision.getInstance().getOffsetY(0) < 1) {
+
       setServoManualHold(-1.0);
       m_shooterServoInPos = false;
     } else {
+
       m_shooterServoInPos = true;
     }
   }
@@ -508,11 +519,4 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   }
 
-  public void hoardShootingLogic() {
-    CommandScheduler.getInstance().schedule(new MoveToPreset(CatzConstants.CatzMechanismConstants.SHOOTER_HOARD_PRESET));
-    currentShooterState = ShooterState.START_SHOOTER_FLYWHEEL_HOARD_MODE;
-  }
-  public Command hoardShooterMode(){
-    return runOnce(()-> hoardShootingLogic());
-  }
 }

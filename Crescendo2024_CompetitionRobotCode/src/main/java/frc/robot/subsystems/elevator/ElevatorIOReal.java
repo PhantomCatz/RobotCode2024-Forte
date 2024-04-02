@@ -48,14 +48,16 @@ public class ElevatorIOReal implements ElevatorIO {
         elevatorTalonConfigs.Slot0.kD = 0.02;
             //current limit
         elevatorTalonConfigs.CurrentLimits = new CurrentLimitsConfigs();
+
+        elevatorTalonConfigs.CurrentLimits.StatorCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
+        elevatorTalonConfigs.CurrentLimits.StatorCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+
         elevatorTalonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
         elevatorTalonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
         elevatorTalonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
         elevatorTalonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
         elevatorTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        //ElevatorMtr.optimizeBusUtilization();
 
         ElevatorMtr.setPosition(SubsystemCatzElevator.ELEVATOR_STOW);
 

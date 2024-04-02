@@ -2,8 +2,6 @@ package frc.robot.subsystems.drivetrain;
 
 import org.littletonrobotics.junction.AutoLog;
 
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 public interface ModuleIO {
  @AutoLog

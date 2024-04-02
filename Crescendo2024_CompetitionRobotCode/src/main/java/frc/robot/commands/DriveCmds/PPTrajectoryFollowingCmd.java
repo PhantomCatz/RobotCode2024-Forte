@@ -69,11 +69,6 @@ public class PPTrajectoryFollowingCmd extends Command {
             // System.out.println("flip");
         }
 
-        //path debug
-        // for(int i=0; i<path.getAllPathPoints().size(); i++){
-        //     System.out.println(path.getAllPathPoints().get(i).position);
-        // }
-       // Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
         //create pathplanner trajectory
 
@@ -84,8 +79,6 @@ public class PPTrajectoryFollowingCmd extends Command {
                                         toChassisSpeeds(m_driveTrain.getModuleStates()),
                                 m_driveTrain.getRotation2d());
     }
-
-    //private double prevSpeed = previousState.velocityMps;
 
     @Override
     public void execute() {

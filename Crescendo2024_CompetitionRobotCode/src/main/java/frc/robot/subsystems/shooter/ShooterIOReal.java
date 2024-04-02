@@ -124,6 +124,8 @@ public class ShooterIOReal implements ShooterIO {
         LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
         LOAD_MOTOR.enableVoltageCompensation(12.0); 
         LOAD_MOTOR.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 32767);
+        LOAD_MOTOR.burnFlash(); //save configs so if pwr lost to be reapplied
+
 
         
         //Create shooter mtr array for easier calls
@@ -137,17 +139,16 @@ public class ShooterIOReal implements ShooterIO {
         
         //Current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
+
+        talonConfigs.CurrentLimits.StatorCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
+        talonConfigs.CurrentLimits.StatorCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+
         talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT; //Make seperate current limits
         talonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
         talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
         talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
 
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-
-       // BaseStatusSignal.setUpdateFrequencyForAll(50, );
-        // SHOOTER_MOTOR_LT.optimizeBusUtilization();
-        // SHOOTER_MOTOR_RT.optimizeBusUtilization();
-
 
 
         //pid
@@ -233,7 +234,7 @@ public class ShooterIOReal implements ShooterIO {
     public void feedShooter() {
         LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
     }
-    //Code that will be tested for double beambreaks
+    
     @Override
     public void fineAdjustFwd() {
         LOAD_MOTOR.set(-LOAD_MOTOR_ADJUST_SPEED);

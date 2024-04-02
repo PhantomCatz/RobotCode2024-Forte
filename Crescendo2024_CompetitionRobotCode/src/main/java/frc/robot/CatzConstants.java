@@ -93,6 +93,7 @@ public final class CatzConstants {
   public class FieldConstants {
 
     public static final double SPEAKER_COORD_MTRS_Y = Units.inchesToMeters(219.277);
+    public static final double HOARD_LOCATION_Y = Units.inchesToMeters(219.277) + 2.0;
     public static double FIELD_LENGTH_MTRS = Units.inchesToMeters(651.223);
     public static double fieldWidth = Units.inchesToMeters(323.277);
     public static double wingX = Units.inchesToMeters(229.201);
@@ -234,7 +235,7 @@ public final class CatzConstants {
         SWERVE_RIGHT_FRONT_LOCATION);
 
     // data has been referenced using recalc calculator https://www.reca.lc/drive
-    public static final double MAX_SPEED = Units.feetToMeters(17.4); // meters per second 4.81
+    public static final double MAX_SPEED = Units.feetToMeters(25.0); // meters per second 4.81
 
     public static final double MAX_ANGSPEED_RAD_PER_SEC = 12.0; // radians per second
     public static final double MAX_SPEED_DESATURATION = MAX_SPEED;
@@ -334,7 +335,7 @@ public final class CatzConstants {
   -----------------------------------------------------------------------------------*/ 
     public static final CatzMechanismPosition SCORING_TRAP_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_SCORE_TRAP,
-        119.0,
+        SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
         SubsystemCatzShooter.SERVO_NULL_POSITION,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 

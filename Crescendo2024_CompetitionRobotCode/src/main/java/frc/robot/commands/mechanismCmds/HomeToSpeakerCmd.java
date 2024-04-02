@@ -19,6 +19,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
 public class HomeToSpeakerCmd extends Command {
@@ -70,10 +71,9 @@ public class HomeToSpeakerCmd extends Command {
     shooterPivotTable.put(6.813, 0.0);
   }
 
-
-  public static final double k_ACCEL_COMP_FACTOR = 0.100; // in units of seconds    TBD Where is this used?
-
   private Translation2d m_targetXY;
+  private double newDist;
+  private double servoPos;
 
   private static final double AUTON_TIMEOUT_SEC = 1.0;
 
@@ -96,7 +96,6 @@ public class HomeToSpeakerCmd extends Command {
   // Called when the command is initially scheduled.
   //------------------------------------------------------------------------------------------------
 
-  private double prevTime = 0.0;
   @Override
   public void initialize() {
     timer.reset();
@@ -112,7 +111,7 @@ public class HomeToSpeakerCmd extends Command {
 
     } else {
       //translation of the Red alliance speaker
-      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);      //TBD - Magic #'s, what about defining Red & Blue constants, using IF to select and have 1 translation2D() call
+      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);     
     }
     turret.setTurretInPose(false);
 
@@ -126,29 +125,24 @@ public class HomeToSpeakerCmd extends Command {
   //------------------------------------------------------------------------------------------------
   @Override 
   public void execute() {
-      double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
+      newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
   
-      double servoPos = shooterPivotTable.get(newDist);
+      servoPos = shooterPivotTable.get(newDist);
       
-      // if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7) {
-      //   shooter.aprilTagVerticalTargeting();
-      // } else {
-      //   shooter.updateShooterServo(servoPos);
-      // }
+      if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
+         SubsystemCatzVision.getInstance().getAprilTagID(0) == 4) {
+        shooter.aprilTagVerticalTargeting();
+      } else {
+        shooter.updateShooterServo(servoPos);
+      }
 
-      turret.aimAtGoal(m_targetXY,false, false);
+      turret.aimAtGoal(m_targetXY, false);
       
       shooter.updateShooterServo(servoPos);
-      
-      //in telop this boolean supplier is being evaluated to see if button was pressed
-      
-      // System.out.println("turret:"+turret.isTurretAtTarget());
-      // System.out.println("shooter:"+shooter.isAutonShooterRamped());
-      // System.out.println("timer:"+timer.hasElapsed(AUTON_TIMEOUT_SEC));
   
       if(DriverStation.isAutonomous()){
   
-        if((/*shooter.getShooterServoInPos() && */ turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(AUTON_TIMEOUT_SEC))) { //TBD add the timer code for shooter pivot
+        if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(AUTON_TIMEOUT_SEC))) { 
   
           shooter.setShooterState(ShooterState.SHOOTING);
         }

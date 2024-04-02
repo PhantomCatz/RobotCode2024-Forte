@@ -7,12 +7,14 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.FieldConstants;
 import frc.robot.Utils.LimelightHelpers;
 import frc.robot.Utils.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -23,20 +25,18 @@ public class VisionIOLimeLight implements VisionIO {
     public boolean getTarget;
     private double[] lastData = new double[6];
 
+    private int primaryTrackingApriltag;
+
      /**
      * Implements Limelight camera
      *
      * @param name Name of the limelight used, and should be configured in limelight software first
-     * @param cameraOffset Location of the camera on the robot (from center, positive x towards the arm, positive y to the left, and positive angle is counterclockwise.
      */
     public VisionIOLimeLight(String name) {
         NetworkTableInstance.getDefault().getTable(name).getEntry("ledMode").setNumber(1);
         this.name = name;
-        // System.out.println(name);
-        // System.out.println(NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue"));
+        System.out.println("Limeilight " + name + " instantiated");
         
-        Logger.recordOutput("Obometry/VisionPose", new Pose2d());
-
     }
 
     private Pose2d prevPos = null;
@@ -44,6 +44,16 @@ public class VisionIOLimeLight implements VisionIO {
 
     @Override
     public void updateInputs(VisionIOInputs inputs) {
+        
+        if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) { 
+            primaryTrackingApriltag = 7;
+        } else {
+            primaryTrackingApriltag = 4;
+        }
+
+        NetworkTableInstance.getDefault().getTable("limelight-ramen").getEntry("priorityid").setNumber(primaryTrackingApriltag);
+
+
             //load up raw apriltag values for distance calculations
         LimelightResults llresults = LimelightHelpers.getLatestResults(name);
         inputs.ty = NetworkTableInstance.getDefault().getTable(name).getEntry("ty").getDouble(0); //vertical offset from crosshair to target in degrees
@@ -52,10 +62,11 @@ public class VisionIOLimeLight implements VisionIO {
         inputs.ta = NetworkTableInstance.getDefault().getTable(name).getEntry("ta").getDouble(0); //target area of the limelight from 0%-100%...how much does the apirltage take up on the frame
         inputs.primaryApriltagID = NetworkTableInstance.getDefault().getTable(name).getEntry("tid").getDouble(0);
 
-        // collects pose information based off network tables and orients itself depending on alliance sid
+        // collects pose information based off network tables and orients itself depending on alliance side
         //creating new pose3d object based of pose from network tables
         Pose3d pose = llresults.targetingResults.getBotPose3d_wpiBlue();
         inputs.tagCount = llresults.targetingResults.targets_Fiducials.length;
+        inputs.maxDistance = llresults.targetingResults.botpose_avgdist;
 
         // set if the Limelight has a target to loggable boolean
         if (inputs.tv == 1) {
@@ -65,7 +76,7 @@ public class VisionIOLimeLight implements VisionIO {
             inputs.hasTarget = false;
         }
 
-        // calculates total latency using 7th table item in array //TBD be more explicit about what latency value gives
+        // calculates total latency using 7th table item in array 
         double latency = (llresults.targetingResults.latency_capture + llresults.targetingResults.latency_pipeline) / 1000; //data[6] or latency is recorded in ms; divide by 1000 to get s
         inputs.latency = latency;
         //shoves in new pose2d from pose3d object estimate depending on if new apriltag detected
@@ -98,7 +109,6 @@ public class VisionIOLimeLight implements VisionIO {
             inputs.x = pose2d.getX();
             inputs.y = pose2d.getY();
             inputs.rotation = pose2d.getRotation().getRadians();
-            Logger.recordOutput("Obometry/VisionPose", new Pose2d(inputs.x,inputs.y,Rotation2d.fromRadians(inputs.rotation)));
         } 
         else {
             inputs.isNewVisionPose = false;

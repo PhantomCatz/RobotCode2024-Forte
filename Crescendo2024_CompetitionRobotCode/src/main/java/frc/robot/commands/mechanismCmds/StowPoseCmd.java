@@ -51,10 +51,4 @@ public class StowPoseCmd extends Command {
     shooter.updateTargetPositionShooter(pose);
     turret.updateTargetPositionTurret(pose);
   }
-
-  private boolean areMechanismsInPosition() {
-    return (intake.getIntakeInPos() && 
-            turret.getTurretInPos() &&
-            elevator.getElevatorInPos());
-  }
 }

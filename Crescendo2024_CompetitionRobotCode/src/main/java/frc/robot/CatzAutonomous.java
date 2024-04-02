@@ -40,7 +40,6 @@ public class CatzAutonomous {
     private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
     private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
-    public static AllianceColor allianceColor;
     private static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
