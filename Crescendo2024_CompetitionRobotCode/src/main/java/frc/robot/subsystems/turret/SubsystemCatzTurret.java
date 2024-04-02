@@ -260,17 +260,17 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public void aimAtGoal(Translation2d goal, boolean aimUsingSpeakerAprilTag, boolean accountRobotVel) {
 
     if (aimUsingSpeakerAprilTag) {
-      //--------------------------------------------------------------------------------------------
+      // --------------------------------------------------------------------------------------------
       //  We are aiming using April Tags - Check if we are looking at he April Tag on the Speaker.
       //  If we are then we will TBD.  Otherwise we will TBD
-      //--------------------------------------------------------------------------------------------
-      // if (SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {     //TBD 
+      // --------------------------------------------------------------------------------------------
+      if (SubsystemCatzVision.getInstance().getAprilTagID(1) == 7) {     //TBD 
       
-      //   m_currentTurretState = TurretState.TRACKING_APRILTAG;
-      // } else {
+        m_currentTurretState = TurretState.TRACKING_APRILTAG;
+      } else {
 
-      //   //TBD add operator notification.
-      // }
+        //TBD add operator notification.
+      }
 
     } else {
       //--------------------------------------------------------------------------------------------
