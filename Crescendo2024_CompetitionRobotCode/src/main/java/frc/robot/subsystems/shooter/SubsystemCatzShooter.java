@@ -31,6 +31,7 @@ import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIO.TurretIOInputs;
+import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
 public class SubsystemCatzShooter extends SubsystemBase {
@@ -405,6 +406,18 @@ public class SubsystemCatzShooter extends SubsystemBase {
     m_targetServoPosition = m_targetServoPosition + (position * 0.01);
     currentServoState = ServoState.IDLE;
   } 
+
+  public void aprilTagVerticalTargeting() {
+    if(SubsystemCatzVision.getInstance().getOffsetY(0) > 1) {
+      setServoManualHold(1.0);
+      m_shooterServoInPos = false;      
+    } else if (SubsystemCatzVision.getInstance().getOffsetY(0) < -1) {
+      setServoManualHold(-1.0);
+      m_shooterServoInPos = false;
+    } else {
+      m_shooterServoInPos = true;
+    }
+  }
 
   //-------------------------------------------------------------------------------------
   // Getter Methods 

@@ -80,7 +80,9 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight-soba"),
+                new VisionIOLimeLight("limelight-ramen"),
+                new VisionIOLimeLight("limelight-soba")
+
             });
         }
         return instance;
@@ -137,7 +139,7 @@ public class SubsystemCatzVision extends SubsystemBase {
                                         new Rotation2d(inputs[cameraNum].rotation));
 
         // add the new pose to a list
-        results.add(new PoseAndTimestamp(currentPose, inputs[cameraNum].timestamp, inputs[cameraNum].tagCount, inputs[cameraNum].ta));
+        results.add(new PoseAndTimestamp(currentPose, inputs[cameraNum].timestamp, inputs[cameraNum].tagCount, inputs[cameraNum].ta, cameras[cameraNum].getName()));
         camNum = cameraNum;
     }
 
@@ -152,12 +154,14 @@ public class SubsystemCatzVision extends SubsystemBase {
         private double timestamp;
         private int numOfTagsVisible;
         private double avgArea;
+        private String name;
 
-        public PoseAndTimestamp(Pose2d pose, double timestamp, int numOfTagsVisible, double avgArea) {
+        public PoseAndTimestamp(Pose2d pose, double timestamp, int numOfTagsVisible, double avgArea, String name) {
             this.pose = pose;
             this.timestamp = timestamp;
             this.numOfTagsVisible = numOfTagsVisible;
             this.avgArea = avgArea;
+            this.name = name;
         }
 
         public Pose2d getPose() {
@@ -175,6 +179,10 @@ public class SubsystemCatzVision extends SubsystemBase {
         public double getAvgArea(){
             return avgArea;
         }
+
+        public String getName(){
+            return name;
+        }
     }
 
     //------------------------------------------------------------------------
@@ -188,6 +196,10 @@ public class SubsystemCatzVision extends SubsystemBase {
     
     public double getOffsetX(int cameraNum) {
         return inputs[cameraNum].tx;
+    }
+
+    public double getOffsetY(int cameraNum) {
+        return inputs[cameraNum].ty;
     }
 
     public double getAprilTagID(int cameraNum) {

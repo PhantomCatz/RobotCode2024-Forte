@@ -110,7 +110,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 Rotation2d.fromDegrees(getGyroAngle()), 
                 getModulePositions(), 
                 new Pose2d(1.5, 5.55, Rotation2d.fromDegrees(0.0)), 
-                VecBuilder.fill(0.1, 0.1, 0.7),  //odometry standard devs
+                VecBuilder.fill(1, 1, 0.7),  //odometry standard devs
                 VecBuilder.fill(5, 5, 500)); //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
         
         //Configure logging trajectories to advantage kit
@@ -144,10 +144,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/gyroinputs ", gyroInputs);
 
+        //update with wheel encoder values
         m_poseEstimator.update(getRotation2d(), getModulePositions());      
         
         var visionOdometry = vision.getVisionOdometry();   
         for (int i = 0; i < visionOdometry.size(); i++) {
+            if(visionOdometry.get(i).getName().equals("limelight-soba")){
+                continue;
+            }
             //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
             double xyStdDev = 0;
 
@@ -175,7 +179,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
 
             m_poseEstimator.setVisionMeasurementStdDevs(
-            VecBuilder.fill(xyStdDev,xyStdDev,9)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
+            VecBuilder.fill(0.7,0.7,99999999)); //does this value matter because im pretty sure this one is the orientation. the gyro is already accurate enough
         
             m_poseEstimator.addVisionMeasurement(
                 new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
