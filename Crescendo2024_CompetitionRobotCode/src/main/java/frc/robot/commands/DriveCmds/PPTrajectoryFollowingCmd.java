@@ -80,8 +80,6 @@ public class PPTrajectoryFollowingCmd extends Command {
                                 m_driveTrain.getRotation2d());
     }
 
-    //private double prevSpeed = previousState.velocityMps;
-
     @Override
     public void execute() {
         if(!atTarget){

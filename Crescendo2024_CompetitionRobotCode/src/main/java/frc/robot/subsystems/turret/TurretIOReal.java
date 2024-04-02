@@ -15,7 +15,7 @@ public class TurretIOReal implements TurretIO {
 
     private final CANSparkMax turretMtr;
 
-    public static final int     NEO_CURRENT_LIMIT_AMPS      = 30;
+    public static final int NEO_CURRENT_LIMIT_AMPS = 30;
 
     public TurretIOReal() {
        

@@ -65,6 +65,10 @@ public class IntakeIOReal implements IntakeIO {
         
             //current limit
         talonConfigsPivot.CurrentLimits = new CurrentLimitsConfigs();
+
+        talonConfigsPivot.CurrentLimits.StatorCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
+        talonConfigsPivot.CurrentLimits.StatorCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+
         talonConfigsPivot.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT; 
         talonConfigsPivot.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS; 
         talonConfigsPivot.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;

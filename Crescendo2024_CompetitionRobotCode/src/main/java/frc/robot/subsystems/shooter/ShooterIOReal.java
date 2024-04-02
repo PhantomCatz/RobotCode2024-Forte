@@ -139,6 +139,10 @@ public class ShooterIOReal implements ShooterIO {
         
         //Current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
+
+        talonConfigs.CurrentLimits.StatorCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
+        talonConfigs.CurrentLimits.StatorCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+
         talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT; //Make seperate current limits
         talonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
         talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
@@ -230,7 +234,7 @@ public class ShooterIOReal implements ShooterIO {
     public void feedShooter() {
         LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
     }
-    //Code that will be tested for double beambreaks
+    
     @Override
     public void fineAdjustFwd() {
         LOAD_MOTOR.set(-LOAD_MOTOR_ADJUST_SPEED);

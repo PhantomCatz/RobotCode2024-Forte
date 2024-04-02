@@ -335,7 +335,7 @@ public final class CatzConstants {
   -----------------------------------------------------------------------------------*/ 
     public static final CatzMechanismPosition SCORING_TRAP_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_SCORE_TRAP,
-        119.0,
+        SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
         SubsystemCatzShooter.SERVO_NULL_POSITION,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 

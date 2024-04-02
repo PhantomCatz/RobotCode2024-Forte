@@ -7,6 +7,8 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.CatzAutonomous;
+import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -20,7 +22,9 @@ public class TeleopDriveCmd extends Command {
   private Supplier<Double> m_supplierRightJoyX;
   private Supplier<Boolean> m_isFieldOrientedDisabled;
 
-  private SlewRateLimiter slewRateLimiter = new SlewRateLimiter(0.5);
+  private SlewRateLimiter slewRateLimiter = new SlewRateLimiter(1.0);
+
+  private double flipDirection = 0.0;
 
   //drive variables
   private double xSpeed;
@@ -43,14 +47,22 @@ public class TeleopDriveCmd extends Command {
   }
 
   @Override
-  public void initialize() {}
+  public void initialize() {
+    if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Red) {
+
+      flipDirection = -1.0;
+    } else {
+
+      flipDirection = 1.0;
+    }
+  }
 
   @Override
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
-    xSpeed =       -m_supplierLeftJoyY.get();
-    ySpeed =       -m_supplierLeftJoyX.get(); 
-    turningSpeed =  m_supplierRightJoyX.get();
+    xSpeed =       -m_supplierLeftJoyY.get() * flipDirection;
+    ySpeed =       -m_supplierLeftJoyX.get() * flipDirection; 
+    turningSpeed =  m_supplierRightJoyX.get() * flipDirection;
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;

@@ -127,9 +127,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private final double TURRET_POWER_SCALE = 0.5;
 
   private double  manualTurretPwr;
-  
-  private double manualTurretPwrRT;
-  private double manualTurretPwrLT;
 
   //-----------------------------------------------------------------------------------------------
   //
@@ -179,9 +176,12 @@ public class SubsystemCatzTurret extends SubsystemBase {
     
     //set turret constraint if shooter is greater than threshold
     if(SubsystemCatzShooter.getInstance().getServoCommandedPosition() > SERVO_TURRET_CONSTRAINT) {
+
       if(m_turretTargetDegree > TURRET_MAX_SERVO_LIMIT_DEG) {
+
         m_turretTargetDegree = TURRET_MAX_SERVO_LIMIT_DEG;
       } else if(m_turretTargetDegree < TURRET_MIN_SERVO_LIMIT_DEG) {
+
         m_turretTargetDegree = TURRET_MIN_SERVO_LIMIT_DEG;
       }
     } 
@@ -268,6 +268,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //--------------------------------------------------------------------------------------------
       if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
          SubsystemCatzVision.getInstance().getAprilTagID(0) == 4){
+          
         m_currentTurretState = TurretState.TRACKING_APRILTAG;
         //System.out.println("apriltag");
       }else{
@@ -344,16 +345,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //-------------------------------------------------------------------------------------------------
   //    Manual Rotate Methods
   //-------------------------------------------------------------------------------------------------
-  public void rotateLeft(double power){
-    m_currentTurretState = TurretState.FULL_MANUAL; 
-    manualTurretPwrLT  = -power * TURRET_POWER_SCALE;    
-
-  }
-
-  public void rotateRight(double power){
-    m_currentTurretState = TurretState.FULL_MANUAL;         
-    manualTurretPwrRT  = power * TURRET_POWER_SCALE;
-  }
 
   public Command cmdRotateTurretManualOn(Supplier<Double> power){
     return run(()->{
@@ -367,13 +358,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //-------------------------------------------------------------------------------------------------
   //    Manual Methods
   //-------------------------------------------------------------------------------------------------
-  public Command cmdTurretLT(Supplier<Double> manualPower) {
-    return run(() -> rotateLeft(manualPower.get()));
-  }
-  
-  public Command cmdTurretRT(Supplier<Double> manualPower) {
-    return run(() -> rotateRight(manualPower.get()));
-  }
   
   public Command cmdTurretOff() {
     return run(() -> setTurretDisabled());
