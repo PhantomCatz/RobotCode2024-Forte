@@ -163,6 +163,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
         Trigger triggerModeHoard = new Trigger(()->isInHoardMode());
 
+        triggerModeHoard.and(xboxDrv.leftStick())
+                      .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE AND STOWS TO AMP SCORE DOWN POS
+
         triggerModeHoard.and(xboxAux.y())
                         .onTrue(shooter.hoardShooterMode());  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
   

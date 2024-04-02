@@ -24,9 +24,11 @@ public interface ShooterIO {
         public double loadMotorPercentOutput; 
         public double loadMotorVelocity;
         public double loadMotorOutputCurrent;
+        public double loadMotorEncCnts;
 
         public double servoLeftPosition;
         public double servoRightPosition;
+
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}
@@ -63,6 +65,6 @@ public interface ShooterIO {
 
     public default void updateTurretState(){}
 
-    public default void updateShooterState(){}
+    public default void resetLoadEnc(){}
 
 }

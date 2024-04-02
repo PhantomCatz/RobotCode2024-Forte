@@ -1,5 +1,6 @@
 package frc.robot.subsystems.LEDs;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class LEDSection {
@@ -10,12 +11,12 @@ public class LEDSection {
         Flow;
     }
 
-    
 
     private final int LED_COUNT;
     private int iteration;
     private int currentIteration = 0;
-    private int alt = 0;
+    private int alternatingCounter = 0;
+    private int alternatingCounterSwitch = 0;
 
     private Color[] ledColors;
     private Color[] ledColors2;
@@ -89,25 +90,38 @@ public class LEDSection {
         if (currentIteration >= iteration) {
             currentIteration = 1;
 
-            if (alt > 200000) {
-                alt = 1;
+            if (alternatingCounter > 200000) {
+                alternatingCounter = 1;
             }
 
-            alt++;
-            
+            if(alternatingCounterSwitch > 200000) {
+                alternatingCounterSwitch = 1;
+            } 
+
+            alternatingCounterSwitch++;
+
+            if(ledMode == LEDMode.Alternating ||
+               ledMode == LEDMode.Blink){
+                if(alternatingCounterSwitch % 10 == 0) {
+                    alternatingCounter++;
+                }
+            } else {
+                alternatingCounter++;
+            }
+
             switch (ledMode) {
                 case Solid:
                     return ledColors;
 
                 case Blink:
-                    if (alt % 2 == 0) {
+                    if (alternatingCounter % 2 == 0) {
                         return ledColors;
                     } else {
                         return new Color[LED_COUNT];
                     }
 
                 case Alternating:
-                    if (alt % 2 == 0) {
+                    if (alternatingCounter % 2 == 0) {
                         return ledColors;
                     } else {
                         return ledColors2;

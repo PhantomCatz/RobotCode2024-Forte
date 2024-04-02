@@ -88,6 +88,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     WAIT_FOR_MOTORS_TO_REV_UP,
     START_SHOOTER_FLYWHEEL,
     START_SHOOTER_FLYWHEEL_HOARD_MODE,
+    PREP_FOR_HANDOFF_SHIFT,
+    HANDOFF_SHIFT,
     SHOOTING,
     LOAD_OFF,
     LOAD_OUT,
@@ -117,6 +119,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   private boolean m_desiredBeamBreakState;
   private int     m_iterationCounter;
+
+  private double m_startingLoadEncoderHandoff;
 
   private boolean m_shooterServoInPos = false;
   private boolean autonKeepFlywheelOn = false;
@@ -208,6 +212,21 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
           case LOAD_OFF:
             io.loadDisabled();
+          break;
+
+          case PREP_FOR_HANDOFF_SHIFT:
+            io.resetLoadEnc();
+            m_startingLoadEncoderHandoff = inputs.loadMotorEncCnts;
+            currentShooterState = ShooterState.HANDOFF_SHIFT;
+          break;
+
+          case HANDOFF_SHIFT:
+            io.loadNote();
+            if(Math.abs(inputs.loadMotorEncCnts - m_startingLoadEncoderHandoff) < 20.0) { //absoulte value because encoder cnts are in negative
+
+              io.loadDisabled();
+              currentShooterState = ShooterState.LOAD_OUT;
+            }
           break;
 
           case LOAD_OUT:
@@ -310,7 +329,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
       } 
     
       //cmd final output
-      io.setServoPosition(m_targetServoPosition);
+      io.setServoPosition(servoPosTuning.get());
 
       //-------------------------------------------------------------------------------------------
       //  Servos are commanded from 0.0 to 1.0 where 0.0 represents 0% of max extension and 1.0
@@ -358,6 +377,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     Logger.recordOutput("shooter/isShooting", currentShooterState == ShooterState.SHOOTING);
     Logger.recordOutput("shooter/shooterTimeuot",shooterTimeout);
     Logger.recordOutput("shooter/servoTimer", servoTimer.get());
+    Logger.recordOutput("shooter/startingenchandoff", m_startingLoadEncoderHandoff);
+
 
   } //end of shooter periodic
 
@@ -366,10 +387,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
     double previousServoPosition = m_targetServoPosition;
-    m_shooterServoInPos = false;
     m_targetServoPosition = newPosition.getShooterVerticalTargetAngle();
     if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
       m_targetServoPosition = previousServoPosition;
+    } else {
+      m_shooterServoInPos = false;
     }
     currentServoState = ServoState.IDLE;
   }

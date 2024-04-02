@@ -122,7 +122,7 @@ public class ShooterIOReal implements ShooterIO {
         LOAD_MOTOR.restoreFactoryDefaults();
         LOAD_MOTOR.setSmartCurrentLimit(NEO_CURRENT_LIMIT_AMPS);
         LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
-        LOAD_MOTOR.enableVoltageCompensation(12.0); //TBD is this the default value?
+        LOAD_MOTOR.enableVoltageCompensation(12.0); 
         LOAD_MOTOR.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 32767);
 
         
@@ -187,8 +187,9 @@ public class ShooterIOReal implements ShooterIO {
         inputs.shooterAdjustBeamBreakState = !ADJUST_BEAM_BREAK.get();
 
         inputs.loadMotorPercentOutput = LOAD_MOTOR.get();
-        // inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
-        // inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
+        inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
+        inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
+        inputs.loadMotorEncCnts = LOAD_MOTOR.getEncoder().getPosition();
 
         inputs.servoLeftPosition  = shooterServoLT.getPosition();
         inputs.servoRightPosition = shooterServoRT.getPosition();
@@ -252,6 +253,12 @@ public class ShooterIOReal implements ShooterIO {
     public void loadDisabled() {
         LOAD_MOTOR.set(0);
     }
+    
+    @Override
+    public void resetLoadEnc() {
+        LOAD_MOTOR.getEncoder().setPosition(0.0);
+    }
+
     @Override
     public void loadBackward() {
         LOAD_MOTOR.set(LOAD_MOTOR_BACKWARD_SPEED);
