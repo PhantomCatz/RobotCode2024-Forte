@@ -43,8 +43,8 @@ public class IntakeIOReal implements IntakeIO {
     private TalonFXConfiguration talonConfigsPivot  = new TalonFXConfiguration();
     private TalonFXConfiguration talonConfigsRoller = new TalonFXConfiguration();
 
-    private final DigitalInput intakeBeamBreak = new DigitalInput(5);
-
+    private final DigitalInput ADJUST_BEAM_BREAK = new DigitalInput(4);
+    private final DigitalInput LOAD_BEAM_BREAK = new DigitalInput(5);
 
     public IntakeIOReal() {
         /************************************************************************************************************************
@@ -106,16 +106,17 @@ public class IntakeIOReal implements IntakeIO {
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         // inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();
-        inputs.pivotMtrRev =            pivotMtr.getPosition().getValue();
+        inputs.pivotMtrRev         =   pivotMtr.getPosition().getValue();
         // inputs.rollerVoltage =          rollerMtr.getTorqueCurrent().getValue();
         // inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
         // inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
         // inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
-        inputs.pivotMtrVelocityRPS =    pivotMtr.getVelocity().getValue();
+        inputs.pivotMtrVelocityRPS =   pivotMtr.getVelocity().getValue();
         // //true if beambreak is broken \/ \/
-        inputs.isIntakeBeamBrkBroken =   !intakeBeamBreak.get(); //TBD add method for controling inputs
-        inputs.closedLoopPivotMtr =     pivotMtr.getClosedLoopError().getValue();
-        inputs.pivotMtrCurrent =         pivotMtr.getStatorCurrent().getValue();
+        inputs.AdjustBeamBrkState =   !ADJUST_BEAM_BREAK.get(); //TBD add method for controling inputs
+        inputs.LoadBreamBrkState  =   !LOAD_BEAM_BREAK.get();
+        inputs.closedLoopPivotMtr =    pivotMtr.getClosedLoopError().getValue();
+        inputs.pivotMtrCurrent    =    pivotMtr.getStatorCurrent().getValue();
     }
 
     @Override
