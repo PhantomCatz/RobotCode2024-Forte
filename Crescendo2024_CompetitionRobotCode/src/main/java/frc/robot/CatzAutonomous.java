@@ -69,10 +69,10 @@ public class CatzAutonomous {
         pathChooser.addOption("Scoring US W1-3", US_W13());
         pathChooser.addOption("Scoring LS W1-3", LS_W13());
       
-        pathChooser.addOption("ScoringC13", scoringC13());
-        pathChooser.addOption("ScoringC35", scoringC35());
-        pathChooser.addOption("Hoard C1-2", HoardC12());
-        pathChooser.addOption("Hoard C4-5", HoardC45());
+        pathChooser.addOption("ScoringC13", US_C13());
+        pathChooser.addOption("ScoringC35", US_C35());
+        pathChooser.addOption("Hoard C1-2", US_C12_Hoard());
+        pathChooser.addOption("Hoard C4-5", LS_C45_Hoard());
 
         //Semi Illegal Paths 
         pathChooser.addOption("1 Wing Bulldoze Under", WingBulldozeUnder());
@@ -115,22 +115,6 @@ public class CatzAutonomous {
     //      Priority Autonomous Paths
     //  
     //--------------------------------------------------------------------------------------------
-    private PathPlannerPath test = PathPlannerPath.fromPathFile("Test");
-    
-    // private Command test(){
-    //     return new SequentialCommandGroup(
-    //         setAutonStartPose(test),
-    //         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-    //         new HomeToSpeakerCmd()
-    //     );
-    // }
-
-    private Command test(){
-        return new SequentialCommandGroup(
-            setAutonStartPose(test),
-            new PPTrajectoryFollowingCmd(test)
-        );
-    }
 
     /*
      * Robot Starting Position: Lower Speaker
