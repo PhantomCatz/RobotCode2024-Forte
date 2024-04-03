@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -40,6 +41,7 @@ public class CatzAutonomous {
     private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
     private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
+    private static AllianceColor allianceColor = AllianceColor.Blue;
     private static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
     private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
@@ -717,7 +719,7 @@ public class CatzAutonomous {
     private Command setAutonStartPose(PathPlannerPath startPath){
         return Commands.runOnce(()->{
             PathPlannerPath path = startPath;
-            if(CatzAutonomous.chosenAllianceColor.get() == CatzConstants.AllianceColor.Red) {
+            if(getAllianceColor() == CatzConstants.AllianceColor.Red) {
                 path = startPath.flipPath();
             }
 
@@ -726,7 +728,11 @@ public class CatzAutonomous {
     }
 
     public AllianceColor getAllianceColor(){
-        return chosenAllianceColor.get();
+        return allianceColor;
+    }
+
+    public void chooseAllianceColorDisabled() {
+        allianceColor = chosenAllianceColor.get();
     }
 
 }
