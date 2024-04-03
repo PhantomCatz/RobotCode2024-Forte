@@ -128,9 +128,10 @@ public class CatzAutonomous {
             new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("LS_W3-1")),
-                                        new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+                                    new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+            new HomeToSpeakerCmd(),
             Commands.runOnce(()->Timer.delay(5)), //placeholder code for just waiting a certain duration before shooting
-            new HomeToSpeakerCmd()
+            shooter.cmdShooterRamp()
         );
     }
 
@@ -147,8 +148,9 @@ public class CatzAutonomous {
             shooter.cmdShooterRamp(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-1")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+            new HomeToSpeakerCmd(),
             Commands.runOnce(()->Timer.delay(5)), //placeholder code for just waiting a certain duration before shooting
-            new HomeToSpeakerCmd()
+            shooter.cmdShooterRamp()
         );
     }
 
@@ -165,8 +167,9 @@ public class CatzAutonomous {
             shooter.cmdShooterRamp(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("CS_W2-1")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+            new HomeToSpeakerCmd(),
             Commands.runOnce(()->Timer.delay(5)), //placeholder code for just waiting a certain duration before shooting
-            new HomeToSpeakerCmd()
+            shooter.cmdShooterRamp()
         );
     }
 
