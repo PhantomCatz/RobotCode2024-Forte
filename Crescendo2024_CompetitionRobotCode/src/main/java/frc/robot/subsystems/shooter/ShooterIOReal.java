@@ -26,8 +26,8 @@ public class ShooterIOReal implements ShooterIO {
  * Configured from front robot facing perspective
  * 
  *-----------------------------------------------------------------------------------------*/
-    private final TalonFX SHOOTER_MOTOR_RT;
-    private final TalonFX SHOOTER_MOTOR_LT;
+    private TalonFX SHOOTER_MOTOR_RT;
+    private TalonFX SHOOTER_MOTOR_LT;
 
     private final int SHOOTER_MOTOR_LT_CAN_ID = 21;
     private final int SHOOTER_MOTOR_RT_CAN_ID = 20;
@@ -42,7 +42,7 @@ public class ShooterIOReal implements ShooterIO {
  * Load Motors
  * 
  *---------------------------------------------------------------------------------------*/
-    private final CANSparkMax LOAD_MOTOR;
+    private CANSparkMax LOAD_MOTOR;
     private final int LOAD_MOTOR_CAN_ID = 23;
 
     //Load motor speeds 
@@ -56,8 +56,8 @@ public class ShooterIOReal implements ShooterIO {
 /*---------------------------------------------------------------------------------------
  * Beam Breaks
  *-------------------------------------------------------------------------------------*/
-    private final DigitalInput ADJUST_BEAM_BREAK = new DigitalInput(0);
-    private final DigitalInput LOAD_BEAM_BREAK   = new DigitalInput(1);
+    private DigitalInput ADJUST_BEAM_BREAK = new DigitalInput(0);
+    private DigitalInput LOAD_BEAM_BREAK   = new DigitalInput(1);
 
 /*---------------------------------------------------------------------------------------
  * Linear Servos

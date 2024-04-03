@@ -18,8 +18,8 @@ public class ClimbIOReal implements ClimbIO {
     public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
     public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
 
-    private final TalonFX climbMtrLT;
-    private final TalonFX climbMtrRT;
+    private TalonFX climbMtrLT;
+    private TalonFX climbMtrRT;
 
     private TalonFXConfiguration climbTalonConfigs = new TalonFXConfiguration();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
