@@ -2,6 +2,7 @@ package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import org.littletonrobotics.junction.Logger;
@@ -12,6 +13,9 @@ import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.FieldConstants;
+import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
+// import frc.robot.Utils.LEDs.SubsystemCatzLED;
+import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -29,6 +33,7 @@ public class HomeToSpeakerCmd extends Command {
   private SubsystemCatzShooter    shooter    = SubsystemCatzShooter.getInstance();
   private SubsystemCatzTurret     turret     = SubsystemCatzTurret.getInstance();
   private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
+  private SubsystemCatzLED        lead       = SubsystemCatzLED.getInstance();
 
   //------------------------------------------------------------------------------------------------
   //

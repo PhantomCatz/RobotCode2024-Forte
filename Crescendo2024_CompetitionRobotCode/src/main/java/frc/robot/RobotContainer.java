@@ -103,7 +103,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     
       
     //LED command
-    xboxAux.back().onTrue(Commands.runOnce(()-> led.signalHumanPlayerAMP())); // SIGNAL HUMAN PLAYER FOR AMP SCORING
+    xboxAux.back().onTrue(Commands.runOnce(()-> led.signalHumanPlayerAMP(true))); // SIGNAL HUMAN PLAYER FOR AMP SCORING
 
 
     //------------------------------------------------------------------------------------
