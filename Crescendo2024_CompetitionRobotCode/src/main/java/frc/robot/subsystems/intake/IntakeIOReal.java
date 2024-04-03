@@ -116,7 +116,7 @@ public class IntakeIOReal implements IntakeIO {
         // //true if beambreak is broken \/ \/
 
         inputs.AdjustBeamBrkState =   !ADJUST_BEAM_BREAK.get(); //TBD add method for controling inputs
-        inputs.LoadBreamBrkState  =   !LOAD_BEAM_BREAK.get();
+        inputs.LoadBeamBrkState  =   !LOAD_BEAM_BREAK.get();
         inputs.closedLoopPivotMtr =    pivotMtr.getClosedLoopError().getValue();
         inputs.pivotMtrCurrent    =    pivotMtr.getStatorCurrent().getValue();
     }

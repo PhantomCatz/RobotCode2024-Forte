@@ -50,7 +50,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     NOTE_ADJUST,
     ROLLERS_OUT_EJECT,
     ROLLERS_OUT_SHOOTER_HANDOFF,
-    ROLLERS_OFF, NOTE_ADJUST, BEAM_BREAK_CHECK
+    ROLLERS_OFF, 
   }
 
   private static final boolean BEAM_IS_BROKEN     = true;
@@ -229,6 +229,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
       // ---------------------------------------Intake Roller logic -------------------------------------------
       switch (m_currentRollerState) {
         case ROLLERS_IN_SOURCE:
+
           if (inputs.LoadBeamBrkState) {
             setRollersOff();
             m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
@@ -238,7 +239,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         case ROLLERS_IN_GROUND:
           if (inputs.LoadBeamBrkState) {
             setRollersOff();
-            m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
+            //m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
           }
           break;
 
@@ -257,6 +258,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
           if(inputs.AdjustBeamBrkState == m_desiredBeamBreakState) {
             setRollersOff();
             m_currentRollerState = IntakeRollerState.ROLLERS_OFF;
+
           }
           break;
 
