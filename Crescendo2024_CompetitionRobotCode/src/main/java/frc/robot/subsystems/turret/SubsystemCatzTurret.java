@@ -274,7 +274,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   //
   //-------------------------------------------------------------------------------------------------
   public void aimAtGoal(Translation2d goal, boolean accountRobotVel) {
-
       //--------------------------------------------------------------------------------------------
       //  We are aiming using April Tags - Check if we are looking at he April Tag on the Speaker.
       //  If we are then we will TBD.  Otherwise we will TBD

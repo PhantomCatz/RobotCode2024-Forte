@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.CatzAutonomous;
@@ -116,6 +118,7 @@ public class HomeToSpeakerCmd extends Command {
     }
     turret.setTurretInPose(false);
 
+    Logger.recordOutput("Speaker", m_targetXY);
   }
 
   
@@ -145,7 +148,7 @@ public class HomeToSpeakerCmd extends Command {
       turret.aimAtGoal(m_targetXY, false);
       
   
-      if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && shooter.getShooterServoInPos())){//timer.hasElapsed(LINEAR_SERVO_TIMEOUT))) { 
+      if((turret.getTurretInPos() && shooter.isAutonShooterRamped())){//timer.hasElapsed(LINEAR_SERVO_TIMEOUT))) { //TBD add linear servo
 
         if(DriverStation.isAutonomous()){
           shooter.setShooterState(ShooterState.SHOOTING);

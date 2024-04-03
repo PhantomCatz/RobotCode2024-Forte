@@ -129,7 +129,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
-    CatzAutonomous.getInstance().chooseAllianceColorDisabled();
+    CatzAutonomous.getInstance().chooseAllianceColor();
 
     if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Blue) {
       lead.top.colorSolid(Color.kBlue); 
@@ -157,8 +157,9 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
+    CatzAutonomous.getInstance().chooseAllianceColor();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    FollowPathCommand.warmupCommand().schedule();
+    // FollowPathCommand.warmupCommand().schedule(); //TBD dont need this because we have our own path following cmd
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -185,13 +186,14 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    CatzAutonomous.getInstance().chooseAllianceColor();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
 
     lead.mid.colorRainbow();
     lead.mid.setMode(LEDMode.Flow);
-
+    
     if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Red){
       flipDirection = -1;
     } else {

@@ -64,7 +64,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         results.clear();
         
         //for every limlight camera process vision with according logic
-        for (int i = 0; i < inputs.length; i++) {
+        for (int i = 0; i < inputs.length-2; i++) { //change to -1 if soba is installed
             // update and process new inputs[cameraNum] for camera
             cameras[i].updateInputs(inputs[i]);
             Logger.processInputs("Vsn/" + cameras[i].getName() + "/Inputs", inputs[i]);
@@ -91,7 +91,7 @@ public class SubsystemCatzVision extends SubsystemBase {
                                         new Rotation2d(inputs[cameraNum].rotation));
 
         // add the new pose to a list
-        results.add(new PoseAndTimestamp(currentPose, inputs[cameraNum].timestamp, inputs[cameraNum].tagCount, inputs[cameraNum].ta, cameras[cameraNum].getName()));
+        results.add(new PoseAndTimestamp(currentPose, inputs[cameraNum].timestamp, inputs[cameraNum].tagCount, inputs[cameraNum].ta, cameras[cameraNum].getName(), inputs[cameraNum].hasTarget));
         camNum = cameraNum;
     }
 
@@ -107,13 +107,15 @@ public class SubsystemCatzVision extends SubsystemBase {
         private int numOfTagsVisible;
         private double avgArea;
         private String name;
+        private boolean hasTarget;
 
-        public PoseAndTimestamp(Pose2d pose, double timestamp, int numOfTagsVisible, double avgArea, String name) {
+        public PoseAndTimestamp(Pose2d pose, double timestamp, int numOfTagsVisible, double avgArea, String name, boolean hasTarget) {
             this.pose = pose;
             this.timestamp = timestamp;
             this.numOfTagsVisible = numOfTagsVisible;
             this.avgArea = avgArea;
             this.name = name;
+            this.hasTarget = hasTarget;
         }
 
         public Pose2d getPose() {
@@ -134,6 +136,10 @@ public class SubsystemCatzVision extends SubsystemBase {
 
         public String getName(){
             return name;
+        }
+
+        public boolean hasTarget(){
+            return hasTarget;
         }
     }
 
