@@ -98,9 +98,9 @@ public class Robot extends LoggedRobot {
       lead.top.colorSolid(Color.kGreen);
       lead.bot.colorSolid(Color.kGreen);
 
-      lead.mid.setMode(LEDMode.Solid);
-      lead.top.setMode(LEDMode.Solid);
-      lead.bot.setMode(LEDMode.Solid);
+      lead.mid.ledMode = LEDMode.Solid;
+      lead.top.ledMode = LEDMode.Solid;
+      lead.bot.ledMode = LEDMode.Solid;
       
       
     } else {
@@ -108,15 +108,14 @@ public class Robot extends LoggedRobot {
       lead.top.colorSolid(Color.kRed);
       lead.bot.colorSolid(Color.kRed);    
 
-      lead.mid.setMode(LEDMode.Solid);
-      lead.top.setMode(LEDMode.Solid);
-      lead.bot.setMode(LEDMode.Solid);
+      lead.mid.ledMode = LEDMode.Solid;
+      lead.top.ledMode = LEDMode.Solid;
+      lead.bot.ledMode = LEDMode.Solid;
       
     }
 
     // lead.mid.colorRainbow();
     // lead.mid.setMode(LEDMode.Solid);
-
   }
 
   @Override
@@ -165,15 +164,9 @@ public class Robot extends LoggedRobot {
       m_autonomousCommand.schedule();
     }
 
-    lead.top.colorAlternating(CatzColorConstants.PHANTOM_SAPPHIRE, Color.kWhite);
-    lead.mid.colorAlternating(CatzColorConstants.PHANTOM_SAPPHIRE, Color.kWhite);
-    lead.bot.colorAlternating(CatzColorConstants.PHANTOM_SAPPHIRE, Color.kWhite);
-    
-    lead.top.setMode(LEDMode.Flow);
-    lead.mid.setMode(LEDMode.Flow);
-    lead.bot.setMode(LEDMode.Flow);
-
-    lead.mid.setIteration(20);
+    lead.top.colorSolid(CatzColorConstants.PHANTOM_SAPPHIRE);
+    lead.mid.colorSolid(CatzColorConstants.PHANTOM_SAPPHIRE);
+    lead.bot.colorSolid(CatzColorConstants.PHANTOM_SAPPHIRE);
   }
 
   @Override
@@ -190,18 +183,6 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-
-    lead.mid.colorRainbow();
-    lead.mid.setMode(LEDMode.Flow);
-    
-    if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Red){
-      flipDirection = -1;
-    } else {
-      flipDirection = 1;
-    }
-
-
-    System.out.println(CatzAutonomous.getInstance().getAllianceColor().toString());
   }
 
   @Override

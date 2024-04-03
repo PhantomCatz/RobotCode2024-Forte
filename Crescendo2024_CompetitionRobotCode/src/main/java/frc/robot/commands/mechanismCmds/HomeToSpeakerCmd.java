@@ -13,6 +13,7 @@ import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.FieldConstants;
+import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -32,6 +33,7 @@ public class HomeToSpeakerCmd extends Command {
   private SubsystemCatzShooter    shooter    = SubsystemCatzShooter.getInstance();
   private SubsystemCatzTurret     turret     = SubsystemCatzTurret.getInstance();
   private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
+  private SubsystemCatzLED        lead       = SubsystemCatzLED.getInstance();
 
   //------------------------------------------------------------------------------------------------
   //
