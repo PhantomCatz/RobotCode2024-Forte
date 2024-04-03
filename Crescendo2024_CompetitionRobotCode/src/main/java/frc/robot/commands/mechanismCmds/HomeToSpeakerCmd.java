@@ -126,10 +126,12 @@ public class HomeToSpeakerCmd extends Command {
   @Override 
   public void execute() {
   
-      if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 || //TBD make the camera number constants make speaker tag id a variable
-         SubsystemCatzVision.getInstance().getAprilTagID(0) == 4) {
+      servoPos = shooterPivotTable.get(newDist);
+      
+      if(SubsystemCatzVision.getInstance().getAprilTagID(2) == 7 || //TBD make the camera number constants make speaker tag id a variable
+         SubsystemCatzVision.getInstance().getAprilTagID(2) == 4) {
+        //use apriltag tracking for servos
 
-          //use apriltag tracking for servos
         shooter.aprilTagVerticalTargeting();
       } else {
 
@@ -141,8 +143,6 @@ public class HomeToSpeakerCmd extends Command {
 
       turret.aimAtGoal(m_targetXY, false);
       
-      
-
   
       if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && shooter.getShooterServoInPos())){//timer.hasElapsed(LINEAR_SERVO_TIMEOUT))) { //TBD add linear servo
 

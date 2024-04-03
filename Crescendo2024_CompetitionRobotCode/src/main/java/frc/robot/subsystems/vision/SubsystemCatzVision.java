@@ -49,8 +49,9 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight-ramen"),   //index 0
-                new VisionIOLimeLight("limelight-udon")     //index 1
+                new VisionIOLimeLight("limelight-udon"),    //index 0 left
+                new VisionIOLimeLight("limelight-soba"),    //index 1 right
+                new VisionIOLimeLight("limelight-ramen"),   //index 2 turret
             });
         }
         return instance;
@@ -69,7 +70,7 @@ public class SubsystemCatzVision extends SubsystemBase {
             Logger.processInputs("Vsn/" + cameras[i].getName() + "/Inputs", inputs[i]);
                     
             //checks for when to process vision
-            if (inputs[i].hasTarget && 
+            if (inputs[i].hasTarget &&
                 inputs[i].isNewVisionPose &&  
                 inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) { //TBD get rid of this?
                 processVision(i);

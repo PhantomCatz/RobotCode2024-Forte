@@ -83,9 +83,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double TURRET_kI = 0.0;
   private static final double TURRET_kD = 0.0;
   
-  private static final double LIMELIGHT_kP = 0.013;
+  private static final double LIMELIGHT_kP = 0.01;//0.013;
   private static final double LIMELIGHT_kI = 0.0;
-  private static final double LIMELIGHT_kD = 0.0001;
+  private static final double LIMELIGHT_kD = 0.0;
 
   private final double TURRET_ANGLE_THRESHOLD_DEG = 3.0;
   private final double TURRET_APRILTAG_OFFSET_THRESHOLD = 5.0;
@@ -226,14 +226,15 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //  turret angle go to specified angle
         //  only track the shooterlimelight to the speaker apriltag  
         //------------------------------------------------------------------------------------------
-        if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
-           SubsystemCatzVision.getInstance().getAprilTagID(0) == 4) {
+        if(SubsystemCatzVision.getInstance().getAprilTagID(2) == 7 ||
+           SubsystemCatzVision.getInstance().getAprilTagID(2) == 4) {
           
-          offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(0);
+          offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(2);
           apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0.0);
           io.turretSetPwr(apriltagTrackingPower);
         }
       } 
+
     }
 
 
@@ -278,9 +279,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //  We are aiming using April Tags - Check if we are looking at he April Tag on the Speaker.
       //  If we are then we will TBD.  Otherwise we will TBD
       //--------------------------------------------------------------------------------------------
-      // System.out.println(SubsystemCatzVision.getInstance().getAprilTagID(0));
-      if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
-         SubsystemCatzVision.getInstance().getAprilTagID(0) == 4){
+      // System.out.println(SubsystemCatzVision.getInstance().getAprilTagID(2));
+      if(SubsystemCatzVision.getInstance().getAprilTagID(2) == 7 ||
+         SubsystemCatzVision.getInstance().getAprilTagID(2) == 4){
           
         m_currentTurretState = TurretState.TRACKING_APRILTAG;
         // System.out.println("apriltag");
