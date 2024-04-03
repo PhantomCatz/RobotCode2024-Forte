@@ -2,9 +2,8 @@ package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -12,6 +11,7 @@ import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.FieldConstants;
+import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -75,7 +75,7 @@ public class HomeToSpeakerCmd extends Command {
   private double newDist;
   private double servoPos;
 
-  private static final double AUTON_TIMEOUT_SEC = 1.0;
+  private static final double LINEAR_SERVO_TIMEOUT = 1.0;
 
   //------------------------------------------------------------------------------------------------
   //
@@ -125,28 +125,36 @@ public class HomeToSpeakerCmd extends Command {
   //------------------------------------------------------------------------------------------------
   @Override 
   public void execute() {
-      newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
   
-      servoPos = shooterPivotTable.get(newDist);
-      
-      if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
+      if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 || //TBD make the camera number constants make speaker tag id a variable
          SubsystemCatzVision.getInstance().getAprilTagID(0) == 4) {
+
+          //use apriltag tracking for servos
         shooter.aprilTagVerticalTargeting();
       } else {
+
+          //use pose to pose linear interpolation table for servo
+        newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
+        servoPos = shooterPivotTable.get(newDist);
         shooter.updateShooterServo(servoPos);
       }
 
       turret.aimAtGoal(m_targetXY, false);
       
-      shooter.updateShooterServo(servoPos);
+      
+
   
-      if(DriverStation.isAutonomous()){
-  
-        if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(AUTON_TIMEOUT_SEC))) { 
-  
+      if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && shooter.getShooterServoInPos())){//timer.hasElapsed(LINEAR_SERVO_TIMEOUT))) { //TBD add linear servo
+
+        if(DriverStation.isAutonomous()){
+
           shooter.setShooterState(ShooterState.SHOOTING);
+        } else {
+
+          SubsystemCatzLED.getInstance().mid.colorSolid(Color.kBlueViolet);// TBD finalize pattern
         }
       }
+      
   }
 
   @Override

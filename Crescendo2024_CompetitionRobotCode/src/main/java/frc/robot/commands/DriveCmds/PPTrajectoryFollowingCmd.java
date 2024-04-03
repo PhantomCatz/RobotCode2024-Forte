@@ -99,10 +99,7 @@ public class PPTrajectoryFollowingCmd extends Command {
             // if(distance > MAX_DISTANCE){
             //     displacement = displacement.times(MAX_DISTANCE/distance);
             // }
-    
-    
-            //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
-            
+                
             /* 
             * Convert PP trajectory into a wpilib trajectory type 
             * Only takes in the current robot position 
@@ -115,16 +112,23 @@ public class PPTrajectoryFollowingCmd extends Command {
                                                           new Pose2d(goal.positionMeters, new Rotation2d()),/*new Pose2d(currentPose.getTranslation().plus(displacement), new Rotation2d()*/
                                                           0.0);
     
-            //debug
-            //System.out.println(goal.getTargetHolonomicPose());
-            //Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
             //construct chassisspeeds
             ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
+
+            //send to drivetrain
+            m_driveTrain.driveRobotWithDiscretizeKinematics(adjustedSpeeds);
+
+            //Long term
+
+            //Debug
+            //Logger.recordOutput("Desired Auto Pose", new Pose2d(state.poseMeters.getTranslation(), goal.targetHolonomicRotation));
             //Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
             //Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
-            //send to drivetrain
-            m_driveTrain.driveRobotWithDescritizeDynamics(adjustedSpeeds);
-            Logger.recordOutput("Desired Auto Pose", new Pose2d(state.poseMeters.getTranslation(), goal.targetHolonomicRotation));
+            //Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
+            //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
+
+            //System.out.println(goal.getTargetHolonomicPose());
+
         }else{
             m_driveTrain.stopDriving();
         }

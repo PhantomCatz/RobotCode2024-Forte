@@ -120,16 +120,18 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         
         //Configure logging trajectories to advantage kit
         Pathfinding.setPathfinder(new LocalADStarAK());
-        PathPlannerLogging.setLogActivePathCallback(
-            (activepath)->{
-                Logger.recordOutput("Obometry/Trajectory", activepath.toArray(new Pose2d[activepath.size()]));
-            });
-        PathPlannerLogging.setLogTargetPoseCallback(
-            (targetPose)-> {
-                Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
-            });
+        
+        //DEBUG
+        // PathPlannerLogging.setLogActivePathCallback(
+        //     (activepath)->{
+        //         Logger.recordOutput("Obometry/Trajectory", activepath.toArray(new Pose2d[activepath.size()]));
+        //     });
+        // PathPlannerLogging.setLogTargetPoseCallback(
+        //     (targetPose)-> {
+        //         Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
+        //     });
 
-        gyroIO.resetNavXIO(0); //start gyro on the blue alliance side 
+        gyroIO.resetNavXIO(0);  //TBD if red alliance how does the gryo get reset
         
     }
 
@@ -191,25 +193,26 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
                 visionOdometry.get(i).getTimestamp()
             );
-            Logger.recordOutput("Obometry/VisionPose-"+visionOdometry.get(i).getName(), visionOdometry.get(i).getPose());
+
+            //DEBUG
+            Logger.recordOutput("Obm/ViPose", visionOdometry.get(i).getPose());
         }
 
 
         //------------------------------------------------------------------------------------------------
         // Logging
         //------------------------------------------------------------------------------------------------
-        // Logger.recordOutput("Obometry/Pose", getPose()); 
+        //Long Term
+        Logger.recordOutput("Obm/EstPose", getPose());
+
+        //DEBUG
         // Logger.recordOutput("Obometry/LimelightPose Soba" , vision.getVisionOdometry().get(1).getPose()); 
         // Logger.recordOutput("Obometry/LimelightPose Udon" , vision.getVisionOdometry().get(2).getPose()); 
-
-        Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
-
-        // Update SmartDashboard with the gyro angle
         SmartDashboard.putNumber("gyroAngle", getGyroAngle());
 
     }   //end of drivetrain periodic
 
-    public void driveRobotWithDescritizeDynamics(ChassisSpeeds chassisSpeeds) {
+    public void driveRobotWithDiscretizeKinematics(ChassisSpeeds chassisSpeeds) {
 
         //correct dynamics with wpilib internal "2nd order kinematics"
         ChassisSpeeds descreteSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
@@ -244,9 +247,9 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         RT_BACK_MODULE.setDesiredState(optimizedDesiredStates[2]);
         RT_FRNT_MODULE.setDesiredState(optimizedDesiredStates[3]);
 
-        // Logging
-        Logger.recordOutput("Drive/unoptimized module states", desiredStates);
-        Logger.recordOutput("Drive/optimized module states", optimizedDesiredStates);
+        // DEBUG
+        // Logger.recordOutput("Drive/unoptimized module states", desiredStates);
+        // Logger.recordOutput("Drive/optimized module states", optimizedDesiredStates);
     }
 
     //--------------------------------------------------DriveTrain MISC methods-------------------------------------------------

@@ -252,13 +252,16 @@ public class SubsystemCatzTurret extends SubsystemBase {
         m_turretInPos = false;
       }
     }
+    //Long Term
+    Logger.recordOutput("turret/currentTurretDegee",   currentTurretDegree);
+    Logger.recordOutput("turret/m_TurretTargetDegree", m_turretTargetDegree);
 
+
+    //DEBUG
     Logger.recordOutput("turret/offsetXTurret",        offsetAprilTagX);
     //Logger.recordOutput("turret/PwrPID", apriltagTrackingPower);
     // Logger.recordOutput("turret/currentTurretState", currentTurretState);
-    Logger.recordOutput("turret/currentTurretDegee",   currentTurretDegree);
-    Logger.recordOutput("turret/closedlooperror",      m_closedLoopError);
-    Logger.recordOutput("turret/m_TurretTargetDegree", m_turretTargetDegree);
+    //Logger.recordOutput("turret/closedlooperror",      m_closedLoopError);
     Logger.recordOutput("turret/setpositionpwr", setPositionPower);
     Logger.recordOutput("turret/m_TurretinPos", m_turretInPos);
   }   //End of periodic()
@@ -311,10 +314,10 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //---------------------------------------------------------------------------------  -----------
         double angle = Math.atan2(roboDistanceFromSpeaker.getY(), roboDistanceFromSpeaker.getX());
   
-        Logger.recordOutput("AutoAim/local turret target angle", angle);
+        //Logger.recordOutput("AutoAim/local turret target angle", angle);
   
         angle = CatzMathUtils.toUnitCircAngle(angle - robotPose.getRotation().getRadians() - 3.14); 
-        Logger.recordOutput("AutoAim/global turret target angle", angle);
+        //Logger.recordOutput("AutoAim/global turret target angle", angle);
   
         m_turretTargetDegree = Math.toDegrees(angle);    //Convert from radians to deg
         if(m_turretTargetDegree > 180) {
@@ -324,7 +327,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
         }
   
   
-        Logger.recordOutput("AutoAim/targetTurretDeg", m_turretTargetDegree);
+        //Logger.recordOutput("AutoAim/targetTurretDeg", m_turretTargetDegree);
         m_currentTurretState   = TurretState.AUTO;
       }
 
