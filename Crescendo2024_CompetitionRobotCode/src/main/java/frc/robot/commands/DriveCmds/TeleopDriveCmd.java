@@ -4,9 +4,12 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.CatzAutonomous;
 import frc.robot.Robot;
+import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -69,22 +72,14 @@ public class TeleopDriveCmd extends Command {
     //send new chassisspeeds object to the drivetrain
     m_driveTrain.driveRobotWithDiscretizeKinematics(chassisSpeeds);
 
-  
-
-  }
-
-  /*
-  * For Debugging Purposes 
-  * Keep them commmented ALWAYS if you are not using it 
-  */
-  public void debugLogsDrive(){
     //DEBUG
-      // Logger.recordOutput("robot xspeed", xSpeed);
-      // Logger.recordOutput("robot yspeed", ySpeed);
-      // Logger.recordOutput("robot turnspeed", turningSpeed);
-      // Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
-      // Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
-      // Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
+    // Logger.recordOutput("robot xspeed", xSpeed);
+    // Logger.recordOutput("robot yspeed", ySpeed);
+    // Logger.recordOutput("robot turnspeed", turningSpeed);
+    // Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
+    // Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
+    // Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
+
   }
 
   // Called once the command ends or is interrupted.

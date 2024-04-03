@@ -394,25 +394,17 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
       }
     }
-    importantIntakeLogs(); // Logging Data
-  }
-
-
-// -------------------------------------------------------------------------------------
-// Debug Logs 
-// -------------------------------------------------------------------------------------
-  public void importantIntakeLogs(){
-  //Long Term
+    //Long Term
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
     Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
-  }
-  public void debugLogsIntake(){  // Keep these commented if not being USED
-    
+
+    //DEBUG
     // Logger.recordOutput("intake/ff volts", m_ffVolts);
     // Logger.recordOutput("intake/pivotvel", pivotVelRadPerSec);
     // Logger.recordOutput("intake/position error", positionErrorDeg);
     // Logger.recordOutput("intake/roller mode", m_currentRollerState.toString());
     // Logger.recordOutput("intake/intake mode", m_currentIntakeControlState.toString());
+
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -443,6 +435,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     // periodic()
     // -------------------------------------------------------------------------------------
     if (m_targetPositionDeg == INTAKE_STOW_DEG) {
+      //System.out.println("I-A");
       // -------------------------------------------------------------------------------------
       // If intake is already behind the elevator then elevator is already in a safe
       // position. If the intake is NOT behind the elevator then we need to make sure
@@ -490,8 +483,10 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
       elevatorThresholdRev = INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV;
       if(m_currentPositionDeg < INTAKE_TRANSITION_CHECK_DEG) {
-          m_intakeElevatorInSafetyZone = true;
+       // System.out.println("I-G");
+        m_intakeElevatorInSafetyZone = true;
       } else if (SubsystemCatzElevator.getInstance().getElevatorRevPos() < INTAKE_ELEV_MAX_HEIGHT_FOR_INTAKE_STOW_REV) {
+          // System.out.println("I-F");
           m_intakeElevatorInSafetyZone = true;
       }
     }

@@ -54,6 +54,4 @@ public interface ShooterIO {
 
     public default void resetLoadEnc(){}
 
-    public default void fineTransferAdjust() {}
-
 }

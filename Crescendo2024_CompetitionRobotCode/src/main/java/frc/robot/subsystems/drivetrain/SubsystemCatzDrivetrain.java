@@ -252,11 +252,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         RT_BACK_MODULE.setDesiredState(optimizedDesiredStates[2]);
         RT_FRNT_MODULE.setDesiredState(optimizedDesiredStates[3]);
 
-       
-    }
-
-    //--------------------------------------------------DEBUG PURPOSES LOGS-------------------------------------------------
-    public void debugLogsDriveSubSys(){
+        // DEBUG
         // Logger.recordOutput("Drive/unoptimized module states", desiredStates);
         // Logger.recordOutput("Drive/optimized module states", optimizedDesiredStates);
     }

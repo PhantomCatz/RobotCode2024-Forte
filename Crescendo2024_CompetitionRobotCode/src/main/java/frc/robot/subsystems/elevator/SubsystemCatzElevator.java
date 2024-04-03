@@ -185,13 +185,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
     // //LongTerm
     //  Logger.recordOutput("elevator/targetRev", m_targetPositionRev);
 
-   
-  }
-
-  //-------------------------------------------------------------------------------------
-  // DEBUG LOGS (Keep them Commented if not Used)
-  //-------------------------------------------------------------------------------------
-  public void debugLogsElevator(){
+    //DEBUG
     // Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
     // Logger.recordOutput("elevator/elevatorin safety", m_elevatorIntakeInSafetyZone);
     // Logger.recordOutput("elevator/GOing up", currentElevatorDirection.toString());

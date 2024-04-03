@@ -61,23 +61,17 @@ public class CatzSwerveModule {
 
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Drv/M " + Integer.toString(m_index), inputs); 
+        Logger.processInputs("Drv/M " + Integer.toString(m_index), inputs);
+
+        //DEBUG
+        // Logger.recordOutput("Module/absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
+        // Logger.recordOutput("Module/angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
+        // Logger.recordOutput("Module " + Integer.toString(m_index) + "/drive applied volts", inputs.driveAppliedVolts);
+
+
+        // SmartDashboard.putNumber("absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
+        // SmartDashboard.putNumber("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
     }
-
-    //-----------------------------------------LOGS----------------------------------------------
-    /*
-    * For Debugging Purposes 
-    * Keep them commmented ALWAYS if you are not using it 
-    */
-        public void debugLogsSwerve(){
-            // Logger.recordOutput("Module/absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
-            // Logger.recordOutput("Module/angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
-            // Logger.recordOutput("Module " + Integer.toString(m_index) + "/drive applied volts", inputs.driveAppliedVolts);
-
-
-            // SmartDashboard.putNumber("absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
-            // SmartDashboard.putNumber("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
-        }
 
     //----------------------------------------Setting pwr methods-------------------------------
     public void setSteerPower(double pwr) {

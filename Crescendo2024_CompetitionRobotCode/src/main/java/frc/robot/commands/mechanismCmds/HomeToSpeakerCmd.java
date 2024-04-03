@@ -105,7 +105,7 @@ public class HomeToSpeakerCmd extends Command {
 
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
-    //shooter.startShooterFlywheel();
+    shooter.startShooterFlywheel();
     
     if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
       
@@ -151,11 +151,14 @@ public class HomeToSpeakerCmd extends Command {
       if((turret.getTurretInPos() && shooter.isAutonShooterRamped())){//timer.hasElapsed(LINEAR_SERVO_TIMEOUT))) { //TBD add linear servo
 
         if(DriverStation.isAutonomous()){
+
           shooter.setShooterState(ShooterState.SHOOTING);
         } else {
+
           SubsystemCatzLED.getInstance().mid.colorSolid(Color.kBlueViolet);// TBD finalize pattern
         }
-      }  
+      }
+      
   }
 
   @Override
