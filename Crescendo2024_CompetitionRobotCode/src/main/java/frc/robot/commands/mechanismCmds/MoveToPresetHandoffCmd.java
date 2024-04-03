@@ -1,6 +1,6 @@
-// // Copyright (c) FIRST and other WPILib contributors.
-// // Open Source Software; you can modify and/or share it under the terms of
-// // the WPILib BSD license file in the root directory of this project.
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.mechanismCmds;
 
@@ -103,8 +103,6 @@ public class MoveToPresetHandoffCmd extends Command {
 
         if(m_noteDestination == NoteDestination.AMP) {
             m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP_PRESET;
-            // System.out.println("Shooter Amp");
-
         } 
      
       break;
@@ -220,7 +218,6 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean intakeState   = intake.getIntakeInPos(); 
     boolean turretState   = turret.getTurretInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-    // System.out.println("i " + intakeState + "t " + turretState + "e " + elevatorState);
     return(intakeState && turretState);// && elevatorState);
   }
 

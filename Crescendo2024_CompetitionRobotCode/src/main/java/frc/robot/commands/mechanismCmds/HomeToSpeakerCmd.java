@@ -144,17 +144,14 @@ public class HomeToSpeakerCmd extends Command {
       turret.aimAtGoal(m_targetXY, false);
       
   
-      if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && shooter.getShooterServoInPos())){//timer.hasElapsed(LINEAR_SERVO_TIMEOUT))) { //TBD add linear servo
+      if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && shooter.getShooterServoInPos())){//timer.hasElapsed(LINEAR_SERVO_TIMEOUT))) { 
 
         if(DriverStation.isAutonomous()){
-
           shooter.setShooterState(ShooterState.SHOOTING);
         } else {
-
           SubsystemCatzLED.getInstance().mid.colorSolid(Color.kBlueViolet);// TBD finalize pattern
         }
-      }
-      
+      }  
   }
 
   @Override
