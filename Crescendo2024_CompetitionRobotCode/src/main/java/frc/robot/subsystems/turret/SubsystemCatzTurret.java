@@ -88,6 +88,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double LIMELIGHT_kD = 0.0001;
 
   private final double TURRET_ANGLE_THRESHOLD_DEG = 3.0;
+  private final double TURRET_APRILTAG_OFFSET_THRESHOLD = 5.0;
 
   private double m_turretTargetDegree;
   private double m_closedLoopError;
@@ -237,12 +238,20 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
 
     //In position check
-    if(m_closedLoopError < TURRET_ANGLE_THRESHOLD_DEG) {     
+    if(m_currentTurretState == TurretState.AUTO){
+      if(m_closedLoopError < TURRET_ANGLE_THRESHOLD_DEG) {     
         m_turretInPos = true;
-    }else{
-      m_turretInPos = false;
+      }else{
+        m_turretInPos = false;
+      }
     }
-
+    else if(m_currentTurretState == TurretState.TRACKING_APRILTAG){
+      if(Math.abs(offsetAprilTagX) < TURRET_APRILTAG_OFFSET_THRESHOLD){
+        m_turretInPos = true;
+      }else{
+        m_turretInPos = false;
+      }
+    }
 
     Logger.recordOutput("turret/offsetXTurret",        offsetAprilTagX);
     //Logger.recordOutput("turret/PwrPID", apriltagTrackingPower);
@@ -266,7 +275,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //  We are aiming using April Tags - Check if we are looking at he April Tag on the Speaker.
       //  If we are then we will TBD.  Otherwise we will TBD
       //--------------------------------------------------------------------------------------------
-      System.out.println(SubsystemCatzVision.getInstance().getAprilTagID(0));
+      // System.out.println(SubsystemCatzVision.getInstance().getAprilTagID(0));
       if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
          SubsystemCatzVision.getInstance().getAprilTagID(0) == 4){
           
@@ -277,7 +286,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //  We are aiming using Odometry
         //  collect drivetrain pose
         //--------------------------------------------------------------------------------------------
-        System.out.println("pose");
+        // System.out.println("pose");
         Pose2d robotPose = SubsystemCatzDrivetrain.getInstance().getPose();
   
         //take difference between speaker and the currnet robot translation
@@ -332,7 +341,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   }
 
   public boolean getTurretInPos() {
-    return Math.abs(m_turretTargetDegree - currentTurretDegree) < 3;
+    return m_turretInPos;
   }
 
   public void setTurretInPose(boolean state){

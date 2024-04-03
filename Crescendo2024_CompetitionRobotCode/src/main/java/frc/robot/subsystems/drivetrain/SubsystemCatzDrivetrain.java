@@ -191,14 +191,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
                 visionOdometry.get(i).getTimestamp()
             );
-            Logger.recordOutput("Obometry/VisionPose", visionOdometry.get(i).getPose());
+            Logger.recordOutput("Obometry/VisionPose-"+visionOdometry.get(i).getName(), visionOdometry.get(i).getPose());
         }
 
 
         //------------------------------------------------------------------------------------------------
         // Logging
         //------------------------------------------------------------------------------------------------
-        Logger.recordOutput("Obometry/Pose", getPose()); 
+        // Logger.recordOutput("Obometry/Pose", getPose()); 
         // Logger.recordOutput("Obometry/LimelightPose Soba" , vision.getVisionOdometry().get(1).getPose()); 
         // Logger.recordOutput("Obometry/LimelightPose Udon" , vision.getVisionOdometry().get(2).getPose()); 
 

@@ -103,7 +103,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
  
   //shooter note state for determining when other mechanism should turn off
-  private ShooterNoteState currentNoteState;
+  private ShooterNoteState currentNoteState = ShooterNoteState.NULL;
   public enum ShooterNoteState {
     NOTE_IN_POSTION,
     NOTE_IN_ADJUST,
@@ -120,7 +120,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final double HANDOFF_TRANSFER_CNT_SHIFT = 10.0;
 
   private boolean m_desiredBeamBreakState;
-  private int     m_iterationCounter;
+  private int     m_iterationCounterRampingTimeout = 0;
+  private int     m_iterationCounterShooting = 0;
 
   private double m_startingLoadEncoderHandoff;
 
@@ -190,7 +191,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
           case LOAD_IN_DONE:
             if(inputs.shooterLoadBeamBreakState == BEAM_IS_BROKEN) { 
               io.loadDisabled();
-              m_iterationCounter = 0;
+              m_iterationCounterRampingTimeout = 0;
               currentShooterState = ShooterState.WAIT_FOR_NOTE_TO_SETTLE;
             }
           break;
@@ -236,12 +237,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
           case LOAD_OUT:
             io.loadBackward();
             
-            if(m_iterationCounter >= LOAD_OUT_TIMEOUT) {
+            if(m_iterationCounterRampingTimeout >= LOAD_OUT_TIMEOUT) {
               io.loadDisabled();
               currentShooterState = ShooterState.LOAD_OFF;
-              m_iterationCounter = 0;
+              m_iterationCounterRampingTimeout = 0;
             }
-            m_iterationCounter++;
+            m_iterationCounterRampingTimeout++;
           break;
           
           case START_SHOOTER_FLYWHEEL:
@@ -265,13 +266,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
                 xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
               }
             } else if(DriverStation.isAutonomous()) {
-              if(m_iterationCounter > WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT) {
+              if(m_iterationCounterRampingTimeout > WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT) {
                 shooterTimeout = true;
-                m_iterationCounter = 0;
+                m_iterationCounterRampingTimeout = 0;
                 currentShooterState = ShooterState.SHOOTING;
                 autonIsShooterRamped = true;
               }
-                m_iterationCounter++;
+                m_iterationCounterRampingTimeout++;
             }
             break;
 
@@ -280,7 +281,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
             
             xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
 
-            if(m_iterationCounter >= SHOOTING_TIMEOUT) 
+            if(m_iterationCounterShooting >= SHOOTING_TIMEOUT) 
             {
               if(DriverStation.isAutonomous()) 
               {
@@ -300,12 +301,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
                   io.setShooterDisabled();
                   currentShooterState = ShooterState.LOAD_OFF;
                 }
-                
+              
+              System.out.println("***********note has been shot!*************");
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT; //ends autoaim sequence
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0);
-              m_iterationCounter = 0;
+              m_iterationCounterShooting = 0;
             }
-            m_iterationCounter++;
+            m_iterationCounterShooting++;
           break;
 
           default:
@@ -382,10 +384,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
     Logger.recordOutput("shooter/seroPosTimeOut", servoPositionTimeout);
     Logger.recordOutput("shooter/servopos", m_targetServoPosition);
     Logger.recordOutput("shooter/isAutonRamped", isAutonShooterRamped());
-    Logger.recordOutput("shooter/isShooting", currentShooterState == ShooterState.SHOOTING);
+    Logger.recordOutput("shooter/currentShooterState", currentShooterState.toString());
     Logger.recordOutput("shooter/shooterTimeuot",shooterTimeout);
     Logger.recordOutput("shooter/servoTimer", servoTimer.get());
     Logger.recordOutput("shooter/startingenchandoff", m_startingLoadEncoderHandoff);
+    Logger.recordOutput("shooter/currentNoteState", currentNoteState.toString());
+    Logger.recordOutput("shooter/iterationCounterShooting", m_iterationCounterShooting);
 
 
   } //end of shooter periodic
@@ -403,6 +407,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
     currentServoState = ServoState.IDLE;
   }
+
 
   public Command cmdSetKeepShooterOn(boolean state){
     return runOnce(() -> {
@@ -510,7 +515,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
   
   public Command loadBackward() {
-    m_iterationCounter = 0;
+    m_iterationCounterRampingTimeout = 0;
     return runOnce(()->setShooterState(ShooterState.LOAD_OUT));
   }
   

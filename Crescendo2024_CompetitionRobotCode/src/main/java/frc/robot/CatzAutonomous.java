@@ -156,20 +156,23 @@ public class CatzAutonomous {
         return new SequentialCommandGroup(
             setAutonStartPose(US_W1_3_1),
             shooter.cmdShooterRamp(),
-            shooter.cmdSetKeepShooterOn(true),
+            // shooter.cmdSetKeepShooterOn(true),
             new HomeToSpeakerCmd(),
 
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_1),
                                      new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0)),
+            shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd(),
 
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_2),
                                      new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0)),
+            shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd(),
 
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_3),
                                      new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0)),
-            shooter.cmdSetKeepShooterOn(false),
+            // shooter.cmdSetKeepShooterOn(false),
+            shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd()
         );
     }
@@ -266,23 +269,23 @@ public class CatzAutonomous {
     private Command scoringC13() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6")),
-            new HomeToSpeakerCmd(),
-            shooter.cmdShooterRamp()
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
         );
     }
 
