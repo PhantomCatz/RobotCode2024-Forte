@@ -84,7 +84,6 @@ public class VisionIOLimeLight implements VisionIO {
 
         if(name.equals("limelight-ramen")||name.equals("limelight-soba")){
             
-            System.out.println("Not installed or to be used");
             return;
         }
         

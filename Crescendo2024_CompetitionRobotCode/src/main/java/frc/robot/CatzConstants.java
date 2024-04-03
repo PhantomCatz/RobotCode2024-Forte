@@ -247,8 +247,6 @@ public final class CatzConstants {
     public static final double DRVTRAIN_WHEEL_DIAMETER_METERS = Units.inchesToMeters(4.0);
     public static final double DRVTRAIN_WHEEL_CIRCUMFERENCE = (Math.PI * DRVTRAIN_WHEEL_DIAMETER_METERS);
 
-    public static final boolean START_FLIPPED = true;
-
     public static final double FEEDFOWARD_Kv_VELOCITY_METERS = 2.68;
     public static final double FEEDFOWARD_Kv_VELOCITY_ACCELERATION_METERS = 0.24;
 
