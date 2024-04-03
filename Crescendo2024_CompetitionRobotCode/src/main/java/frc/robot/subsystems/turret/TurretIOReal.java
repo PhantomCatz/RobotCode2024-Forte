@@ -41,7 +41,6 @@ public class TurretIOReal implements TurretIO {
     @Override
     public void updateInputs(TurretIOInputs inputs) {
         inputs.turretMtrPercentOutput = turretMtr.getAppliedOutput();
-        // inputs.turretMtrOutputCurrent = turretMtr.getOutputCurrent();
         inputs.turretEncValue         = turretMtr.getEncoder().getPosition();
 
     }

@@ -388,12 +388,14 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
       }
     }
+    //Long Term
+    Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
+    Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
 
+    //DEBUG
     // Logger.recordOutput("intake/ff volts", m_ffVolts);
     // Logger.recordOutput("intake/pivotvel", pivotVelRadPerSec);
     // Logger.recordOutput("intake/position error", positionErrorDeg);
-    Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
-    Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
     // Logger.recordOutput("intake/roller mode", m_currentRollerState.toString());
     // Logger.recordOutput("intake/intake mode", m_currentIntakeControlState.toString());
 
@@ -541,14 +543,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
   // -------------------------------------------------------------------------------------
   public double getWristAngle() {
     return m_currentPositionDeg;
-  }
-
-  public double getWristVelocity() {
-    return inputs.pivotMtrVelocityRPS;
-  }
-
-  public double getWristCurrent() {
-    return inputs.pivotMtrCurrent;
   }
 
   public boolean getIntakeInPos() {
