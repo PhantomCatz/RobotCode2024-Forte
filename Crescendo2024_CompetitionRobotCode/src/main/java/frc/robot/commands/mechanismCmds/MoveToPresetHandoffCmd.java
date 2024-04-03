@@ -37,8 +37,6 @@ public class MoveToPresetHandoffCmd extends Command {
   private boolean m_targetMechPoseStartReached = false;
   private boolean m_targetMechPoseEndReached   = false;
 
-  private Timer transferToShooter  = new Timer();
-
 
   public MoveToPresetHandoffCmd(NoteDestination noteDestination, NoteSource noteSource) {
     this.m_noteDestination = noteDestination;
@@ -148,10 +146,8 @@ public class MoveToPresetHandoffCmd extends Command {
 
         mechInPos = areMechanismsInPosition();
         if(mechInPos) {
-
           if(m_noteDestination == NoteDestination.SPEAKER) {
              intake.setRollersOutakeHandoff();
-
             if(shooter.getShooterNoteState() == ShooterNoteState.NOTE_IN_POSTION) {
 
               intake.setRollersOff();
@@ -225,7 +221,7 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean turretState   = turret.getTurretInPos();
     boolean elevatorState = elevator.getElevatorInPos();
     // System.out.println("i " + intakeState + "t " + turretState + "e " + elevatorState);
-    return(intakeState && turretState && elevatorState);
+    return(intakeState && turretState);// && elevatorState);
   }
 
   @Override

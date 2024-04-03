@@ -56,6 +56,7 @@ public class PPTrajectoryFollowingCmd extends Command {
     }
 
     private boolean atTarget = false;
+    private double pathTimeOut;
 
     @Override
     public void initialize() {
@@ -63,21 +64,23 @@ public class PPTrajectoryFollowingCmd extends Command {
         timer.reset();
         timer.start();
 
+
         //flip auton path to mirrored red side if we choose red alliance
         if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
             path = path.flipPath();
-            // System.out.println("flip");
         }
 
         
         //create pathplanner trajectory
-
         this.trajectory = new PathPlannerTrajectory(
                                 path, 
                                 DriveConstants.
                                     swerveDriveKinematics.
                                         toChassisSpeeds(m_driveTrain.getModuleStates()),
                                 m_driveTrain.getRotation2d());
+                                
+        pathTimeOut = trajectory.getTotalTimeSeconds() * TIMEOUT_RATIO;
+
     }
 
     @Override
@@ -154,10 +157,11 @@ public class PPTrajectoryFollowingCmd extends Command {
         //System.out.println("Y error " + yError);
         //System.out.println("Angle error " + rotationError);
         atTarget = (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
-                yError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
-                rotationError < TrajectoryConstants.ALLOWABLE_ROTATION_ERROR) || 
-                timer.hasElapsed(trajectory.getTotalTimeSeconds() * TIMEOUT_RATIO);
-        return atTarget;
-    }
+                    yError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
+                    rotationError < TrajectoryConstants.ALLOWABLE_ROTATION_ERROR);
+
+        return atTarget || timer.hasElapsed(pathTimeOut);
+
+    } 
 
 }
