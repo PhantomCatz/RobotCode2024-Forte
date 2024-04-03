@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.CatzConstants.CatzColorConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
@@ -37,6 +38,7 @@ public class Robot extends LoggedRobot {
 
   public static SubsystemCatzLED lead = SubsystemCatzLED.getInstance();
   private RobotContainer m_robotContainer;
+  public static int flipDirection = 1;
   
   @Override
   public void robotInit() {
@@ -179,6 +181,10 @@ public class Robot extends LoggedRobot {
 
     lead.mid.colorRainbow();
     lead.mid.setMode(LEDMode.Flow);
+
+    if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Red){
+      flipDirection = -1;
+    }
   }
 
   @Override

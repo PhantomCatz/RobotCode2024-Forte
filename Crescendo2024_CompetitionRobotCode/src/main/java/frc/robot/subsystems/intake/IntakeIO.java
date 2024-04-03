@@ -13,7 +13,7 @@ public interface IntakeIO {
         public double rollerPercentOutput;
         public double rollerVelocity;
         public boolean AdjustBeamBrkState;
-        public boolean LoadBreamBrkState;
+        public boolean LoadBeamBrkState;
         public double closedLoopPivotMtr;
         public double pivotMtrCurrent;
     }

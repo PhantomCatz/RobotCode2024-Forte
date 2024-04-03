@@ -26,7 +26,7 @@ public class CatzSwerveModule {
     private PIDController m_PID;
                 
     //steering pid constants
-    private final double kP = 0.6; 
+    private final double kP = 0.4; 
     private final double kI = 0.01;
 
     private final double kD = 0.000;

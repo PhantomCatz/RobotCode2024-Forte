@@ -80,7 +80,7 @@ public class CatzAutonomous {
         // pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
         // pathChooser.addOption("Curve", curveAuto());
 
-        pathChooser.addOption("DriveStraightRotate", driveRotate());
+        pathChooser.addOption("Test", test());
     }
 
     //configured dashboard
@@ -101,11 +101,22 @@ public class CatzAutonomous {
     //      Priority Autonomous Paths
     //  
     //--------------------------------------------------------------------------------------------
-    
-    private Command driveRotate(){
+    private PathPlannerPath test = PathPlannerPath.fromPathFile("Test");
+
+    // private Command test(){
+    //     return new SequentialCommandGroup(
+    //         // shooter.cmdShooterRamp(),
+    //         new ParallelCommandGroup(new PPTrajectoryFollowingCmd(test),
+    //                                  new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+    //         new HomeToSpeakerCmd()
+    //     );
+    // }
+
+    private Command test(){
         return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("Test")),
-            new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Test"))
+            setAutonStartPose(test),
+            new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            new HomeToSpeakerCmd()
         );
     }
     
@@ -123,7 +134,8 @@ public class CatzAutonomous {
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("CS_W2-1")),
                                         new SequentialCommandGroup(
                                             new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                            new HomeToSpeakerCmd())),
+                                            new ParallelCommandGroup(new HomeToSpeakerCmd(),
+                                                                     drivetrain.cancelTrajectory()))),
             shooter.cmdSetKeepShooterOn(false),
             Commands.runOnce(()->shooter.disableShooter())
         );
@@ -144,19 +156,24 @@ public class CatzAutonomous {
         return new SequentialCommandGroup(
             setAutonStartPose(US_W1_3_1),
             shooter.cmdShooterRamp(),
-            shooter.cmdSetKeepShooterOn(true),
+            // shooter.cmdSetKeepShooterOn(true),
             new HomeToSpeakerCmd(),
+
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_1),
-                                     new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0),
-                                                               new HomeToSpeakerCmd())),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0)),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_2),
-                                    new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0),
-                                                                new HomeToSpeakerCmd())),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0)),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_3),
-                                        new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0),
-                                                                    new HomeToSpeakerCmd())),
-            shooter.cmdSetKeepShooterOn(false),
-            Commands.runOnce(()->shooter.disableShooter())
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0)),
+            // shooter.cmdSetKeepShooterOn(false),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
         );
     }
 
@@ -252,23 +269,23 @@ public class CatzAutonomous {
     private Command scoringC13() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_2")),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_3")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_4")),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_5")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Scoring_C1-3_6")),
-            new HomeToSpeakerCmd(),
-            shooter.cmdShooterRamp()
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
         );
     }
 

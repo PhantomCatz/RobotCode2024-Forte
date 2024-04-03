@@ -147,14 +147,19 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         }
         // Update gyro inputs and log them
         gyroIO.updateInputs(gyroInputs);
-        Logger.processInputs("Drive/gyroinputs ", gyroInputs);  
+        Logger.processInputs("Drive/gyroinputs ", gyroInputs); 
+        
+        //------------------------------------------------------------------------------------------------
+        // Odometry pose updating
+        //------------------------------------------------------------------------------------------------
+        m_poseEstimator.update(getRotation2d(), getModulePositions());    
         
         //------------------------------------------------------------------------------------------------
         // Vison pose updating
         //------------------------------------------------------------------------------------------------
         var visionOdometry = vision.getVisionOdometry();   
         for (int i = 0; i < visionOdometry.size(); i++) {
-            if(visionOdometry.get(i).getName().equals("limelight-soba")){
+            if(visionOdometry.get(i).getName().equals("limelight-ramen")){
                 continue;
             } 
 
@@ -164,18 +169,18 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
 
                 //vision is trusted more with more tags visible
-                xyStdDev = 0.3; //3
+                xyStdDev = 3; //3
             }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
 
                 //vision is trusted more with tags that are closer to the target
-                xyStdDev = 0.5; //5
+                xyStdDev = 5; //5
             }else if(visionOdometry.get(i).getAvgArea() >= 0.12){ //TBD doesn't this do the same as the above
 
-                xyStdDev = 1.0; //10
+                xyStdDev = 10; //10
             }else{
                 
                 //Do not trust vision inputs
-                xyStdDev = 4.0; //40
+                xyStdDev = 40; //40
             }
 
             m_poseEstimator.setVisionMeasurementStdDevs(
@@ -186,20 +191,16 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
                 visionOdometry.get(i).getTimestamp()
             );
+            Logger.recordOutput("Obometry/VisionPose-"+visionOdometry.get(i).getName(), visionOdometry.get(i).getPose());
         }
-
-        //------------------------------------------------------------------------------------------------
-        // Odometry pose updating
-        //------------------------------------------------------------------------------------------------
-        m_poseEstimator.update(getRotation2d(), getModulePositions());    
 
 
         //------------------------------------------------------------------------------------------------
         // Logging
         //------------------------------------------------------------------------------------------------
-        Logger.recordOutput("Obometry/Pose", getPose()); 
-        Logger.recordOutput("Obometry/LimelightPose Soba" , vision.getVisionOdometry().get(1).getPose()); 
-        Logger.recordOutput("Obometry/LimelightPose Udon" , vision.getVisionOdometry().get(2).getPose()); 
+        // Logger.recordOutput("Obometry/Pose", getPose()); 
+        // Logger.recordOutput("Obometry/LimelightPose Soba" , vision.getVisionOdometry().get(1).getPose()); 
+        // Logger.recordOutput("Obometry/LimelightPose Udon" , vision.getVisionOdometry().get(2).getPose()); 
 
         Logger.recordOutput("Obometry/EstimatedPose", m_poseEstimator.getEstimatedPosition());
 
