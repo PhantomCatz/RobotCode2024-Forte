@@ -55,7 +55,6 @@ public class ScoreAmpCmd extends Command {
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
     elevator.updateTargetPositionElevator(pose.getElevatorTargetRev());
     intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
-    shooter.updateTargetPositionShooter(pose);
     turret.updateTargetPositionTurret(pose);
   }
 

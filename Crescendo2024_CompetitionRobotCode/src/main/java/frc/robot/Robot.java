@@ -50,7 +50,8 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
     switch (BuildConstants.DIRTY) {
       case 0:
-         Logger.recordMetadata("GitDirty", "All changes committed");
+         Logger.recordMetadata
+         ("GitDirty", "All changes committed");
          break;
       case 1:
          Logger.recordMetadata("GitDirty", "Uncomitted changes");
@@ -130,18 +131,24 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     CatzAutonomous.getInstance().chooseAllianceColorDisabled();
 
+    if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Blue) {
+      lead.top.colorSolid(Color.kBlue); 
+    }else{
+      lead.top.colorSolid(Color.kRed); 
+    }
+
 
     //checklist done leds
-    // if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || SubsystemCatzVision.getInstance().getApriltagID(0) == 263) { 
-    //   lead.mid.colorSolid(Color.kGreen);
-    //   lead.top.colorSolid(Color.kGreen);
-    //   lead.bot.colorSolid(Color.kGreen);
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
+      lead.mid.colorSolid(Color.kGreen);
+      lead.top.colorSolid(Color.kGreen);
+      lead.bot.colorSolid(Color.kGreen);
       
-    // } else {
-    //   lead.mid.colorSolid(Color.kRed);
-    //   lead.top.colorSolid(Color.kRed);
-    //   lead.bot.colorSolid(Color.kRed);    
-    // }
+    } else {
+      lead.mid.colorSolid(Color.kRed);
+      lead.top.colorSolid(Color.kRed);
+      lead.bot.colorSolid(Color.kRed);    
+    }
 
   }
 
@@ -190,6 +197,7 @@ public class Robot extends LoggedRobot {
     } else {
       flipDirection = 1;
     }
+
 
     System.out.println(CatzAutonomous.getInstance().getAllianceColor().toString());
   }

@@ -37,6 +37,8 @@ public class MoveToPresetHandoffCmd extends Command {
   private boolean m_targetMechPoseStartReached = false;
   private boolean m_targetMechPoseEndReached   = false;
 
+  private boolean m_targetNoteAdjustInit = false;
+
 
   public MoveToPresetHandoffCmd(NoteDestination noteDestination, NoteSource noteSource) {
     this.m_noteDestination = noteDestination;
@@ -51,6 +53,8 @@ public class MoveToPresetHandoffCmd extends Command {
 
     m_targetMechPoseStartReached = false;
     m_targetMechPoseEndReached   = false;
+    m_targetNoteAdjustInit = false;
+
 
     switch(m_noteSource) {
       case INTAKE_GROUND:
@@ -161,10 +165,18 @@ public class MoveToPresetHandoffCmd extends Command {
     } else if(m_noteSource == NoteSource.FROM_SHOOTER) {
       //when the the rollers stop intaking due to beambreak
       if(m_targetMechPoseStartReached == false) {
+          if(m_targetNoteAdjustInit == false) {
+            shooter.setShooterNoteState(ShooterNoteState.NOTE_IN_ADJUST);//to account for periodic loop following command loop
+            shooter.setShooterState(ShooterState.PREP_FOR_HANDOFF_SHIFT);
+            m_targetNoteAdjustInit = true;
+          }
+
+
         if(areMechanismsInPosition()) {
-          intake.setRollersIntakeSource();
-          shooter.setShooterState(ShooterState.PREP_FOR_HANDOFF_SHIFT);
-          m_targetMechPoseStartReached = true;
+          if(shooter.getShooterNoteState() == ShooterNoteState.NOTE_IN_POSTION) {
+            intake.setRollersIntakeSource();
+            m_targetMechPoseStartReached = true;
+          }
         }
       }
 
@@ -182,7 +194,7 @@ public class MoveToPresetHandoffCmd extends Command {
           } else {
             //keep note in intake
           }
-        }
+        } 
       } 
     } else if(m_noteSource == NoteSource.FROM_INTAKE) {
       //when the the rollers stop intaking due to beambreak
@@ -212,7 +224,6 @@ public class MoveToPresetHandoffCmd extends Command {
 
     intake  .updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator  (pose.getElevatorTargetRev());
-    shooter .updateTargetPositionShooter   (pose);
     turret  .updateTargetPositionTurret    (pose);
   }
 

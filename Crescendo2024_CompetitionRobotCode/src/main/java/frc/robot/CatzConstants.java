@@ -270,19 +270,19 @@ public final class CatzConstants {
     public static final CatzMechanismPosition STOW_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_STOW_DEG,
-        SubsystemCatzShooter.SERVO_NULL_POSITION,
+        SubsystemCatzShooter.SERVO_IGNORE_POSITION,
         SubsystemCatzTurret.HOME_POSITION_DEG);
     
     public static final CatzMechanismPosition INTAKE_GROUND_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG,
-        SubsystemCatzShooter.SERVO_NULL_POSITION,
+        SubsystemCatzShooter.SERVO_IGNORE_POSITION,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition INTAKE_SOURCE_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_SOURCE_PICKUP,
         SubsystemCatzIntake.INTAKE_SOURCE_LOAD_UP_DEG,
-        SubsystemCatzShooter.SERVO_NULL_POSITION,
+        SubsystemCatzShooter.SERVO_IGNORE_POSITION,
         SubsystemCatzTurret.HOME_POSITION_DEG);
  /* ---------------------------------------------------------------------------------
   * SPEAKER PRESETS
@@ -296,7 +296,7 @@ public final class CatzConstants {
     public static final CatzMechanismPosition AUTO_AIM_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
-        SubsystemCatzShooter.SERVO_NULL_POSITION,
+        SubsystemCatzShooter.SERVO_IGNORE_POSITION,
         -999.0);
  /* ---------------------------------------------------------------------------------
   * HOARD PRESETS
@@ -305,7 +305,7 @@ public final class CatzConstants {
         SubsystemCatzElevator.ELEVATOR_STOW,
         
         SubsystemCatzIntake.INTAKE_HOARD_DEG,
-        SubsystemCatzShooter.SERVO_NULL_POSITION,
+        SubsystemCatzShooter.SERVO_IGNORE_POSITION,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition SHOOTER_HOARD_PRESET = new CatzMechanismPosition(
@@ -321,13 +321,13 @@ public final class CatzConstants {
     public static final CatzMechanismPosition PREP_FOR_AMP_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
-        SubsystemCatzShooter.SERVO_NULL_POSITION,
+        SubsystemCatzShooter.SERVO_IGNORE_POSITION,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
     public static final CatzMechanismPosition SCORING_AMP_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_AMP_SCORE,
         SubsystemCatzIntake.INTAKE_AMP_SCORE_DEG,
-        SubsystemCatzShooter.SERVO_NULL_POSITION,
+        SubsystemCatzShooter.SERVO_IGNORE_POSITION,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
  /* ---------------------------------------------------------------------------------
@@ -336,7 +336,7 @@ public final class CatzConstants {
     public static final CatzMechanismPosition SCORING_TRAP_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_SCORE_TRAP,
         SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
-        SubsystemCatzShooter.SERVO_NULL_POSITION,
+        SubsystemCatzShooter.SERVO_IGNORE_POSITION,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
  
