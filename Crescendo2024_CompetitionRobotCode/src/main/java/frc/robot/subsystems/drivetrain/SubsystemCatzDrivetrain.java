@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
@@ -154,49 +156,52 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         //------------------------------------------------------------------------------------------------
         // Odometry pose updating
         //------------------------------------------------------------------------------------------------
+        //
         m_poseEstimator.update(getRotation2d(), getModulePositions());    
         
         //------------------------------------------------------------------------------------------------
         // Vison pose updating
         //------------------------------------------------------------------------------------------------
-        var visionOdometry = vision.getVisionOdometry();   
-        for (int i = 0; i < visionOdometry.size(); i++) {
-            if(visionOdometry.get(i).getName().equals("limelight-ramen")){
-                continue;
-            } 
+        // var visionOdometry = vision.getVisionOdometry();   
+        // for (int i = 0; i < visionOdometry.size(); i++) {
+        //     if(visionOdometry.get(i).getName().equals("limelight-ramen")){
+        //         continue;
+        //     } 
 
-            //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
-            xyStdDev = 0;
+        //     //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
+        //     xyStdDev = 0;
 
-            if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
+        //     if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
 
-                //vision is trusted more with more tags visible
-                xyStdDev = 3; //3
-            }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
+        //         //vision is trusted more with more tags visible
+        //         xyStdDev = 3; //3
+        //     }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
 
-                //vision is trusted more with tags that are closer to the target
-                xyStdDev = 5; //5
-            }else if(visionOdometry.get(i).getAvgArea() >= 0.12){ //TBD doesn't this do the same as the above
+        //         //vision is trusted more with tags that are closer to the target
+        //         xyStdDev = 5; //5
+        //     }else if(visionOdometry.get(i).getAvgArea() >= 0.12){ //TBD doesn't this do the same as the above
 
-                xyStdDev = 10; //10
-            }else{
+        //         xyStdDev = 10; //10
+        //     }else{
                 
-                //Do not trust vision inputs
-                xyStdDev = 40; //40
-            }
+        //         //Do not trust vision inputs
+        //         xyStdDev = 40; //40
+        //     }
 
-            m_poseEstimator.setVisionMeasurementStdDevs(
-                VecBuilder.fill(xyStdDev, xyStdDev,99999999.0)
-            ); //gyro can be purely trusted for pose calculations so always trust it more than vision
-        
-            m_poseEstimator.addVisionMeasurement(
-                new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
-                visionOdometry.get(i).getTimestamp()
-            );
+        //     m_poseEstimator.setVisionMeasurementStdDevs(
+        //         VecBuilder.fill(xyStdDev, xyStdDev,99999999.0)
+        //     ); //gyro can be purely trusted for pose calculations so always trust it more than vision
+            
+        //     if(visionOdometry.get(i).hasTarget()){ //-999.0 indicates that limelight had bad data or no target
+        //         m_poseEstimator.addVisionMeasurement(
+        //             new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
+        //             visionOdometry.get(i).getTimestamp()
+        //         );
+        //     }
 
-            //DEBUG
-            Logger.recordOutput("Obm/ViPose", visionOdometry.get(i).getPose());
-        }
+        //     //DEBUG
+        //     Logger.recordOutput("Obm/ViPose "+ visionOdometry.get(i).getName(), visionOdometry.get(i).getPose());
+        // }
 
 
         //------------------------------------------------------------------------------------------------
@@ -311,7 +316,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     public Command resetGyro() {
         return runOnce(() -> {
-            gyroIO.setAngleAdjustmentIO(-gyroInputs.gyroYaw);
+            if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Red){
+                gyroIO.setAngleAdjustmentIO(-gyroInputs.gyroYaw + 180);
+            }else{
+                gyroIO.setAngleAdjustmentIO(-gyroInputs.gyroYaw);
+            }
         });
     }
 
@@ -343,11 +352,8 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     // Reset the position of the robot with a given pose
     public void resetPosition(Pose2d pose) {
         double angle = pose.getRotation().getDegrees();
-        if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
-            angle += 180;
-            gyroIO.setAngleAdjustmentIO(180);
-            
-        }
+
+        gyroIO.setAngleAdjustmentIO(angle);
         pose = new Pose2d(pose.getTranslation(), Rotation2d.fromDegrees(angle));
         m_poseEstimator.resetPosition(Rotation2d.fromDegrees(angle),getModulePositions(),pose);
     }

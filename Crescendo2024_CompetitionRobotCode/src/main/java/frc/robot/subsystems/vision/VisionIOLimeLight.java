@@ -81,39 +81,47 @@ public class VisionIOLimeLight implements VisionIO {
         double latency = (llresults.targetingResults.latency_capture + llresults.targetingResults.latency_pipeline) / 1000; //data[6] or latency is recorded in ms; divide by 1000 to get s
         inputs.latency = latency;
         //shoves in new pose2d from pose3d object estimate depending on if new apriltag detected
+
+        if(name.equals("limelight-ramen")||name.equals("limelight-soba")){
+            
+            System.out.println("Not installed or to be used");
+            return;
+        }
         
         if (inputs.hasTarget) {
             // sets input timestamp
-            inputs.timestamp = Timer.getFPGATimestamp() - latency;
-
             inputs.isNewVisionPose = true;
-
             
             visionPose2d = new Pose2d(visionPoseInfo[0],visionPoseInfo[1], new Rotation2d());
             if(prevVisionPos == null){
                 prevVisionPos = visionPose2d;
             }
 
-            if(visionPose2d.getTranslation().getDistance(prevVisionPos.getTranslation()) > 0.3){
+            // System.out.println(visionPose2d.getTranslation().getDistance(prevVisionPos.getTranslation()));
+            double error = visionPose2d.getTranslation().getDistance(prevVisionPos.getTranslation());
+            if(error == 0.0){
+                inputs.isNewVisionPose = false;
+                return;
+            }
+            if(error > 0.1){
                 badData = true;
-                visionPose2d = SubsystemCatzDrivetrain.getInstance().getPose();
-                prevVisionPos = SubsystemCatzDrivetrain.getInstance().getPose();
             }
 
             if(!badData){
-                prevVisionPos = visionPose2d;
+                inputs.x = visionPose2d.getX();
+                inputs.y = visionPose2d.getY();
+                inputs.rotation = visionPose2d.getRotation().getRadians();
+                inputs.timestamp = Timer.getFPGATimestamp() - latency;
             }
-
+            
+            prevVisionPos = visionPose2d;
             badData = false;
 
             //data used for pose estimator
-            inputs.x = visionPose2d.getX();
-            inputs.y = visionPose2d.getY();
-            inputs.rotation = visionPose2d.getRotation().getRadians();
+           
         } 
         else {
             inputs.isNewVisionPose = false;
-            visionPose2d = SubsystemCatzDrivetrain.getInstance().getPose();
             prevVisionPos = null;
         }
 
