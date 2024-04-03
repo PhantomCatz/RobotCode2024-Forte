@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -163,7 +162,7 @@ public class CatzAutonomous {
      * Robot Starting Position: Center Speaker
      * Sequence: Shoots preload into speaker
      *           Picks up note in front of it (W2)
-     *           Waits Ushoots into speaker
+     *           Waits until last 5 seconds and then shoots into speaker
      */
 
     private PathPlannerPath CS_W2_1 = PathPlannerPath.fromPathFile("CS_W2-1");
@@ -174,7 +173,8 @@ public class CatzAutonomous {
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(CS_W2_1),
-                                        new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+                                        new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
+                                    ),
             new WaitUntilSecondsLeft(5.0),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd()
@@ -190,7 +190,6 @@ public class CatzAutonomous {
     private PathPlannerPath US_W1_3_1 = PathPlannerPath.fromPathFile("US_W1-3_1");
     private PathPlannerPath US_W1_3_2 = PathPlannerPath.fromPathFile("ver2 US_W1-3_2");
     private PathPlannerPath US_W1_3_3 = PathPlannerPath.fromPathFile("ver2 US_W1-3_3");
-
 
     private Command US_W13() {
         return new SequentialCommandGroup(
@@ -277,22 +276,22 @@ public class CatzAutonomous {
         return new SequentialCommandGroup(
             setAutonStartPose(C35_1),
             shooter.cmdShooterRamp(),
-            shooter.cmdSetKeepShooterOn(true),
             new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(C35_1),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+            shooter.cmdShooterRamp(),
             new PPTrajectoryFollowingCmd(C35_2),
             new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(C35_3),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+            shooter.cmdShooterRamp(),
             new PPTrajectoryFollowingCmd(C35_4),
             new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(C35_5),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+            shooter.cmdShooterRamp(),
             new PPTrajectoryFollowingCmd(C35_6),
-            new HomeToSpeakerCmd(),
-            shooter.cmdSetKeepShooterOn(false),
-            Commands.runOnce(()->shooter.disableShooter())
+            new HomeToSpeakerCmd()
         );
     }
 
