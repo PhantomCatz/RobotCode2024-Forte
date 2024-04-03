@@ -221,7 +221,7 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean turretState   = turret.getTurretInPos();
     boolean elevatorState = elevator.getElevatorInPos();
     // System.out.println("i " + intakeState + "t " + turretState + "e " + elevatorState);
-    return(intakeState && turretState && elevatorState);
+    return(intakeState && turretState);// && elevatorState);
   }
 
   @Override
