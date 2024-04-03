@@ -46,7 +46,7 @@ public class ShooterIOReal implements ShooterIO {
     private final double LOAD_MOTOR_LOADING_SPEED    = 0.4;//0.3;//0.6; //was 0.4
     private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.8;
     private final double LOAD_MOTOR_ADJUST_SPEED     = 0.04;
-    private final double LOAD_MOTOR_TRANSFER_SPEED   = 0.2;
+    private final double LOAD_MOTOR_TRANSFER_SPEED   = 0.4;
 
     public static final int NEO_CURRENT_LIMIT_AMPS      = 30;
 
@@ -203,7 +203,7 @@ public class ShooterIOReal implements ShooterIO {
 
      @Override
     public void fineTransferAdjust() {
-        LOAD_MOTOR.set(-LOAD_MOTOR_ADJUST_SPEED);
+        LOAD_MOTOR.set(-LOAD_MOTOR_TRANSFER_SPEED);
     }
 
     @Override
