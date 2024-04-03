@@ -27,7 +27,6 @@ public class ScoreAmpCmd extends Command {
 
   @Override
   public void initialize() {
-
     runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP_PRESET);
     intakeNoteTimer.reset();
     intake.setWasIntakeInAmpScoring(false);

@@ -50,39 +50,47 @@ public class CatzAutonomous {
         Units.degreesToRadians(540), Units.degreesToRadians(720));
     
     private CatzAutonomous() {
+
+    //Alliance Color Selection in ShuffleBoard
         chosenAllianceColor.addDefaultOption("Blue Alliance", AllianceColor.Blue);
         chosenAllianceColor.addOption       ("Red Alliance",  AllianceColor.Red);
 
-        pathChooser.addOption("mid", mid());
-        pathChooser.addOption("bot", bot());
-        pathChooser.addOption("top", top());
-        pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
-        pathChooser.addOption("Speaker 4 Piece CS Wing", speaker4PieceCSWing());
-
-        pathChooser.addOption("1 Wing Bulldoze Under", WingBulldozeUnder());
-        pathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
+    /*-------------------------------------------------------------------------------------------------------------------
+    *
+    *   AUTON Priority LIST (It's in order - So Don't Mess it Up)
+    *
+    *-------------------------------------------------------------------------------------------------------------------*/
 
         pathChooser.addOption("ScoringW2", CS_W2());
         pathChooser.addOption("Scoring US W1-3", US_W13());
-        pathChooser.addOption("TestDrive US W1-3", US_W13_TEST_DRIVE());
         pathChooser.addOption("Scoring LS W1-3", LS_W13());
-        pathChooser.addOption("ScoringC13", scoringC13());
-        pathChooser.addOption("ScoringC35", scoringC35());
+        pathChooser.addOption("ScoringC35", US_C35());
+        pathChooser.addOption("ScoringC13", US_C13());
+        pathChooser.addOption("Hoard C1-2", US_C12_Hoard());
+        pathChooser.addOption("Hoard C4-5", LS_C45_Hoard());
 
-        pathChooser.addOption("Run and gun W1 C1-3", RNGC1W13());
 
-        pathChooser.addOption("Hoard C1-2", HoardC12());
-        pathChooser.addOption("Hoard C4-5", HoardC45());
-        pathChooser.addOption("Hoard Lower Mid", HoardLowerMid());
-        pathChooser.addOption("Bottom Mid Clear", BottomMidClear());
+        //Semi Illegal Paths 
+        pathChooser.addOption("1 Wing Bulldoze Under", WingBulldozeUnder());
+        pathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
 
-        // pathChooser.addOption("Center Rush Mid", CenterRushMid());
+    //-----------------------------------------------------------------------------------------------------------------------
+
+
+        // pathChooser.addOption("mid", mid());
+        // pathChooser.addOption("bot", bot());
+        // pathChooser.addOption("top", top());
+        // pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
+        // pathChooser.addOption("Speaker 4 Piece CS Wing", speaker4PieceCSWing());
+        // pathChooser.addOption("TestDrive US W1-3", US_W13_TEST_DRIVE());
+        // pathChooser.addOption("Run and gun W1 C1-3", RNGC1W13());
+        // pathChooser.addOption("Hoard Lower Mid", HoardLowerMid());
+        // pathChooser.addOption("Bottom Mid Clear", BottomMidClear());
         // pathChooser.addOption("DriveStraightRight", driveTranslateAutoRight());
         // pathChooser.addOption("DriveStraightMid", driveTranslateAutoMid());
         // pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
         // pathChooser.addOption("Curve", curveAuto());
-
-        pathChooser.addOption("Test", test());
+        // pathChooser.addOption("Test", test());
     }
 
     //configured dashboard
@@ -103,24 +111,6 @@ public class CatzAutonomous {
     //      Priority Autonomous Paths
     //  
     //--------------------------------------------------------------------------------------------
-    private PathPlannerPath test = PathPlannerPath.fromPathFile("Test");
-
-    // private Command test(){
-    //     return new SequentialCommandGroup(
-    //         // shooter.cmdShooterRamp(),
-    //         new ParallelCommandGroup(new PPTrajectoryFollowingCmd(test),
-    //                                  new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
-    //         new HomeToSpeakerCmd()
-    //     );
-    // }
-
-    private Command test(){
-        return new SequentialCommandGroup(
-            setAutonStartPose(test),
-            new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-            new HomeToSpeakerCmd()
-        );
-    }
     
     /*
      * Robot Starting Position: Center Speaker
@@ -235,7 +225,7 @@ public class CatzAutonomous {
     private PathPlannerPath C35_5 = PathPlannerPath.fromPathFile("Scoring_C3-5_5");
     private PathPlannerPath C35_6 = PathPlannerPath.fromPathFile("Scoring_C3-5_6");
 
-    private Command scoringC35() {
+    private Command US_C35() {
         return new SequentialCommandGroup(
             setAutonStartPose(C35_1),
             shooter.cmdShooterRamp(),
@@ -268,7 +258,7 @@ public class CatzAutonomous {
      *           Drives to center line to pick up note below previous note (C3)
      *           Goes under stage to shoot into speaker
      */
-    private Command scoringC13() {
+    private Command US_C13() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("Scoring_C1-3_1")),
             shooter.cmdShooterRamp(),
@@ -299,7 +289,7 @@ public class CatzAutonomous {
      *           Drives to center line to pick up note below previous note (C2)
      *           Goes near stage to hoard by shooting near speaker
      */
-    private Command HoardC12() {
+    private Command US_C12_Hoard() {
         return new SequentialCommandGroup( 
             setAutonStartPose(PathPlannerPath.fromPathFile("Hoard_C1-2_1")),
             new HomeToSpeakerCmd(),
@@ -323,7 +313,7 @@ public class CatzAutonomous {
      *           Drives to center line to pick up note above previous note (C4)
      *           Goes under stage to hoard by shooting near speaker
      */
-    private Command HoardC45() {
+    private Command LS_C45_Hoard() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("Hoard_C4-5_1")),
             new HomeToSpeakerCmd(),
@@ -596,6 +586,23 @@ public class CatzAutonomous {
         );
     }
 
+       // private Command test(){
+    //     return new SequentialCommandGroup(
+    //         // shooter.cmdShooterRamp(),
+    //         new ParallelCommandGroup(new PPTrajectoryFollowingCmd(test),
+    //                                  new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
+    //         new HomeToSpeakerCmd()
+    //     );
+    // }
+    private PathPlannerPath test = PathPlannerPath.fromPathFile("Test");
+
+    private Command test(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(test),
+            new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
+            new HomeToSpeakerCmd()
+        );
+    }
     //--------------------------------------------------------------------------------------------
     //  
     //      Auto Trjaectories for Telop

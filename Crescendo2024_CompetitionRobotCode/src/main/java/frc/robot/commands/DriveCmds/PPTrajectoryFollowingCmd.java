@@ -31,11 +31,10 @@ public class PPTrajectoryFollowingCmd extends Command {
     
     private final Timer timer = new Timer();
     private final double TIMEOUT_RATIO = 5;
-    private final double MAX_DISTANCE = 0.3;
     private PathPlannerPath path;
 
     /**
-     * @param drivetrain The coordinator between the gyro and the swerve modules.
+     * @param drivetrain           The coordinator between the gyro and the swerve modules.
      * @param trajectory          The trajectory to follow.
      */
     public PPTrajectoryFollowingCmd(PathPlannerPath newPath) {
@@ -93,12 +92,6 @@ public class PPTrajectoryFollowingCmd extends Command {
             PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
             Rotation2d targetOrientation     = goal.targetHolonomicRotation;
             Pose2d currentPose               = m_driveTrain.getPose();
-            // Translation2d displacement = goal.positionMeters.minus(currentPose.getTranslation());
-            // double distance = displacement.getDistance(new Translation2d());
-            // // System.out.println(distance);
-            // if(distance > MAX_DISTANCE){
-            //     displacement = displacement.times(MAX_DISTANCE/distance);
-            // }
                 
             /* 
             * Convert PP trajectory into a wpilib trajectory type 
@@ -118,21 +111,24 @@ public class PPTrajectoryFollowingCmd extends Command {
             //send to drivetrain
             m_driveTrain.driveRobotWithDiscretizeKinematics(adjustedSpeeds);
 
-            //Long term
-
-            //Debug
-            //Logger.recordOutput("Desired Auto Pose", new Pose2d(state.poseMeters.getTranslation(), goal.targetHolonomicRotation));
-            //Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
-            //Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
-            //Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
-            //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
-
-            //System.out.println(goal.getTargetHolonomicPose());
-
         }else{
             m_driveTrain.stopDriving();
         }
 
+    }
+
+    /*
+     * For Debugging Purposes 
+     * Keep them commmented ALWAYS if you are not using it 
+     */
+    public void debugLogsTrajectory(){
+        //Logger.recordOutput("Desired Auto Pose", new Pose2d(state.poseMeters.getTranslation(), goal.targetHolonomicRotation));
+        //Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
+        //Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
+        //Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
+        //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
+
+        //System.out.println(goal.getTargetHolonomicPose());
     }
 
     @Override
@@ -141,6 +137,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         m_driveTrain.stopDriving();
         System.out.println("trajectory done");
     }
+
 
     @Override
     public boolean isFinished() {
@@ -157,9 +154,6 @@ public class PPTrajectoryFollowingCmd extends Command {
         double yError =        Math.abs(desiredPosY - currentPosY);
         double rotationError = Math.abs(desiredRotation - currentRotation);
 
-        //System.out.println("X error " + xError);
-        //System.out.println("Y error " + yError);
-        //System.out.println("Angle error " + rotationError);
         atTarget = (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
                     yError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
                     rotationError < TrajectoryConstants.ALLOWABLE_ROTATION_ERROR);
