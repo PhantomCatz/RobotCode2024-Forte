@@ -1,6 +1,6 @@
-// // Copyright (c) FIRST and other WPILib contributors.
-// // Open Source Software; you can modify and/or share it under the terms of
-// // the WPILib BSD license file in the root directory of this project.
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.mechanismCmds;
 
@@ -37,6 +37,8 @@ public class MoveToPresetHandoffCmd extends Command {
   private boolean m_targetMechPoseStartReached = false;
   private boolean m_targetMechPoseEndReached   = false;
 
+  private boolean m_targetNoteAdjustInit = false;
+
 
   public MoveToPresetHandoffCmd(NoteDestination noteDestination, NoteSource noteSource) {
     this.m_noteDestination = noteDestination;
@@ -51,6 +53,8 @@ public class MoveToPresetHandoffCmd extends Command {
 
     m_targetMechPoseStartReached = false;
     m_targetMechPoseEndReached   = false;
+    m_targetNoteAdjustInit = false;
+
 
     switch(m_noteSource) {
       case INTAKE_GROUND:
@@ -103,8 +107,6 @@ public class MoveToPresetHandoffCmd extends Command {
 
         if(m_noteDestination == NoteDestination.AMP) {
             m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP_PRESET;
-            // System.out.println("Shooter Amp");
-
         } 
      
       break;
@@ -161,10 +163,18 @@ public class MoveToPresetHandoffCmd extends Command {
     } else if(m_noteSource == NoteSource.FROM_SHOOTER) {
       //when the the rollers stop intaking due to beambreak
       if(m_targetMechPoseStartReached == false) {
+          if(m_targetNoteAdjustInit == false) {
+            shooter.setShooterNoteState(ShooterNoteState.NOTE_IN_ADJUST);//to account for periodic loop following command loop
+            shooter.setShooterState(ShooterState.PREP_FOR_HANDOFF_SHIFT);
+            m_targetNoteAdjustInit = true;
+          }
+
+
         if(areMechanismsInPosition()) {
-          intake.setRollersIntakeSource();
-          shooter.setShooterState(ShooterState.PREP_FOR_HANDOFF_SHIFT);
-          m_targetMechPoseStartReached = true;
+          if(shooter.getShooterNoteState() == ShooterNoteState.NOTE_IN_POSTION) {
+            intake.setRollersIntakeSource();
+            m_targetMechPoseStartReached = true;
+          }
         }
       }
 
@@ -182,7 +192,7 @@ public class MoveToPresetHandoffCmd extends Command {
           } else {
             //keep note in intake
           }
-        }
+        } 
       } 
     } else if(m_noteSource == NoteSource.FROM_INTAKE) {
       //when the the rollers stop intaking due to beambreak
@@ -212,7 +222,6 @@ public class MoveToPresetHandoffCmd extends Command {
 
     intake  .updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator  (pose.getElevatorTargetRev());
-    shooter .updateTargetPositionShooter   (pose);
     turret  .updateTargetPositionTurret    (pose);
   }
 
@@ -220,7 +229,6 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean intakeState   = intake.getIntakeInPos(); 
     boolean turretState   = turret.getTurretInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-    // System.out.println("i " + intakeState + "t " + turretState + "e " + elevatorState);
     return(intakeState && turretState);// && elevatorState);
   }
 

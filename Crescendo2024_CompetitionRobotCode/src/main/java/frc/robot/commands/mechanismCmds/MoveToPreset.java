@@ -46,7 +46,6 @@ public class MoveToPreset extends Command {
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
     intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(pose.getElevatorTargetRev());
-    shooter.updateTargetPositionShooter(pose);
     turret.updateTargetPositionTurret(pose);
   }
 

@@ -40,7 +40,6 @@ public class ClimbCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("in clmb");
     climb.setClimbModeEnabled(true);
     turret.cmdTurretDegree(SubsystemCatzTurret.HOME_POSITION_DEG);
     shooter.setServoManualHold(1.0);
@@ -86,17 +85,4 @@ public class ClimbCmd extends Command {
     return false;
   }
 
-  //factory for updating all mechanisms with the packaged target info associated with the new postion
-  private void runMechanismSetpoints(CatzMechanismPosition pose) {
-    intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
-    elevator.updateTargetPositionElevator(pose.getElevatorTargetRev());
-    shooter.updateTargetPositionShooter(pose);
-    turret.updateTargetPositionTurret(pose);
-  }
-
-  private boolean areMechanismsInPosition() {
-    return (intake.getIntakeInPos() && 
-            turret.getTurretInPos() &&
-            elevator.getElevatorInPos());
-  }
 }

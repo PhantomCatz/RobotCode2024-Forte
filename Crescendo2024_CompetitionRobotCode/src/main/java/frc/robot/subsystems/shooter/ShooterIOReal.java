@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -15,9 +14,6 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
-import frc.robot.CatzConstants;
-import frc.robot.Utils.LoggedTunableNumber;
-import frc.robot.subsystems.turret.TurretIOReal;
 
 public class ShooterIOReal implements ShooterIO {
 /*-----------------------------------------------------------------------------------------
@@ -46,10 +42,11 @@ public class ShooterIOReal implements ShooterIO {
     private final int LOAD_MOTOR_CAN_ID = 23;
 
     //Load motor speeds 
-    private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
+    private final double LOAD_MOTOR_SHOOTING_SPEED   = 1.0;
     private final double LOAD_MOTOR_LOADING_SPEED    = 0.4;//0.3;//0.6; //was 0.4
-    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.2;
+    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.8;
     private final double LOAD_MOTOR_ADJUST_SPEED     = 0.04;
+    private final double LOAD_MOTOR_TRANSFER_SPEED   = 0.4;
 
     public static final int NEO_CURRENT_LIMIT_AMPS      = 30;
 
@@ -202,6 +199,11 @@ public class ShooterIOReal implements ShooterIO {
     @Override
     public void fineAdjustFwd() {
         LOAD_MOTOR.set(-LOAD_MOTOR_ADJUST_SPEED);
+    }
+
+     @Override
+    public void fineTransferAdjust() {
+        LOAD_MOTOR.set(-LOAD_MOTOR_TRANSFER_SPEED);
     }
 
     @Override
