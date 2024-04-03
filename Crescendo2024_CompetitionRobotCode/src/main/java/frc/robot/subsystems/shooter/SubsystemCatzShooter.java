@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.OIConstants;
+import frc.robot.CatzConstants.RobotMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.commands.mechanismCmds.MoveToPreset;
@@ -130,6 +131,21 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private boolean m_shooterServoInPos = false;
   private boolean autonKeepFlywheelOn = false;
   private boolean autonIsShooterRamped = false;
+
+  /*-------------------------------------------------------------------------------------------
+   * Shooter Velocities
+   *--------------------------------------------------------------------------------------------*/
+  public static final double SHOOTER_VELOCITY_LT = 57.0; //For Shooting Speaker
+  public static final double SHOOTER_VELOCITY_RT = 80.0;
+  public static final double FLYWHEEL_THRESHOLD_OFFSET = 5;
+
+
+  //Will be changed to a final double when confirmed speed, right now those speeds are made up
+  public static LoggedTunableNumber hoardShooterVelLT = new LoggedTunableNumber("HoardLTVelShooter", 50); // For Hoarding 
+  public static LoggedTunableNumber hoardShooterVelRT = new LoggedTunableNumber("HoardRTVelShooter", 70); 
+
+  private double m_velocityThresholdRT;
+  private double m_velocityThresholdLT;
   
   //XboxController for rumbling
   private XboxController xboxAuxRumble;
@@ -163,8 +179,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
       return instance;
   }
 
-  private boolean shooterTimeout = false;
-
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -173,6 +187,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
     if(DriverStation.isDisabled()) { //TBD this thing delayed the start of auton by more than a second 
       disableShooter();
+
     } else {
       switch(currentShooterState) {
           //-------------------------------------------------------------------------------------------
@@ -246,34 +261,36 @@ public class SubsystemCatzShooter extends SubsystemBase {
           break;
           
           case START_SHOOTER_FLYWHEEL:
-            io.setShooterEnabled();
-            io.toggleHoardVelocityThreshold(false);
-            currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
-          break;
-          
-          case START_SHOOTER_FLYWHEEL_HOARD_MODE:
-            io.setShooterEnabled_Hoard();
-            io.toggleHoardVelocityThreshold(true);
+            setFlyWheelVelocities();
             currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
           break;
 
           case WAIT_FOR_MOTORS_TO_REV_UP:
-            if(inputs.shooterVelocityRT >= inputs.velocityThresholdRT &&
-               Math.abs(inputs.shooterVelocityLT) >= Math.abs(inputs.velocityThresholdLT)) {
+            if(inputs.shooterVelocityRT >= m_velocityThresholdRT &&
+               Math.abs(inputs.shooterVelocityLT) >= Math.abs(m_velocityThresholdLT)) { //abs due to negative inversion
+                //flywheels have reached speeds
               if(DriverStation.isAutonomous()) {
+
                 autonIsShooterRamped = true;
               } else {
+
                 xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0.7);
               }
-            } else if(DriverStation.isAutonomous()) {
-              if(m_iterationCounterRampingTimeout > WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT) {
-                shooterTimeout = true;
-                m_iterationCounterRampingTimeout = 0;
-                currentShooterState = ShooterState.SHOOTING;
-                autonIsShooterRamped = true;
-              }
+            } else { 
+              //flywheels not at velocity
+              if(DriverStation.isAutonomous()) {
+
+                //timeout if desired velocity not reached in time
+                if(m_iterationCounterRampingTimeout > WAIT_FOR_MOTORS_TO_REV_UP_TIMEOUT) {
+
+                  //we passed the timeout shoot anyway
+                  m_iterationCounterRampingTimeout = 0;
+                  autonIsShooterRamped = true;
+                }
                 m_iterationCounterRampingTimeout++;
+              }
             }
+            
             break;
 
           case SHOOTING:
@@ -350,9 +367,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
       switch(currentServoState) {
         case IDLE:
           
+          
+        case WAIT_FOR_SERVO_IN_POSITION:
+
           m_servoPosError = Math.abs(m_previousServoPosition - m_targetServoPosition);
 
           if(Math.abs(m_servoPosError) > 0.0) {
+            
             //-------------------------------------------------------------------------------------------
             //  If a new servo position is being commanded, then clear servo in position flag and restart
             //  timer.  Note that we can't readback position of the servos so we are going to assume 
@@ -364,28 +385,29 @@ public class SubsystemCatzShooter extends SubsystemBase {
             servoDistToMoveMm    = m_servoPosError * SERVO_MAX_EXTENSTION_MM; 
             servoPositionTimeout = servoDistToMoveMm / SERVO_VELOCITY_MM_PER_SEC;
 
-            currentServoState = ServoState.WAIT_FOR_SERVO_IN_POSITION;
             m_previousServoPosition = m_targetServoPosition;
           } else {
             //not commanding new position
             m_shooterServoInPos = true;
           }
-          
-        case WAIT_FOR_SERVO_IN_POSITION:
-          
+
           if(servoTimer.hasElapsed(servoPositionTimeout)) {
             m_shooterServoInPos = true;
             currentServoState = ServoState.IDLE;
           }
       }
     } // End of Enabled loop
+
+    //Long Term
+    Logger.recordOutput("shooter/servopos", m_targetServoPosition);
+
     
+    //DEBUG
     Logger.recordOutput("shooter/seroDistToMoveMm", servoDistToMoveMm);
     Logger.recordOutput("shooter/seroPosTimeOut", servoPositionTimeout);
     Logger.recordOutput("shooter/servopos", m_targetServoPosition);
     Logger.recordOutput("shooter/isAutonRamped", isAutonShooterRamped());
     Logger.recordOutput("shooter/currentShooterState", currentShooterState.toString());
-    Logger.recordOutput("shooter/shooterTimeuot",shooterTimeout);
     Logger.recordOutput("shooter/servoTimer", servoTimer.get());
     Logger.recordOutput("shooter/startingenchandoff", m_startingLoadEncoderHandoff);
     Logger.recordOutput("shooter/currentNoteState", currentNoteState.toString());
@@ -395,16 +417,30 @@ public class SubsystemCatzShooter extends SubsystemBase {
   } //end of shooter periodic
 
   //-------------------------------------------------------------------------------------
-  // Shooter Calculation Methods
+  // Auto Aim Calculations
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionShooter(CatzMechanismPosition newPosition) {
+
     previousServoPosition = m_targetServoPosition;
     m_targetServoPosition = newPosition.getShooterVerticalTargetAngle();
-    if(newPosition.getShooterVerticalTargetAngle() == SERVO_NULL_POSITION) {
+
+    if(m_targetServoPosition == SERVO_NULL_POSITION) {
+
       m_targetServoPosition = previousServoPosition;
+      currentServoState = ServoState.IDLE;
+
     } else {
-      m_shooterServoInPos = false;
+      currentServoState = ServoState.WAIT_FOR_SERVO_IN_POSITION;
     }
+
+    m_shooterServoInPos = false;
+
+  }
+
+  public void updateShooterServo(double position) {
+
+    m_shooterServoInPos = false;
+    m_targetServoPosition = position;
     currentServoState = ServoState.IDLE;
   }
 
@@ -421,12 +457,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   public double getScuffedShootingSpeed(){
     return ((inputs.shooterVelocityRT + inputs.shooterVelocityLT)/2+2) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink) TBD
-  }
-
-  public void updateShooterServo(double position) {
-    m_shooterServoInPos = false;
-    m_targetServoPosition = position;
-    currentServoState = ServoState.IDLE;
   }
 
   public Command cmdManualHoldOn(Supplier<Double> pwr) {
@@ -477,12 +507,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
   
   //-------------------------------------------------------------------------------------
-  // Flywheel Commands
+  // Flywheel Methods and Commands
   //-------------------------------------------------------------------------------------
-
-  public void startShooterFlywheel() {
-    currentShooterState = ShooterState.START_SHOOTER_FLYWHEEL;
-  }
 
   public Command cmdShooterRamp(){
     return runOnce(()-> startShooterFlywheel());
@@ -492,19 +518,45 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return runOnce(()->disableShooter());
   }
 
+  public Command cmdShoot() {
+    return runOnce(()->setShooterState(ShooterState.SHOOTING));
+  }
+
+  public void startShooterFlywheel() {
+    currentShooterState = ShooterState.START_SHOOTER_FLYWHEEL;
+  }
+
   public void disableShooter() {
     currentShooterState = ShooterState.LOAD_OFF;
     io.setShooterDisabled(); 
     io.loadDisabled();
     autonIsShooterRamped = false;
+    xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
   }
 
   public void setShooterState(ShooterState state) {
     currentShooterState = state;
   }
 
-  public Command cmdShoot() {
-    return runOnce(()->setShooterState(ShooterState.SHOOTING));
+  public void setFlyWheelVelocities() {
+    double velocityLT;
+    double velocityRT;
+
+    if(CatzConstants.currentRobotMode == RobotMode.HOARD) {
+
+      m_velocityThresholdLT = -hoardShooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET;
+      m_velocityThresholdRT =  hoardShooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
+      velocityLT = hoardShooterVelLT.get();
+      velocityRT = hoardShooterVelRT.get();
+    } else {
+
+      m_velocityThresholdLT = -SHOOTER_VELOCITY_LT + FLYWHEEL_THRESHOLD_OFFSET;
+      m_velocityThresholdRT =  SHOOTER_VELOCITY_RT - FLYWHEEL_THRESHOLD_OFFSET;
+      velocityLT = SHOOTER_VELOCITY_LT;
+      velocityRT = SHOOTER_VELOCITY_RT;
+    }
+
+      io.setShooterEnabled(velocityLT, velocityRT);    
   }
 
   //-------------------------------------------------------------------------------------

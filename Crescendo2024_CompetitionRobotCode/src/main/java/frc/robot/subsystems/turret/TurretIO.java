@@ -7,11 +7,7 @@ public interface TurretIO {
     @AutoLog
     public class TurretIOInputs {
         public double turretMtrPercentOutput;
-        public double turretMtrSupplyCurrent;
-        public double turretMtrStatorCurrent;
-        public double turretMtrOutputCurrent;
         public double turretEncValue;
-        public double closedLoopError;
     }
 
     public default void updateInputs(TurretIOInputs inputs) {}
@@ -19,7 +15,5 @@ public interface TurretIO {
     public default void turretSetPwr(double outputPwr) {}
 
     public default void turretSetEncoderPos(double position){}
-
-    public default void turretSetPositionSM(double position) {}
-
+    
 }

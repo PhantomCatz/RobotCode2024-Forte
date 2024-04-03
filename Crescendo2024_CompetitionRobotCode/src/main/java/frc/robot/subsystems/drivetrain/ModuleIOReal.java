@@ -101,11 +101,9 @@ public class ModuleIOReal implements ModuleIO {
 
         inputs.driveMtrVelocity       = DRIVE_MOTOR.getRotorVelocity().getValue();
         inputs.driveMtrSensorPosition = DRIVE_MOTOR.getRotorPosition().getValue();
-        inputs.driveAppliedVolts      = DRIVE_MOTOR.getMotorVoltage().getValueAsDouble();
+        //inputs.driveAppliedVolts      = DRIVE_MOTOR.getMotorVoltage().getValueAsDouble();
         inputs.magEncoderValue        = magEnc.get();
-        inputs.steerAppliedVolts      = STEER_MOTOR.getOutputCurrent();
-        inputs.driveVelocityError     = DRIVE_MOTOR.getClosedLoopError().getValueAsDouble();
-        inputs.steerAppliedVolts      = STEER_MOTOR.getAppliedOutput();
+
     }
 
     @Override

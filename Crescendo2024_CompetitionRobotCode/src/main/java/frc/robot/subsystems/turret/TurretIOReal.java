@@ -13,7 +13,7 @@ import com.revrobotics.SparkPIDController.AccelStrategy;
 
 public class TurretIOReal implements TurretIO {
 
-    private final CANSparkMax turretMtr;
+    private CANSparkMax turretMtr;
 
     public static final int NEO_CURRENT_LIMIT_AMPS = 30;
 
@@ -41,7 +41,6 @@ public class TurretIOReal implements TurretIO {
     @Override
     public void updateInputs(TurretIOInputs inputs) {
         inputs.turretMtrPercentOutput = turretMtr.getAppliedOutput();
-        // inputs.turretMtrOutputCurrent = turretMtr.getOutputCurrent();
         inputs.turretEncValue         = turretMtr.getEncoder().getPosition();
 
     }

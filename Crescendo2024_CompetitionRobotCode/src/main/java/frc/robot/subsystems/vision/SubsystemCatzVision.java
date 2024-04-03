@@ -67,7 +67,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         for (int i = 0; i < inputs.length; i++) {
             // update and process new inputs[cameraNum] for camera
             cameras[i].updateInputs(inputs[i]);
-            Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);
+            Logger.processInputs("Vsn/" + cameras[i].getName() + "/Inputs", inputs[i]);
                     
             //checks for when to process vision
             if (inputs[i].hasTarget &&
@@ -78,8 +78,8 @@ public class SubsystemCatzVision extends SubsystemBase {
             }
         }        
 
-        //Logging
-        Logger.recordOutput("Vision/ResultCount", results.size());
+        //DEBUG
+        //Logger.recordOutput("Vision/ResultCount", results.size());
     }
 
     static int camNum;

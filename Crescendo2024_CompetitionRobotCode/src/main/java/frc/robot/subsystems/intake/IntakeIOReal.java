@@ -24,11 +24,11 @@ import frc.robot.Utils.LoggedTunableNumber;
 public class IntakeIOReal implements IntakeIO {
 
     //Motor IDs
-    public static int PIVOT_MTR_ID = 12;
-    public static int ROLLER_MTR_ID = 10;
+    public final static int PIVOT_MTR_ID = 12;
+    public final static int ROLLER_MTR_ID = 10;
     
-    private final TalonFX pivotMtr;
-    private final TalonFX rollerMtr;
+    private TalonFX pivotMtr;
+    private TalonFX rollerMtr;
 
     //Kraken configuration constants
     public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
@@ -39,13 +39,13 @@ public class IntakeIOReal implements IntakeIO {
     private StatusCode pivotInitializationStatus  = StatusCode.StatusCodeNotInitialized;
     private StatusCode rollerInitializationStatus = StatusCode.StatusCodeNotInitialized;
 
-            //create new config objects
+    //create new config objects
     private TalonFXConfiguration talonConfigsPivot  = new TalonFXConfiguration();
     private TalonFXConfiguration talonConfigsRoller = new TalonFXConfiguration();
 
 
-    private final DigitalInput ADJUST_BEAM_BREAK = new DigitalInput(4);
-    private final DigitalInput LOAD_BEAM_BREAK = new DigitalInput(5);
+    private DigitalInput adjustBeamBreak = new DigitalInput(4);
+    private DigitalInput loadBeamBreak = new DigitalInput(5);
 
     public IntakeIOReal() {
         /************************************************************************************************************************
@@ -86,15 +86,13 @@ public class IntakeIOReal implements IntakeIO {
         }
 
         /************************************************************************************************************************
-        * roller
+        * Roller
         ************************************************************************************************************************/
         rollerMtr = new TalonFX(ROLLER_MTR_ID);
         rollerMtr.getConfigurator().apply(new TalonFXConfiguration());  //reset to factory defaults
 
         talonConfigsRoller = talonConfigsPivot;
         talonConfigsRoller.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        //rollerMtr.optimizeBusUtilization();
         
         //check if roller motor is initialized correctly
         rollerInitializationStatus = rollerMtr.getConfigurator().apply(talonConfigsRoller);
@@ -106,19 +104,13 @@ public class IntakeIOReal implements IntakeIO {
 
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
-        // inputs.rollerVoltage =          rollerMtr.getMotorVoltage().getValue();
-        inputs.pivotMtrRev         =   pivotMtr.getPosition().getValue();
-        // inputs.rollerVoltage =          rollerMtr.getTorqueCurrent().getValue();
-        // inputs.pivotMtrPercentOutput =  pivotMtr.getDutyCycle().getValue();
-        // inputs.rollerPercentOutput =    rollerMtr.getDutyCycle().getValue();
-        // inputs.rollerVelocity =         rollerMtr.getVelocity().getValue();
-        inputs.pivotMtrVelocityRPS =   pivotMtr.getVelocity().getValue();
-        // //true if beambreak is broken \/ \/
+        inputs.pivotMtrRev =            pivotMtr.getPosition().getValue();
+        inputs.closedLoopPivotMtr =     pivotMtr.getClosedLoopError().getValue();
 
-        inputs.AdjustBeamBrkState =   !ADJUST_BEAM_BREAK.get(); //TBD add method for controling inputs
-        inputs.LoadBeamBrkState  =   !LOAD_BEAM_BREAK.get();
-        inputs.closedLoopPivotMtr =    pivotMtr.getClosedLoopError().getValue();
-        inputs.pivotMtrCurrent    =    pivotMtr.getStatorCurrent().getValue();
+
+        //true if beambreak is broken \/ \/
+        inputs.AdjustBeamBrkState =     !adjustBeamBreak.get(); 
+        inputs.LoadBeamBrkState =       !loadBeamBreak.get();
     }
 
     @Override

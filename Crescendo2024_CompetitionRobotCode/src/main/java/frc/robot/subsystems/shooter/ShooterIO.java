@@ -7,39 +7,26 @@ public interface ShooterIO {
     public class ShooterIOInputs {
         public double shooterVelocityLT;
         public double shooterVelocityRT;
-        public double velocityThresholdLT;
-        public double velocityThresholdRT;
-        public double shooterMotorVoltageLT;
-        public double shooterMotorVoltageRT;
-        public double shooterTorqueCurrentLT;
-        public double shooterTorqueCurrentRT;
-        public double shooterDutyCycleLT;
-        public double shooterDutyCycleRT;
-        public double shooterVelocityErrorLT;
-        public double shooterVelocityErrorRT;
+        // public double shooterTorqueCurrentLT;
+        // public double shooterTorqueCurrentRT;
+        // public double shooterDutyCycleLT;
+        // public double shooterDutyCycleRT;
 
         public boolean shooterAdjustBeamBreakState;
         public boolean shooterLoadBeamBreakState;
 
-        public double loadMotorPercentOutput; 
-        public double loadMotorVelocity;
-        public double loadMotorOutputCurrent;
         public double loadMotorEncCnts;
-
-        public double servoLeftPosition;
-        public double servoRightPosition;
-
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}
 
-    public default void setShooterEnabled() {}
+    public default void setShooterEnabled(double velocityLT, double velocityRT) {}
 
     public default void setShooterEnabled_Hoard() {}
 
     public default void setShooterDisabled() {}
 
-    public default void toggleHoardVelocityThreshold(Boolean toggle) {}
+    public default void toggleHoardVelocityThreshold(boolean toggle) {}
 
     public default void loadBackward() {}
 

@@ -18,8 +18,8 @@ public class ClimbIOReal implements ClimbIO {
     public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
     public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
 
-    private final TalonFX climbMtrLT;
-    private final TalonFX climbMtrRT;
+    private TalonFX climbMtrLT;
+    private TalonFX climbMtrRT;
 
     private TalonFXConfiguration climbTalonConfigs = new TalonFXConfiguration();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
@@ -60,17 +60,13 @@ public class ClimbIOReal implements ClimbIO {
 
     @Override
     public void updateInputs(ClimbIOInputs inputs) {
-        // inputs.climbDutyCycleLT = climbMtrLT.getDutyCycle().getValue();
         //inputs.climbPositionErrorLT = climbMtrLT.getClosedLoopError().getValue();
         // inputs.climbSpoolRevLT = climbMtrLT.getPosition().getValue();
-        // inputs.climbTorqueCurrentLT = climbMtrLT.getTorqueCurrent().getValue();
-        // inputs.climbVoltageLT = climbMtrLT.getMotorVoltage().getValue();
 
-        // inputs.climbDutyCycleRT = climbMtrRT.getDutyCycle().getValue();
+
         // //inputs.climbPositionErrorRT = climbMtrRT.getClosedLoopError().getValue();
         // inputs.climbSpoolRevRT = climbMtrRT.getPosition().getValue();
-        // inputs.climbTorqueCurrentRT = climbMtrRT.getTorqueCurrent().getValue();
-        // inputs.climbVoltageRT = climbMtrRT.getMotorVoltage().getValue();
+
     }
 
     @Override

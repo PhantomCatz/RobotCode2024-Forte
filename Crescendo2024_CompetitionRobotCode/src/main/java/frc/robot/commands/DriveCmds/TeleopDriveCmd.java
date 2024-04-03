@@ -23,8 +23,6 @@ public class TeleopDriveCmd extends Command {
   private Supplier<Double> m_supplierRightJoyX;
   private Supplier<Boolean> m_isFieldOrientedDisabled;
 
-  private SlewRateLimiter slewRateLimiter = new SlewRateLimiter(1.0);
-
   //drive variables
   private double xSpeed;
   private double ySpeed;
@@ -60,11 +58,6 @@ public class TeleopDriveCmd extends Command {
     ySpeed =       Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed * DriveConstants.MAX_SPEED: 0.0;
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed * DriveConstants.MAX_ANGSPEED_RAD_PER_SEC: 0.0;
 
-    //apply slew rate limiting
-    // xSpeed =       slewRateLimiter.calculate(turningSpeed);
-    // ySpeed =       slewRateLimiter.calculate(turningSpeed);
-    // turningSpeed = slewRateLimiter.calculate(turningSpeed);
-
     //Construct desired chassis speeds
     if (m_isFieldOrientedDisabled.get()) {
         // Relative to robot
@@ -77,9 +70,9 @@ public class TeleopDriveCmd extends Command {
     }
 
     //send new chassisspeeds object to the drivetrain
-    m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
+    m_driveTrain.driveRobotWithDiscretizeKinematics(chassisSpeeds);
 
-    //logging
+    //DEBUG
     // Logger.recordOutput("robot xspeed", xSpeed);
     // Logger.recordOutput("robot yspeed", ySpeed);
     // Logger.recordOutput("robot turnspeed", turningSpeed);
