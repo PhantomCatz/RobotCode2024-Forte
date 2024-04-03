@@ -92,8 +92,29 @@ public class Robot extends LoggedRobot {
 
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    lead.mid.colorRainbow();
-    lead.mid.setMode(LEDMode.Solid);
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
+      lead.mid.colorSolid(Color.kGreen);
+      lead.top.colorSolid(Color.kGreen);
+      lead.bot.colorSolid(Color.kGreen);
+
+      lead.mid.setMode(LEDMode.Solid);
+      lead.top.setMode(LEDMode.Solid);
+      lead.bot.setMode(LEDMode.Solid);
+      
+      
+    } else {
+      lead.mid.colorSolid(Color.kRed);
+      lead.top.colorSolid(Color.kRed);
+      lead.bot.colorSolid(Color.kRed);    
+
+      lead.mid.setMode(LEDMode.Solid);
+      lead.top.setMode(LEDMode.Solid);
+      lead.bot.setMode(LEDMode.Solid);
+      
+    }
+
+    // lead.mid.colorRainbow();
+    // lead.mid.setMode(LEDMode.Solid);
 
   }
 
@@ -108,16 +129,16 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     //checklist done leds
-    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263) { 
-      lead.mid.colorSolid(Color.kGreen);
-      lead.top.colorSolid(Color.kGreen);
-      lead.bot.colorSolid(Color.kGreen);
+    // if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || SubsystemCatzVision.getInstance().getApriltagID(0) == 263) { 
+    //   lead.mid.colorSolid(Color.kGreen);
+    //   lead.top.colorSolid(Color.kGreen);
+    //   lead.bot.colorSolid(Color.kGreen);
       
-    } else {
-      lead.mid.colorSolid(Color.kRed);
-      lead.top.colorSolid(Color.kRed);
-      lead.bot.colorSolid(Color.kRed);    
-    }
+    // } else {
+    //   lead.mid.colorSolid(Color.kRed);
+    //   lead.top.colorSolid(Color.kRed);
+    //   lead.bot.colorSolid(Color.kRed);    
+    // }
 
   }
 
@@ -157,6 +178,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
     lead.mid.colorRainbow();
     lead.mid.setMode(LEDMode.Flow);
 

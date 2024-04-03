@@ -443,11 +443,11 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
   public void aprilTagVerticalTargeting() {
 
-    if(SubsystemCatzVision.getInstance().getOffsetY(0) > 1) {
+    if(SubsystemCatzVision.getInstance().getOffsetY(2) > 1) {
 
       setServoManualHold(1.0);
       m_shooterServoInPos = false;      
-    } else if (SubsystemCatzVision.getInstance().getOffsetY(0) < 1) {
+    } else if (SubsystemCatzVision.getInstance().getOffsetY(2) < 1) {
 
       setServoManualHold(-1.0);
       m_shooterServoInPos = false;

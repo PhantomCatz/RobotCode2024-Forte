@@ -129,8 +129,8 @@ public class HomeToSpeakerCmd extends Command {
   
       servoPos = shooterPivotTable.get(newDist);
       
-      if(SubsystemCatzVision.getInstance().getAprilTagID(0) == 7 ||
-         SubsystemCatzVision.getInstance().getAprilTagID(0) == 4) {
+      if(SubsystemCatzVision.getInstance().getAprilTagID(2) == 7 ||
+         SubsystemCatzVision.getInstance().getAprilTagID(2) == 4) {
         shooter.aprilTagVerticalTargeting();
       } else {
         shooter.updateShooterServo(servoPos);
@@ -138,7 +138,7 @@ public class HomeToSpeakerCmd extends Command {
 
       turret.aimAtGoal(m_targetXY, false);
       
-      shooter.updateShooterServo(servoPos);
+      // shooter.updateShooterServo(servoPos);
   
       if(DriverStation.isAutonomous()){
   
