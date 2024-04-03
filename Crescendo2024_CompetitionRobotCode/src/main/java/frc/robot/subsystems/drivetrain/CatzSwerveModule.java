@@ -26,7 +26,7 @@ public class CatzSwerveModule {
     private PIDController m_PID;
                 
     //steering pid constants
-    private final double kP = 0.6; 
+    private final double kP = 0.4; 
     private final double kI = 0.01;
 
     private final double kD = 0.000;
@@ -61,17 +61,23 @@ public class CatzSwerveModule {
 
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Drive/Module " + Integer.toString(m_index), inputs);
-
-        //Logging outputs
-        Logger.recordOutput("Module/absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
-        Logger.recordOutput("Module/angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/drive applied volts", inputs.driveAppliedVolts);
-
-
-        SmartDashboard.putNumber("absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
-        SmartDashboard.putNumber("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
+        Logger.processInputs("Drv/M " + Integer.toString(m_index), inputs); 
     }
+
+    //-----------------------------------------LOGS----------------------------------------------
+    /*
+    * For Debugging Purposes 
+    * Keep them commmented ALWAYS if you are not using it 
+    */
+        public void debugLogsSwerve(){
+            // Logger.recordOutput("Module/absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
+            // Logger.recordOutput("Module/angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
+            // Logger.recordOutput("Module " + Integer.toString(m_index) + "/drive applied volts", inputs.driveAppliedVolts);
+
+
+            // SmartDashboard.putNumber("absenctorad" + Integer.toString(m_index) , getAbsEncRadians());
+            // SmartDashboard.putNumber("angle" + Integer.toString(m_index) , getCurrentRotation().getDegrees());
+        }
 
     //----------------------------------------Setting pwr methods-------------------------------
     public void setSteerPower(double pwr) {
@@ -142,13 +148,13 @@ public class CatzSwerveModule {
 
         setSteerPower(steerPIDpwr);
 
-        //logging
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/angle error deg", Math.toDegrees(targetAngleRad-currentAngleRad));
+        //DEBUG
+        // Logger.recordOutput("Module " + Integer.toString(m_index) + "/angle error deg", Math.toDegrees(targetAngleRad-currentAngleRad));
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/target state", state);
         Logger.recordOutput("Module " + Integer.toString(m_index) + "/current state", getModuleState());
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/turn power", steerPIDpwr);
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/currentmoduleangle rad", currentAngleRad);
-        Logger.recordOutput("Module " + Integer.toString(m_index) + "/targetmoduleangle rad", targetAngleRad);
+        // Logger.recordOutput("Module " + Integer.toString(m_index) + "/turn power", steerPIDpwr);
+        // Logger.recordOutput("Module " + Integer.toString(m_index) + "/currentmoduleangle rad", currentAngleRad);
+        // Logger.recordOutput("Module " + Integer.toString(m_index) + "/targetmoduleangle rad", targetAngleRad);
     }
 
     //optimze wheel angles before sending to setdesiredstate method for logging

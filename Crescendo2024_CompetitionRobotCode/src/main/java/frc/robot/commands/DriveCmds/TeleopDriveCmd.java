@@ -3,8 +3,10 @@ package frc.robot.commands.DriveCmds;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Robot;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
@@ -17,6 +19,14 @@ public class TeleopDriveCmd extends Command {
   private Supplier<Double> m_supplierLeftJoyY;
   private Supplier<Double> m_supplierRightJoyX;
   private Supplier<Boolean> m_isFieldOrientedDisabled;
+
+  //drive variables
+  private double xSpeed;
+  private double ySpeed;
+  private double turningSpeed;
+
+  private ChassisSpeeds chassisSpeeds;
+
 
   public TeleopDriveCmd(Supplier<Double> supplierLeftJoyX,
                         Supplier<Double> supplierLeftJoyY,
@@ -36,9 +46,9 @@ public class TeleopDriveCmd extends Command {
   @Override
   public void execute() {
     //obtain realtime joystick inputs with supplier methods
-    double xSpeed =       -m_supplierLeftJoyY.get();
-    double ySpeed =       -m_supplierLeftJoyX.get(); 
-    double turningSpeed =  m_supplierRightJoyX.get();
+    xSpeed =       -m_supplierLeftJoyY.get() * Robot.flipDirection;
+    ySpeed =       -m_supplierLeftJoyX.get() * Robot.flipDirection; 
+    turningSpeed =  m_supplierRightJoyX.get();
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;
@@ -46,7 +56,6 @@ public class TeleopDriveCmd extends Command {
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed * DriveConstants.MAX_ANGSPEED_RAD_PER_SEC: 0.0;
 
     //Construct desired chassis speeds
-    ChassisSpeeds chassisSpeeds;
     if (m_isFieldOrientedDisabled.get()) {
         // Relative to robot
         chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
@@ -58,16 +67,24 @@ public class TeleopDriveCmd extends Command {
     }
 
     //send new chassisspeeds object to the drivetrain
-    m_driveTrain.driveRobotWithDescritizeDynamics(chassisSpeeds);
+    m_driveTrain.driveRobotWithDiscretizeKinematics(chassisSpeeds);
 
-    //logging
-    // Logger.recordOutput("robot xspeed", xSpeed);
-    // Logger.recordOutput("robot yspeed", ySpeed);
-    // Logger.recordOutput("robot turnspeed", turningSpeed);
-    // Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
-    // Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
-    // Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
+  
 
+  }
+
+  /*
+  * For Debugging Purposes 
+  * Keep them commmented ALWAYS if you are not using it 
+  */
+  public void debugLogsDrive(){
+    //DEBUG
+      // Logger.recordOutput("robot xspeed", xSpeed);
+      // Logger.recordOutput("robot yspeed", ySpeed);
+      // Logger.recordOutput("robot turnspeed", turningSpeed);
+      // Logger.recordOutput("robot orientation", m_driveTrain.getRotation2d().getRadians());
+      // Logger.recordOutput("chassisspeed x speed mtr sec", chassisSpeeds.vxMetersPerSecond);
+      // Logger.recordOutput("chassisspeed y speed mtr sec", chassisSpeeds.vyMetersPerSecond);
   }
 
   // Called once the command ends or is interrupted.

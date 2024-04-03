@@ -7,11 +7,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.VisionConstants;
@@ -31,36 +27,9 @@ public class SubsystemCatzVision extends SubsystemBase {
 
     private final List<SubsystemCatzVision.PoseAndTimestamp> results = new ArrayList<>(); //in a list to account for multiple cameras
 
-    //All Apriltag heights are measured from ground level to the center of the Apriltag
-    //- Actually all values will be the centimeter recorded values because the inches are in fractions :(
-    //Apriltag height values converted from inches
-
-    final double LIMELIGHT_PLACEMENT_HEIGHT_METERS = (50.2/100);//Units.feetToMeters(1.0); 
-
-    //CENTIMETERS 
-    final double SOURCE_APRILTAG_HEIGHT_METERS = (130.5/100);//Units.feetToMeters(4.01); 
-    final double SPEAKER_APRILTAG_HEIGHT_METERS = (140.5/100);//Units.feetToMeters(4.33071);
-    final double STAGE_APRILTAG_HEIGHT_METERS = (129.5/100);//Units.feetToMeters(3.9583);
-    final double AMP_APRILTAG_HEIGHT_METERS = (130.5/100);//Units.feetToMeters(4.01);
-    final double SPEAKER_HOOD_HEIGHT_METERS = (202/100);
-    
-    static double aprilTagDistanceToWall;
-    static double aprilTagDistanceToSource;
-    static double aprilTagDistanceToTrap;
-    static double aprilTagDistanceToSpeaker;
-    static double aprilTagDistanceToAmp;
-    static double distanceToAprilTag;
-    static String primaryAprilTag;
-    static boolean horizontallyAllignedWithAprilTag;
-
-    double targetID;
-    static double horizontalTargetOffset;
-
+    private double targetID;
     private int acceptableTagID;
     private boolean useSingleTag = false;
-
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    NetworkTableEntry tid = table.getEntry("tid");
 
     //constructor for vision subsystem that creates new vision input objects for each camera set in the singleton implementation
     private SubsystemCatzVision(VisionIO[] cameras) {
@@ -80,7 +49,9 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight-soba"),
+                new VisionIOLimeLight("limelight-udon"),    //index 0 left
+                new VisionIOLimeLight("limelight-soba"),    //index 1 right
+                new VisionIOLimeLight("limelight-ramen"),   //index 2 turret
             });
         }
         return instance;
@@ -88,44 +59,27 @@ public class SubsystemCatzVision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("useSingleTag", useSingleTag); //set by driverstation
 
         // clear results from last periodic
         results.clear();
         
         //for every limlight camera process vision with according logic
-        for (int i = 0; i < inputs.length; i++) {
+        for (int i = 0; i < inputs.length-2; i++) { //change to -1 if soba is installed
             // update and process new inputs[cameraNum] for camera
             cameras[i].updateInputs(inputs[i]);
-            Logger.processInputs("Vision/" + cameras[i].getName() + "/Inputs", inputs[i]);
+            Logger.processInputs("Vsn/" + cameras[i].getName() + "/Inputs", inputs[i]);
                     
             //checks for when to process vision
-            if (inputs[i].hasTarget && 
+            if (inputs[i].hasTarget &&
                 inputs[i].isNewVisionPose &&  
-                inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) {
-                useSingleTag = false;
-                if (useSingleTag) {
-                    if (inputs[i].singleIDUsed == acceptableTagID) {
-                        processVision(i);
-                    }
-                } 
-                else {
-                    processVision(i);
-                }
+                inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) { //TBD get rid of this?
+                processVision(i);
+       
             }
-        }
+        }        
 
-        // limelightRangeFinder(1);
-        
-
-        //Logging
-        Logger.recordOutput("Vision/ResultCount", results.size());
-
-        //log data
-        Logger.recordOutput("AprilTagID", primaryAprilTag);
-        Logger.recordOutput("Vertical Degrees to Apriltag", inputs[0].ty);
-        Logger.recordOutput("Distance to Apriltag", distanceToAprilTag);
-        Logger.recordOutput("Distance to Wall", aprilTagDistanceToWall);
+        //DEBUG
+        //Logger.recordOutput("Vision/ResultCount", results.size());
     }
 
     static int camNum;
@@ -137,7 +91,7 @@ public class SubsystemCatzVision extends SubsystemBase {
                                         new Rotation2d(inputs[cameraNum].rotation));
 
         // add the new pose to a list
-        results.add(new PoseAndTimestamp(currentPose, inputs[cameraNum].timestamp, inputs[cameraNum].tagCount, inputs[cameraNum].ta));
+        results.add(new PoseAndTimestamp(currentPose, inputs[cameraNum].timestamp, inputs[cameraNum].tagCount, inputs[cameraNum].ta, cameras[cameraNum].getName(), inputs[cameraNum].hasTarget));
         camNum = cameraNum;
     }
 
@@ -152,12 +106,16 @@ public class SubsystemCatzVision extends SubsystemBase {
         private double timestamp;
         private int numOfTagsVisible;
         private double avgArea;
+        private String name;
+        private boolean hasTarget;
 
-        public PoseAndTimestamp(Pose2d pose, double timestamp, int numOfTagsVisible, double avgArea) {
+        public PoseAndTimestamp(Pose2d pose, double timestamp, int numOfTagsVisible, double avgArea, String name, boolean hasTarget) {
             this.pose = pose;
             this.timestamp = timestamp;
             this.numOfTagsVisible = numOfTagsVisible;
             this.avgArea = avgArea;
+            this.name = name;
+            this.hasTarget = hasTarget;
         }
 
         public Pose2d getPose() {
@@ -175,6 +133,14 @@ public class SubsystemCatzVision extends SubsystemBase {
         public double getAvgArea(){
             return avgArea;
         }
+
+        public String getName(){
+            return name;
+        }
+
+        public boolean hasTarget(){
+            return hasTarget;
+        }
     }
 
     //------------------------------------------------------------------------
@@ -188,6 +154,10 @@ public class SubsystemCatzVision extends SubsystemBase {
     
     public double getOffsetX(int cameraNum) {
         return inputs[cameraNum].tx;
+    }
+
+    public double getOffsetY(int cameraNum) {
+        return inputs[cameraNum].ty;
     }
 
     public double getAprilTagID(int cameraNum) {

@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.CatzConstants.CatzColorConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
@@ -37,6 +38,7 @@ public class Robot extends LoggedRobot {
 
   public static SubsystemCatzLED lead = SubsystemCatzLED.getInstance();
   private RobotContainer m_robotContainer;
+  public static int flipDirection = 1;
   
   @Override
   public void robotInit() {
@@ -48,7 +50,8 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
     switch (BuildConstants.DIRTY) {
       case 0:
-         Logger.recordMetadata("GitDirty", "All changes committed");
+         Logger.recordMetadata
+         ("GitDirty", "All changes committed");
          break;
       case 1:
          Logger.recordMetadata("GitDirty", "Uncomitted changes");
@@ -89,9 +92,8 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     DriverStation.silenceJoystickConnectionWarning(true);
-    // SubsystemCatzVision.getInstance().setUseSingleTag(true, 4);
 
-    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263) { 
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
       lead.mid.colorSolid(Color.kGreen);
       lead.top.colorSolid(Color.kGreen);
       lead.bot.colorSolid(Color.kGreen);
@@ -126,6 +128,27 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
+    CatzAutonomous.getInstance().chooseAllianceColor();
+
+    if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Blue) {
+      lead.top.colorSolid(Color.kBlue); 
+    }else{
+      lead.top.colorSolid(Color.kRed); 
+    }
+
+
+    //checklist done leds
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
+      lead.mid.colorSolid(Color.kGreen);
+      lead.top.colorSolid(Color.kGreen);
+      lead.bot.colorSolid(Color.kGreen);
+      
+    } else {
+      lead.mid.colorSolid(Color.kRed);
+      lead.top.colorSolid(Color.kRed);
+      lead.bot.colorSolid(Color.kRed);    
+    }
+
   }
 
   @Override
@@ -133,8 +156,9 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
+    CatzAutonomous.getInstance().chooseAllianceColor();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    FollowPathCommand.warmupCommand().schedule();
+    // FollowPathCommand.warmupCommand().schedule(); //TBD dont need this because we have our own path following cmd
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -150,14 +174,12 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousExit() {
-    if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
-      SubsystemCatzDrivetrain.getInstance().flipGyro();
-    }
     SubsystemCatzShooter.getInstance().cmdSetKeepShooterOn(false).execute();
   }
 
   @Override
   public void teleopInit() {
+    CatzAutonomous.getInstance().chooseAllianceColor();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

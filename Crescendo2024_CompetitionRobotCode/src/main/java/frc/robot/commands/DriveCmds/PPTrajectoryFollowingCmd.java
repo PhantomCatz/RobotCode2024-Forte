@@ -31,11 +31,10 @@ public class PPTrajectoryFollowingCmd extends Command {
     
     private final Timer timer = new Timer();
     private final double TIMEOUT_RATIO = 5;
-    private final double MAX_DISTANCE = 0.3;
     private PathPlannerPath path;
 
     /**
-     * @param drivetrain The coordinator between the gyro and the swerve modules.
+     * @param drivetrain           The coordinator between the gyro and the swerve modules.
      * @param trajectory          The trajectory to follow.
      */
     public PPTrajectoryFollowingCmd(PathPlannerPath newPath) {
@@ -56,6 +55,7 @@ public class PPTrajectoryFollowingCmd extends Command {
     }
 
     private boolean atTarget = false;
+    private double pathTimeOut;
 
     @Override
     public void initialize() {
@@ -63,29 +63,24 @@ public class PPTrajectoryFollowingCmd extends Command {
         timer.reset();
         timer.start();
 
+
         //flip auton path to mirrored red side if we choose red alliance
         if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Red) {
             path = path.flipPath();
-            // System.out.println("flip");
         }
 
-        //path debug
-        // for(int i=0; i<path.getAllPathPoints().size(); i++){
-        //     System.out.println(path.getAllPathPoints().get(i).position);
-        // }
-       // Logger.recordOutput("Inital pose", path.getPreviewStartingHolonomicPose());
         
         //create pathplanner trajectory
-
         this.trajectory = new PathPlannerTrajectory(
                                 path, 
                                 DriveConstants.
                                     swerveDriveKinematics.
                                         toChassisSpeeds(m_driveTrain.getModuleStates()),
                                 m_driveTrain.getRotation2d());
-    }
+                                
+        pathTimeOut = trajectory.getTotalTimeSeconds() * TIMEOUT_RATIO;
 
-    //private double prevSpeed = previousState.velocityMps;
+    }
 
     @Override
     public void execute() {
@@ -97,16 +92,7 @@ public class PPTrajectoryFollowingCmd extends Command {
             PathPlannerTrajectory.State goal = trajectory.sample(currentTime);
             Rotation2d targetOrientation     = goal.targetHolonomicRotation;
             Pose2d currentPose               = m_driveTrain.getPose();
-            // Translation2d displacement = goal.positionMeters.minus(currentPose.getTranslation());
-            // double distance = displacement.getDistance(new Translation2d());
-            // // System.out.println(distance);
-            // if(distance > MAX_DISTANCE){
-            //     displacement = displacement.times(MAX_DISTANCE/distance);
-            // }
-    
-    
-            //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
-            
+                
             /* 
             * Convert PP trajectory into a wpilib trajectory type 
             * Only takes in the current robot position 
@@ -119,20 +105,30 @@ public class PPTrajectoryFollowingCmd extends Command {
                                                           new Pose2d(goal.positionMeters, new Rotation2d()),/*new Pose2d(currentPose.getTranslation().plus(displacement), new Rotation2d()*/
                                                           0.0);
     
-            //debug
-            //System.out.println(goal.getTargetHolonomicPose());
-            //Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
             //construct chassisspeeds
             ChassisSpeeds adjustedSpeeds = hocontroller.calculate(currentPose, state, targetOrientation);
-            //Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
-            //Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
+
             //send to drivetrain
-            m_driveTrain.driveRobotWithDescritizeDynamics(adjustedSpeeds);
-            Logger.recordOutput("Desired Auto Pose", new Pose2d(state.poseMeters.getTranslation(), goal.targetHolonomicRotation));
+            m_driveTrain.driveRobotWithDiscretizeKinematics(adjustedSpeeds);
+
         }else{
             m_driveTrain.stopDriving();
         }
 
+    }
+
+    /*
+     * For Debugging Purposes 
+     * Keep them commmented ALWAYS if you are not using it 
+     */
+    public void debugLogsTrajectory(){
+        //Logger.recordOutput("Desired Auto Pose", new Pose2d(state.poseMeters.getTranslation(), goal.targetHolonomicRotation));
+        //Logger.recordOutput("Adjusted Speeds X", adjustedSpeeds.vxMetersPerSecond);
+        //Logger.recordOutput("Adjusted Speeds Y", adjustedSpeeds.vyMetersPerSecond);
+        //Logger.recordOutput("Trajectory Goal MPS", state.velocityMetersPerSecond);
+        //Logger.recordOutput("PathPlanner Goal MPS", goal.velocityMps);
+
+        //System.out.println(goal.getTargetHolonomicPose());
     }
 
     @Override
@@ -141,6 +137,7 @@ public class PPTrajectoryFollowingCmd extends Command {
         m_driveTrain.stopDriving();
         System.out.println("trajectory done");
     }
+
 
     @Override
     public boolean isFinished() {
@@ -157,14 +154,12 @@ public class PPTrajectoryFollowingCmd extends Command {
         double yError =        Math.abs(desiredPosY - currentPosY);
         double rotationError = Math.abs(desiredRotation - currentRotation);
 
-        //System.out.println("X error " + xError);
-        //System.out.println("Y error " + yError);
-        //System.out.println("Angle error " + rotationError);
         atTarget = (xError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
-                yError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
-                rotationError < TrajectoryConstants.ALLOWABLE_ROTATION_ERROR) || 
-                timer.hasElapsed(trajectory.getTotalTimeSeconds() * TIMEOUT_RATIO);
-        return atTarget;
-    }
+                    yError < TrajectoryConstants.ALLOWABLE_POSE_ERROR && 
+                    rotationError < TrajectoryConstants.ALLOWABLE_ROTATION_ERROR);
+
+        return atTarget || timer.hasElapsed(pathTimeOut);
+
+    } 
 
 }

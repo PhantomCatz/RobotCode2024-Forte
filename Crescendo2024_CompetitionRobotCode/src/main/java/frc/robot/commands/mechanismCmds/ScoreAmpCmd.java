@@ -21,21 +21,12 @@ public class ScoreAmpCmd extends Command {
   private SubsystemCatzTurret turret = SubsystemCatzTurret.getInstance();
 
   private static Timer intakeNoteTimer = new Timer();
-
-  private boolean m_targetMechPoseStartReached = false;
-  private boolean m_targetMechPoseEndReached   = false;
-
-  private double m_previousTargetPositionDeg;
-  private int velocityCounter;
-
   public ScoreAmpCmd() {
     addRequirements(intake, elevator, shooter, turret);
   }
 
   @Override
   public void initialize() {
-    velocityCounter = 0;
-
     runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP_PRESET);
     intakeNoteTimer.reset();
     intake.setWasIntakeInAmpScoring(false);
@@ -50,7 +41,7 @@ public class ScoreAmpCmd extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    intake.setWasIntakeInAmpScoring(true);
   }
 
   // Returns true when the command should end.
@@ -63,7 +54,6 @@ public class ScoreAmpCmd extends Command {
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
     elevator.updateTargetPositionElevator(pose.getElevatorTargetRev());
     intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
-    shooter.updateTargetPositionShooter(pose);
     turret.updateTargetPositionTurret(pose);
   }
 

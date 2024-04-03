@@ -1,6 +1,6 @@
-// // Copyright (c) FIRST and other WPILib contributors.
-// // Open Source Software; you can modify and/or share it under the terms of
-// // the WPILib BSD license file in the root directory of this project.
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.mechanismCmds;
 
@@ -37,7 +37,7 @@ public class MoveToPresetHandoffCmd extends Command {
   private boolean m_targetMechPoseStartReached = false;
   private boolean m_targetMechPoseEndReached   = false;
 
-  private Timer transferToShooter  = new Timer();
+  private boolean m_targetNoteAdjustInit = false;
 
 
   public MoveToPresetHandoffCmd(NoteDestination noteDestination, NoteSource noteSource) {
@@ -51,10 +51,10 @@ public class MoveToPresetHandoffCmd extends Command {
   public void initialize() {
     intake.setWasIntakeInAmpScoring(false); // flag for determining whether to move to a transition state during sequencing
 
-    // System.out.println("Handoff " + m_noteDestination.toString());
-    // System.out.println(m_noteSource.toString());
     m_targetMechPoseStartReached = false;
     m_targetMechPoseEndReached   = false;
+    m_targetNoteAdjustInit = false;
+
 
     switch(m_noteSource) {
       case INTAKE_GROUND:
@@ -65,12 +65,12 @@ public class MoveToPresetHandoffCmd extends Command {
            m_noteDestination == NoteDestination.SPEAKER) {
 
             m_targetMechPoseEnd = CatzMechanismConstants.STOW_PRESET;
-            // System.out.println("Ground speaker");
+            
         } else if(m_noteDestination == NoteDestination.AMP)  {
 
             m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP_PRESET;
-            // System.out.println("Ground AMP");
-        }
+
+          }
       break;
 
       case INTAKE_SOURCE:
@@ -81,10 +81,10 @@ public class MoveToPresetHandoffCmd extends Command {
 
             m_targetMechPoseEnd = CatzMechanismConstants.STOW_PRESET;
             intake.setRollersIntakeSource();
-            // System.out.println(" Source Speaker");
+
         } else if(m_noteDestination == NoteDestination.AMP) {
           m_targetMechPoseEnd = m_targetMechPoseStart;
-                        // System.out.println("Source Amp");
+
         }      
       break;
 
@@ -93,11 +93,10 @@ public class MoveToPresetHandoffCmd extends Command {
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
-            // System.out.println("Intake Speaker");
 
           m_targetMechPoseEnd = CatzMechanismConstants.STOW_PRESET;
         } else if(m_noteDestination == NoteDestination.AMP) {
-            // System.out.println("Intake Amp");
+
           m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP_PRESET;
         }
       
@@ -108,15 +107,12 @@ public class MoveToPresetHandoffCmd extends Command {
 
         if(m_noteDestination == NoteDestination.AMP) {
             m_targetMechPoseEnd = CatzMechanismConstants.PREP_FOR_AMP_PRESET;
-            // System.out.println("Shooter Amp");
-
         } 
      
       break;
         
       default: 
         //invalid command...should have used switch handoff positions cmd
-       // m_targetMechPoseStart = CatzMechanismConstants.HOME;
       break;
     }
 
@@ -152,12 +148,10 @@ public class MoveToPresetHandoffCmd extends Command {
 
         mechInPos = areMechanismsInPosition();
         if(mechInPos) {
-
           if(m_noteDestination == NoteDestination.SPEAKER) {
              intake.setRollersOutakeHandoff();
-            //System.out.print("Outtaking");
             if(shooter.getShooterNoteState() == ShooterNoteState.NOTE_IN_POSTION) {
-            //System.out.print("Note in position");
+
               intake.setRollersOff();
               m_targetMechPoseEndReached = true;
             } 
@@ -169,10 +163,18 @@ public class MoveToPresetHandoffCmd extends Command {
     } else if(m_noteSource == NoteSource.FROM_SHOOTER) {
       //when the the rollers stop intaking due to beambreak
       if(m_targetMechPoseStartReached == false) {
+          if(m_targetNoteAdjustInit == false) {
+            shooter.setShooterNoteState(ShooterNoteState.NOTE_IN_ADJUST);//to account for periodic loop following command loop
+            shooter.setShooterState(ShooterState.PREP_FOR_HANDOFF_SHIFT);
+            m_targetNoteAdjustInit = true;
+          }
+
+
         if(areMechanismsInPosition()) {
-          intake.setRollersIntakeSource();
-          shooter.setShooterState(ShooterState.LOAD_OUT);
-          m_targetMechPoseStartReached = true;
+          if(shooter.getShooterNoteState() == ShooterNoteState.NOTE_IN_POSTION) {
+            intake.setRollersIntakeSource();
+            m_targetMechPoseStartReached = true;
+          }
         }
       }
 
@@ -190,7 +192,7 @@ public class MoveToPresetHandoffCmd extends Command {
           } else {
             //keep note in intake
           }
-        }
+        } 
       } 
     } else if(m_noteSource == NoteSource.FROM_INTAKE) {
       //when the the rollers stop intaking due to beambreak
@@ -220,7 +222,6 @@ public class MoveToPresetHandoffCmd extends Command {
 
     intake  .updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator  (pose.getElevatorTargetRev());
-    shooter .updateTargetPositionShooter   (pose);
     turret  .updateTargetPositionTurret    (pose);
   }
 
@@ -228,13 +229,11 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean intakeState   = intake.getIntakeInPos(); 
     boolean turretState   = turret.getTurretInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-    // System.out.println("i " + intakeState + "t " + turretState + "e " + elevatorState);
-    return(intakeState && turretState && elevatorState);
+    return(intakeState && turretState);// && elevatorState);
   }
 
   @Override
   public void end(boolean interrupted) {
-    System.out.println("movetopreset");
   }
 
   @Override

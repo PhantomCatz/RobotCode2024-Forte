@@ -55,8 +55,8 @@ public class SubsystemCatzClimb extends SubsystemBase {
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("climb/inputs", inputs);
+    // io.updateInputs(inputs);
+    // Logger.processInputs("climb/inputs", inputs);
 
     if(DriverStation.isDisabled()) {
       io.setClimbMtrPercentOutputLT(0.0);

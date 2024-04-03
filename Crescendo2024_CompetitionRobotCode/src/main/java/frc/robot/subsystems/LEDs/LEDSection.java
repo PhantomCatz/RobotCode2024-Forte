@@ -10,6 +10,7 @@ public class LEDSection {
         Alternate,
     }
 
+
     private final int LED_COUNT;
     private final double BLINK_FREQ = 2;
 

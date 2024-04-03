@@ -18,39 +18,32 @@ public class ClimbIOReal implements ClimbIO {
     public static final double  KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS = 0.5;
     public static final boolean KRAKEN_ENABLE_CURRENT_LIMIT          = true;
 
-    private final TalonFX climbMtrLT;
-    private final TalonFX climbMtrRT;
+    private TalonFX climbMtrLT;
+    private TalonFX climbMtrRT;
 
     private TalonFXConfiguration climbTalonConfigs = new TalonFXConfiguration();
     private StatusCode initializationStatus = StatusCode.StatusCodeNotInitialized;
 
 
     public ClimbIOReal() {
-        climbMtrLT = new TalonFX(40); //TBD
+        climbMtrLT = new TalonFX(40); 
         climbMtrRT = new TalonFX(41);
 
         climbMtrLT.getConfigurator().apply(new TalonFXConfiguration());
         climbMtrRT.getConfigurator().apply(new TalonFXConfiguration());
 
-                // set Motion Magic settings
-        climbTalonConfigs.MotionMagic.MotionMagicCruiseVelocity = 30; // Target cruise velocity of 80 rps
-        climbTalonConfigs.MotionMagic.MotionMagicAcceleration   = 160; // Target acceleration of 160 rps/s (0.5 seconds)
-        climbTalonConfigs.MotionMagic.MotionMagicJerk           = 16000; // Target jerk of 1600 rps/s/s (0.1 seconds)
-
-        climbTalonConfigs.Slot0.kP = 2.0;
-        climbTalonConfigs.Slot0.kI = 0.0;
-        climbTalonConfigs.Slot0.kD = 0.0;
             //current limit
         climbTalonConfigs.CurrentLimits = new CurrentLimitsConfigs();
+
+        climbTalonConfigs.CurrentLimits.StatorCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
+        climbTalonConfigs.CurrentLimits.StatorCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+
         climbTalonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
         climbTalonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
         climbTalonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
         climbTalonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
             //neutral mode
         climbTalonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        climbMtrLT.optimizeBusUtilization();
-        climbMtrRT.optimizeBusUtilization();
 
         //check if climb motor is initialized correctly
         initializationStatus = climbMtrRT.getConfigurator().apply(climbTalonConfigs);
@@ -67,17 +60,13 @@ public class ClimbIOReal implements ClimbIO {
 
     @Override
     public void updateInputs(ClimbIOInputs inputs) {
-        // inputs.climbDutyCycleLT = climbMtrLT.getDutyCycle().getValue();
         //inputs.climbPositionErrorLT = climbMtrLT.getClosedLoopError().getValue();
         // inputs.climbSpoolRevLT = climbMtrLT.getPosition().getValue();
-        // inputs.climbTorqueCurrentLT = climbMtrLT.getTorqueCurrent().getValue();
-        // inputs.climbVoltageLT = climbMtrLT.getMotorVoltage().getValue();
 
-        // inputs.climbDutyCycleRT = climbMtrRT.getDutyCycle().getValue();
+
         // //inputs.climbPositionErrorRT = climbMtrRT.getClosedLoopError().getValue();
         // inputs.climbSpoolRevRT = climbMtrRT.getPosition().getValue();
-        // inputs.climbTorqueCurrentRT = climbMtrRT.getTorqueCurrent().getValue();
-        // inputs.climbVoltageRT = climbMtrRT.getMotorVoltage().getValue();
+
     }
 
     @Override
@@ -90,11 +79,6 @@ public class ClimbIOReal implements ClimbIO {
         climbMtrLT.set(output);
     }
 
-    @Override
-    public void setClimbSelectedSensorPositionLT(double readPosition) {
-        climbMtrLT.setPosition(readPosition);
-    }
-
     
     @Override
     public void setClimbPositionRT(double climbPosition) {
@@ -105,13 +89,6 @@ public class ClimbIOReal implements ClimbIO {
     public void setClimbMtrPercentOutputRT(double output) {
         climbMtrRT.set(output);
     }
-
-    @Override
-    public void setClimbSelectedSensorPositionRT(double readPosition) {
-        climbMtrRT.setPosition(readPosition);
-    }
-
-
 
     
 }

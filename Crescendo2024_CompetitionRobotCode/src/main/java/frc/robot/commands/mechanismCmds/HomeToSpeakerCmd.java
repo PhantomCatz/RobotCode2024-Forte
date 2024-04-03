@@ -14,7 +14,6 @@ import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.FieldConstants;
 import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
-// import frc.robot.Utils.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -23,6 +22,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
 public class HomeToSpeakerCmd extends Command {
@@ -75,12 +75,11 @@ public class HomeToSpeakerCmd extends Command {
     shooterPivotTable.put(6.813, 0.0);
   }
 
-
-  public static final double k_ACCEL_COMP_FACTOR = 0.100; // in units of seconds    TBD Where is this used?
-
   private Translation2d m_targetXY;
+  private double newDist;
+  private double servoPos;
 
-  private static final double AUTON_TIMEOUT_SEC = 1.0;
+  private static final double LINEAR_SERVO_TIMEOUT = 1.0;
 
   //------------------------------------------------------------------------------------------------
   //
@@ -101,7 +100,6 @@ public class HomeToSpeakerCmd extends Command {
   // Called when the command is initially scheduled.
   //------------------------------------------------------------------------------------------------
 
-  private double prevTime = 0.0;
   @Override
   public void initialize() {
     timer.reset();
@@ -109,6 +107,7 @@ public class HomeToSpeakerCmd extends Command {
 
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
+    //shooter.startShooterFlywheel();
     
     if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
       
@@ -117,10 +116,11 @@ public class HomeToSpeakerCmd extends Command {
 
     } else {
       //translation of the Red alliance speaker
-      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);      //TBD - Magic #'s, what about defining Red & Blue constants, using IF to select and have 1 translation2D() call
+      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.SPEAKER_COORD_MTRS_Y);     
     }
     turret.setTurretInPose(false);
 
+    Logger.recordOutput("Speaker", m_targetXY);
   }
 
   
@@ -131,27 +131,33 @@ public class HomeToSpeakerCmd extends Command {
   //------------------------------------------------------------------------------------------------
   @Override 
   public void execute() {
-      double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
   
-      double servoPos = shooterPivotTable.get(newDist);
-  
-      turret.aimAtGoal(m_targetXY, false, false);
-  
-      shooter.updateShooterServo(servoPos);
-  
-      //in telop this boolean supplier is being evaluated to see if button was pressed
-  
-      // System.out.println("turret:"+turret.isTurretAtTarget());
-      // System.out.println("shooter:"+shooter.isAutonShooterRamped());
-      // System.out.println("timer:"+timer.hasElapsed(AUTON_TIMEOUT_SEC));
-  
-      if(DriverStation.isAutonomous()){
-  
-        if((/*shooter.getShooterServoInPos() && */ turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(AUTON_TIMEOUT_SEC))) { //TBD add the timer code for shooter pivot
-  
-          shooter.setShooterState(ShooterState.SHOOTING);
-        }
+      servoPos = shooterPivotTable.get(newDist);
+      
+      if(SubsystemCatzVision.getInstance().getAprilTagID(2) == 7 || //TBD make the camera number constants make speaker tag id a variable
+         SubsystemCatzVision.getInstance().getAprilTagID(2) == 4) {
+        //use apriltag tracking for servos
+
+        shooter.aprilTagVerticalTargeting();
+      } else {
+
+          //use pose to pose linear interpolation table for servo
+        newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
+        servoPos = shooterPivotTable.get(newDist);
+        shooter.updateShooterServo(servoPos);
       }
+
+      turret.aimAtGoal(m_targetXY, false);
+      
+  
+      if((turret.getTurretInPos() && shooter.isAutonShooterRamped())){//timer.hasElapsed(LINEAR_SERVO_TIMEOUT))) { //TBD add linear servo
+
+        if(DriverStation.isAutonomous()){
+          shooter.setShooterState(ShooterState.SHOOTING);
+        } else {
+          SubsystemCatzLED.getInstance().mid.colorSolid(Color.kBlueViolet);// TBD finalize pattern
+        }
+      }  
   }
 
   @Override

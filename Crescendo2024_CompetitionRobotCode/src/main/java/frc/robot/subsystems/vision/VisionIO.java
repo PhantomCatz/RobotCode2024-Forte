@@ -19,13 +19,6 @@ public interface VisionIO {
         public double minDistance;
 
         public boolean hasTarget = false;
-        public int singleIDUsed;
-        public double singleIDUsedDouble;
-
-        public double translationToTargetX;
-        public double translationToTargetY;
-
-        public boolean isLimelightCommunicatingWithNetworkTables;
 
         public double primaryApriltagID; //closest apirltag id that the limelight is communicating with
 

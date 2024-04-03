@@ -7,6 +7,8 @@ package frc.robot.commands.mechanismCmds;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.CatzConstants;
+import frc.robot.CatzConstants.RobotMode;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.climb.SubsystemCatzClimb;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -38,23 +40,33 @@ public class ClimbCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("in clmb");
     climb.setClimbModeEnabled(true);
     turret.cmdTurretDegree(SubsystemCatzTurret.HOME_POSITION_DEG);
+    shooter.setServoManualHold(1.0);
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    
     if(Math.abs(m_supplierXboxLeftY.get()) > 0.1 ){
-      climb.setLeftClimbPercentOutput(-m_supplierXboxLeftY.get()/2);
+      if(CatzConstants.currentRobotMode == RobotMode.CLIMB) {
+        climb.setLeftClimbPercentOutput(-Math.abs(m_supplierXboxLeftY.get()/2));
+      } else {
+        climb.setLeftClimbPercentOutput(-m_supplierXboxLeftY.get()/2);
+      }
     }
     else{
       climb.setLeftClimbPercentOutput(0.0);
     }
+
     if(Math.abs(m_supplierXboxRightY.get()) > 0.1 ){
-      climb.setRightClimbPercentOutput(m_supplierXboxRightY.get()/2);
+      if(CatzConstants.currentRobotMode == RobotMode.CLIMB) {
+        climb.setLeftClimbPercentOutput(Math.abs(m_supplierXboxLeftY.get()/2));
+      } else {
+        climb.setLeftClimbPercentOutput(m_supplierXboxLeftY.get()/2);
+      }
     }
     else{
       climb.setRightClimbPercentOutput(0.0);
@@ -73,17 +85,4 @@ public class ClimbCmd extends Command {
     return false;
   }
 
-  //factory for updating all mechanisms with the packaged target info associated with the new postion
-  private void runMechanismSetpoints(CatzMechanismPosition pose) {
-    intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
-    elevator.updateTargetPositionElevator(pose.getElevatorTargetRev());
-    shooter.updateTargetPositionShooter(pose);
-    turret.updateTargetPositionTurret(pose);
-  }
-
-  private boolean areMechanismsInPosition() {
-    return (intake.getIntakeInPos() && 
-            turret.getTurretInPos() &&
-            elevator.getElevatorInPos());
-  }
 }

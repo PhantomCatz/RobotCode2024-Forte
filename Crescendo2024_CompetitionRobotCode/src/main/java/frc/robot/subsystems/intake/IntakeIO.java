@@ -7,14 +7,11 @@ public interface IntakeIO {
     @AutoLog
     public class IntakeIOInputs {
         public double pivotMtrRev;
-        public double pivotMtrPercentOutput;
-        public double pivotMtrVelocityRPS;
-        public double rollerVoltage;
-        public double rollerPercentOutput;
-        public double rollerVelocity;
-        public boolean isIntakeBeamBrkBroken;
         public double closedLoopPivotMtr;
-        public double pivotMtrCurrent;
+
+        public boolean AdjustBeamBrkState;
+        public boolean LoadBeamBrkState;
+
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}

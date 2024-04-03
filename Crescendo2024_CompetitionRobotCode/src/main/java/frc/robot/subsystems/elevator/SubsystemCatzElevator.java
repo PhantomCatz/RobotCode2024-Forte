@@ -6,8 +6,6 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.Logger;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,9 +29,7 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
   //-------------------------------------------------------------------------------------
   // Elevator Constants
-  //-------------------------------------------------------------------------------------
-  private static final double REV_SWITCH_POS = 0.0; 
-  
+  //-------------------------------------------------------------------------------------  
 
   private static final double ELEVATOR_MANUAL_STEP_SIZE = 0.5;
 
@@ -136,60 +132,66 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Elevator/inputs", inputs);
+    // io.updateInputs(inputs);
+    // Logger.processInputs("Elevator/inputs", inputs);
 
 
-    //elevator control calculations
-    m_ffVolts = elevatorFeedforward.calculate(0.0); //calculating while disabled for advantage scope logging
+    // //elevator control calculations
+    // m_ffVolts = elevatorFeedforward.calculate(0.0); //calculating while disabled for advantage scope logging
 
-    if(DriverStation.isDisabled()) {
-      setElevatorOff();
-    }
-    else {
+    // if(DriverStation.isDisabled()) {
+    //   setElevatorOff();
+    // }
+    // else {
 
-      if(inputs.bottomSwitchTripped) {
-        io.setSelectedSensorPosition(0.0);
-      }
+    //   if(inputs.bottomSwitchTripped) {
+    //     io.setSelectedSensorPosition(0.0);
+    //   }
 
-      if((currentElevatorState == ElevatorControlState.AUTO  ||
-          currentElevatorState == ElevatorControlState.SEMI_MANUAL)) {
+    //   if((currentElevatorState == ElevatorControlState.AUTO  ||
+    //       currentElevatorState == ElevatorControlState.SEMI_MANUAL)) {
 
-        if((m_targetPositionRev != ELEVATOR_NULL_POSITION)) {
+    //     if((m_targetPositionRev != ELEVATOR_NULL_POSITION)) {
 
-          if(m_elevatorIntakeInSafetyZone == false) {
-            if(currentElevatorDirection == ElevatorDirection.DOWN) {
-              if(SubsystemCatzIntake.getInstance().getWristAngle() > intakeClearanceAngle) {
-                m_elevatorIntakeInSafetyZone = true;
-                        //System.out.println("E-G");
+    //       if(m_elevatorIntakeInSafetyZone == false) {
+    //         if(currentElevatorDirection == ElevatorDirection.DOWN) {
+    //           if(SubsystemCatzIntake.getInstance().getWristAngle() > intakeClearanceAngle) {
+    //             m_elevatorIntakeInSafetyZone = true;
 
-              } 
-            } else {
-              if(SubsystemCatzIntake.getInstance().getWristAngle() < intakeClearanceAngle) {
-                m_elevatorIntakeInSafetyZone = true;
-                 //System.out.println("E-F");
+    //           } 
+    //         } else {
+    //           if(SubsystemCatzIntake.getInstance().getWristAngle() < intakeClearanceAngle) {
+    //             m_elevatorIntakeInSafetyZone = true;
 
-              }     
-            }
-          }
+    //           }     
+    //         }
+    //       }
 
-          if(m_elevatorIntakeInSafetyZone == true) {
-            io.setElevatorPosition(m_targetPositionRev, 
-                                    m_ffVolts, 
-                                    inputs.bottomSwitchTripped);
+    //       if(m_elevatorIntakeInSafetyZone == true) {
+    //         io.setElevatorPosition(m_targetPositionRev, 
+    //                                 m_ffVolts, 
+    //                                 inputs.bottomSwitchTripped);
 
-            if(inputs.elevatorPositionError < 0.2) {
-              m_elevatorInPos = true;
-            } 
-          }
-        }
-      } else {
-        io.setElevatorPercentOutput(m_elevatorPercentOutput);
-      }
-    }
+    //         if(inputs.elevatorPositionError < 0.2) {
+    //           m_elevatorInPos = true;
+    //         } 
+    //       }p
+    //     }
+    //   } else {
+    //     io.setElevatorPercentOutput(m_elevatorPercentOutput);
+    //   }
+    // }
   
+    // //LongTerm
+    //  Logger.recordOutput("elevator/targetRev", m_targetPositionRev);
 
-    // Logger.recordOutput("elevator/targetRev", m_targetPositionRev);
+   
+  }
+
+  //-------------------------------------------------------------------------------------
+  // DEBUG LOGS (Keep them Commented if not Used)
+  //-------------------------------------------------------------------------------------
+  public void debugLogsElevator(){
     // Logger.recordOutput("elevator/PercentOut", m_elevatorPercentOutput);
     // Logger.recordOutput("elevator/elevatorin safety", m_elevatorIntakeInSafetyZone);
     // Logger.recordOutput("elevator/GOing up", currentElevatorDirection.toString());
@@ -200,7 +202,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // Elevator Access Methods
   //-------------------------------------------------------------------------------------
   public void updateTargetPositionElevator(double targetPositionRev) {
-    // System.out.println("EUP" + targetPosition.getElevatorTargetRev());
     m_elevatorInPos = false;
     currentElevatorState = ElevatorControlState.AUTO;
 
@@ -210,7 +211,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
     if(m_targetPositionRev == ELEVATOR_STOW ||
        m_targetPositionRev == ELEVATOR_GROUND_PICKUP ||
        m_targetPositionRev == ELEVATOR_AMP_SCORE_DN) {
-                // System.out.println("E-Z");
       //-------------------------------------------------------------------------------------
       //  If elevator is below the stow clearance. No change
       //  If elevator is above the stow clearance. No change
@@ -220,7 +220,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
       // System.out.println(SubsystemCatzIntake.getInstance().getWristAngle());
       if(SubsystemCatzIntake.getInstance().getWristAngle() > SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG) {
         
-        // System.out.println("E-A");
            //-------------------------------------------------------------------------------------
           //  intake is above bumpers
           //----------------------------------------------------------------------------------
@@ -230,12 +229,10 @@ public class SubsystemCatzElevator extends SubsystemBase {
               m_targetPositionRev == ELEVATOR_AMP_TRANSITION||
               m_targetPositionRev == ELEVATOR_SCORE_TRAP    ||
               m_targetPositionRev == ELEVATOR_AMP_SCORE) {        
-        // System.out.println("E-B");
 
       currentElevatorDirection = ElevatorDirection.UP;
       intakeClearanceAngle = SubsystemCatzIntake.INTAKE_MIN_ELEV_CLEARANCE_DEG;
       if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_MIN_ELEV_CLEARANCE_DEG) {
-        // System.out.println("E-C");
 
         //-------------------------------------------------------------------------------------
         //  intake is in front of elevator
@@ -271,10 +268,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
   // ----------------------------------------------------------------------------------
   public double getElevatorRevPos() {
     return inputs.elevatorPosRev;
-  }
-
-  private ElevatorControlState getElevatorState() {
-    return currentElevatorState;
   }
 
   public boolean getElevatorInPos() {

@@ -25,6 +25,7 @@ import frc.robot.commands.mechanismCmds.MoveToPreset;
 import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
 import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
+import frc.robot.commands.mechanismCmds.HomeToHoardShotCmd;
 import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.HomeToSpeakerCmd;
@@ -82,11 +83,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   }
   
 
-  private void configureBindings() {    
+  private void configureBindings() {   
     
-    //RESET GYRO
-   // xboxDrv.start().onTrue(driveTrain.resetGyro());
-
+    //OTHER COMMANDS
+    xboxDrv.start().and(xboxDrv.back()).onTrue(driveTrain.resetGyro());
+    
     //------------------------------------------------------------------------------------
     // INTAKE COMMANDS
     //------------------------------------------------------------------------------------
@@ -112,30 +113,42 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
         Trigger triggerModeSpeaker = new Trigger(()->isInSpeakerMode());
 
         triggerModeSpeaker.and(xboxDrv.leftStick())
-                          .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
+                          .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
+                          ); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
                     
         triggerModeSpeaker.and(xboxAux.leftTrigger())
-                          .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE));//NOTE IN INTAKE TRANSFER TO SHOOTER
+                          .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)
+                          );//NOTE IN INTAKE TRANSFER TO SHOOTER
 
         triggerModeSpeaker.and(xboxAux.x())
-                          .onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET));
+                          .onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET)
+                          );
 
-        triggerModeSpeaker.and(xboxAux.rightTrigger()).onTrue(Commands.runOnce(()->shooter.disableShooter()));
+        triggerModeSpeaker.and(xboxAux.rightTrigger())
+                          .onTrue(Commands.runOnce(()->shooter.disableShooter())
+                          );
         
         triggerModeSpeaker.and(xboxAux.a())
-                          .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL)));  //RAMPING UP 
+                          .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL))
+                          );  //RAMPING UP 
 
         triggerModeSpeaker.and(xboxAux.b())
-                          .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.SHOOTING)));  //TO SHOOT (NEED TO RAMP UP FIRST)
+                          .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.SHOOTING))
+                          );  //TO SHOOT (NEED TO RAMP UP FIRST)
 
         triggerModeSpeaker.and(xboxAux.y())
-                          .onTrue(new HomeToSpeakerCmd());      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
+                          .onTrue(new HomeToSpeakerCmd()
+                          );      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
         Trigger auxJoystickTriggerRightX = new Trigger(()->Math.abs(xboxAux.getLeftY()) > 0.1);
-        triggerModeSpeaker.and(auxJoystickTriggerRightX).onTrue(shooter.cmdManualHoldOn(()->xboxAux.getLeftY())); //MOVE SERVO POSITION MANUAL 
+        triggerModeSpeaker.and(auxJoystickTriggerRightX)
+                          .onTrue(shooter.cmdManualHoldOn(()->xboxAux.getLeftY())
+                          ); //MOVE SERVO POSITION MANUAL 
 
         Trigger auxJoystickTriggerRightY = new Trigger(()->Math.abs(xboxAux.getRightX()) > 0.1);
-        triggerModeSpeaker.and(auxJoystickTriggerRightY).onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX()));            //MOVE TURRET POSITION MANUAL
+        triggerModeSpeaker.and(auxJoystickTriggerRightY)
+                          .onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX())
+                          );            //MOVE TURRET POSITION MANUAL
 
         
     //------------------------------------------------------------------------------------
@@ -158,44 +171,66 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     //------------------------------------------------------------------------------------
     // HOARD MODE
-
     //------------------------------------------------------------------------------------
 
         Trigger triggerModeHoard = new Trigger(()->isInHoardMode());
 
+        triggerModeHoard.and(xboxDrv.leftStick())
+                      .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)
+                      ); //DEPLOY INTAKE AND STOWS TO AMP SCORE DOWN POS
+
         triggerModeHoard.and(xboxAux.y())
-                        .onTrue(shooter.hoardShooterMode());  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
+                        .onTrue(Commands.parallel(new HomeToHoardShotCmd(),
+                                                  Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL_HOARD_MODE)))
+                        );  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
   
         triggerModeHoard.and(xboxAux.b())
-                        .onTrue(shooter.cmdShoot());    
-                              //TO SHOOT (NEED TO RAMP UP FIRST)
+                        .onTrue(shooter.cmdShoot()
+                        );    //TO SHOOT (NEED TO RAMP UP FIRST)
 
         triggerModeHoard.and(xboxAux.x())
-                        .onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_HOARD_PRESET));      //TO HOARD INTAKE POS
+                        .onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_HOARD_PRESET)
+                        );      //TO HOARD INTAKE POS
 
         triggerModeHoard.and(xboxAux.a())
-                        .onTrue(intake.cmdRollerOut());        // INTAKE ROLLERS SHOOT
+                        .onTrue(intake.cmdRollerOut()
+                        );        // INTAKE ROLLERS SHOOT
 
         triggerModeHoard.and(xboxAux.leftBumper())
-                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER));     //NOTE IN SHOOTER TRANSFERED TO INTAKE
+                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
+                        );     //NOTE IN SHOOTER TRANSFERED TO INTAKE
+
         triggerModeHoard.and(xboxAux.rightBumper())
-                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)); //NOTE IN INTAKE TRANSFERED TO SHOOTER
+                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)
+                        ); //NOTE IN INTAKE TRANSFERED TO SHOOTER
 
         triggerModeHoard.and(xboxDrv.leftStick())
-                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
+                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
+                        ); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
                     
 
     //------------------------------------------------------------------------------------  
     // CLIMB MODE
     //------------------------------------------------------------------------------------
         Trigger triggerModeClimb = new Trigger(()->isInClimbMode());
-        triggerModeClimb.and(xboxDrv.povUp()).onTrue(new ClimbCmd(()-> xboxAux.getLeftY(), ()-> xboxAux.getRightY()));
-        triggerModeClimb.and(xboxAux.y()).onTrue(new ScoreTrapCmd());
-        triggerModeClimb.and(xboxAux.b()).onTrue(intake.cmdRollerOut());
+
+        triggerModeClimb.and(xboxDrv.povUp())
+                        .onTrue(new ClimbCmd(()-> xboxAux.getLeftY(), ()-> xboxAux.getRightY())
+                        );
+
+        triggerModeClimb.and(xboxAux.y())
+                        .onTrue(new ScoreTrapCmd()
+                        );
+
+        triggerModeClimb.and(xboxAux.b())
+                        .onTrue(intake.cmdRollerOut()
+                        );
 
 
     //------------------------------------------------------------------------------------
-        xboxAux.povUp().and(()->CatzConstants.currentRobotMode == RobotMode.CLIMB_MAINTENANCE_MODE).onTrue(new ClimbCmd(()-> xboxAux.getLeftY(), ()-> xboxAux.getRightY()));
+        xboxAux.povUp().and(()->CatzConstants.currentRobotMode == RobotMode.CLIMB_MAINTENANCE_MODE)
+                       .onTrue(new ClimbCmd(()-> xboxAux.getLeftY(), ()-> xboxAux.getRightY())
+                       );
 
       
     //------------------------------------------------------------------------------------
@@ -214,8 +249,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   }
 
   public void logDpadStates() {
-       SmartDashboard.putString("Scoring Mode", CatzConstants.currentRobotMode.toString());
-       Logger.recordOutput("Robot Control State", CatzConstants.currentRobotMode.toString());
+    //SmartDashboard.putString("Scoring Mode", CatzConstants.currentRobotMode.toString());
+    Logger.recordOutput("Robot Control State", CatzConstants.currentRobotMode);
 
   }
 

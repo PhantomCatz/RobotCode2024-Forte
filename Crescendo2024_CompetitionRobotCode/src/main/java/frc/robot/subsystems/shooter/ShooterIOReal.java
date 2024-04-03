@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -15,9 +14,6 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
-import frc.robot.CatzConstants;
-import frc.robot.Utils.LoggedTunableNumber;
-import frc.robot.subsystems.turret.TurretIOReal;
 
 public class ShooterIOReal implements ShooterIO {
 /*-----------------------------------------------------------------------------------------
@@ -26,13 +22,11 @@ public class ShooterIOReal implements ShooterIO {
  * Configured from front robot facing perspective
  * 
  *-----------------------------------------------------------------------------------------*/
-    private final TalonFX SHOOTER_MOTOR_RT;
-    private final TalonFX SHOOTER_MOTOR_LT;
+    private TalonFX SHOOTER_MOTOR_RT;
+    private TalonFX SHOOTER_MOTOR_LT;
 
     private final int SHOOTER_MOTOR_LT_CAN_ID = 21;
     private final int SHOOTER_MOTOR_RT_CAN_ID = 20;
-
-    private final double FLYWHEEL_THRESHOLD_OFFSET = 5;
 
     //Kraken configuration constants
     public static final int     KRAKEN_CURRENT_LIMIT_AMPS            = 55;
@@ -44,22 +38,23 @@ public class ShooterIOReal implements ShooterIO {
  * Load Motors
  * 
  *---------------------------------------------------------------------------------------*/
-    private final CANSparkMax LOAD_MOTOR;
+    private CANSparkMax LOAD_MOTOR;
     private final int LOAD_MOTOR_CAN_ID = 23;
 
     //Load motor speeds 
-    private final double LOAD_MOTOR_SHOOTING_SPEED   = 1;
+    private final double LOAD_MOTOR_SHOOTING_SPEED   = 1.0;
     private final double LOAD_MOTOR_LOADING_SPEED    = 0.4;//0.3;//0.6; //was 0.4
-    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.2;
+    private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.8;
     private final double LOAD_MOTOR_ADJUST_SPEED     = 0.04;
+    private final double LOAD_MOTOR_TRANSFER_SPEED   = 0.4;
 
     public static final int NEO_CURRENT_LIMIT_AMPS      = 30;
 
 /*---------------------------------------------------------------------------------------
  * Beam Breaks
  *-------------------------------------------------------------------------------------*/
-    private final DigitalInput ADJUST_BEAM_BREAK = new DigitalInput(0);
-    private final DigitalInput LOAD_BEAM_BREAK   = new DigitalInput(1);
+    private DigitalInput ADJUST_BEAM_BREAK = new DigitalInput(0);
+    private DigitalInput LOAD_BEAM_BREAK   = new DigitalInput(1);
 
 /*---------------------------------------------------------------------------------------
  * Linear Servos
@@ -79,12 +74,6 @@ public class ShooterIOReal implements ShooterIO {
 /*---------------------------------------------------------------------------------------
  * Motor Velocities
  *-------------------------------------------------------------------------------------*/  
-    public final double SHOOTER_VELOCITY_LT = 57.0; //For Shooting Speaker
-    public final double SHOOTER_VELOCITY_RT = 80.0;
-
-    //Will be changed to a final double when confirmed speed, right now those speeds are made up
-    LoggedTunableNumber hoardShooterVelLT = new LoggedTunableNumber("HoardLTVelShooter", 50); // For Hoarding 
-    LoggedTunableNumber hoardShooterVelRT = new LoggedTunableNumber("HoardRTVelShooter", 70); 
 
     public static int ACCEPTABLE_VEL_ERROR = 20;
     public double velocityThresholdLT;
@@ -122,8 +111,10 @@ public class ShooterIOReal implements ShooterIO {
         LOAD_MOTOR.restoreFactoryDefaults();
         LOAD_MOTOR.setSmartCurrentLimit(NEO_CURRENT_LIMIT_AMPS);
         LOAD_MOTOR.setIdleMode(IdleMode.kBrake);
-        LOAD_MOTOR.enableVoltageCompensation(12.0); //TBD is this the default value?
+        LOAD_MOTOR.enableVoltageCompensation(12.0); 
         LOAD_MOTOR.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 32767);
+        LOAD_MOTOR.burnFlash(); //save configs so if pwr lost to be reapplied
+
 
         
         //Create shooter mtr array for easier calls
@@ -137,17 +128,16 @@ public class ShooterIOReal implements ShooterIO {
         
         //Current limit
         talonConfigs.CurrentLimits = new CurrentLimitsConfigs();
+
+        talonConfigs.CurrentLimits.StatorCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT;
+        talonConfigs.CurrentLimits.StatorCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
+
         talonConfigs.CurrentLimits.SupplyCurrentLimitEnable = KRAKEN_ENABLE_CURRENT_LIMIT; //Make seperate current limits
         talonConfigs.CurrentLimits.SupplyCurrentLimit       = KRAKEN_CURRENT_LIMIT_AMPS;
         talonConfigs.CurrentLimits.SupplyCurrentThreshold   = KRAKEN_CURRENT_LIMIT_TRIGGER_AMPS;
         talonConfigs.CurrentLimits.SupplyTimeThreshold      = KRAKEN_CURRENT_LIMIT_TIMEOUT_SECONDS;
 
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-
-       // BaseStatusSignal.setUpdateFrequencyForAll(50, );
-        // SHOOTER_MOTOR_LT.optimizeBusUtilization();
-        // SHOOTER_MOTOR_RT.optimizeBusUtilization();
-
 
 
         //pid
@@ -171,13 +161,7 @@ public class ShooterIOReal implements ShooterIO {
 
         inputs.shooterVelocityLT   =  SHOOTER_MOTOR_LT.getVelocity().getValue();
         inputs.shooterVelocityRT   =  SHOOTER_MOTOR_RT.getVelocity().getValue();
-        
-        inputs.velocityThresholdLT = velocityThresholdLT;
-        inputs.velocityThresholdRT = velocityThresholdRT;
-        // inputs.shooterVelocityErrorLT   = SHOOTER_MOTOR_LT.getClosedLoopError().getValue();
-        // inputs.shooterVelocityErrorRT   = SHOOTER_MOTOR_RT.getClosedLoopError().getValue();
-        // inputs.shooterMotorVoltageLT    = SHOOTER_MOTOR_LT.getMotorVoltage().getValue();
-        // inputs.shooterMotorVoltageRT    = SHOOTER_MOTOR_RT.getMotorVoltage().getValue();
+
         // inputs.shooterDutyCycleLT       = SHOOTER_MOTOR_LT.getDutyCycle().getValue();
         // inputs.shooterDutyCycleRT       = SHOOTER_MOTOR_RT.getDutyCycle().getValue();
         // inputs.shooterTorqueCurrentLT   = SHOOTER_MOTOR_LT.getTorqueCurrent().getValue();
@@ -186,27 +170,16 @@ public class ShooterIOReal implements ShooterIO {
         inputs.shooterLoadBeamBreakState   = !LOAD_BEAM_BREAK.get();
         inputs.shooterAdjustBeamBreakState = !ADJUST_BEAM_BREAK.get();
 
-        inputs.loadMotorPercentOutput = LOAD_MOTOR.get();
-        // inputs.loadMotorVelocity      =(LOAD_MOTOR.getEncoder().getVelocity()/60); //to rps
-        // inputs.loadMotorOutputCurrent = LOAD_MOTOR.getOutputCurrent();
-
-        inputs.servoLeftPosition  = shooterServoLT.getPosition();
-        inputs.servoRightPosition = shooterServoRT.getPosition();
+        inputs.loadMotorEncCnts = LOAD_MOTOR.getEncoder().getPosition();
 
     }
 
   //-------------------------------------------Flywheel Methods------------------------------------------
 
     @Override
-    public void setShooterEnabled() {
-        SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-SHOOTER_VELOCITY_LT).withEnableFOC(true));
-        SHOOTER_MOTOR_RT.setControl(new VelocityVoltage( SHOOTER_VELOCITY_RT).withEnableFOC(true));
-    }
-
-    @Override
-    public void setShooterEnabled_Hoard() {
-        SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-hoardShooterVelLT.get()).withEnableFOC(true));
-        SHOOTER_MOTOR_RT.setControl(new VelocityVoltage( hoardShooterVelRT.get()).withEnableFOC(true));
+    public void setShooterEnabled(double shooterVelocityLT, double shooterVelocityRT) {
+        SHOOTER_MOTOR_LT.setControl(new VelocityVoltage(-shooterVelocityLT).withEnableFOC(true));
+        SHOOTER_MOTOR_RT.setControl(new VelocityVoltage( shooterVelocityRT).withEnableFOC(true));
     }
 
     @Override
@@ -216,26 +189,21 @@ public class ShooterIOReal implements ShooterIO {
         loadDisabled();
     }
 
-    @Override
-    public void toggleHoardVelocityThreshold(Boolean toggle) {
-        if(toggle = true) {
-            velocityThresholdLT = -hoardShooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET;
-            velocityThresholdRT =  hoardShooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
-        } else {
-            velocityThresholdLT = -SHOOTER_VELOCITY_LT + FLYWHEEL_THRESHOLD_OFFSET;
-            velocityThresholdRT =  SHOOTER_VELOCITY_RT - FLYWHEEL_THRESHOLD_OFFSET;
-        }
-    }
   //-------------------------------------------Load Methods------------------------------------------
 
     @Override
     public void feedShooter() {
         LOAD_MOTOR.set(-LOAD_MOTOR_SHOOTING_SPEED);
     }
-    //Code that will be tested for double beambreaks
+    
     @Override
     public void fineAdjustFwd() {
         LOAD_MOTOR.set(-LOAD_MOTOR_ADJUST_SPEED);
+    }
+
+     @Override
+    public void fineTransferAdjust() {
+        LOAD_MOTOR.set(-LOAD_MOTOR_TRANSFER_SPEED);
     }
 
     @Override
@@ -252,6 +220,12 @@ public class ShooterIOReal implements ShooterIO {
     public void loadDisabled() {
         LOAD_MOTOR.set(0);
     }
+    
+    @Override
+    public void resetLoadEnc() {
+        LOAD_MOTOR.getEncoder().setPosition(0.0);
+    }
+
     @Override
     public void loadBackward() {
         LOAD_MOTOR.set(LOAD_MOTOR_BACKWARD_SPEED);
