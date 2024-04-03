@@ -27,7 +27,6 @@ public class ScoreAmpCmd extends Command {
 
   @Override
   public void initialize() {
-
     runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP_PRESET);
     intakeNoteTimer.reset();
     intake.setWasIntakeInAmpScoring(false);
@@ -55,7 +54,6 @@ public class ScoreAmpCmd extends Command {
   private void runMechanismSetpoints(CatzMechanismPosition pose) {
     elevator.updateTargetPositionElevator(pose.getElevatorTargetRev());
     intake.updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
-    shooter.updateTargetPositionShooter(pose);
     turret.updateTargetPositionTurret(pose);
   }
 
