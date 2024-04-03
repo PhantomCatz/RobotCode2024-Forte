@@ -190,13 +190,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
     } else {
       switch(currentShooterState) {
-          //-------------------------------------------------------------------------------------------
-          //
-          // feeder roller periodic logic
-          //
-          //-------------------------------------------------------------------------------------------
+     
           case NONE:
           break;
+      /*--------------------------------------------------------------------------------------------------------------------
+      * LOADING NOTE
+      *--------------------------------------------------------------------------------------------------------------------*/
           case LOAD_IN:
             io.loadNote();
             currentShooterState = ShooterState.LOAD_IN_DONE;
@@ -221,7 +220,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
             }
             currentShooterState = ShooterState.FINE_TUNE;
           break;
-
+      /*--------------------------------------------------------------------------------------------------------------------
+      * ADJUSTING NOTE
+      *--------------------------------------------------------------------------------------------------------------------*/
           case FINE_TUNE:
             if(inputs.shooterAdjustBeamBreakState == m_desiredBeamBreakState) { //if front is still conncected adjust foward until it breaks
               io.loadDisabled();
@@ -233,7 +234,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
           case LOAD_OFF:
             io.loadDisabled();
           break;
-
+          
+      /*--------------------------------------------------------------------------------------------------------------------
+      * HANDING OFF
+      *--------------------------------------------------------------------------------------------------------------------*/
           case PREP_FOR_HANDOFF_SHIFT:
             io.resetLoadEnc();
             m_startingLoadEncoderHandoff = inputs.loadMotorEncCnts;
@@ -248,7 +252,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
               currentShooterState = ShooterState.LOAD_OUT;
             }
           break;
-
+      /*--------------------------------------------------------------------------------------------------------------------
+      * LOAD OUT
+      *--------------------------------------------------------------------------------------------------------------------*/
           case LOAD_OUT:
             io.loadBackward();
             
@@ -259,7 +265,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
             }
             m_iterationCounterRampingTimeout++;
           break;
-          
+
+      /*--------------------------------------------------------------------------------------------------------------------
+      * SHOOTING LOGIC 
+      *--------------------------------------------------------------------------------------------------------------------*/
           case START_SHOOTER_FLYWHEEL:
             setFlyWheelVelocities();
             currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
@@ -319,7 +328,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
                   currentShooterState = ShooterState.LOAD_OFF;
                 }
               
-              System.out.println("***********note has been shot!*************");
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT; //ends autoaim sequence
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0);
               m_iterationCounterShooting = 0;
@@ -398,23 +406,30 @@ public class SubsystemCatzShooter extends SubsystemBase {
       }
     } // End of Enabled loop
 
-    //Long Term
-    Logger.recordOutput("shooter/servopos", m_targetServoPosition);
-
-    
-    //DEBUG
-    Logger.recordOutput("shooter/seroDistToMoveMm", servoDistToMoveMm);
-    Logger.recordOutput("shooter/seroPosTimeOut", servoPositionTimeout);
-    Logger.recordOutput("shooter/servopos", m_targetServoPosition);
-    Logger.recordOutput("shooter/isAutonRamped", isAutonShooterRamped());
-    Logger.recordOutput("shooter/currentShooterState", currentShooterState.toString());
-    Logger.recordOutput("shooter/servoTimer", servoTimer.get());
-    Logger.recordOutput("shooter/startingenchandoff", m_startingLoadEncoderHandoff);
-    Logger.recordOutput("shooter/currentNoteState", currentNoteState.toString());
-    Logger.recordOutput("shooter/iterationCounterShooting", m_iterationCounterShooting);
-
+    importantShooterLogs();
 
   } //end of shooter periodic
+
+  //-------------------------------------------------------------------------------------
+  // Debug Logger For Shooter 
+  //-------------------------------------------------------------------------------------
+  public void importantShooterLogs(){
+    Logger.recordOutput("shooter/servopos", m_targetServoPosition);
+  }
+
+  public void debugLogsShooter(){
+    //DEBUG
+    // Logger.recordOutput("shooter/seroDistToMoveMm", servoDistToMoveMm);
+    // Logger.recordOutput("shooter/seroPosTimeOut", servoPositionTimeout);
+    // Logger.recordOutput("shooter/servopos", m_targetServoPosition);
+    // Logger.recordOutput("shooter/isAutonRamped", isAutonShooterRamped());
+    // Logger.recordOutput("shooter/currentShooterState", currentShooterState.toString());
+    // Logger.recordOutput("shooter/servoTimer", servoTimer.get());
+    // Logger.recordOutput("shooter/startingenchandoff", m_startingLoadEncoderHandoff);
+    // Logger.recordOutput("shooter/currentNoteState", currentNoteState.toString());
+    // Logger.recordOutput("shooter/iterationCounterShooting", m_iterationCounterShooting);
+
+  }
 
   //-------------------------------------------------------------------------------------
   // Auto Aim Calculations
