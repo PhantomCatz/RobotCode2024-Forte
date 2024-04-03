@@ -128,6 +128,9 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
+    CatzAutonomous.getInstance().chooseAllianceColorDisabled();
+
+
     //checklist done leds
     // if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || SubsystemCatzVision.getInstance().getApriltagID(0) == 263) { 
     //   lead.mid.colorSolid(Color.kGreen);
@@ -184,7 +187,11 @@ public class Robot extends LoggedRobot {
 
     if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Red){
       flipDirection = -1;
+    } else {
+      flipDirection = 1;
     }
+
+    System.out.println(CatzAutonomous.getInstance().getAllianceColor().toString());
   }
 
   @Override
