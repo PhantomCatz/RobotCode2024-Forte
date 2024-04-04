@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.75,
-        "y": 7.41
+        "x": 7.7,
+        "y": 2.41
       },
       "prevControl": null,
       "nextControl": {
-        "x": 11.872214464115093,
-        "y": 7.41
+        "x": 7.017197030114459,
+        "y": 2.9042874633538145
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.827270596053316,
-        "y": 5.714888234341376
+        "x": 4.710162230595501,
+        "y": 4.520382906671662
       },
       "prevControl": {
-        "x": 3.8272705960533164,
-        "y": 5.714888234341376
+        "x": 6.298637202124615,
+        "y": 4.457777035382887
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,17 +33,17 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 6.4,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "US-Counter_C1-2",
+  "folder": "LS-Counter_C3-4",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

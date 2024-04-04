@@ -349,6 +349,7 @@ public final class CatzConstants {
     SPEAKER,
     AMP,
     HOARD,
+    COUNTER,
     CLIMB_MAINTENANCE_MODE,
     CLIMB
   }

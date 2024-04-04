@@ -134,6 +134,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public static LoggedTunableNumber hoardShooterVelLT = new LoggedTunableNumber("HoardLTVelShooter", 50); // For Hoarding 
   public static LoggedTunableNumber hoardShooterVelRT = new LoggedTunableNumber("HoardRTVelShooter", 70); 
 
+  public static LoggedTunableNumber counterShooterVelLT = new LoggedTunableNumber("CounterLTVelShooter", 10); //For getting rid of note under stage
+  public static LoggedTunableNumber counterShooterVelRT = new LoggedTunableNumber("CounterRTVelShooter", 10); // in Counter Auton Paths
+
   private double m_velocityThresholdRT;
   private double m_velocityThresholdLT;
   
@@ -551,6 +554,14 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return runOnce(()->setShooterState(ShooterState.SHOOTING));
   }
 
+  public Command cmdShooterHoard() {
+    return runOnce(()->setShooterMode(RobotMode.HOARD));
+  }
+
+  public Command cmdShooterCounter() {
+    return runOnce(()->setShooterMode(RobotMode.COUNTER));
+  }
+
   public void startShooterFlywheel() {
     currentShooterState = ShooterState.START_SHOOTER_FLYWHEEL;
   }
@@ -567,25 +578,30 @@ public class SubsystemCatzShooter extends SubsystemBase {
     currentShooterState = state;
   }
 
+  public void setShooterMode(RobotMode mode) {
+    CatzConstants.currentRobotMode = mode;
+  }
+
   public void setFlyWheelVelocities() {
     double velocityLT;
     double velocityRT;
 
     if(CatzConstants.currentRobotMode == RobotMode.HOARD) {
-
       m_velocityThresholdLT = -hoardShooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET;
       m_velocityThresholdRT =  hoardShooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
       velocityLT = hoardShooterVelLT.get();
       velocityRT = hoardShooterVelRT.get();
+    } else if (CatzConstants.currentRobotMode == RobotMode.COUNTER) {
+      velocityLT = counterShooterVelLT.get();
+      velocityRT = counterShooterVelRT.get();
     } else {
-
-      m_velocityThresholdLT = -SHOOTER_VELOCITY_LT + FLYWHEEL_THRESHOLD_OFFSET;
+      m_velocityThresholdLT = -SHOOTER_VELOCITY_LT + FLYWHEEL_THRESHOLD_OFFSET; 
       m_velocityThresholdRT =  SHOOTER_VELOCITY_RT - FLYWHEEL_THRESHOLD_OFFSET;
       velocityLT = SHOOTER_VELOCITY_LT;
       velocityRT = SHOOTER_VELOCITY_RT;
     }
 
-      io.setShooterEnabled(velocityLT, velocityRT);    
+    io.setShooterEnabled(velocityLT, velocityRT);    
   }
 
   //-------------------------------------------------------------------------------------
