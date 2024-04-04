@@ -19,6 +19,7 @@ public class LEDSection {
     public LEDMode ledMode = LEDMode.Solid;
 
     public LEDSection(int ledCount) {
+        timer = new Timer();
         LED_COUNT = ledCount;
         baseColors = new Color[LED_COUNT];
         timer.reset();
