@@ -63,9 +63,9 @@ public class ClimbCmd extends Command {
 
     if(Math.abs(m_supplierXboxRightY.get()) > 0.1 ){
       if(CatzConstants.currentRobotMode == RobotMode.CLIMB) {
-        climb.setLeftClimbPercentOutput(Math.abs(m_supplierXboxLeftY.get()/2));
+        climb.setRightClimbPercentOutput(Math.abs(m_supplierXboxRightY.get()/2));
       } else {
-        climb.setLeftClimbPercentOutput(m_supplierXboxLeftY.get()/2);
+        climb.setRightClimbPercentOutput(m_supplierXboxRightY.get()/2);
       }
     }
     else{

@@ -24,6 +24,9 @@ import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class SubsystemCatzIntake extends SubsystemBase {
+  //Logging
+  private int TraceID = 0;
+  
   // intake io block
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
@@ -35,7 +38,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
    * rollers
    *
    ************************************************************************************************************************/
-  private final double ROLLERS_MTR_PWR_IN_GROUND = 0.8;//0.45;//0.6//TBD - need to handle carpet and non-carpet value or code
+  private final double ROLLERS_MTR_PWR_IN_GROUND = 0.8; //TBD - need to handle carpet and non-carpet value or code
                                                        // issue
   private final double ROLLERS_MTR_PWR_IN_SOURCE = 0.25;
   private final double ROLLERS_MTR_PWR_OUT_EJECT = -1.0; // TBD fix top rooler before testing
@@ -225,21 +228,19 @@ public class SubsystemCatzIntake extends SubsystemBase {
       setPivotDisabled();
     } else {
       // robot enabled
-
+      TraceID = 10;
       // ---------------------------------------Intake Roller logic -------------------------------------------
       switch (m_currentRollerState) {
-        case ROLLERS_IN_SOURCE:
 
+        case ROLLERS_IN_SOURCE:
           if (inputs.LoadBeamBrkState) {
-            setRollersOff();
             m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
           }
           break;
 
         case ROLLERS_IN_GROUND:
           if (inputs.LoadBeamBrkState) {
-            setRollersOff();
-            //m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
+            m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
           }
           break;
 
@@ -258,7 +259,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
           if(inputs.AdjustBeamBrkState == m_desiredBeamBreakState) {
             setRollersOff();
             m_currentRollerState = IntakeRollerState.ROLLERS_OFF;
-
           }
           break;
 
@@ -277,7 +277,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
         case ROLLERS_OFF:
           break;
       }
-
+      TraceID = 11;
       // ---------------------------------------Intake Pivot logic -------------------------------------------
       if ((m_currentIntakeControlState == IntakeControlState.AUTO ||
           m_currentIntakeControlState == IntakeControlState.SEMI_MANUAL)) {
@@ -325,7 +325,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
             }
 
           }
-
+          TraceID = 30;
  
 
           if (m_intakeTurretInSafetyZone && m_intakeElevatorInSafetyZone) {
@@ -347,30 +347,36 @@ public class SubsystemCatzIntake extends SubsystemBase {
               // consecutive
               // samples within target threshold have been seen
               // -----------------------------------------------------------------------------------
+              TraceID = 31;
               if (m_targetPositionDeg == INTAKE_STOW_DEG) {
+                TraceID = 32;
                 io.setIntakePivotVoltage(0.0);
               }
               m_iterationCounter++;
+              TraceID = 33;
               if (m_iterationCounter >= 10) { //TBD previously 5
+                TraceID = 34;
                 m_intakeInPosition = true;
-                
+                TraceID = 35;
                 // -----------------------------------------------------------------------------------
                 // Chk if we were commanded to AMP_TRANS position. If that was the case, then
                 // update target position to original commanded position
                 // -----------------------------------------------------------------------------------
                 if (m_nextTargetPositionDeg == INTAKE_AMP_TRANSITION_DEG ||
                     m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
-
+TraceID = 36;
                   m_targetPositionDeg = m_nextTargetPositionDeg;
                   m_intermediatePositionReached = true;
 
                   updateAutoTargetPositionIntake(m_targetPositionDeg);
-
+TraceID = 37;
                   if(m_intermediatePositionReached == true) {
+                    TraceID = 38;
                     m_intermediatePositionReached = false;
                   }
-
                   m_nextTargetPositionDeg = INTAKE_NULL_DEG;
+                  TraceID = 39;
+
                 }
               }
             } else {
@@ -380,21 +386,23 @@ public class SubsystemCatzIntake extends SubsystemBase {
               io.setIntakePivotPostionRev(m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts);
 
               m_iterationCounter = 0; // reset counter - we've overshot target position or bounced
+              TraceID = 40;
             }
           }
         }
       } else if(m_currentIntakeControlState == IntakeControlState.VOLTAGE_CONTROL) {
         io.setIntakePivotVoltage(PIVOT_FF_kG);
-    
+        TraceID = 41;
       } else {
         // -------------------------------------------------------------------------------------
         // Manual Control Mode - Use operator input to change intake angle
         // -------------------------------------------------------------------------------------
         io.setIntakePivotPercentOutput(m_pivotManualPwr);
-
+        TraceID = 42;
       }
     }
     importantIntakeLogs(); // Logging Data
+    debugLogsIntake();
   }
 
 
@@ -405,7 +413,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   //Long Term
     Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
     Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
-  }
+    }
   public void debugLogsIntake(){  // Keep these commented if not being USED
     
     // Logger.recordOutput("intake/ff volts", m_ffVolts);
@@ -413,6 +421,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     // Logger.recordOutput("intake/position error", positionErrorDeg);
     // Logger.recordOutput("intake/roller mode", m_currentRollerState.toString());
     // Logger.recordOutput("intake/intake mode", m_currentIntakeControlState.toString());
+    Logger.recordOutput("IntakeTraceID", TraceID);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -564,7 +573,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
     return m_currentRollerState;
   }
 
-  public boolean getIntakeBeamBreakBroken() {
+  public boolean getIntakeLoadBeamBreakBroken() {
     return inputs.LoadBeamBrkState;
   }
 
@@ -598,9 +607,13 @@ public class SubsystemCatzIntake extends SubsystemBase {
   }
 
   public void setRollersIntakeSource() {
+    TraceID = 0;
     rollerTimer.restart();
+    TraceID = 1;
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
+    TraceID = 2;
     m_currentRollerState = IntakeRollerState.ROLLERS_IN_SOURCE;
+    TraceID = 3;
   }
 
 
