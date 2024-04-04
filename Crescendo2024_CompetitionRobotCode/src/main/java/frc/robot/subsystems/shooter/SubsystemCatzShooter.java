@@ -110,7 +110,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final boolean BEAM_IS_BROKEN     = true;
   private static final boolean BEAM_IS_NOT_BROKEN = false;
 
-  private static final double HANDOFF_TRANSFER_CNT_SHIFT = 1.0;
+  private static final double HANDOFF_TRANSFER_CNT_SHIFT = 2.0;
 
   private boolean m_desiredBeamBreakState;
   private int     m_iterationCounterRampingTimeout = 0;

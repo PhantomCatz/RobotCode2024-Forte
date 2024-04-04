@@ -61,7 +61,7 @@ public class SubsystemCatzLED extends SubsystemBase {
             index++;
         }
         if (SubsystemCatzClimb.getInstance().isClimbing()) {
-            if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
+            if (SubsystemCatzIntake.getInstance().getIntakeLoadBeamBreakBroken()) {
                 top.colorSolid(Color.kBlue);
                 top.setMode(LEDMode.Solid);
 
@@ -78,7 +78,7 @@ public class SubsystemCatzLED extends SubsystemBase {
                 bot.setMode(LEDMode.Alternating);
             }
         } else if (CatzConstants.currentRobotMode == RobotMode.AMP) {
-            if (SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()) {
+            if (SubsystemCatzIntake.getInstance().getIntakeLoadBeamBreakBroken()) {
                 top.colorSolid(Color.kYellow);
                 top.setMode(LEDMode.Solid);
 

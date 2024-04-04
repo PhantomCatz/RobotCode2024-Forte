@@ -202,11 +202,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                         .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)
                         ); //NOTE IN INTAKE TRANSFERED TO SHOOTER
 
-        triggerModeHoard.and(xboxDrv.leftStick())
-                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
-                        ); //DEPLOY INTAKE & STOWS & STORES TO SHOOTER
-                    
-
     //------------------------------------------------------------------------------------  
     // CLIMB MODE
     //------------------------------------------------------------------------------------

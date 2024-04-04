@@ -4,6 +4,8 @@
 
 package frc.robot.commands.mechanismCmds;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants.CatzMechanismConstants;
@@ -18,7 +20,7 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class MoveToPresetHandoffCmd extends Command {
-  
+  //Logging
   //subsystem declaration
   private SubsystemCatzElevator elevator = SubsystemCatzElevator.getInstance();
   private SubsystemCatzIntake intake = SubsystemCatzIntake.getInstance();
@@ -39,6 +41,7 @@ public class MoveToPresetHandoffCmd extends Command {
 
   private boolean m_targetNoteAdjustInit = false;
 
+  private boolean m_intakeNoteAdjustDone;
 
   public MoveToPresetHandoffCmd(NoteDestination noteDestination, NoteSource noteSource) {
     this.m_noteDestination = noteDestination;
@@ -54,6 +57,7 @@ public class MoveToPresetHandoffCmd extends Command {
     m_targetMechPoseStartReached = false;
     m_targetMechPoseEndReached   = false;
     m_targetNoteAdjustInit = false;
+    m_intakeNoteAdjustDone = false;
 
 
     switch(m_noteSource) {
@@ -123,13 +127,12 @@ public class MoveToPresetHandoffCmd extends Command {
   @Override
   public void execute() {
     boolean mechInPos = false;
-    areMechanismsInPosition();
 
     if(m_noteSource == NoteSource.INTAKE_GROUND ||
        m_noteSource == NoteSource.INTAKE_SOURCE) {
 
       //when the the rollers stop intaking due to beambreak
-      if(intake.getIntakeBeamBreakBroken()) {
+      if(intake.getIntakeLoadBeamBreakBroken()) {
         if(m_targetMechPoseStartReached == false) { 
           
           runMechanismSetpoints(m_targetMechPoseEnd);
@@ -163,29 +166,27 @@ public class MoveToPresetHandoffCmd extends Command {
     } else if(m_noteSource == NoteSource.FROM_SHOOTER) {
       //when the the rollers stop intaking due to beambreak
       if(m_targetMechPoseStartReached == false) {
-          if(m_targetNoteAdjustInit == false) {
-            shooter.setShooterNoteState(ShooterNoteState.NOTE_IN_ADJUST);//to account for periodic loop following command loop
-            shooter.setShooterState(ShooterState.PREP_FOR_HANDOFF_SHIFT);
-            m_targetNoteAdjustInit = true;
-          }
+        if(m_targetNoteAdjustInit == false) {
+          shooter.setShooterNoteState(ShooterNoteState.NOTE_IN_ADJUST);//to account for periodic loop following command loop
+          shooter.setShooterState(ShooterState.PREP_FOR_HANDOFF_SHIFT);
+          m_targetNoteAdjustInit = true;
+        }
 
 
         if(areMechanismsInPosition()) {
+            
+
           if(shooter.getShooterNoteState() == ShooterNoteState.NOTE_IN_POSTION) {
             intake.setRollersIntakeSource();
             m_targetMechPoseStartReached = true;
           }
         }
       }
-
       //when the mechanisms have all reached their end position after collecting 
       if(m_targetMechPoseStartReached && 
          m_targetMechPoseEndReached == false) {
-
-        if(intake.getIntakeBeamBreakBroken()) { 
-
-          intake.setRollersOff(); 
-
+          intake.setRollersIntakeSource();
+        if(intake.getIntakeLoadBeamBreakBroken()) { 
           if(m_noteDestination == NoteDestination.AMP) {
             runMechanismSetpoints(m_targetMechPoseEnd);
             m_targetMechPoseEndReached = true;
@@ -198,22 +199,16 @@ public class MoveToPresetHandoffCmd extends Command {
       //when the the rollers stop intaking due to beambreak
       if(m_targetMechPoseStartReached == false) {
         if(areMechanismsInPosition()) {
+          if(m_intakeNoteAdjustDone == false) {
             intake.setRollersOutakeHandoff();
+            m_intakeNoteAdjustDone = true;
+          }
+
           shooter.setShooterState(ShooterState.LOAD_IN);
           m_targetMechPoseStartReached = true;
         }
       }
-
-      //when the mechanisms have all reached their end position after collecting 
-      if(m_targetMechPoseStartReached && 
-         m_targetMechPoseEndReached == false) {
-
-        if(shooter.shooterLoadBeamBrkBroken()) { 
-          intake.setRollersOff();  
-        }
-      } 
     }
-
 
   }
 
@@ -229,15 +224,17 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean intakeState   = intake.getIntakeInPos(); 
     boolean turretState   = turret.getTurretInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-    return(intakeState && turretState);// && elevatorState);
+    return(intakeState && turretState && elevatorState);
   }
 
   @Override
   public void end(boolean interrupted) {
+    //System.out.println("MoveToPresetHandoffCMD: " + TraceID);
   }
 
   @Override
   public boolean isFinished() {
+   // System.out.println("MoveToPresetHandoffCMD: " + TraceID);
     return m_targetMechPoseEndReached;
   }
 }
