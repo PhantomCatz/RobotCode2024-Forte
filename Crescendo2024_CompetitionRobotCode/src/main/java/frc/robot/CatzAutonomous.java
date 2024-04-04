@@ -62,7 +62,7 @@ public class CatzAutonomous {
     *-------------------------------------------------------------------------------------------------------------------*/
 
         pathChooser.addOption("Score and Wait US_W1", US_W1());
-        pathChooser.addOption("Score and Wait LS_W3", LS_W3());
+        pathChooser.addOption("Score and Wait LS_W3", LS_W3()); 
         pathChooser.addOption("Score and Wait CS_W2", CS_W2());
         
         pathChooser.addOption("Scoring US W1-3", US_W13());
@@ -93,7 +93,7 @@ public class CatzAutonomous {
         // pathChooser.addOption("DriveStraightMid", driveTranslateAutoMid());
         // pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
         // pathChooser.addOption("Curve", curveAuto());
-        // pathChooser.addOption("Test", test());
+        pathChooser.addOption("Test", test());
     }
 
     //configured dashboard
@@ -128,9 +128,9 @@ public class CatzAutonomous {
             setAutonStartPose(LS_W3_1),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd(),
+            new WaitUntilSecondsLeft(5.0),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS_W3_1),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
-            new WaitUntilSecondsLeft(5.0),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd()
         );
@@ -149,10 +149,10 @@ public class CatzAutonomous {
             setAutonStartPose(US_W1_1),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd(),
+            new WaitUntilSecondsLeft(5.0),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_1),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
                                     ),
-            new WaitUntilSecondsLeft(5.0),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd()
         );
@@ -172,10 +172,10 @@ public class CatzAutonomous {
             setAutonStartPose(CS_W2_1),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd(),
+            new WaitUntilSecondsLeft(5.0),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(CS_W2_1),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
                                     ),
-            new WaitUntilSecondsLeft(5.0),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd()
         );
@@ -339,16 +339,18 @@ public class CatzAutonomous {
     private Command US_C12_Hoard() {
         return new SequentialCommandGroup( 
             setAutonStartPose(PathPlannerPath.fromPathFile("Hoard_C1-2_1")),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C1-2_1")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C1-2_2")),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C1-2_3")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("Hoard_C1-2_4")),
-            shooter.cmdShooterRamp()
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
         );
     }
 
@@ -646,8 +648,8 @@ public class CatzAutonomous {
     private Command test(){
         return new SequentialCommandGroup(
             setAutonStartPose(test),
-            new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-            new HomeToSpeakerCmd()
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(test),
+                                        new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND))
         );
     }
     //--------------------------------------------------------------------------------------------

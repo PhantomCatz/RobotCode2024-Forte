@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3023087957730821,
-        "y": 7.7
+        "x": 1.4194171612308972,
+        "y": 6.183321696172636
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.197438471912642,
-        "y": 7.781975855823146
+        "x": 5.541631625345989,
+        "y": 6.183321696172636
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.836955588319164,
-        "y": 7.45
+        "x": 7.754979732498693,
+        "y": 7.412959533479694
       },
       "prevControl": {
-        "x": 6.092040943000609,
-        "y": 7.450000000002675
+        "x": 6.754979732498693,
+        "y": 7.412959533479694
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,8 +34,8 @@
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 6.4,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -43,7 +43,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Scoring_C1-3",
-  "previewStartingState": null,
+  "folder": "US-Counter_C1-2",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }
