@@ -78,7 +78,7 @@ public class SubsystemCatzLED extends SubsystemBase {
         if(DriverStation.isTeleop()){
             for(ModeColors mode: ModeColors.values()){
                 if(mode.robotMode == CatzConstants.currentRobotMode){
-                    if(SubsystemCatzIntake.getInstance().getIntakeBeamBreakBroken()){
+                    if(SubsystemCatzIntake.getInstance().getIntakeLoadBeamBreakBroken()){
                         if(!signalHumanPlayer){
                             top.colorSolid(mode.color); top.ledMode = LEDMode.Solid;
                         }
