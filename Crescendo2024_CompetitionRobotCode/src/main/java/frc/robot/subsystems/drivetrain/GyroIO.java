@@ -21,5 +21,4 @@ public interface GyroIO
 
   public default double getAngleAdjustmentIO() {return 0.0;}
 
-  public default void printAccl(){}
 }
