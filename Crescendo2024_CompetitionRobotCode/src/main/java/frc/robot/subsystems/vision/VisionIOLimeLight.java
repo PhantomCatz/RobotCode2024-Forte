@@ -72,7 +72,7 @@ public class VisionIOLimeLight implements VisionIO {
         inputs.latency = latency;
         //shoves in new pose2d from pose3d object estimate depending on if new apriltag detected
 
-        if(name.equals("limelight-ramen")||name.equals("limelight-soba")){
+        if(name.equals("limelight-ramen")){
             
             return;
         }

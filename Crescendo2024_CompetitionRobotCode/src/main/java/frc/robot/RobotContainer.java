@@ -245,7 +245,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
   public void logDpadStates() {
     //SmartDashboard.putString("Scoring Mode", CatzConstants.currentRobotMode.toString());
-    Logger.recordOutput("Robot Control State", CatzConstants.currentRobotMode);
+    // Logger.recordOutput("Robot Control State", CatzConstants.currentRobotMode);
 
   }
 

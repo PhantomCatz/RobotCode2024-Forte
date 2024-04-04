@@ -132,57 +132,57 @@ public class SubsystemCatzElevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // io.updateInputs(inputs);
-    // Logger.processInputs("Elevator/inputs", inputs);
+    io.updateInputs(inputs);
+    Logger.processInputs("Elevator/inputs", inputs);
 
 
-    // //elevator control calculations
-    // m_ffVolts = elevatorFeedforward.calculate(0.0); //calculating while disabled for advantage scope logging
+    //elevator control calculations
+    m_ffVolts = elevatorFeedforward.calculate(0.0); //calculating while disabled for advantage scope logging
 
-    // if(DriverStation.isDisabled()) {
-    //   setElevatorOff();
-    // }
-    // else {
+    if(DriverStation.isDisabled()) {
+      setElevatorOff();
+    }
+    else {
 
-    //   if(inputs.bottomSwitchTripped) {
-    //     io.setSelectedSensorPosition(0.0);
-    //   }
+      if(inputs.bottomSwitchTripped) {
+        io.setSelectedSensorPosition(0.0);
+      }
 
-    //   if((currentElevatorState == ElevatorControlState.AUTO  ||
-    //       currentElevatorState == ElevatorControlState.SEMI_MANUAL)) {
+      if((currentElevatorState == ElevatorControlState.AUTO  ||
+          currentElevatorState == ElevatorControlState.SEMI_MANUAL)) {
 
-    //     if((m_targetPositionRev != ELEVATOR_NULL_POSITION)) {
+        if((m_targetPositionRev != ELEVATOR_NULL_POSITION)) {
 
-    //       if(m_elevatorIntakeInSafetyZone == false) {
-    //         if(currentElevatorDirection == ElevatorDirection.DOWN) {
-    //           if(SubsystemCatzIntake.getInstance().getWristAngle() > intakeClearanceAngle) {
-    //             m_elevatorIntakeInSafetyZone = true;
+          if(m_elevatorIntakeInSafetyZone == false) {
+            if(currentElevatorDirection == ElevatorDirection.DOWN) {
+              if(SubsystemCatzIntake.getInstance().getWristAngle() > intakeClearanceAngle) {
+                m_elevatorIntakeInSafetyZone = true;
 
-    //           } 
-    //         } else {
-    //           if(SubsystemCatzIntake.getInstance().getWristAngle() < intakeClearanceAngle) {
-    //             m_elevatorIntakeInSafetyZone = true;
+              } 
+            } else {
+              if(SubsystemCatzIntake.getInstance().getWristAngle() < intakeClearanceAngle) {
+                m_elevatorIntakeInSafetyZone = true;
 
-    //           }     
-    //         }
-    //       }
+              }     
+            }
+          }
 
-    //       if(m_elevatorIntakeInSafetyZone == true) {
-    //         io.setElevatorPosition(m_targetPositionRev, 
-    //                                 m_ffVolts, 
-    //                                 inputs.bottomSwitchTripped);
+          if(m_elevatorIntakeInSafetyZone == true) {
+            io.setElevatorPosition(m_targetPositionRev, 
+                                    m_ffVolts, 
+                                    inputs.bottomSwitchTripped);
 
-    //         if(inputs.elevatorPositionError < 0.2) {
-    //           m_elevatorInPos = true;
-    //         } 
-    //       }p
-    //     }
-    //   } else {
-    //     io.setElevatorPercentOutput(m_elevatorPercentOutput);
-    //   }
-    // }
+            if(inputs.elevatorPositionError < 0.2) {
+              m_elevatorInPos = true;
+            } 
+          }
+        }
+      } else {
+        io.setElevatorPercentOutput(m_elevatorPercentOutput);
+      }
+    }
   
-    // //LongTerm
+    //LongTerm
     //  Logger.recordOutput("elevator/targetRev", m_targetPositionRev);
 
    

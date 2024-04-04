@@ -20,6 +20,7 @@ import frc.robot.CatzConstants.OIConstants;
 import frc.robot.CatzConstants.RobotMode;
 import frc.robot.Utils.LoggedTunableNumber;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
@@ -343,6 +344,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
                 }
               
               currentNoteState = ShooterNoteState.NOTE_HAS_BEEN_SHOT; //ends autoaim sequence
+              SubsystemCatzTurret.getInstance().setTurretState(TurretState.AUTO);
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0);
               m_iterationCounterShooting = 0;
             }

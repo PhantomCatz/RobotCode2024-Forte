@@ -61,30 +61,30 @@ public class Robot extends LoggedRobot {
          break;
    }
 
-    // // Set up data receivers & replay source
-    // switch (CatzConstants.currentMode) {
-    //   // Running on a real robot, log to a USB stick
-    //   case REAL:
+    // Set up data receivers & replay source
+    switch (CatzConstants.currentMode) {
+      // Running on a real robot, log to a USB stick
+      case REAL:
 
-    //     Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
-    //     Logger.addDataReceiver(new NT4Publisher());
-    //    // new PowerDistribution(1, ModuleType.kRev);
-    //     break;
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
+        Logger.addDataReceiver(new NT4Publisher());
+      //  new PowerDistribution(1, ModuleType.kRev);
+        break;
 
-    //   // Running a physics simulator, log to local folder
-    //   case SIM:
-    //     Logger.addDataReceiver(new WPILOGWriter("F:/robotics code projects/loggingfiles/"));
-    //     Logger.addDataReceiver(new NT4Publisher());
-    //     break;
+      // Running a physics simulator, log to local folder
+      case SIM:
+        // Logger.addDataReceiver(new WPILOGWriter("F:/robotics code projects/loggingfiles/"));
+        // Logger.addDataReceiver(new NT4Publisher());
+        break;
 
-    //   // Replaying a log, set up replay source
-    //   case REPLAY:
-    //     setUseTiming(false); // Run as fast as possible
-    //     String logPath = LogFileUtil.findReplayLog();
-    //     Logger.setReplaySource(new WPILOGReader(logPath));
-    //     Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
-    //     break;
-    // }
+      // Replaying a log, set up replay source
+      case REPLAY:
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        break;
+    }
     // Start AdvantageKit logger
     Logger.start();
 
@@ -182,6 +182,10 @@ public class Robot extends LoggedRobot {
     CatzAutonomous.getInstance().chooseAllianceColor();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+    }
+
+    if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Red){
+      flipDirection = -1;
     }
   }
 
