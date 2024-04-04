@@ -12,6 +12,7 @@ import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
+import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 
 public class StowPoseCmd extends Command {
   //subsystem declaration
@@ -26,6 +27,7 @@ public class StowPoseCmd extends Command {
 
   @Override
   public void initialize() {
+      turret.setTurretState(TurretState.AUTO);
       runMechanismSetpoints(CatzMechanismConstants.STOW_PRESET);
       intake.setRollersOff();
       shooter.setShooterState(ShooterState.LOAD_OFF);

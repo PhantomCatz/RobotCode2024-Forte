@@ -79,6 +79,8 @@ public class HomeToSpeakerCmd extends Command {
   private double newDist;
   private double servoPos;
 
+
+  private final double AUTON_TIMEOUT_SEC = 3.0;
   //------------------------------------------------------------------------------------------------
   //
   //  
@@ -148,7 +150,7 @@ public class HomeToSpeakerCmd extends Command {
       turret.aimAtGoal(m_targetXY, false);
       
   
-      if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && shooter.getShooterServoInPos())){
+      if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && shooter.getShooterServoInPos()) || timer.hasElapsed(AUTON_TIMEOUT_SEC)){
 
         if(DriverStation.isAutonomous()){
           shooter.setShooterState(ShooterState.SHOOTING);

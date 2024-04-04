@@ -64,17 +64,16 @@ public class SubsystemCatzVision extends SubsystemBase {
         results.clear();
         
         //for every limlight camera process vision with according logic
-        for (int i = 0; i < inputs.length-2; i++) { //change to -1 if soba is installed
+        for (int i = 0; i < inputs.length-1; i++) { //change to -1 if soba is installed
             // update and process new inputs[cameraNum] for camera
+            
             cameras[i].updateInputs(inputs[i]);
             Logger.processInputs("Vsn/" + cameras[i].getName() + "/Inputs", inputs[i]);
                     
             //checks for when to process vision
             if (inputs[i].hasTarget &&
-                inputs[i].isNewVisionPose &&  
                 inputs[i].maxDistance < VisionConstants.LOWEST_DISTANCE) { //TBD get rid of this?
                 processVision(i);
-       
             }
         }        
 

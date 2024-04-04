@@ -411,8 +411,8 @@ TraceID = 37;
 // -------------------------------------------------------------------------------------
   public void importantIntakeLogs(){
   //Long Term
-    Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
-    Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
+    // Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
+    // Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
     }
   public void debugLogsIntake(){  // Keep these commented if not being USED
     
@@ -421,7 +421,7 @@ TraceID = 37;
     // Logger.recordOutput("intake/position error", positionErrorDeg);
     // Logger.recordOutput("intake/roller mode", m_currentRollerState.toString());
     // Logger.recordOutput("intake/intake mode", m_currentIntakeControlState.toString());
-    Logger.recordOutput("IntakeTraceID", TraceID);
+    // Logger.recordOutput("IntakeTraceID", TraceID);
   }
 
   // -----------------------------------------------------------------------------------------------

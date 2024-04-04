@@ -259,11 +259,11 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
 
     //DEBUG
-    Logger.recordOutput("turret/offsetXTurret",        offsetAprilTagX);
+    // Logger.recordOutput("turret/offsetXTurret",        offsetAprilTagX);
     //Logger.recordOutput("turret/PwrPID", apriltagTrackingPower);
     // Logger.recordOutput("turret/currentTurretState", currentTurretState);
     //Logger.recordOutput("turret/closedlooperror",      m_closedLoopError);
-    Logger.recordOutput("turret/setpositionpwr", setPositionPower);
+    // Logger.recordOutput("turret/setpositionpwr", setPositionPower);
     Logger.recordOutput("turret/m_TurretinPos", m_turretInPos);
   }   //End of periodic()
 
