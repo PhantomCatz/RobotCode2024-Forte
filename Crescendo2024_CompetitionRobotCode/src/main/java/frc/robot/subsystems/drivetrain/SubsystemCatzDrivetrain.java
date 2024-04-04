@@ -144,7 +144,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // gyroIO.printAccl();
         // Update inputs (sensors/encoders) for code logic and advantage kit
         for (CatzSwerveModule module : m_swerveModules) {
             module.periodic();

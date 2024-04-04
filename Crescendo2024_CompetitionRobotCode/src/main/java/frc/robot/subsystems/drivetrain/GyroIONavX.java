@@ -36,9 +36,6 @@ public class GyroIONavX implements GyroIO
         return navX.getAngleAdjustment();
     }
 
-    @Override
-    public void printAccl(){
-         System.out.println(navX.getWorldLinearAccelX());
-    }
+
 }
 
