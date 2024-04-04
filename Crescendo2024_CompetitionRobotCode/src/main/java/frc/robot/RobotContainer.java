@@ -83,7 +83,10 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
   }
   
 
-  private void configureBindings() {    
+  private void configureBindings() {   
+    
+    //OTHER COMMANDS
+    xboxDrv.start().and(xboxDrv.back()).onTrue(driveTrain.resetGyro());
     
     //------------------------------------------------------------------------------------
     // INTAKE COMMANDS
@@ -101,7 +104,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     
       
     //LED command
-    xboxAux.back().onTrue(Commands.runOnce(()-> led.signalHumanPlayerAMP())); // SIGNAL HUMAN PLAYER FOR AMP SCORING
+    xboxAux.back().onTrue(Commands.runOnce(()-> led.signalHumanPlayerAMP(true))); // SIGNAL HUMAN PLAYER FOR AMP SCORING
 
 
     //------------------------------------------------------------------------------------
@@ -168,7 +171,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
     //------------------------------------------------------------------------------------
     // HOARD MODE
-
     //------------------------------------------------------------------------------------
 
         Trigger triggerModeHoard = new Trigger(()->isInHoardMode());

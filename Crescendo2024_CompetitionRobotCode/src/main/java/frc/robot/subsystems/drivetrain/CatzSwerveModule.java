@@ -150,8 +150,8 @@ public class CatzSwerveModule {
 
         //DEBUG
         // Logger.recordOutput("Module " + Integer.toString(m_index) + "/angle error deg", Math.toDegrees(targetAngleRad-currentAngleRad));
-        // Logger.recordOutput("Module " + Integer.toString(m_index) + "/target state", state);
-        // Logger.recordOutput("Module " + Integer.toString(m_index) + "/current state", getModuleState());
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/target state", state);
+        Logger.recordOutput("Module " + Integer.toString(m_index) + "/current state", getModuleState());
         // Logger.recordOutput("Module " + Integer.toString(m_index) + "/turn power", steerPIDpwr);
         // Logger.recordOutput("Module " + Integer.toString(m_index) + "/currentmoduleangle rad", currentAngleRad);
         // Logger.recordOutput("Module " + Integer.toString(m_index) + "/targetmoduleangle rad", targetAngleRad);
