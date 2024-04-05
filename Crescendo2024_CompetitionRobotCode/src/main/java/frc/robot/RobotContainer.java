@@ -70,7 +70,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     shooter    = SubsystemCatzShooter.getInstance();
     climb      = SubsystemCatzClimb.getInstance();
 
-    auton     = CatzAutonomous.getInstance();
+    auton      = CatzAutonomous.getInstance();
     
 
     xboxDrv = new CommandXboxController(OIConstants.XBOX_DRV_PORT); 

@@ -218,7 +218,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
           
           offsetAprilTagX       = SubsystemCatzVision.getInstance().getOffsetX(2);
           apriltagTrackingPower = -m_trackingApriltagPID.calculate(offsetAprilTagX, 0.0);
-          io.turretSetPwr(apriltagTrackingPower);
+          
+          if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {  
+            //------------------------------------------------------------------------------------------    
+            //  Intake angle is wihin valid range.
+            //------------------------------------------------------------------------------------------
+            io.turretSetPwr(apriltagTrackingPower);
+          }
         }
       } 
 
