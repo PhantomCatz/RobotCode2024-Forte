@@ -490,7 +490,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return autonIsShooterRamped;
   }
 
-  public double getScuffedShootingSpeed(){
+  public double getNoteShootingSpeed(){
+    //72 rps *  0.2 m wheel circum  = 14.4 mps note speed
     return ((inputs.shooterVelocityRT + inputs.shooterVelocityLT)/2+2) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink) TBD
   }
 

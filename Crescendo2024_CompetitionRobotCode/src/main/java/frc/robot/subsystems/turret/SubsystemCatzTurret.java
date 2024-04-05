@@ -289,7 +289,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
         if(accountRobotVel){
             //divide by distance to get direction unit vector
           roboDistanceFromSpeaker.div(Math.hypot(roboDistanceFromSpeaker.getX(), roboDistanceFromSpeaker.getY())); 
-          double shootingSpeedVelocity = 12.0; //12 meters/s
+          double shootingSpeedVelocity = SubsystemCatzShooter.getInstance().getNoteShootingSpeed();
             // reapply velocity from shooter to get magnitude
           roboDistanceFromSpeaker.times(shootingSpeedVelocity);  
             //subtract the shooter vector from the drivetrain vector to get the note shooting vector to point turret at

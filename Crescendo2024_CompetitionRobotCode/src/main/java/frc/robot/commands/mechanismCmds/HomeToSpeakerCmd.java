@@ -80,7 +80,7 @@ public class HomeToSpeakerCmd extends Command {
   private double servoPos;
 
 
-  private final double AUTON_TIMEOUT_SEC = 3.0;
+  private final double AUTON_TIMEOUT_SEC = 2.0;
   //------------------------------------------------------------------------------------------------
   //
   //  
