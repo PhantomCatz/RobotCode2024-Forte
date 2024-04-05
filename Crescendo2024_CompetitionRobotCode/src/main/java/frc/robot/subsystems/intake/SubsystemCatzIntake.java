@@ -12,20 +12,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
-import frc.robot.CatzConstants.CatzMechanismConstants;
-import frc.robot.CatzConstants.RobotMode;
-import frc.robot.Utils.CatzMechanismPosition;
-import frc.robot.Utils.LoggedTunableNumber;
-import frc.robot.CatzConstants.NoteDestination;
-import frc.robot.CatzConstants.NoteSource;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
-import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
-import frc.robot.subsystems.intake.SubsystemCatzIntake.IntakeControlState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class SubsystemCatzIntake extends SubsystemBase {
-  //Logging
-  private int TraceID = 0;
   
   // intake io block
   private final IntakeIO io;
@@ -48,7 +38,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static enum IntakeRollerState {
     ROLLERS_IN_SOURCE,
     ROLLERS_IN_GROUND,
-    ROLLERS_IN_SCORING_AMP,
     BEAM_BREAK_CHECK,
     NOTE_ADJUST,
     ROLLERS_OUT_EJECT,
@@ -125,7 +114,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
     AUTO,
     SEMI_MANUAL,
     FULL_MANUAL,
-    VOLTAGE_CONTROL
   }
 
   private static IntakeControlState m_currentIntakeControlState = IntakeControlState.AUTO;
@@ -228,7 +216,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
       setPivotDisabled();
     } else {
       // robot enabled
-      TraceID = 10;
       // ---------------------------------------Intake Roller logic -------------------------------------------
       switch (m_currentRollerState) {
 
@@ -277,7 +264,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
         case ROLLERS_OFF:
           break;
       }
-      TraceID = 11;
       // ---------------------------------------Intake Pivot logic -------------------------------------------
       if ((m_currentIntakeControlState == IntakeControlState.AUTO ||
           m_currentIntakeControlState == IntakeControlState.SEMI_MANUAL)) {
@@ -325,7 +311,6 @@ public class SubsystemCatzIntake extends SubsystemBase {
             }
 
           }
-          TraceID = 30;
  
 
           if (m_intakeTurretInSafetyZone && m_intakeElevatorInSafetyZone) {
@@ -347,35 +332,26 @@ public class SubsystemCatzIntake extends SubsystemBase {
               // consecutive
               // samples within target threshold have been seen
               // -----------------------------------------------------------------------------------
-              TraceID = 31;
               if (m_targetPositionDeg == INTAKE_STOW_DEG) {
-                TraceID = 32;
                 io.setIntakePivotVoltage(0.0);
               }
               m_iterationCounter++;
-              TraceID = 33;
               if (m_iterationCounter >= 10) { //TBD previously 5
-                TraceID = 34;
                 m_intakeInPosition = true;
-                TraceID = 35;
                 // -----------------------------------------------------------------------------------
                 // Chk if we were commanded to AMP_TRANS position. If that was the case, then
                 // update target position to original commanded position
                 // -----------------------------------------------------------------------------------
                 if (m_nextTargetPositionDeg == INTAKE_AMP_TRANSITION_DEG ||
                     m_nextTargetPositionDeg == INTAKE_STOW_DEG) {
-TraceID = 36;
                   m_targetPositionDeg = m_nextTargetPositionDeg;
                   m_intermediatePositionReached = true;
 
                   updateAutoTargetPositionIntake(m_targetPositionDeg);
-TraceID = 37;
                   if(m_intermediatePositionReached == true) {
-                    TraceID = 38;
                     m_intermediatePositionReached = false;
                   }
                   m_nextTargetPositionDeg = INTAKE_NULL_DEG;
-                  TraceID = 39;
 
                 }
               }
@@ -386,19 +362,14 @@ TraceID = 37;
               io.setIntakePivotPostionRev(m_targetPositionDeg * INTAKE_PIVOT_MTR_REV_PER_DEG, m_ffVolts);
 
               m_iterationCounter = 0; // reset counter - we've overshot target position or bounced
-              TraceID = 40;
             }
           }
         }
-      } else if(m_currentIntakeControlState == IntakeControlState.VOLTAGE_CONTROL) {
-        io.setIntakePivotVoltage(PIVOT_FF_kG);
-        TraceID = 41;
       } else {
         // -------------------------------------------------------------------------------------
         // Manual Control Mode - Use operator input to change intake angle
         // -------------------------------------------------------------------------------------
         io.setIntakePivotPercentOutput(m_pivotManualPwr);
-        TraceID = 42;
       }
     }
     importantIntakeLogs(); // Logging Data
@@ -430,7 +401,6 @@ TraceID = 37;
   //
   // -----------------------------------------------------------------------------------------------
   public void updateAutoTargetPositionIntake(double targetPosition) {
-    // System.out.println("IUP" + targetPosition);
     // -------------------------------------------------------------------------------------
     // Initialize Variables
     // -------------------------------------------------------------------------------------
@@ -607,13 +577,9 @@ TraceID = 37;
   }
 
   public void setRollersIntakeSource() {
-    TraceID = 0;
     rollerTimer.restart();
-    TraceID = 1;
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
-    TraceID = 2;
     m_currentRollerState = IntakeRollerState.ROLLERS_IN_SOURCE;
-    TraceID = 3;
   }
 
 

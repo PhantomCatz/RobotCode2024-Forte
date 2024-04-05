@@ -151,6 +151,10 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         // Update gyro inputs and log them
         gyroIO.updateInputs(gyroInputs);
         Logger.processInputs("Drive/gyroinputs ", gyroInputs); 
+
+        m_fieldRelVel = new FieldRelativeSpeed(DriveConstants.swerveDriveKinematics.toChassisSpeeds(getModuleStates()), 
+                                               Rotation2d.fromDegrees(getGyroAngle()));
+
         
         //------------------------------------------------------------------------------------------------
         // Odometry pose updating
@@ -172,18 +176,18 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
 
                 //vision is trusted more with more tags visible
-                xyStdDev = 3; //3
+                xyStdDev = 3; 
             }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
 
-                //vision is trusted more with tags that are closer to the target
-                xyStdDev = 5; //5
-            }else if(visionOdometry.get(i).getAvgArea() >= 0.12){ //TBD doesn't this do the same as the above
-
-                xyStdDev = 10; //10
+                //vision is trusted more with tags that are closer to the target which inherhently take more of the frame
+                xyStdDev = 5; 
+            }else if(visionOdometry.get(i).getAvgArea() >= 0.12){ 
+                //if vision takes up less than 12% of the frame
+                xyStdDev = 10; 
             }else{
                 
                 //Do not trust vision inputs
-                xyStdDev = 40; //40
+                xyStdDev = 40; 
             }
 
             m_poseEstimator.setVisionMeasurementStdDevs(

@@ -291,7 +291,7 @@ public final class CatzConstants {
     public static final CatzMechanismPosition SUBWOOFER_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_STOW,
         SubsystemCatzIntake.INTAKE_STOW_DEG,
-        1.0,
+        SubsystemCatzShooter.SERVO_MAX_POS,
         SubsystemCatzTurret.HOME_POSITION_DEG);
         
     public static final CatzMechanismPosition AUTO_AIM_PRESET = new CatzMechanismPosition(
@@ -337,7 +337,7 @@ public final class CatzConstants {
     public static final CatzMechanismPosition SCORING_TRAP_PRESET = new CatzMechanismPosition(
         SubsystemCatzElevator.ELEVATOR_SCORE_TRAP,
         SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG,
-        SubsystemCatzShooter.SERVO_IGNORE_POSITION,
+        SubsystemCatzShooter.SERVO_MAX_POS,
         SubsystemCatzTurret.HOME_POSITION_DEG);
 
  

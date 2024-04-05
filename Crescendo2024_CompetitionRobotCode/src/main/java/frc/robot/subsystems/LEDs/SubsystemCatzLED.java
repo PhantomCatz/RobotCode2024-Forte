@@ -16,7 +16,7 @@ import frc.robot.subsystems.turret.SubsystemCatzTurret;
 public class SubsystemCatzLED extends SubsystemBase {
     private static SubsystemCatzLED instance = new SubsystemCatzLED();
 
-    private final int LED_PWM_PORT = 2; //2 soon on friday comp
+    private final int LED_PWM_PORT = 2; //2 
     private final int LED_COUNT_HALF = 17; //half 18
     private final int LED_EDGE = 4; //4
 
@@ -77,21 +77,40 @@ public class SubsystemCatzLED extends SubsystemBase {
 
         if(DriverStation.isTeleop()){
             for(ModeColors mode: ModeColors.values()){
-                if(mode.robotMode == CatzConstants.currentRobotMode){
+                if(mode.robotMode == CatzConstants.currentRobotMode){ 
+                    //evaluate below conditions for the specific driver chosen mode
+
+                    //driver pressed signal human player logic
+                    if(!signalHumanPlayer){
+                        top.colorAlternating(mode.color, Color.kWhite); top.ledMode = LEDMode.Alternate;
+                    } else {
+                        top.colorSolid(mode.color); top.ledMode = LEDMode.Solid;
+                    }
+
                     if(SubsystemCatzIntake.getInstance().getIntakeLoadBeamBreakBroken()){
-                        if(!signalHumanPlayer){
-                            top.colorSolid(mode.color); top.ledMode = LEDMode.Solid;
-                        }
-                            bot.colorSolid(mode.color); bot.ledMode = LEDMode.Solid;
-                        if(SubsystemCatzShooter.getInstance().getShooterServoInPos() && SubsystemCatzTurret.getInstance().getTurretInPos() && SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()){
+                        //note is currently in the intake
+                        mid.colorSolid(Color.kOrange); mid.ledMode = LEDMode.Solid;
+                        bot.colorSolid(mode.color); bot.ledMode = LEDMode.Solid;
+
+
+                    } else if(SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()) {
+                        //note is currently in the shooter
+
+                        if(SubsystemCatzShooter.getInstance().getShooterServoInPos() && 
+                           SubsystemCatzTurret.getInstance().getTurretInPos()){
+                            //autoaim is in position
                             mid.colorSolid(Color.kOrange); mid.ledMode = LEDMode.Solid;
                         } else {
+                            //currently in autoaim moving to target
                             mid.colorSolid(Color.kOrange); mid.ledMode = LEDMode.Blink;
                         }
+
+                        bot.colorSolid(mode.color); bot.ledMode = LEDMode.Solid;
+
+                        
                     } else {
-                        if(!signalHumanPlayer){
-                            top.colorAlternating(mode.color, Color.kWhite); top.ledMode = LEDMode.Alternate;
-                        }
+                        //robot doesn't have any note inside
+                        
                         bot.colorAlternating(mode.color, Color.kWhite); bot.ledMode = LEDMode.Alternate;
                         mid.colorAlternating(mode.color, Color.kWhite); mid.ledMode = LEDMode.Alternate;
                     }

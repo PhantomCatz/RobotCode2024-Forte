@@ -217,7 +217,6 @@ public class SubsystemCatzElevator extends SubsystemBase {
       //----------------------------------------------------------------------------------
       currentElevatorDirection = ElevatorDirection.DOWN;
       intakeClearanceAngle = SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG;
-      // System.out.println(SubsystemCatzIntake.getInstance().getWristAngle());
       if(SubsystemCatzIntake.getInstance().getWristAngle() > SubsystemCatzIntake.INTAKE_GROUND_PICKUP_DEG) {
         
            //-------------------------------------------------------------------------------------

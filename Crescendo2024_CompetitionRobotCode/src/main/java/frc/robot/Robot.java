@@ -39,6 +39,8 @@ public class Robot extends LoggedRobot {
   public static SubsystemCatzLED lead = SubsystemCatzLED.getInstance();
   private RobotContainer m_robotContainer;
   public static int flipDirection = 1;
+
+  public static int latchedChecklistCounter = 0;
   
   @Override
   public void robotInit() {
@@ -66,9 +68,9 @@ public class Robot extends LoggedRobot {
       // Running on a real robot, log to a USB stick
       case REAL:
 
-        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
-        Logger.addDataReceiver(new NT4Publisher());
-      //  new PowerDistribution(1, ModuleType.kRev);
+        // Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
+        // Logger.addDataReceiver(new NT4Publisher());
+        // new PowerDistribution(1, ModuleType.kRev);
         break;
 
       // Running a physics simulator, log to local folder
@@ -93,26 +95,6 @@ public class Robot extends LoggedRobot {
 
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
-      lead.mid.colorSolid(Color.kGreen);
-      lead.top.colorSolid(Color.kGreen);
-      lead.bot.colorSolid(Color.kGreen);
-
-      lead.mid.ledMode = LEDMode.Solid;
-      lead.top.ledMode = LEDMode.Solid;
-      lead.bot.ledMode = LEDMode.Solid;
-      
-      
-    } else {
-      lead.mid.colorSolid(Color.kRed);
-      lead.top.colorSolid(Color.kRed);
-      lead.bot.colorSolid(Color.kRed);    
-
-      lead.mid.ledMode = LEDMode.Solid;
-      lead.top.ledMode = LEDMode.Solid;
-      lead.bot.ledMode = LEDMode.Solid;
-      
-    }
 
     // lead.mid.colorRainbow();
     // lead.mid.setMode(LEDMode.Solid);
@@ -130,7 +112,8 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     CatzAutonomous.getInstance().chooseAllianceColor();
 
-    if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Blue) {
+
+    if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Blue) { 
       lead.top.colorSolid(Color.kBlue); 
     }else{
       lead.top.colorSolid(Color.kRed); 
@@ -138,7 +121,10 @@ public class Robot extends LoggedRobot {
 
 
     //checklist done leds
-    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
+    if((SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || 
+        SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) &&
+        latchedChecklistCounter == 0) { 
+      latchedChecklistCounter = 1;
       lead.mid.colorSolid(Color.kGreen);
       lead.top.colorSolid(Color.kGreen);
       lead.bot.colorSolid(Color.kGreen);
@@ -158,7 +144,6 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     CatzAutonomous.getInstance().chooseAllianceColor();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    // FollowPathCommand.warmupCommand().schedule(); //TBD dont need this because we have our own path following cmd
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -202,7 +187,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-
   }
 
   @Override

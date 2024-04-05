@@ -224,18 +224,16 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean intakeState   = intake.getIntakeInPos(); 
     boolean turretState   = turret.getTurretInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-    System.out.println(intakeState +" "+ turretState + " "+  elevatorState);
+    //System.out.println(intakeState +" "+ turretState + " "+  elevatorState);
     return(intakeState && turretState && elevatorState);
   }
 
   @Override
   public void end(boolean interrupted) {
-    //System.out.println("MoveToPresetHandoffCMD: " + TraceID);
   }
 
   @Override
   public boolean isFinished() {
-   // System.out.println("MoveToPresetHandoffCMD: " + TraceID);
     return m_targetMechPoseEndReached;
   }
 }

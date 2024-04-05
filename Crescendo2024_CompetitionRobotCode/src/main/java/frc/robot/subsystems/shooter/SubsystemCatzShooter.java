@@ -111,7 +111,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private static final boolean BEAM_IS_BROKEN     = true;
   private static final boolean BEAM_IS_NOT_BROKEN = false;
 
-  private static final double HANDOFF_TRANSFER_CNT_SHIFT = 2.0;
+  private static final double HANDOFF_TRANSFER_CNT_SHIFT = 3.0;
 
   private boolean m_desiredBeamBreakState;
   private int     m_iterationCounterRampingTimeout = 0;
@@ -461,6 +461,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
   //-------------------------------------------------------------------------------------
 
   public void updateShooterServo(double position) {
+    
+    if(position == SERVO_IGNORE_POSITION) {
+      //change position back to the previous position
+      position = m_previousServoPosition;
+    }
+
     if(m_previousServoPosition == position) {
         //target position hasn't changed 
         //periodic loop will handle if servo is in position or not
@@ -470,7 +476,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
       m_previousServoPosition = m_targetServoPosition;
       m_targetServoPosition = position;
       currentServoState = ServoState.MOVE_SERVO_INIT; 
-      m_shooterServoInPos = false;
     }
   }
 
@@ -485,7 +490,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     return autonIsShooterRamped;
   }
 
-  public double getScuffedShootingSpeed(){
+  public double getNoteShootingSpeed(){
+    //72 rps *  0.2 m wheel circum  = 14.4 mps note speed
     return ((inputs.shooterVelocityRT + inputs.shooterVelocityLT)/2+2) * CatzConstants.ShooterConstants.WHEEL_CIRCUMFERENCE; //math is definitely correct (winkwink) TBD
   }
 

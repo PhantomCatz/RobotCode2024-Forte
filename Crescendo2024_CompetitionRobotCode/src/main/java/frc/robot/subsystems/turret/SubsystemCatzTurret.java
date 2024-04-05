@@ -4,10 +4,7 @@
 
 package frc.robot.subsystems.turret;
 
-import java.sql.Driver;
 import java.util.function.Supplier;
-
-import javax.swing.TransferHandler.TransferSupport;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -15,22 +12,16 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
-import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMathUtils;
 import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
-import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
@@ -94,8 +85,6 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private double m_closedLoopError;
   private double setPositionPower;
 
-  private boolean m_trackTarget = false;
-
   private double apriltagTrackingPower;
 
   private double offsetAprilTagX;   //TBD
@@ -106,9 +95,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
   private boolean m_turretInPos;
 
-  private XboxController driveRumbleController;   //TBD - How does this work with Shooter rumble?
-
-  private final SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();   //TBD - How does this work?
+  private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();   
 
 
   // -----------------------------------------------------------------------------------------------
@@ -300,9 +287,12 @@ public class SubsystemCatzTurret extends SubsystemBase {
         
         
         if(accountRobotVel){
-          roboDistanceFromSpeaker.div(Math.hypot(roboDistanceFromSpeaker.getX(), roboDistanceFromSpeaker.getY())); //direction
-          double shootingSpeedVelocity = SubsystemCatzShooter.getInstance().getScuffedShootingSpeed();
-          roboDistanceFromSpeaker.times(shootingSpeedVelocity);  //magnitude
+            //divide by distance to get direction unit vector
+          roboDistanceFromSpeaker.div(Math.hypot(roboDistanceFromSpeaker.getX(), roboDistanceFromSpeaker.getY())); 
+          double shootingSpeedVelocity = SubsystemCatzShooter.getInstance().getNoteShootingSpeed();
+            // reapply velocity from shooter to get magnitude
+          roboDistanceFromSpeaker.times(shootingSpeedVelocity);  
+            //subtract the shooter vector from the drivetrain vector to get the note shooting vector to point turret at
           roboDistanceFromSpeaker.minus(new Translation2d(drivetrain.getFieldRelativeSpeed().vx, 
                                                           drivetrain.getFieldRelativeSpeed().vy));
         }
@@ -320,6 +310,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //Logger.recordOutput("AutoAim/global turret target angle", angle);
   
         m_turretTargetDegree = Math.toDegrees(angle);    //Convert from radians to deg
+
+        //Roll back if angle is past the softlimit
         if(m_turretTargetDegree > 180) {
           m_turretTargetDegree = m_turretTargetDegree - 360;
         } else if(m_turretTargetDegree < -180) {
