@@ -48,7 +48,7 @@ public class TeleopDriveCmd extends Command {
     //obtain realtime joystick inputs with supplier methods
     xSpeed =       -m_supplierLeftJoyY.get() * Robot.flipDirection;
     ySpeed =       -m_supplierLeftJoyX.get() * Robot.flipDirection; 
-    turningSpeed =  m_supplierRightJoyX.get();
+    turningSpeed =  m_supplierRightJoyX.get() * Robot.flipDirection;
 
     // Apply deadbands to prevent modules from receiving unintentional pwr
     xSpeed =       Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed * DriveConstants.MAX_SPEED: 0.0;

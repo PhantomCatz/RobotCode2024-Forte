@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.RobotMode;
-import frc.robot.Utils.CatzMechanismPosition;
 import frc.robot.subsystems.climb.SubsystemCatzClimb;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
@@ -42,14 +41,14 @@ public class ClimbCmd extends Command {
   public void initialize() {
     climb.setClimbModeEnabled(true);
     turret.cmdTurretDegree(SubsystemCatzTurret.HOME_POSITION_DEG);
-    shooter.setServoManualHold(1.0);
+    shooter.setServoManualHold(SubsystemCatzShooter.SERVO_MAX_POS);
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
+    //Left Climb hook control
     if(Math.abs(m_supplierXboxLeftY.get()) > 0.1 ){
       if(CatzConstants.currentRobotMode == RobotMode.CLIMB) {
         climb.setLeftClimbPercentOutput(-Math.abs(m_supplierXboxLeftY.get()/2));
@@ -61,6 +60,7 @@ public class ClimbCmd extends Command {
       climb.setLeftClimbPercentOutput(0.0);
     }
 
+    //Right Climb Hook Control
     if(Math.abs(m_supplierXboxRightY.get()) > 0.1 ){
       if(CatzConstants.currentRobotMode == RobotMode.CLIMB) {
         climb.setRightClimbPercentOutput(Math.abs(m_supplierXboxRightY.get()/2));

@@ -5,10 +5,13 @@
 package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj.Timer;
-
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.Utils.CatzMechanismPosition;
+import frc.robot.subsystems.LEDs.LEDSection;
+import frc.robot.subsystems.LEDs.SubsystemCatzLED;
+import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
@@ -30,6 +33,8 @@ public class ScoreAmpCmd extends Command {
     runMechanismSetpoints(CatzMechanismConstants.SCORING_AMP_PRESET);
     intakeNoteTimer.reset();
     intake.setWasIntakeInAmpScoring(false);
+    SubsystemCatzLED.getInstance().mid.ledMode = LEDMode.Solid;
+    SubsystemCatzLED.getInstance().mid.colorSolid(Color.kAquamarine);
   } 
 
   // Called every time the scheduler runs while the command is scheduled.

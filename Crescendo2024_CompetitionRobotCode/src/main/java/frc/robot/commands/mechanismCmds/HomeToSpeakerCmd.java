@@ -107,8 +107,11 @@ public class HomeToSpeakerCmd extends Command {
 
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
-    //shooter.startShooterFlywheel();
-    
+
+    if(DriverStation.isTeleop()) {
+      shooter.startShooterFlywheel();
+    }
+
     if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
       
       //translation of the blue alliance speaker
@@ -121,6 +124,7 @@ public class HomeToSpeakerCmd extends Command {
     turret.setTurretInPose(false);
 
     Logger.recordOutput("Speaker", m_targetXY);
+
   }
 
   
@@ -133,30 +137,22 @@ public class HomeToSpeakerCmd extends Command {
   public void execute() {
   
       servoPos = shooterPivotTable.get(newDist);
+
+        //use pose to pose linear interpolation table for servo
+      newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
+      servoPos = shooterPivotTable.get(newDist);
+      shooter.updateShooterServo(servoPos);
       
-      if(SubsystemCatzVision.getInstance().getAprilTagID(2) == 7 || //TBD make the camera number constants make speaker tag id a variable
-         SubsystemCatzVision.getInstance().getAprilTagID(2) == 4) {
-        //use apriltag tracking for servos
 
-        shooter.aprilTagVerticalTargeting();
-      } else {
-
-          //use pose to pose linear interpolation table for servo
-        newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
-        servoPos = shooterPivotTable.get(newDist);
-        shooter.updateShooterServo(servoPos);
-      }
-
-      turret.aimAtGoal(m_targetXY, false);
+      turret.aimAtGoal(m_targetXY, true); //change back to false if auto aim doesn't work
       
   
       if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && shooter.getShooterServoInPos()) || timer.hasElapsed(AUTON_TIMEOUT_SEC)){
 
         if(DriverStation.isAutonomous()){
           shooter.setShooterState(ShooterState.SHOOTING);
-        } else {
-          SubsystemCatzLED.getInstance().mid.colorSolid(Color.kBlueViolet);// TBD finalize pattern
         }
+
       }  
   }
 
