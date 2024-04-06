@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -124,14 +125,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         Pathfinding.setPathfinder(new LocalADStarAK());
         
         //DEBUG
-        // PathPlannerLogging.setLogActivePathCallback(
-        //     (activepath)->{
-        //         Logger.recordOutput("Obometry/Trajectory", activepath.toArray(new Pose2d[activepath.size()]));
-        //     });
-        // PathPlannerLogging.setLogTargetPoseCallback(
-        //     (targetPose)-> {
-        //         Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
-        //     });
+        PathPlannerLogging.setLogActivePathCallback(
+            (activepath)->{
+                Logger.recordOutput("Obometry/Trajectory", activepath.toArray(new Pose2d[activepath.size()]));
+            });
+        PathPlannerLogging.setLogTargetPoseCallback(
+            (targetPose)-> {
+                Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
+            });
 
         gyroIO.resetNavXIO(0);  //TBD if red alliance how does the gryo get reset
         
@@ -184,10 +185,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             }else if(visionOdometry.get(i).getAvgArea() >= 0.12){ 
                 //if vision takes up less than 12% of the frame
                 xyStdDev = 10; 
-            }else{
-                
+            }else if(visionOdometry.get(i).getAvgArea() <= 0.05){
+
                 //Do not trust vision inputs
-                xyStdDev = 40; 
+                xyStdDev = 100; 
+            }
+
+            if(DriverStation.isAutonomous()){
+                xyStdDev *= 2.5;
             }
 
             m_poseEstimator.setVisionMeasurementStdDevs(

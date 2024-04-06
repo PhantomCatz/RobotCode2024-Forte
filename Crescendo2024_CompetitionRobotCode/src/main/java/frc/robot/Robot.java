@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.Locale.Category;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -19,6 +21,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -67,7 +70,6 @@ public class Robot extends LoggedRobot {
     switch (CatzConstants.currentMode) {
       // Running on a real robot, log to a USB stick
       case REAL:
-
         // Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
         // Logger.addDataReceiver(new NT4Publisher());
         // new PowerDistribution(1, ModuleType.kRev);
@@ -108,31 +110,67 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {}
 
+  private AllianceColor prevAllianceColor = null;
+  private boolean allianceColorChanged = false;
+  private double allianceColorChangedTime = 0.0;
+  private final double WAIT_UNTIL_RAINBOW_SEC = 3.0;
+
   @Override
   public void disabledPeriodic() {
     CatzAutonomous.getInstance().chooseAllianceColor();
 
+    // if(prevAllianceColor != CatzAutonomous.getInstance().getAllianceColor()){
+    //   allianceColorChanged = true;
+    //   allianceColorChangedTime = Timer.getFPGATimestamp();
+    // }
+
+    // if(allianceColorChanged && Timer.getFPGATimestamp() < allianceColorChangedTime+WAIT_UNTIL_RAINBOW_SEC){
+    //   if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Blue) { 
+    //     lead.mid.colorSolid(Color.kBlue); 
+    //     lead.bot.colorSolid(Color.kBlue); 
+    //   }else{
+    //     lead.mid.colorSolid(Color.kRed); 
+    //     lead.bot.colorSolid(Color.kRed); 
+    //   }
+    //     lead.mid.ledMode = LEDMode.Solid;
+    //     lead.bot.ledMode = LEDMode.Solid;
+    // }else{
+    //   allianceColorChanged = false;
+    // }
+
+    // prevAllianceColor = CatzAutonomous.getInstance().getAllianceColor();
+    
+    // if(!allianceColorChanged){
+    //   lead.mid.colorRainbow();
+    //   lead.bot.colorRainbow();
+
+    //   lead.mid.ledMode = LEDMode.Flow;
+    //   lead.bot.ledMode = LEDMode.Flow;
+    // }
 
     if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Blue) { 
-      lead.top.colorSolid(Color.kBlue); 
-    }else{
-      lead.top.colorSolid(Color.kRed); 
-    }
-
+        lead.mid.colorSolid(Color.kBlue); 
+        lead.bot.colorSolid(Color.kBlue); 
+      }else{
+        lead.mid.colorSolid(Color.kRed); 
+        lead.bot.colorSolid(Color.kRed); 
+      }
+        lead.mid.ledMode = LEDMode.Solid;
+        lead.bot.ledMode = LEDMode.Solid;
 
     //checklist done leds
-    if((SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || 
-        SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) &&
-        latchedChecklistCounter == 0) { 
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || 
+        SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
       latchedChecklistCounter = 1;
-      lead.mid.colorSolid(Color.kGreen);
-      lead.top.colorSolid(Color.kGreen);
-      lead.bot.colorSolid(Color.kGreen);
-      
+      lead.top.colorSolid(Color.kGreen); 
+      lead.top.ledMode = LEDMode.Blink;
+
+    } else if(latchedChecklistCounter == 1) {
+      lead.top.colorSolid(Color.kGreen); 
+      lead.top.ledMode = LEDMode.Solid;
     } else {
-      lead.mid.colorSolid(Color.kRed);
-      lead.top.colorSolid(Color.kRed);
-      lead.bot.colorSolid(Color.kRed);    
+      lead.top.colorSolid(Color.kRed); 
+      lead.top.ledMode = LEDMode.Solid;
     }
 
   }

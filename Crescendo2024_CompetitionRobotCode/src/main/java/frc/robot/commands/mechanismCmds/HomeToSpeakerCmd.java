@@ -80,7 +80,7 @@ public class HomeToSpeakerCmd extends Command {
   private double servoPos;
 
 
-  private final double AUTON_TIMEOUT_SEC = 2.0;
+  private final double AUTON_TIMEOUT_SEC = 4.0;
   //------------------------------------------------------------------------------------------------
   //
   //  
@@ -109,7 +109,7 @@ public class HomeToSpeakerCmd extends Command {
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
 
     if(DriverStation.isTeleop()) {
-      shooter.startShooterFlywheel();
+      shooter.startShooterFlywheel(); 
     }
 
     if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
@@ -144,7 +144,7 @@ public class HomeToSpeakerCmd extends Command {
       shooter.updateShooterServo(servoPos);
       
 
-      turret.aimAtGoal(m_targetXY, true); //change back to false if auto aim doesn't work
+      turret.aimAtGoal(m_targetXY, false); //change back to false if auto aim doesn't work
       
   
       if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && shooter.getShooterServoInPos()) || timer.hasElapsed(AUTON_TIMEOUT_SEC)){

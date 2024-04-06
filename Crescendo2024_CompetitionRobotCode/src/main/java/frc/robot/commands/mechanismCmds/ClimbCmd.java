@@ -42,6 +42,7 @@ public class ClimbCmd extends Command {
     climb.setClimbModeEnabled(true);
     turret.cmdTurretDegree(SubsystemCatzTurret.HOME_POSITION_DEG);
     shooter.setServoManualHold(SubsystemCatzShooter.SERVO_MAX_POS);
+    intake.updateAutoTargetPositionIntake(SubsystemCatzIntake.INTAKE_AMP_SCORE_DN_DEG);
 
   }
 
@@ -63,9 +64,9 @@ public class ClimbCmd extends Command {
     //Right Climb Hook Control
     if(Math.abs(m_supplierXboxRightY.get()) > 0.1 ){
       if(CatzConstants.currentRobotMode == RobotMode.CLIMB) {
-        climb.setRightClimbPercentOutput(Math.abs(m_supplierXboxRightY.get()/2));
+        climb.setRightClimbPercentOutput(-Math.abs(m_supplierXboxRightY.get()/2));
       } else {
-        climb.setRightClimbPercentOutput(m_supplierXboxRightY.get()/2);
+        climb.setRightClimbPercentOutput(-m_supplierXboxRightY.get()/2);
       }
     }
     else{

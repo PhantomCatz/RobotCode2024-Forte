@@ -71,13 +71,9 @@ public class VisionIOLimeLight implements VisionIO {
         double latency = visionPoseInfo[6] / 1000; //data[6] or latency is recorded in ms; divide by 1000 to get s
         inputs.latency = latency;
         //shoves in new pose2d from pose3d object estimate depending on if new apriltag detected
-
-        if(name.equals("limelight-ramen")){
             
-            return;
-        }
         
-        if (inputs.hasTarget) {
+        if (inputs.hasTarget && !name.equals("limelight-ramen")) {
             // sets input timestamp
             inputs.isNewVisionPose = true;
             
