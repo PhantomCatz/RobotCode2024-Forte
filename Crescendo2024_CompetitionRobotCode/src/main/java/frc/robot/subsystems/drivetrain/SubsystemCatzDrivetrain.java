@@ -199,7 +199,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 VecBuilder.fill(xyStdDev, xyStdDev,99999999.0)
             ); //gyro can be purely trusted for pose calculations so always trust it more than vision
             
-            if(visionOdometry.get(i).hasTarget()){ //-999.0 indicates that limelight had bad data or no target
+            if(visionOdometry.get(i).hasTarget() && DriverStation.isTeleop()){ //-999.0 indicates that limelight had bad data or no target
                 m_poseEstimator.addVisionMeasurement(
                     new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
                     visionOdometry.get(i).getTimestamp()
@@ -228,11 +228,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         //correct dynamics with wpilib internal "2nd order kinematics"
         ChassisSpeeds descreteSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
-
-        if(isAutonSlowedDown){
-
-            descreteSpeeds = descreteSpeeds.times(AUTON_SPEED_SLOWDOWN_FACTOR);
-        }
 
         // Convert chassis speeds to individual module states and set module states
         SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(descreteSpeeds);
@@ -292,13 +287,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     }
 
     // Create a command to stop driving
-    public Command stopDriving() {
-        return Commands.runOnce(() -> {
-            for (CatzSwerveModule module : m_swerveModules) {
-                module.stopDriving();
-                module.setSteerPower(0.0);
-            }
-        }, this);
+    public void stopDriving() {
+        for (CatzSwerveModule module : m_swerveModules) {
+            module.stopDriving();
+            module.setSteerPower(0.0);
+        }
     }
 
     //command to cancel running auto trajectories

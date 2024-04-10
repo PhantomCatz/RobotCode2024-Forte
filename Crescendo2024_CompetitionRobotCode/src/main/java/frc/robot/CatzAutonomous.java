@@ -192,6 +192,10 @@ public class CatzAutonomous {
     private PathPlannerPath US_W1_3_2 = PathPlannerPath.fromPathFile("ver2 US_W1-3_2");
     private PathPlannerPath US_W1_3_3 = PathPlannerPath.fromPathFile("ver2 US_W1-3_3");
 
+    private PathPlannerPath no_servo_US_W1_3_2 = PathPlannerPath.fromPathFile("no servo US_W1-3_2");
+    private PathPlannerPath no_servo_US_W1_3_3 = PathPlannerPath.fromPathFile("no servo US_W1-3_3");
+    private PathPlannerPath no_servo_US_W1_3_4 = PathPlannerPath.fromPathFile("no servo US_W1-3_4");
+
     private Command US_W13() {
         return new SequentialCommandGroup(
             setAutonStartPose(US_W1_3_1),

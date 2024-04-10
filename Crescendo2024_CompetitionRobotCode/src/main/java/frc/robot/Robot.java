@@ -71,7 +71,8 @@ public class Robot extends LoggedRobot {
       // Running on a real robot, log to a USB stick
       case REAL:
         // Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
-        // Logger.addDataReceiver(new NT4Publisher());
+        // Logger.addDataReceiver(new NT4Publisher  ());
+        
         // new PowerDistribution(1, ModuleType.kRev);
         break;
 
@@ -169,7 +170,7 @@ public class Robot extends LoggedRobot {
       lead.top.colorSolid(Color.kGreen); 
       lead.top.ledMode = LEDMode.Solid;
     } else {
-      lead.top.colorSolid(Color.kRed); 
+      lead.top.colorSolid(Color.kOrangeRed); 
       lead.top.ledMode = LEDMode.Solid;
     }
 

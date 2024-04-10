@@ -37,23 +37,23 @@ public class HomeToHoardShotCmd extends Command {
   public void initialize() {
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
-    
-    if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
+    turret.updateTargetPositionTurret(CatzMechanismConstants.STOW_PRESET);
+    // if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
       
-      //translation of the blue alliance speaker
-      m_targetXY = new Translation2d(0.0, FieldConstants.HOARD_LOCATION_Y);
+    //   //translation of the blue alliance speaker
+    //   m_targetXY = new Translation2d(0.0, FieldConstants.HOARD_LOCATION_Y);
 
-    } else {
-      //translation of the Red alliance speaker
-      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.HOARD_LOCATION_Y);     
-    }
+    // } else {
+    //   //translation of the Red alliance speaker
+    //   m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.HOARD_LOCATION_Y);     
+    // }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     
-    turret.aimAtGoal(m_targetXY, false);
+    //turret.aimAtGoal(m_targetXY, false);
 
   }
 
