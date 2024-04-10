@@ -96,7 +96,7 @@ public class SubsystemCatzLED extends SubsystemBase {
                     } else if(SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()) {
                         //note is currently in the shooter
 
-                        if(SubsystemCatzShooter.getInstance().getShooterServoInPos() && 
+                        if(//SubsystemCatzShooter.getInstance().getShooterServoInPos() && 
                            SubsystemCatzTurret.getInstance().getTurretInPos()){
                             //autoaim is in position
                             mid.colorSolid(Color.kOrangeRed); mid.ledMode = LEDMode.Blink;

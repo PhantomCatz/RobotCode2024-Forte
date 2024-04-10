@@ -218,9 +218,9 @@ public class MoveToPresetHandoffCmd extends Command {
     intake  .updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator  (pose.getElevatorTargetRev());
     turret  .updateTargetPositionTurret    (pose);
-    if(shooter.getShooterServoTargetPosition() > 0.5) {
-      shooter.updateShooterServo(0.5  );
-    }
+    // if(shooter.getShooterServoTargetPosition() > 0.5) {
+    //   shooter.updateShooterServo(0.5  );
+    // }
   }
 
   private boolean areMechanismsInPosition() {

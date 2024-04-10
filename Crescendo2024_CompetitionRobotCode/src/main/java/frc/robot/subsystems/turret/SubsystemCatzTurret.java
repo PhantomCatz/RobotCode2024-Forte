@@ -165,7 +165,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     currentTurretDegree = -inputs.turretEncValue; 
     
     //set turret constraint if shooter is greater than threshold
-    if(SubsystemCatzShooter.getInstance().getServoCommandedPosition() > SERVO_TURRET_CONSTRAINT) {
+    // if(SubsystemCatzShooter.getInstance().getServoCommandedPosition() > SERVO_TURRET_CONSTRAINT) {
 
       if(m_turretTargetDegree > TURRET_MAX_SERVO_LIMIT_DEG) {
 
@@ -174,7 +174,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
         m_turretTargetDegree = TURRET_MIN_SERVO_LIMIT_DEG;
       }
-    } 
+    // } 
 
     //obtain calculation values
     setPositionPower  =  -m_setPositionPID.calculate(currentTurretDegree, m_turretTargetDegree);

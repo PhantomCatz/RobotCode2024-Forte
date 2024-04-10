@@ -161,7 +161,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
                System.out.println("Current Mode Unconfigured");
       break;
     }
-    updateShooterServo(SERVO_STARTING_CONFIG_POS);
+    // updateShooterServo(SERVO_STARTING_CONFIG_POS);
   }
   
   
@@ -367,13 +367,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
       //-------------------------------------------------------------------------------------------
       
       //min max servo value clamping
-      if(m_targetServoPosition > SERVO_MAX_POS) {
+      // if(m_targetServoPosition > SERVO_MAX_POS) {
 
-        m_targetServoPosition = SERVO_MAX_POS;
-      } else if(m_targetServoPosition < SERVO_MIN_POS) {
+      //   m_targetServoPosition = SERVO_MAX_POS;
+      // } else if(m_targetServoPosition < SERVO_MIN_POS) {
 
-        m_targetServoPosition = SERVO_MIN_POS;
-      }
+      //   m_targetServoPosition = SERVO_MIN_POS;
+      // }
 
       //turret clamping
       if(Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle()) > SubsystemCatzTurret.TURRET_MAX_SERVO_LIMIT_DEG) {
@@ -385,7 +385,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
       } 
     
       //cmd final output
-      io.setServoPosition(m_targetServoPosition); //TBD change back to 10/
+      // io.setServoPosition(m_targetServoPosition); //TBD change back to 10/
 
       //-------------------------------------------------------------------------------------------
       //  Servos are commanded from 0.0 to 1.0 where 0.0 represents 0% of max extension and 1.0
@@ -393,52 +393,52 @@ public class SubsystemCatzShooter extends SubsystemBase {
       //  max extension.  Convert % of max extension to a distance in mm and use that to calculate
       //  timeout value based on servo velocity in mm/sec
       //-------------------------------------------------------------------------------------------    
-      switch(currentServoState) {
-        case IDLE:
+    //   switch(currentServoState) {
+    //     case IDLE:
 
-        break;
+    //     break;
 
-        case MOVE_SERVO_INIT:
+    //     case MOVE_SERVO_INIT:
 
-          m_servoPosError = Math.abs(m_previousServoPosition - m_targetServoPosition);
+    //       m_servoPosError = Math.abs(m_previousServoPosition - m_targetServoPosition);
 
-          if(Math.abs(m_servoPosError) > 0.0) {
-            //init
-            //-------------------------------------------------------------------------------------------
-            //  If a new servo position is being commanded, then clear servo in position flag and restart
-            //  timer.  Note that we can't readback position of the servos so we are going to assume 
-            //  servo is in position based on time (e.g. velocity * time = disatnce)
-            //-------------------------------------------------------------------------------------------
-            servoTimer.restart();
-            m_shooterServoInPos = false;
+    //       if(Math.abs(m_servoPosError) > 0.0) {
+    //         //init
+    //         //-------------------------------------------------------------------------------------------
+    //         //  If a new servo position is being commanded, then clear servo in position flag and restart
+    //         //  timer.  Note that we can't readback position of the servos so we are going to assume 
+    //         //  servo is in position based on time (e.g. velocity * time = disatnce)
+    //         //-------------------------------------------------------------------------------------------
+    //         servoTimer.restart();
+    //         m_shooterServoInPos = false;
 
-            servoDistToMoveMm    = m_servoPosError * SERVO_MAX_EXTENSTION_MM; 
-            servoPositionTimeout = servoDistToMoveMm / SERVO_VELOCITY_MM_PER_SEC ;
+    //         servoDistToMoveMm    = m_servoPosError * SERVO_MAX_EXTENSTION_MM; 
+    //         servoPositionTimeout = servoDistToMoveMm / SERVO_VELOCITY_MM_PER_SEC ;
 
-            m_previousServoPosition = m_targetServoPosition;
-            currentServoState = ServoState.WAIT_FOR_SERVO_IN_POSITION;
-          } else {
-            //not commanding new position
-            m_shooterServoInPos = true;
-            currentServoState = ServoState.IDLE;
-          }
-        break;
+    //         m_previousServoPosition = m_targetServoPosition;
+    //         currentServoState = ServoState.WAIT_FOR_SERVO_IN_POSITION;
+    //       } else {
+    //         //not commanding new position
+    //         m_shooterServoInPos = true;
+    //         currentServoState = ServoState.IDLE;
+    //       }
+    //     break;
           
-        case WAIT_FOR_SERVO_IN_POSITION:
+    //     case WAIT_FOR_SERVO_IN_POSITION:
 
-          if(servoTimer.hasElapsed(servoPositionTimeout)) {
-            //shooter servos are in position due to timeout
-            m_shooterServoInPos = true;
-            currentServoState = ServoState.IDLE;
-          }
-        break;
-      }
-    } // End of Enabled loop
+    //       if(servoTimer.hasElapsed(servoPositionTimeout)) {
+    //         //shooter servos are in position due to timeout
+    //         m_shooterServoInPos = true;
+    //         currentServoState = ServoState.IDLE;
+    //       }
+    //     break;
+    //   }
+    // } // End of Enabled loop
 
-    importantShooterLogs();
+    // importantShooterLogs();
 
   } //end of shooter periodic
-
+  }
   //-------------------------------------------------------------------------------------
   // Debug Logger For Shooter 
   //-------------------------------------------------------------------------------------

@@ -136,21 +136,19 @@ public class HomeToSpeakerCmd extends Command {
   @Override 
   public void execute() {
   
-      servoPos = shooterPivotTable.get(newDist);
+      // servoPos = shooterPivotTable.get(newDist);
 
         //use pose to pose linear interpolation table for servo
-      newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
-      servoPos = shooterPivotTable.get(newDist);
+      // newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
+      // servoPos = shooterPivotTable.get(newDist);
 
-    
+      // shooter.updateShooterServo(servoPos);
 
-      shooter.updateShooterServo(servoPos);
-      
 
       turret.aimAtGoal(m_targetXY, false); //change back to false if auto aim doesn't work
       
   
-      if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(1.0)) || timer.hasElapsed(AUTON_TIMEOUT_SEC)){
+      if((turret.getTurretInPos() && shooter.isAutonShooterRamped()) || timer.hasElapsed(AUTON_TIMEOUT_SEC)){
 
         if(DriverStation.isAutonomous()){
           shooter.setShooterState(ShooterState.SHOOTING);
