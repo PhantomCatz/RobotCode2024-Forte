@@ -218,18 +218,23 @@ public class MoveToPresetHandoffCmd extends Command {
     intake  .updateAutoTargetPositionIntake(pose.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator  (pose.getElevatorTargetRev());
     turret  .updateTargetPositionTurret    (pose);
+    if(shooter.getShooterServoTargetPosition() > 0.5) {
+      shooter.updateShooterServo(0.5  );
+    }
   }
 
   private boolean areMechanismsInPosition() {
     boolean intakeState   = intake.getIntakeInPos(); 
     boolean turretState   = turret.getTurretInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-    //System.out.println(intakeState +" "+ turretState + " "+  elevatorState);
-    return(intakeState && turretState && elevatorState);
+   // boolean shooterServoState = shooter.getShooterServoInPos();
+    // System.out.println(intakeState +" "+ turretState + " "+  elevatorState);
+    return(intakeState && turretState && elevatorState);// shooterServoState);
   }
 
   @Override
   public void end(boolean interrupted) {
+
   }
 
   @Override

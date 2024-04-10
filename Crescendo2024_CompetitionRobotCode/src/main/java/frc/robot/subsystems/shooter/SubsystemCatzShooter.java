@@ -19,6 +19,7 @@ import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.OIConstants;
 import frc.robot.CatzConstants.RobotMode;
 import frc.robot.Utils.LoggedTunableNumber;
+import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 import frc.robot.subsystems.turret.SubsystemCatzTurret.TurretState;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
@@ -287,6 +288,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
           case START_SHOOTER_FLYWHEEL:
             setFlyWheelVelocities();
             currentShooterState = ShooterState.WAIT_FOR_MOTORS_TO_REV_UP;
+            io.loadDisabled();
+
           break;
 
           case WAIT_FOR_MOTORS_TO_REV_UP:
@@ -319,6 +322,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
           case SHOOTING:
             io.feedShooter();
+            SubsystemCatzIntake.getInstance().setRollersOutakeHandoff();
             
             xboxAuxRumble.setRumble(RumbleType.kBothRumble, 0);
 
@@ -347,6 +351,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
               SubsystemCatzTurret.getInstance().setTurretState(TurretState.AUTO);
               SubsystemCatzTurret.getInstance().setTurretTargetDegree(0);
               m_iterationCounterShooting = 0;
+              SubsystemCatzIntake.getInstance().setRollersOff();
             }
             m_iterationCounterShooting++;
           break;
@@ -422,6 +427,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
         case WAIT_FOR_SERVO_IN_POSITION:
 
           if(servoTimer.hasElapsed(servoPositionTimeout)) {
+            //shooter servos are in position due to timeout
             m_shooterServoInPos = true;
             currentServoState = ServoState.IDLE;
           }
@@ -533,6 +539,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
   }
   public ShooterNoteState getShooterNoteState() {
     return currentNoteState;
+  }
+  
+  public double getShooterServoTargetPosition() {
+    return m_targetServoPosition;
   }
 
   public boolean shooterLoadBeamBrkBroken() {

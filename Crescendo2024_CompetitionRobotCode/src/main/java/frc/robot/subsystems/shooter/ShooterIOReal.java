@@ -43,7 +43,7 @@ public class ShooterIOReal implements ShooterIO {
 
     //Load motor speeds 
     private final double LOAD_MOTOR_SHOOTING_SPEED   = 1.0;
-    private final double LOAD_MOTOR_LOADING_SPEED    = 0.4;//0.3;//0.6; //was 0.4
+    private final double LOAD_MOTOR_LOADING_SPEED    = 0.6;//0.3;//0.6; //was 0.4 LISA
     private final double LOAD_MOTOR_BACKWARD_SPEED   = 0.8;
     private final double LOAD_MOTOR_ADJUST_SPEED     = 0.04;
     private final double LOAD_MOTOR_TRANSFER_SPEED   = 0.4;

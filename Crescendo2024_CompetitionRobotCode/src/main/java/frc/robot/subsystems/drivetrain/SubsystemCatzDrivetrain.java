@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -124,14 +125,14 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
         Pathfinding.setPathfinder(new LocalADStarAK());
         
         //DEBUG
-        // PathPlannerLogging.setLogActivePathCallback(
-        //     (activepath)->{
-        //         Logger.recordOutput("Obometry/Trajectory", activepath.toArray(new Pose2d[activepath.size()]));
-        //     });
-        // PathPlannerLogging.setLogTargetPoseCallback(
-        //     (targetPose)-> {
-        //         Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
-        //     });
+        PathPlannerLogging.setLogActivePathCallback(
+            (activepath)->{
+                Logger.recordOutput("Obometry/Trajectory", activepath.toArray(new Pose2d[activepath.size()]));
+            });
+        PathPlannerLogging.setLogTargetPoseCallback(
+            (targetPose)-> {
+                Logger.recordOutput("Obometry/TrajectorySetpoint", targetPose);
+            });
 
         gyroIO.resetNavXIO(0);  //TBD if red alliance how does the gryo get reset
         
@@ -184,17 +185,21 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             }else if(visionOdometry.get(i).getAvgArea() >= 0.12){ 
                 //if vision takes up less than 12% of the frame
                 xyStdDev = 10; 
-            }else{
-                
+            }else if(visionOdometry.get(i).getAvgArea() <= 0.05){
+
                 //Do not trust vision inputs
-                xyStdDev = 40; 
+                xyStdDev = 100; 
+            }
+
+            if(DriverStation.isAutonomous()){
+                xyStdDev *= 2.5;
             }
 
             m_poseEstimator.setVisionMeasurementStdDevs(
                 VecBuilder.fill(xyStdDev, xyStdDev,99999999.0)
             ); //gyro can be purely trusted for pose calculations so always trust it more than vision
             
-            if(visionOdometry.get(i).hasTarget()){ //-999.0 indicates that limelight had bad data or no target
+            if(visionOdometry.get(i).hasTarget() && DriverStation.isTeleop()){ //-999.0 indicates that limelight had bad data or no target
                 m_poseEstimator.addVisionMeasurement(
                     new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
                     visionOdometry.get(i).getTimestamp()
@@ -223,11 +228,6 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
 
         //correct dynamics with wpilib internal "2nd order kinematics"
         ChassisSpeeds descreteSpeeds = ChassisSpeeds.discretize(chassisSpeeds, 0.02);
-
-        if(isAutonSlowedDown){
-
-            descreteSpeeds = descreteSpeeds.times(AUTON_SPEED_SLOWDOWN_FACTOR);
-        }
 
         // Convert chassis speeds to individual module states and set module states
         SwerveModuleState[] moduleStates = DriveConstants.swerveDriveKinematics.toSwerveModuleStates(descreteSpeeds);
@@ -287,13 +287,11 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
     }
 
     // Create a command to stop driving
-    public Command stopDriving() {
-        return Commands.runOnce(() -> {
-            for (CatzSwerveModule module : m_swerveModules) {
-                module.stopDriving();
-                module.setSteerPower(0.0);
-            }
-        }, this);
+    public void stopDriving() {
+        for (CatzSwerveModule module : m_swerveModules) {
+            module.stopDriving();
+            module.setSteerPower(0.0);
+        }
     }
 
     //command to cancel running auto trajectories

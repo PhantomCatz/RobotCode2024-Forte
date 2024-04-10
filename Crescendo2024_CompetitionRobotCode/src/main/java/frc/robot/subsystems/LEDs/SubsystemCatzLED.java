@@ -82,15 +82,15 @@ public class SubsystemCatzLED extends SubsystemBase {
 
                     //driver pressed signal human player logic
                     if(!signalHumanPlayer){
-                        top.colorAlternating(mode.color, Color.kWhite); top.ledMode = LEDMode.Alternate;
+                        top.colorAlternating(mode.color, Color.kWhite); top.ledMode = LEDMode.Solid;
                     } else {
-                        top.colorSolid(mode.color); top.ledMode = LEDMode.Solid;
+                        top.colorSolid(mode.color); top.ledMode = LEDMode.Blink;
                     }
 
                     if(SubsystemCatzIntake.getInstance().getIntakeLoadBeamBreakBroken()){
                         //note is currently in the intake
-                        mid.colorSolid(Color.kOrange); mid.ledMode = LEDMode.Solid;
-                        bot.colorSolid(mode.color); bot.ledMode = LEDMode.Solid;
+                        mid.colorSolid(Color.kPink); mid.ledMode = LEDMode.Blink;
+                        bot.colorSolid(mode.color); bot.ledMode = LEDMode.Blink;
 
 
                     } else if(SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()) {
@@ -99,20 +99,19 @@ public class SubsystemCatzLED extends SubsystemBase {
                         if(SubsystemCatzShooter.getInstance().getShooterServoInPos() && 
                            SubsystemCatzTurret.getInstance().getTurretInPos()){
                             //autoaim is in position
-                            mid.colorSolid(Color.kOrange); mid.ledMode = LEDMode.Solid;
+                            mid.colorSolid(Color.kOrangeRed); mid.ledMode = LEDMode.Blink;
                         } else {
                             //currently in autoaim moving to target
-                            mid.colorSolid(Color.kOrange); mid.ledMode = LEDMode.Blink;
+                            mid.colorSolid(Color.kOrangeRed); mid.ledMode = LEDMode.Solid;
                         }
 
-                        bot.colorSolid(mode.color); bot.ledMode = LEDMode.Solid;
-
+                        bot.colorSolid(mode.color); bot.ledMode = LEDMode.Blink;
                         
                     } else {
                         //robot doesn't have any note inside
                         
-                        bot.colorAlternating(mode.color, Color.kWhite); bot.ledMode = LEDMode.Alternate;
-                        mid.colorAlternating(mode.color, Color.kWhite); mid.ledMode = LEDMode.Alternate;
+                        bot.colorSolid(mode.color); bot.ledMode = LEDMode.Solid;
+                        mid.colorSolid(mode.color); mid.ledMode = LEDMode.Solid;
                     }
                 }
             }

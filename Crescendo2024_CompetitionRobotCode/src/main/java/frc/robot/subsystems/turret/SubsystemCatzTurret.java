@@ -92,6 +92,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private PIDController m_setPositionPID;
   private PIDController m_trackingApriltagPID;
 
+  private TurretState m_prevTurretState;
+
 
   private boolean m_turretInPos;
 
@@ -158,7 +160,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public void periodic() {
   
     io.updateInputs(inputs);
-    Logger.processInputs("turret", inputs);
+    // Logger.processInputs("turret", inputs);
 
     currentTurretDegree = -inputs.turretEncValue; 
     
@@ -184,6 +186,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
       setTurretDisabled();
     } else {
 
+      // System.out.println(manualTurretPwr);
+      // System.out.println(m_currentTurretState);
       if(m_currentTurretState == TurretState.FULL_MANUAL) {
         //------------------------------------------------------------------------------------------
         //  Manual Mode - Use Operator input to set turret motor power % output
@@ -199,12 +203,20 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //------------------------------------------------------------------------------------------
         //  Auto Mode - Use PID to go to specified angle
         //------------------------------------------------------------------------------------------
+          manualTurretPwr = 0.0;
 
+        if(m_prevTurretState == TurretState.FULL_MANUAL){
+          io.turretSetPwr(0.0);
+        }
+        
+      
         if(SubsystemCatzIntake.getInstance().getWristAngle() < SubsystemCatzIntake.INTAKE_TURRET_CLEARANCE) {  
           //------------------------------------------------------------------------------------------    
           //  Intake angle is wihin valid range.
           //------------------------------------------------------------------------------------------
           io.turretSetPwr(setPositionPower);
+        }else{
+          io.turretSetPwr(0.0);
         }
    
       } else if (m_currentTurretState == TurretState.TRACKING_APRILTAG) {
@@ -213,6 +225,10 @@ public class SubsystemCatzTurret extends SubsystemBase {
         //  turret angle go to specified angle
         //  only track the shooterlimelight to the speaker apriltag  
         //------------------------------------------------------------------------------------------
+        manualTurretPwr = 0.0;
+        if(m_prevTurretState == TurretState.FULL_MANUAL){
+          io.turretSetPwr(0.0);
+        }
         if(SubsystemCatzVision.getInstance().getAprilTagID(2) == 7 ||
            SubsystemCatzVision.getInstance().getAprilTagID(2) == 4) {
           
@@ -221,8 +237,13 @@ public class SubsystemCatzTurret extends SubsystemBase {
           io.turretSetPwr(apriltagTrackingPower);
         }
       } 
+      else{
+        io.turretSetPwr(0.0);
+      }
 
     }
+
+    m_prevTurretState = m_currentTurretState;
 
 
     //In position check
@@ -251,7 +272,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
     // Logger.recordOutput("turret/currentTurretState", currentTurretState);
     //Logger.recordOutput("turret/closedlooperror",      m_closedLoopError);
     // Logger.recordOutput("turret/setpositionpwr", setPositionPower);
-    Logger.recordOutput("turret/m_TurretinPos", m_turretInPos);
+    // Logger.recordOutput("turret/m_TurretinPos", m_turretInPos);
   }   //End of periodic()
 
 
@@ -265,7 +286,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //  We are aiming using April Tags - Check if we are looking at he April Tag on the Speaker.
       //  If we are then we will TBD.  Otherwise we will TBD
       //--------------------------------------------------------------------------------------------
-      // System.out.println(SubsystemCatzVision.getInstance().getAprilTagID(2));
+      System.out.println(SubsystemCatzVision.getInstance().getAprilTagID(2));
       if(SubsystemCatzVision.getInstance().getAprilTagID(2) == 7 ||
          SubsystemCatzVision.getInstance().getAprilTagID(2) == 4){
           

@@ -7,16 +7,21 @@ public class LEDSection {
     public enum LEDMode {
         Solid,
         Blink,
+        BlinkWithAlternate,
         Alternate,
+        Flow;
     }
 
 
     private final int LED_COUNT;
     private final double BLINK_FREQ = 2;
+    private final double FLOW_FREQ  = 0.5;
 
     private Color[] baseColors;
     private Timer timer;
     public LEDMode ledMode = LEDMode.Solid;
+
+    private boolean alreadyRainbow = false;
 
     public LEDSection(int ledCount) {
         timer = new Timer();
@@ -30,9 +35,23 @@ public class LEDSection {
         return (int)(timer.get() * BLINK_FREQ)%2 == 0;
     }
 
+    private boolean canFlow(){
+        return (int)(timer.get() * FLOW_FREQ)%2 == 0;
+    }
+
     public void colorSolid(Color color) {
         for (int i = 0; i < LED_COUNT; i++) {
             baseColors[i] = color;
+        }
+        alreadyRainbow = false;
+    }
+
+    public void colorRainbow(){
+        if(!alreadyRainbow){
+            for(int i = 0; i < LED_COUNT; i++){
+                baseColors[i] = Color.fromHSV((int)((double)i/LED_COUNT * 180), 255, 255);
+            }
+            alreadyRainbow = true;
         }
     }
 
@@ -44,27 +63,49 @@ public class LEDSection {
                 baseColors[i] = color;
             }
         }
+        alreadyRainbow = false;
     }
 
     public Color[] getColors() {
         Color[] currentColors = new Color[LED_COUNT];
+        boolean blink = canBlink();
+        boolean flow = canFlow();
         for(int i=0; i<LED_COUNT; i++){
-            if(ledMode == LEDMode.Solid){
-                currentColors[i] = baseColors[i];
-            }
-            if(ledMode == LEDMode.Blink){
-                if(canBlink()){
-                    currentColors[i] = Color.kBlack;
-                } else {
+            switch(ledMode){
+                case Solid:
                     currentColors[i] = baseColors[i];
-                }
-            }
-            if(ledMode == LEDMode.Alternate){
-                if(canBlink() && i%2 == 0){
-                    currentColors[i] = Color.kBlack;
-                } else {
-                    currentColors[i] = baseColors[i];
-                }
+                break;
+
+                case Alternate:
+                    if(blink && i%2 == 0){
+                        currentColors[i] = Color.kBlack;
+                    } else {
+                        currentColors[i] = baseColors[i];
+                    }
+                break;
+
+                case Blink:
+                    if(blink){
+                        currentColors[i] = Color.kBlack;
+                    } else {
+                        currentColors[i] = baseColors[i];
+                    }
+                break;
+
+                case BlinkWithAlternate:
+                    if(blink){
+                    currentColors[i] = baseColors[i+1];
+                    } else {
+                        currentColors[i] = baseColors[i];
+                    }
+                break;
+
+                case Flow:
+                    if(flow){
+                        currentColors[i] = baseColors[(i+1)%LED_COUNT];
+                    }
+                    
+                break;
             }
         }
         return currentColors;

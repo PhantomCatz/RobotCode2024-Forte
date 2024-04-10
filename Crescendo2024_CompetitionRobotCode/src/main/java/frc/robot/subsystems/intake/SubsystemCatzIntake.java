@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class SubsystemCatzIntake extends SubsystemBase {
@@ -25,15 +26,16 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private static SubsystemCatzIntake instance = new SubsystemCatzIntake();
   /************************************************************************************************************************
    * 
+   * 
    * rollers
    *
    ************************************************************************************************************************/
   private final double ROLLERS_MTR_PWR_IN_GROUND = 0.8; //TBD - need to handle carpet and non-carpet value or code
                                                        // issue
   private final double ROLLERS_MTR_PWR_IN_SOURCE = 0.25;
-  private final double ROLLERS_MTR_PWR_OUT_EJECT = -1.0; // TBD fix top rooler before testing
+  private final double ROLLERS_MTR_PWR_OUT_EJECT = -0.2; //0.2 // TBD fix top rooler before testing
   private final double ROLLERS_MTR_PWR_OUT_AMP_SCORE = 0.6;
-  private final double ROLLERS_MTR_PWR_OUT_HANDOFF = -0.3;//-0.2;//-0.3;
+  private final double ROLLERS_MTR_PWR_OUT_HANDOFF = -0.5;//-0.2;//-0.3;
 
   public static enum IntakeRollerState {
     ROLLERS_IN_SOURCE,
@@ -49,7 +51,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   private static final boolean BEAM_IS_NOT_BROKEN = false;
 
   private final double ROLLER_ADJUST_BACK    = -0.1;
-  private final double ROLLER_ADJUST_FORWARD =  0.1;
+  private final double ROLLER_ADJUST_FORWARD =  0.4;
 
   private boolean m_desiredBeamBreakState;
   private IntakeRollerState m_currentRollerState;
@@ -129,7 +131,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static final double INTAKE_SOURCE_LOAD_DN_DEG = 30.0;
   public static final double INTAKE_SOURCE_LOAD_UP_DEG =  97.0; //with drivetrain inner rail to the
                                                              // bottom inner rail 7 1/4 inches
-  public static final double INTAKE_AMP_SCORE_DN_DEG   =  92.6; //90.43; 
+  public static final double INTAKE_AMP_SCORE_DN_DEG   =  95.6; //90.43; 
   public static final double INTAKE_HOARD_DEG          = 40.0;
   public static final double INTAKE_AMP_SCORE_DEG      = 80.0;
   public static final double INTAKE_GROUND_PICKUP_DEG  = -22.0; //-25.0;
@@ -250,13 +252,16 @@ public class SubsystemCatzIntake extends SubsystemBase {
           break;
 
         case ROLLERS_OUT_EJECT:
-          if (rollerTimer.hasElapsed(0.5)) {
+          if (rollerTimer.hasElapsed(4.0)) {
             setRollersOff();
           }
           break;
           
         case ROLLERS_OUT_SHOOTER_HANDOFF:
-          if (rollerTimer.hasElapsed(0.5)) {
+          // if (rollerTimer.hasElapsed(0.5)) {
+          //   setRollersOff();
+          // }
+          if(SubsystemCatzShooter.getInstance().shooterLoadBeamBrkBroken()){
             setRollersOff();
           }
           break;

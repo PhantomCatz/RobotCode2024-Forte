@@ -64,7 +64,7 @@ public class SubsystemCatzVision extends SubsystemBase {
         results.clear();
         
         //for every limlight camera process vision with according logic
-        for (int i = 0; i < inputs.length-1; i++) { //change to -1 if soba is installed
+        for (int i = 0; i < inputs.length; i++) { //change to -1 if soba is installed
             // update and process new inputs[cameraNum] for camera
             
             cameras[i].updateInputs(inputs[i]);
