@@ -97,15 +97,16 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     DriverStation.silenceJoystickConnectionWarning(true);
-
-
-    // lead.mid.colorRainbow();
-    // lead.mid.setMode(LEDMode.Solid);
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); //YALL BETTER NOT DELETE THIS :D
+
+    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
+      lead.colorSolid(Color.kYellow); 
+      lead.ledMode = LEDMode.Solid;
+    }
   }
 
   @Override
@@ -125,55 +126,12 @@ public class Robot extends LoggedRobot {
     //   allianceColorChangedTime = Timer.getFPGATimestamp();
     // }
 
-    // if(allianceColorChanged && Timer.getFPGATimestamp() < allianceColorChangedTime+WAIT_UNTIL_RAINBOW_SEC){
-    //   if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Blue) { 
-    //     lead.mid.colorSolid(Color.kBlue); 
-    //     lead.bot.colorSolid(Color.kBlue); 
-    //   }else{
-    //     lead.mid.colorSolid(Color.kRed); 
-    //     lead.bot.colorSolid(Color.kRed); 
-    //   }
-    //     lead.mid.ledMode = LEDMode.Solid;
-    //     lead.bot.ledMode = LEDMode.Solid;
-    // }else{
-    //   allianceColorChanged = false;
-    // }
-
-    // prevAllianceColor = CatzAutonomous.getInstance().getAllianceColor();
-    
-    // if(!allianceColorChanged){
-    //   lead.mid.colorRainbow();
-    //   lead.bot.colorRainbow();
-
-    //   lead.mid.ledMode = LEDMode.Flow;
-    //   lead.bot.ledMode = LEDMode.Flow;
-    // }
-
     if(CatzAutonomous.getInstance().getAllianceColor() == AllianceColor.Blue) { 
-        lead.mid.colorSolid(Color.kBlue); 
-        lead.bot.colorSolid(Color.kBlue); 
-      }else{
-        lead.mid.colorSolid(Color.kRed); 
-        lead.bot.colorSolid(Color.kRed); 
-      }
-        lead.mid.ledMode = LEDMode.Solid;
-        lead.bot.ledMode = LEDMode.Solid;
-
-    //checklist done leds
-    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || 
-        SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
-      latchedChecklistCounter = 1;
-      lead.top.colorSolid(Color.kGreen); 
-      lead.top.ledMode = LEDMode.Blink;
-
-    } else if(latchedChecklistCounter == 1) {
-      lead.top.colorSolid(Color.kGreen); 
-      lead.top.ledMode = LEDMode.Solid;
-    } else {
-      lead.top.colorSolid(Color.kOrangeRed); 
-      lead.top.ledMode = LEDMode.Solid;
+      lead.colorSolid(Color.kBlue); 
+    }else{
+      lead.colorSolid(Color.kRed); 
     }
-
+    lead.ledMode = LEDMode.Solid;
   }
 
   @Override
@@ -187,10 +145,6 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-
-    lead.top.colorSolid(CatzColorConstants.PHANTOM_SAPPHIRE);
-    lead.mid.colorSolid(CatzColorConstants.PHANTOM_SAPPHIRE);
-    lead.bot.colorSolid(CatzColorConstants.PHANTOM_SAPPHIRE);
   }
 
   @Override

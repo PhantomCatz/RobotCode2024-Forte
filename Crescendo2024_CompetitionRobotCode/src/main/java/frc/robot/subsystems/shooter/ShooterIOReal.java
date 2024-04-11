@@ -187,6 +187,7 @@ public class ShooterIOReal implements ShooterIO {
         SHOOTER_MOTOR_LT.setControl(new DutyCycleOut(0));
         SHOOTER_MOTOR_RT.setControl(new DutyCycleOut(0));
         loadDisabled();
+        SubsystemCatzLED.getInstance().isAligned = false;
     }
 
   //-------------------------------------------Load Methods------------------------------------------

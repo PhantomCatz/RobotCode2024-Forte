@@ -149,7 +149,9 @@ public class HomeToSpeakerCmd extends Command {
 
       turret.aimAtGoal(m_targetXY, false); //change back to false if auto aim doesn't work
       
-  
+      if(turret.getTurretInPos()){
+        SubsystemCatzLED.getInstance().isAligned = true;
+      }
       if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(1.0)) || timer.hasElapsed(AUTON_TIMEOUT_SEC)){
 
         if(DriverStation.isAutonomous()){
