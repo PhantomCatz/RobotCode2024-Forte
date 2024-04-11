@@ -70,8 +70,8 @@ public class Robot extends LoggedRobot {
     switch (CatzConstants.currentMode) {
       // Running on a real robot, log to a USB stick
       case REAL:
-        // Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
-        // Logger.addDataReceiver(new NT4Publisher  ());
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
+        Logger.addDataReceiver(new NT4Publisher  ());
         
         // new PowerDistribution(1, ModuleType.kRev);
         break;

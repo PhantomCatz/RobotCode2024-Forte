@@ -32,14 +32,16 @@ public class SubsystemCatzIntake extends SubsystemBase {
    ************************************************************************************************************************/
   private final double ROLLERS_MTR_PWR_IN_GROUND = 0.8; //TBD - need to handle carpet and non-carpet value or code
                                                        // issue
+  private final double ROLLERS_MTR_PWR_IN_FULL = 1.0; //TBD - need to handle carpet and non-carpet value or code             
   private final double ROLLERS_MTR_PWR_IN_SOURCE = 0.25;
   private final double ROLLERS_MTR_PWR_OUT_EJECT = -0.2; //0.2 // TBD fix top rooler before testing
   private final double ROLLERS_MTR_PWR_OUT_AMP_SCORE = 0.6;
-  private final double ROLLERS_MTR_PWR_OUT_HANDOFF = -0.5;//-0.2;//-0.3;
+  private final double ROLLERS_MTR_PWR_OUT_HANDOFF = -0.6;//-0.2;//-0.3;
 
   public static enum IntakeRollerState {
     ROLLERS_IN_SOURCE,
     ROLLERS_IN_GROUND,
+    ROLLERS_IN_FULL,
     BEAM_BREAK_CHECK,
     NOTE_ADJUST,
     ROLLERS_OUT_EJECT,
@@ -134,7 +136,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public static final double INTAKE_AMP_SCORE_DN_DEG   =  95.6; //90.43; 
   public static final double INTAKE_HOARD_DEG          = 40.0;
   public static final double INTAKE_AMP_SCORE_DEG      = 80.0;
-  public static final double INTAKE_GROUND_PICKUP_DEG  = -22.0; //-25.0;
+  public static final double INTAKE_GROUND_PICKUP_DEG  = -24.0; //-25.0;
   public static final double INTAKE_AMP_TRANSITION_DEG = -77.0; //TBD Change to -80 on sn2
 
   public static final double INTAKE_MIN_ELEV_CLEARANCE_DEG = 100.0;
@@ -222,6 +224,11 @@ public class SubsystemCatzIntake extends SubsystemBase {
       switch (m_currentRollerState) {
 
         case ROLLERS_IN_SOURCE:
+          if (inputs.LoadBeamBrkState) {
+            m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
+          }
+          break;
+        case ROLLERS_IN_FULL:
           if (inputs.LoadBeamBrkState) {
             m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
           }
@@ -564,7 +571,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
   // Roller Methods
   // -------------------------------------------------------------------------------------
   public Command cmdRollerIn() {
-    return runOnce(() -> setRollersIn());
+    return runOnce(() -> setRollersInFull());
   }
 
   public Command cmdRollerOut() {
@@ -578,6 +585,12 @@ public class SubsystemCatzIntake extends SubsystemBase {
   public void setRollersIn() {
     rollerTimer.restart();
     io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_GROUND);
+    m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
+  }
+
+  public void setRollersInFull() {
+    rollerTimer.restart();
+    io.setRollerPercentOutput(ROLLERS_MTR_PWR_IN_FULL);
     m_currentRollerState = IntakeRollerState.ROLLERS_IN_GROUND;
   }
 

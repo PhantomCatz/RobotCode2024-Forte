@@ -83,6 +83,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
     PREP_FOR_HANDOFF_SHIFT,
     HANDOFF_SHIFT,
     HANDOFF_FINE_ADJUST,
+    SHOOTER_LOAD_INIT,
+    SHOOTER_LOAD,
     SHOOTING,
     LOAD_OFF,
     LOAD_OUT,
@@ -127,8 +129,8 @@ public class SubsystemCatzShooter extends SubsystemBase {
   /*-------------------------------------------------------------------------------------------
    * Shooter Velocities
    *--------------------------------------------------------------------------------------------*/
-  public static final double SHOOTER_VELOCITY_LT = 57.0; //For Shooting Speaker
-  public static final double SHOOTER_VELOCITY_RT = 80.0;
+  public static final double SHOOTER_VELOCITY_LT = 40;//57.0; //For Shooting Speaker
+  public static final double SHOOTER_VELOCITY_RT = 60;//80.0;
   public static final double FLYWHEEL_THRESHOLD_OFFSET = 5;
 
 
@@ -170,12 +172,15 @@ public class SubsystemCatzShooter extends SubsystemBase {
       return instance;
   }
 
+  final double rightvel = 50;
+  final double leftvel = 35;
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
 
-
+    // rightvel = hoardShooterVelRT.get();
+    // leftvel  = hoardShooterVelLT.get(); 
     if(DriverStation.isDisabled()) { //TBD this thing delayed the start of auton by more than a second 
       disableShooter();
 
@@ -354,6 +359,19 @@ public class SubsystemCatzShooter extends SubsystemBase {
               SubsystemCatzIntake.getInstance().setRollersOff();
             }
             m_iterationCounterShooting++;
+          break;
+          case SHOOTER_LOAD_INIT:
+            m_iterationCounterShooting = 0;
+            currentShooterState = ShooterState.SHOOTER_LOAD;
+          break;
+
+          case SHOOTER_LOAD:
+            io.setShooterEnabled(-20, -20);
+            io.loadBackward();
+            if(inputs.shooterAdjustBeamBreakState == false && m_iterationCounterShooting > 20) {
+              io.loadDisabled();
+              currentShooterState = ShooterState.LOAD_OFF;
+            }
           break;
 
           default:
@@ -591,10 +609,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
     if(CatzConstants.currentRobotMode == RobotMode.HOARD) {
 
-      m_velocityThresholdLT = -hoardShooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET;
-      m_velocityThresholdRT =  hoardShooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
-      velocityLT = hoardShooterVelLT.get();
-      velocityRT = hoardShooterVelRT.get();
+      m_velocityThresholdLT = -leftvel + FLYWHEEL_THRESHOLD_OFFSET;
+      m_velocityThresholdRT =  rightvel - FLYWHEEL_THRESHOLD_OFFSET;
+      velocityLT = leftvel;
+      velocityRT = rightvel;
     } else {
 
       m_velocityThresholdLT = -SHOOTER_VELOCITY_LT + FLYWHEEL_THRESHOLD_OFFSET;

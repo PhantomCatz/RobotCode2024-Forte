@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.CatzConstants.CatzColorConstants;
@@ -137,9 +136,12 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                           .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.SHOOTING))
                           );  //TO SHOOT (NEED TO RAMP UP FIRST)
 
+
+        triggerModeSpeaker.and(xboxDrv.rightTrigger())
+                          .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.SHOOTER_LOAD_INIT)));
+
         triggerModeSpeaker.and(xboxAux.y())
-                          .onTrue(new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE).withTimeout(1.0),
-                                                             new HomeToSpeakerCmd())
+                          .onTrue(new HomeToSpeakerCmd()
                           );      //TO AUTO AIM TURRET+SERVOS TO SPEAKER 
 
         Trigger auxJoystickTriggerRightX = new Trigger(()->Math.abs(xboxAux.getLeftY()) > 0.1);
@@ -151,6 +153,8 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
         triggerModeSpeaker.and(auxJoystickTriggerRightY)
                           .onTrue(turret.cmdRotateTurretManualOn(()->xboxAux.getRightX())
                           );            //MOVE TURRET POSITION MANUAL
+
+                    
 
         
     //------------------------------------------------------------------------------------
@@ -178,13 +182,11 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
         Trigger triggerModeHoard = new Trigger(()->isInHoardMode());
 
         triggerModeHoard.and(xboxDrv.leftStick())
-                      .onTrue(new MoveToPresetHandoffCmd(
-                        NoteDestination.AMP, NoteSource.INTAKE_GROUND)
+                      .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.INTAKE_GROUND)
                       ); //DEPLOY INTAKE AND STOWS TO AMP SCORE DOWN POS
 
-        triggerModeHoard.and(xboxAux.y())
-                        .onTrue(Commands.parallel(new HomeToHoardShotCmd(),
-                                                  Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL)))
+        triggerModeHoard.and(xboxAux.y()).onTrue(
+                                          Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL))
                         );  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
   
         triggerModeHoard.and(xboxAux.b())
@@ -226,9 +228,9 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
     //------------------------------------------------------------------------------------
-        // xboxAux.povUp().and(()->CatzConstants.currentRobotMode == RobotMode.CLIMB_MAINTENANCE_MODE)
-        //                .onTrue(new ClimbCmd(()-> xboxAux.getLeftY(), ()-> xboxAux.getRightY())
-        //                );
+        xboxAux.povUp().and(()->CatzConstants.currentRobotMode == RobotMode.CLIMB_MAINTENANCE_MODE)
+                       .onTrue(new ClimbCmd(()-> xboxAux.getLeftY(), ()-> xboxAux.getRightY())
+                       );
 
       
     //------------------------------------------------------------------------------------
@@ -236,7 +238,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
     //------------------------------------------------------------------------------------
         xboxAux.povUp().onTrue(Commands.runOnce(()-> CatzConstants.currentRobotMode = RobotMode.CLIMB)); // CLIMB MODE
 
-        // xboxAux.rightBumper().and(xboxAux.leftBumper()).onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.CLIMB_MAINTENANCE_MODE)); //CLIMB MANTAINANCE MODE
+        xboxAux.rightBumper().and(xboxAux.leftBumper()).onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.CLIMB_MAINTENANCE_MODE)); //CLIMB MANTAINANCE MODE
 
         xboxAux.povDown().onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.HOARD));                     //HOARD MODE
       
