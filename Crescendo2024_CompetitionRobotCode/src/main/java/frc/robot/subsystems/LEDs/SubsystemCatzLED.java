@@ -4,11 +4,11 @@ package frc.robot.subsystems.LEDs;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.RobotMode;
-import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
@@ -52,20 +52,12 @@ public class SubsystemCatzLED extends SubsystemBase {
 
     private SubsystemCatzLED() {
         led = new AddressableLED(LED_PWM_PORT);
-        ledBuffer = new AddressableLEDBuffer(LED_COUNT_HALF*2);
+        ledBuffer = new AddressableLEDBuffer(LED_COUNT*2);
         led.setLength(ledBuffer.getLength());
         led.setData(ledBuffer);
         led.start();
         timer.start();
         colorSolid(Color.kBlack);
-    }
-
-    public LEDSection(int ledCount) {
-        timer = new Timer();
-        LED_COUNT = ledCount;
-        baseColors = new Color[LED_COUNT];
-        timer.reset();
-        timer.start();
     }
 
     public void colorSolid(Color color) {
@@ -127,8 +119,8 @@ public class SubsystemCatzLED extends SubsystemBase {
         for(int i=0; i<LED_COUNT; i++){
             ledBuffer.setLED(i, colors[i]);
         }
-        for(int i=LED_COUNT_HALF; i<LED_COUNT_HALF*2; i++){
-            ledBuffer.setLED(i, colors[LED_COUNT_HALF*2-i-1]);
+        for(int i=LED_COUNT; i<LED_COUNT*2; i++){
+            ledBuffer.setLED(i, colors[LED_COUNT*2-i-1]);
         }
         led.setData(ledBuffer);
     }

@@ -13,7 +13,6 @@ import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.FieldConstants;
-import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -142,7 +141,7 @@ public class HomeToSpeakerCmd extends Command {
       newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
       servoPos = shooterPivotTable.get(newDist);
 
-    
+
 
       shooter.updateShooterServo(servoPos);
       

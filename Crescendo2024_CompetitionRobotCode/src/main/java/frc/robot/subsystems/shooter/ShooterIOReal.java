@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
+import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 
 public class ShooterIOReal implements ShooterIO {
 /*-----------------------------------------------------------------------------------------

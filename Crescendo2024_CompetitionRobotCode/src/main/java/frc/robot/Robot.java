@@ -30,7 +30,7 @@ import frc.robot.CatzConstants.CatzColorConstants;
 import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.LocalADStarAK;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
-import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
+import frc.robot.subsystems.LEDs.SubsystemCatzLED.LEDMode;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
