@@ -102,10 +102,6 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
       xboxDrv.rightStick().onTrue(new StowPoseCmd()); //STOW Mechnanism 
       xboxAux.rightTrigger().onTrue(new StowPoseCmd()); //STOW Mechnanism 
 
-    
-      
-    //LED command
-    xboxAux.back().onTrue(Commands.runOnce(()-> led.signalHumanPlayerAMP(true))); // SIGNAL HUMAN PLAYER FOR AMP SCORING
 
 
     //------------------------------------------------------------------------------------
