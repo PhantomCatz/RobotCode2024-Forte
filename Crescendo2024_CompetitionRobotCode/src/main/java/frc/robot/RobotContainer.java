@@ -1,15 +1,6 @@
 package frc.robot;
 
-import java.util.function.Supplier;
-
-import com.pathplanner.lib.commands.FollowPathCommand;
-import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -26,7 +17,7 @@ import frc.robot.commands.mechanismCmds.MoveToPreset;
 import frc.robot.commands.mechanismCmds.ScoreAmpCmd;
 import frc.robot.commands.mechanismCmds.ScoreTrapCmd;
 import frc.robot.commands.mechanismCmds.ClimbCmd;
-import frc.robot.commands.mechanismCmds.HomeToHoardShotCmd;
+import frc.robot.commands.mechanismCmds.HoardShotCmd;
 import frc.robot.commands.mechanismCmds.StowPoseCmd;
 import frc.robot.commands.mechanismCmds.ManualElevatorCmd;
 import frc.robot.commands.mechanismCmds.HomeToSpeakerCmd;
@@ -183,8 +174,7 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                       ); //DEPLOY INTAKE AND STOWS TO AMP SCORE DOWN POS
 
         triggerModeHoard.and(xboxAux.y())
-                        .onTrue(Commands.parallel(new HomeToHoardShotCmd(),
-                                                  Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL)))
+                        .onTrue(Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL))
                         );  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
   
         triggerModeHoard.and(xboxAux.b())
@@ -224,23 +214,15 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                         .onTrue(intake.cmdRollerOut()
                         );
 
-
-    //------------------------------------------------------------------------------------
-        // xboxAux.povUp().and(()->CatzConstants.currentRobotMode == RobotMode.CLIMB_MAINTENANCE_MODE)
-        //                .onTrue(new ClimbCmd(()-> xboxAux.getLeftY(), ()-> xboxAux.getRightY())
-        //                );
-
       
     //------------------------------------------------------------------------------------
     //  CHANGING MODES
     //------------------------------------------------------------------------------------
-        xboxAux.povUp().onTrue(Commands.runOnce(()-> CatzConstants.currentRobotMode = RobotMode.CLIMB)); // CLIMB MODE
-
-        // xboxAux.rightBumper().and(xboxAux.leftBumper()).onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.CLIMB_MAINTENANCE_MODE)); //CLIMB MANTAINANCE MODE
+        xboxAux.povUp().onTrue(Commands.runOnce(()-> CatzConstants.currentRobotMode = RobotMode.CLIMB));                      // CLIMB MODE
 
         xboxAux.povDown().onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.HOARD));                     //HOARD MODE
       
-        xboxAux.povLeft().onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.AMP));                      //AMP MODE
+        xboxAux.povLeft().onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.AMP));                       //AMP MODE
       
         xboxAux.povRight().onTrue(Commands.runOnce(()->CatzConstants.currentRobotMode = RobotMode.SPEAKER));                  //SPEAKER MODE
     //------------------------------------------------------------------------------------

@@ -44,10 +44,4 @@ public class ScoreTrapCmd extends Command {
     elevator.updateTargetPositionElevator(pose.getElevatorTargetRev());
     turret.updateTargetPositionTurret(pose);
   }
-
-  private boolean areMechanismsInPosition() {
-    return (intake.getIntakeInPos() && 
-            turret.getTurretInPos() &&
-            elevator.getElevatorInPos());
-  }
 }

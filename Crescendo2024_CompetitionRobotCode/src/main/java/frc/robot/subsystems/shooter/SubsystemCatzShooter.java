@@ -66,7 +66,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
   private final int SHOOTING_TIMEOUT                  = (int) (Math.round(0.5/LOOP_CYCLE_SECONDS) + 1.0);
   private final int LOAD_OUT_TIMEOUT                  = (int) (Math.round(0.5/LOOP_CYCLE_SECONDS) + 1.0);
 
-  private Timer servoTimer = new Timer();
+  // private Timer servoTimer = new Timer();
   /*-----------------------------------------------------------------------------------------
    * States
    *-----------------------------------------------------------------------------------------*/
@@ -79,7 +79,6 @@ public class SubsystemCatzShooter extends SubsystemBase {
     WAIT_FOR_NOTE_TO_SETTLE,
     WAIT_FOR_MOTORS_TO_REV_UP,
     START_SHOOTER_FLYWHEEL,
-    START_SHOOTER_FLYWHEEL_HOARD_MODE,
     PREP_FOR_HANDOFF_SHIFT,
     HANDOFF_SHIFT,
     HANDOFF_FINE_ADJUST,
@@ -89,12 +88,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
     NONE;
   }
 
-  private static ServoState currentServoState = ServoState.IDLE;
-  public static enum ServoState {
-    IDLE,
-    MOVE_SERVO_INIT,
-    WAIT_FOR_SERVO_IN_POSITION
-  }
+  // private static ServoState currentServoState = ServoState.IDLE;
+  // public static enum ServoState {
+  //   IDLE,
+  //   MOVE_SERVO_INIT,
+  //   WAIT_FOR_SERVO_IN_POSITION
+  // }
  
   //shooter note state for determining when other mechanism should turn off
   private ShooterNoteState currentNoteState = ShooterNoteState.NULL;
@@ -129,12 +128,16 @@ public class SubsystemCatzShooter extends SubsystemBase {
    *--------------------------------------------------------------------------------------------*/
   public static final double SHOOTER_VELOCITY_LT = 57.0; //For Shooting Speaker
   public static final double SHOOTER_VELOCITY_RT = 80.0;
+
+  // public static final double HOARD_SHOOTER_VEL_LT = 35.0; //For Shooting Hoard
+  // public static final double HOARD_SHOOTER_VEL_RT = 50.0;
+
   public static final double FLYWHEEL_THRESHOLD_OFFSET = 5;
 
 
   //Will be changed to a final double when confirmed speed, right now those speeds are made up
-  public static LoggedTunableNumber hoardShooterVelLT = new LoggedTunableNumber("HoardLTVelShooter", 50); // For Hoarding 
-  public static LoggedTunableNumber hoardShooterVelRT = new LoggedTunableNumber("HoardRTVelShooter", 70); 
+  public static LoggedTunableNumber HOARD_SHOOTER_VEL_LT = new LoggedTunableNumber("HoardLTVelShooter", 35); // For Hoarding 
+  public static LoggedTunableNumber HOARD_SHOOTER_VEL_RT = new LoggedTunableNumber("HoardRTVelShooter", 50); 
 
   private double m_velocityThresholdRT;
   private double m_velocityThresholdLT;
@@ -161,7 +164,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
                System.out.println("Current Mode Unconfigured");
       break;
     }
-    updateShooterServo(SERVO_STARTING_CONFIG_POS);
+    // updateShooterServo(SERVO_STARTING_CONFIG_POS);
   }
   
   
@@ -170,12 +173,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
       return instance;
   }
 
+
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter/shooterinputs", inputs);
-
-
+ 
     if(DriverStation.isDisabled()) { //TBD this thing delayed the start of auton by more than a second 
       disableShooter();
 
@@ -358,7 +361,12 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
           default:
           break;
-      }
+      } 
+    }
+    double vellt = HOARD_SHOOTER_VEL_LT.get();
+    double velrt = HOARD_SHOOTER_VEL_RT.get();
+
+    io.setShooterEnabled(vellt, velrt);
   
       //-------------------------------------------------------------------------------------------
       //
@@ -366,79 +374,79 @@ public class SubsystemCatzShooter extends SubsystemBase {
       //
       //-------------------------------------------------------------------------------------------
       
-      //min max servo value clamping
-      if(m_targetServoPosition > SERVO_MAX_POS) {
+    //   //min max servo value clamping
+    //   if(m_targetServoPosition > SERVO_MAX_POS) {
 
-        m_targetServoPosition = SERVO_MAX_POS;
-      } else if(m_targetServoPosition < SERVO_MIN_POS) {
+    //     m_targetServoPosition = SERVO_MAX_POS;
+    //   } else if(m_targetServoPosition < SERVO_MIN_POS) {
 
-        m_targetServoPosition = SERVO_MIN_POS;
-      }
+    //     m_targetServoPosition = SERVO_MIN_POS;
+    //   }
 
-      //turret clamping
-      if(Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle()) > SubsystemCatzTurret.TURRET_MAX_SERVO_LIMIT_DEG) {
+    //   //turret clamping
+    //   if(Math.abs(SubsystemCatzTurret.getInstance().getTurretAngle()) > SubsystemCatzTurret.TURRET_MAX_SERVO_LIMIT_DEG) {
 
-        if(m_targetServoPosition > SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT) {
+    //     if(m_targetServoPosition > SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT) {
 
-           m_targetServoPosition = SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT;
-        } 
-      } 
+    //        m_targetServoPosition = SubsystemCatzTurret.SERVO_TURRET_CONSTRAINT;
+    //     } 
+    //   } 
     
-      //cmd final output
-      io.setServoPosition(m_targetServoPosition); //TBD change back to 10/
+    //   //cmd final output
+    //   io.setServoPosition(m_targetServoPosition); //TBD change back to 10/
 
-      //-------------------------------------------------------------------------------------------
-      //  Servos are commanded from 0.0 to 1.0 where 0.0 represents 0% of max extension and 1.0
-      //  represents 100% of max extension or 100% of 100 mm.  m_xxxServoPosition represents % of
-      //  max extension.  Convert % of max extension to a distance in mm and use that to calculate
-      //  timeout value based on servo velocity in mm/sec
-      //-------------------------------------------------------------------------------------------    
-      switch(currentServoState) {
-        case IDLE:
+    //   //-------------------------------------------------------------------------------------------
+    //   //  Servos are commanded from 0.0 to 1.0 where 0.0 represents 0% of max extension and 1.0
+    //   //  represents 100% of max extension or 100% of 100 mm.  m_xxxServoPosition represents % of
+    //   //  max extension.  Convert % of max extension to a distance in mm and use that to calculate
+    //   //  timeout value based on servo velocity in mm/sec
+    //   //-------------------------------------------------------------------------------------------    
+    //   switch(currentServoState) {
+    //     case IDLE:
 
-        break;
+    //     break;
 
-        case MOVE_SERVO_INIT:
+    //     case MOVE_SERVO_INIT:
 
-          m_servoPosError = Math.abs(m_previousServoPosition - m_targetServoPosition);
+    //       m_servoPosError = Math.abs(m_previousServoPosition - m_targetServoPosition);
 
-          if(Math.abs(m_servoPosError) > 0.0) {
-            //init
-            //-------------------------------------------------------------------------------------------
-            //  If a new servo position is being commanded, then clear servo in position flag and restart
-            //  timer.  Note that we can't readback position of the servos so we are going to assume 
-            //  servo is in position based on time (e.g. velocity * time = disatnce)
-            //-------------------------------------------------------------------------------------------
-            servoTimer.restart();
-            m_shooterServoInPos = false;
+    //       if(Math.abs(m_servoPosError) > 0.0) {
+    //         //init
+    //         //-------------------------------------------------------------------------------------------
+    //         //  If a new servo position is being commanded, then clear servo in position flag and restart
+    //         //  timer.  Note that we can't readback position of the servos so we are going to assume 
+    //         //  servo is in position based on time (e.g. velocity * time = disatnce)
+    //         //-------------------------------------------------------------------------------------------
+    //         servoTimer.restart();
+    //         m_shooterServoInPos = false;
 
-            servoDistToMoveMm    = m_servoPosError * SERVO_MAX_EXTENSTION_MM; 
-            servoPositionTimeout = servoDistToMoveMm / SERVO_VELOCITY_MM_PER_SEC ;
+    //         servoDistToMoveMm    = m_servoPosError * SERVO_MAX_EXTENSTION_MM; 
+    //         servoPositionTimeout = servoDistToMoveMm / SERVO_VELOCITY_MM_PER_SEC ;
 
-            m_previousServoPosition = m_targetServoPosition;
-            currentServoState = ServoState.WAIT_FOR_SERVO_IN_POSITION;
-          } else {
-            //not commanding new position
-            m_shooterServoInPos = true;
-            currentServoState = ServoState.IDLE;
-          }
-        break;
+    //         m_previousServoPosition = m_targetServoPosition;
+    //         currentServoState = ServoState.WAIT_FOR_SERVO_IN_POSITION;
+    //       } else {
+    //         //not commanding new position
+    //         m_shooterServoInPos = true;
+    //         currentServoState = ServoState.IDLE;
+    //       }
+    //     break;
           
-        case WAIT_FOR_SERVO_IN_POSITION:
+    //     case WAIT_FOR_SERVO_IN_POSITION:
 
-          if(servoTimer.hasElapsed(servoPositionTimeout)) {
-            //shooter servos are in position due to timeout
-            m_shooterServoInPos = true;
-            currentServoState = ServoState.IDLE;
-          }
-        break;
-      }
-    } // End of Enabled loop
+    //       if(servoTimer.hasElapsed(servoPositionTimeout)) {
+    //         //shooter servos are in position due to timeout
+    //         m_shooterServoInPos = true;
+    //         currentServoState = ServoState.IDLE;
+    //       }
+    //     break;
+    //   }
+    // } // End of Enabled loop
 
-    importantShooterLogs();
+    // importantShooterLogs();
 
   } //end of shooter periodic
-
+  
   //-------------------------------------------------------------------------------------
   // Debug Logger For Shooter 
   //-------------------------------------------------------------------------------------
@@ -481,7 +489,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
       //there is a new target poition
       m_previousServoPosition = m_targetServoPosition;
       m_targetServoPosition = position;
-      currentServoState = ServoState.MOVE_SERVO_INIT; 
+      // currentServoState = ServoState.MOVE_SERVO_INIT; 
     }
   }
 
@@ -591,10 +599,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
     if(CatzConstants.currentRobotMode == RobotMode.HOARD) {
 
-      m_velocityThresholdLT = -hoardShooterVelLT.get() + FLYWHEEL_THRESHOLD_OFFSET;
-      m_velocityThresholdRT =  hoardShooterVelRT.get() - FLYWHEEL_THRESHOLD_OFFSET;
-      velocityLT = hoardShooterVelLT.get();
-      velocityRT = hoardShooterVelRT.get();
+      m_velocityThresholdLT = -HOARD_SHOOTER_VEL_LT.get() + FLYWHEEL_THRESHOLD_OFFSET;
+      m_velocityThresholdRT =  HOARD_SHOOTER_VEL_RT.get() - FLYWHEEL_THRESHOLD_OFFSET;
+      velocityLT = HOARD_SHOOTER_VEL_RT.get();
+      velocityRT = HOARD_SHOOTER_VEL_LT.get();
     } else {
 
       m_velocityThresholdLT = -SHOOTER_VELOCITY_LT + FLYWHEEL_THRESHOLD_OFFSET;
@@ -604,6 +612,13 @@ public class SubsystemCatzShooter extends SubsystemBase {
     }
 
       io.setShooterEnabled(velocityLT, velocityRT);    
+  }
+
+  public void setFlyWheelVelocities(double leftVel, double rightVel) {
+      m_velocityThresholdLT = -leftVel + FLYWHEEL_THRESHOLD_OFFSET;
+      m_velocityThresholdRT =  rightVel - FLYWHEEL_THRESHOLD_OFFSET;
+
+      io.setShooterEnabled(leftVel, rightVel);    
   }
 
   //-------------------------------------------------------------------------------------

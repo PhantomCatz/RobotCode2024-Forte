@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.Locale.Category;
-
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -13,28 +11,16 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.revrobotics.ColorSensorV3.LEDCurrent;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.CatzConstants.CatzColorConstants;
-import frc.robot.CatzConstants.DriveConstants;
-import frc.robot.Utils.LocalADStarAK;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
-import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
-import frc.robot.CatzAutonomous;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -160,19 +146,19 @@ public class Robot extends LoggedRobot {
         lead.bot.ledMode = LEDMode.Solid;
 
     //checklist done leds
-    if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || 
-        SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
-      latchedChecklistCounter = 1;
-      lead.top.colorSolid(Color.kGreen); 
-      lead.top.ledMode = LEDMode.Blink;
+    // if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || 
+    //     SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
+    //   latchedChecklistCounter = 1;
+    //   lead.top.colorSolid(Color.kGreen); 
+    //   lead.top.ledMode = LEDMode.Blink;
 
-    } else if(latchedChecklistCounter == 1) {
-      lead.top.colorSolid(Color.kGreen); 
-      lead.top.ledMode = LEDMode.Solid;
-    } else {
-      lead.top.colorSolid(Color.kOrangeRed); 
-      lead.top.ledMode = LEDMode.Solid;
-    }
+    // } else if(latchedChecklistCounter == 1) {
+    //   lead.top.colorSolid(Color.kGreen); 
+    //   lead.top.ledMode = LEDMode.Solid;
+    // } else {
+    //   lead.top.colorSolid(Color.kOrangeRed); 
+    //   lead.top.ledMode = LEDMode.Solid;
+    // }
 
   }
 

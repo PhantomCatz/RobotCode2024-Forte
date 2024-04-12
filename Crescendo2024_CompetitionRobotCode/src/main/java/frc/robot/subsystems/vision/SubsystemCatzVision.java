@@ -9,9 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.VisionConstants;
-import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 
  
 /*
@@ -49,9 +47,9 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                new VisionIOLimeLight("limelight-udon"),    //index 0 left
-                new VisionIOLimeLight("limelight-soba"),    //index 1 right
-                new VisionIOLimeLight("limelight-ramen"),   //index 2 turret
+                // new VisionIOLimeLight("limelight-udon"),    //index 0 left
+                // new VisionIOLimeLight("limelight-soba"),    //index 1 right
+                // new VisionIOLimeLight("limelight-ramen"),   //index 2 turret
             });
         }
         return instance;

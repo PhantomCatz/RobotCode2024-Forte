@@ -1,11 +1,5 @@
 package frc.robot.subsystems.drivetrain;
 
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -17,16 +11,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveWheelPositions;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CatzAutonomous;
@@ -36,7 +25,6 @@ import frc.robot.CatzConstants.DriveConstants;
 import frc.robot.Utils.FieldRelativeAccel;
 import frc.robot.Utils.FieldRelativeSpeed;
 import frc.robot.Utils.LocalADStarAK;
-// import frc.robot.subsystems.vision.SubsystemCatzVision;;
 import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 // Drive train subsystem for swerve drive implementation
@@ -116,7 +104,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             DriveConstants.swerveDriveKinematics,
             Rotation2d.fromDegrees(getGyroAngle()), 
             getModulePositions(), 
-            new Pose2d(1.5, 5.55, Rotation2d.fromDegrees(0.0)), 
+            new Pose2d(9.72, 1.74, Rotation2d.fromDegrees(0.0)), 
             VecBuilder.fill(1, 1, 0.7),  //odometry standard devs
             VecBuilder.fill(5, 5, 99999.0) //vision pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less           
         ); 
