@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.15,
-        "y": 5.53
+        "x": 2.5,
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1266462475863597,
-        "y": 3.7708893677416455
+        "x": 2.0,
+        "y": 5.55
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.15,
-        "y": 4.075371117931965
+        "x": 1.4,
+        "y": 5.55
       },
       "prevControl": {
-        "x": 2.0166698250657547,
-        "y": 4.157346973752435
+        "x": 1.9,
+        "y": 5.55
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "SP4W",
+  "folder": "subwoof_S4PW",
   "previewStartingState": {
     "rotation": 0.0,
     "velocity": 0

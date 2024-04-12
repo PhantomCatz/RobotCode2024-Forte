@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.49,
+        "x": 2.5,
         "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.22744523321186,
-        "y": 6.675192713736179
+        "x": 2.215360238284578,
+        "y": 6.588927979484631
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.454549670868242,
+        "x": 1.4,
         "y": 5.55
       },
       "prevControl": {
-        "x": 1.665344728692309,
-        "y": 5.854481750190318
+        "x": 1.684639761715422,
+        "y": 5.961072020515369
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,18 +32,18 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.5,
-    "maxAcceleration": 2.5,
-    "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 360.0
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "US_W1-3",
+  "folder": "subwoof_S4PW",
   "previewStartingState": {
     "rotation": 0.0,
     "velocity": 0

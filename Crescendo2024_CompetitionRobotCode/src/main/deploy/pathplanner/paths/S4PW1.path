@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 1.3959954881393342,
-        "y": 5.527514849608872
+        "y": 5.55
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6067905459634015,
-        "y": 6.45267093672561
+        "x": 1.6094440915643888,
+        "y": 6.474547476135271
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.1454890270693507,
-        "y": 6.979658581285779
+        "x": 2.5,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 1.0563812283116707,
-        "y": 7.108477783289376
+        "x": 1.4033003218202156,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "S4PW",
+  "folder": "subwoof_S4PW",
   "previewStartingState": {
     "rotation": 0.0,
     "velocity": 0

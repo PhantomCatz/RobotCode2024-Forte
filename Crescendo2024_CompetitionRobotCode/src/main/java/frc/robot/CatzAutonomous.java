@@ -65,14 +65,17 @@ public class CatzAutonomous {
         pathChooser.addOption("Score and Wait LS_W3", LS_W3()); 
         pathChooser.addOption("Score and Wait CS_W2", CS_W2());
         
-        pathChooser.addOption("Scoring US W1-3", US_W13());
-        pathChooser.addOption("Scoring LS W1-3", LS_W13());
-      
+        
         pathChooser.addOption("ScoringC13", US_C13());
         pathChooser.addOption("ScoringC35", US_C35());
         pathChooser.addOption("Hoard C1-2", US_C12_Hoard());
         pathChooser.addOption("Hoard C4-5", LS_C45_Hoard());
-
+        
+        //4 Note Autons
+        pathChooser.addOption("Scoring US W1-3", US_W13());
+        pathChooser.addOption("Scoring LS W1-3", LS_W13());
+        pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
+        
         //Semi Illegal Paths 
         pathChooser.addOption("1 Wing Bulldoze Under", WingBulldozeUnder());
         pathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
@@ -83,7 +86,6 @@ public class CatzAutonomous {
         // pathChooser.addOption("mid", mid());
         // pathChooser.addOption("bot", bot());
         // pathChooser.addOption("top", top());
-        // pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
         // pathChooser.addOption("Speaker 4 Piece CS Wing", speaker4PieceCSWing());
         // pathChooser.addOption("TestDrive US W1-3", US_W13_TEST_DRIVE());
         // pathChooser.addOption("Run and gun W1 C1-3", RNGC1W13());
@@ -192,9 +194,11 @@ public class CatzAutonomous {
     private PathPlannerPath US_W1_3_2 = PathPlannerPath.fromPathFile("ver2 US_W1-3_2");
     private PathPlannerPath US_W1_3_3 = PathPlannerPath.fromPathFile("ver2 US_W1-3_3");
 
-    private PathPlannerPath no_servo_US_W1_3_2 = PathPlannerPath.fromPathFile("no servo US_W1-3_2");
-    private PathPlannerPath no_servo_US_W1_3_3 = PathPlannerPath.fromPathFile("no servo US_W1-3_3");
-    private PathPlannerPath no_servo_US_W1_3_4 = PathPlannerPath.fromPathFile("no servo US_W1-3_4");
+    private PathPlannerPath sub_US_W1_3_2 = PathPlannerPath.fromPathFile("sub US_W1-3_2");
+    private PathPlannerPath sub_US_W1_3_3 = PathPlannerPath.fromPathFile("sub US_W1-3_3");
+    private PathPlannerPath sub_US_W1_3_4 = PathPlannerPath.fromPathFile("sub US_W1-3_4");
+    private PathPlannerPath sub_US_W1_3_5 = PathPlannerPath.fromPathFile("sub US_W1-3_5");
+    private PathPlannerPath sub_US_W1_3_6 = PathPlannerPath.fromPathFile("sub US_W1-3_6");
 
     private Command US_W13() {
         return new SequentialCommandGroup(
@@ -205,16 +209,19 @@ public class CatzAutonomous {
 
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_1),
                                      new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_US_W1_3_2),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd(),
 
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_2),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_US_W1_3_3),
                                      new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_US_W1_3_4),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd(),
 
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_3),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_US_W1_3_5),
                                      new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_US_W1_3_6),
             // shooter.cmdSetKeepShooterOn(false),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd()
@@ -235,27 +242,41 @@ public class CatzAutonomous {
      * Seems to be redundant with 4 piece auton, only advantage is having code for different starting positions depending on
      * alliance's capabilities
      */
-    private PathPlannerPath LS3_1 = PathPlannerPath.fromPathFile("LS_W1-3_1");
-    private PathPlannerPath LS3_2 = PathPlannerPath.fromPathFile("LS_W1-3_2");
-    private PathPlannerPath LS3_3 = PathPlannerPath.fromPathFile("LS_W1-3_3");
+    private PathPlannerPath LS_W1_3 = PathPlannerPath.fromPathFile("LS_W1-3_1");
+    private PathPlannerPath LS_W2_3 = PathPlannerPath.fromPathFile("LS_W1-3_2");
+    private PathPlannerPath LS_W3_3 = PathPlannerPath.fromPathFile("LS_W1-3_3");
+
+    private PathPlannerPath sub_LS_W1_3_2 = PathPlannerPath.fromPathFile("sub LS_W1-3_2");
+    private PathPlannerPath sub_LS_W1_3_3 = PathPlannerPath.fromPathFile("sub LS_W1-3_3");
+    private PathPlannerPath sub_LS_W1_3_4 = PathPlannerPath.fromPathFile("sub LS_W1-3_4");
+    private PathPlannerPath sub_LS_W1_3_5 = PathPlannerPath.fromPathFile("sub LS_W1-3_5");
+    private PathPlannerPath sub_LS_W1_3_6 = PathPlannerPath.fromPathFile("sub LS_W1-3_6");
 
     private Command LS_W13() {
         return new SequentialCommandGroup(
-            setAutonStartPose(LS3_1),
+            setAutonStartPose(LS_W1_3),
+            shooter.cmdShooterRamp(),
+            // shooter.cmdSetKeepShooterOn(true),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS_W1_3),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_LS_W1_3_2),
             shooter.cmdShooterRamp(),
             new HomeToSpeakerCmd(),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS3_1),
-                                        new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT),
-                                                                    shooter.cmdShooterRamp(),
-                                                                    new HomeToSpeakerCmd())),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS3_2),
-                                        new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT),
-                                                                    shooter.cmdShooterRamp(),
-                                                                    new HomeToSpeakerCmd())),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS3_3),
-                                        new SequentialCommandGroup(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT),
-                                                                    shooter.cmdShooterRamp(),
-                                                                    new HomeToSpeakerCmd()))
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_LS_W1_3_3),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_LS_W1_3_4),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_LS_W1_3_5),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_LS_W1_3_6),
+            // shooter.cmdSetKeepShooterOn(false),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
         );
     }
     
@@ -445,6 +466,43 @@ public class CatzAutonomous {
     //      Autonomous Paths
     //  
     //--------------------------------------------------------------------------------------------
+    //https://docs.google.com/presentation/d/19F_5L03n90t7GhtzQhD4mYNEMkdFsUGoDSb4tT9HqNI/edit#slide=id.g268da342b19_1_0
+
+    private PathPlannerPath SP4W1 = PathPlannerPath.fromPathFile("SP4W1");
+    private PathPlannerPath sub_SP4W2 = PathPlannerPath.fromPathFile("sub SP4W2");
+    private PathPlannerPath sub_SP4W3 = PathPlannerPath.fromPathFile("sub SP4W3");
+    private PathPlannerPath sub_SP4W4 = PathPlannerPath.fromPathFile("sub SP4W4");
+    private PathPlannerPath sub_SP4W5 = PathPlannerPath.fromPathFile("sub SP4W5");
+    private PathPlannerPath sub_SP4W6 = PathPlannerPath.fromPathFile("sub SP4W6");
+
+    private Command speaker4PieceWing(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(SP4W1),
+            shooter.cmdShooterRamp(),
+            // shooter.cmdSetKeepShooterOn(true),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(SP4W1),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_SP4W2),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_SP4W3),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_SP4W4),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_SP4W5),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_SP4W6),
+            // shooter.cmdSetKeepShooterOn(false),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
+        );
+    }
+    
     private Command mid(){
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("DriveStraightMid")),
@@ -471,26 +529,6 @@ public class CatzAutonomous {
             shooter.cmdShooterRamp().withTimeout(1.5),
             Commands.waitSeconds(1.0),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("DriveStraightTop"))
-        );
-    }
-
-    //https://docs.google.com/presentation/d/19F_5L03n90t7GhtzQhD4mYNEMkdFsUGoDSb4tT9HqNI/edit#slide=id.g268da342b19_1_0
-
-    private Command speaker4PieceWing(){
-        return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("S4PW1")),
-            // new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET),
-            // shooter.cmdShooterRamp(),
-            new ParallelCommandGroup(//new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW1"))),
-            // new AimAndOrFireAtSpeakerCmd().withTimeout(2.0),
-            // shooter.cmdShooterRamp(),
-            new ParallelCommandGroup(//new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW2"))),
-            // new AimAndOrFireAtSpeakerCmd().withTimeout(2.0),
-            // shooter.cmdShooterRamp(),
-            new ParallelCommandGroup(//new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND),
-                                     new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("S4PW3")))
         );
     }
 
