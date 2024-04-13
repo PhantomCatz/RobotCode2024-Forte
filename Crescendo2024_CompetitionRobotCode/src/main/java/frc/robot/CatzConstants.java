@@ -181,18 +181,18 @@ public final class CatzConstants {
   /* ---------------------------------------------------------------------------------
   * SN2 OFFSETS
   -----------------------------------------------------------------------------------*/ 
-    public static final double LT_FRNT_OFFSET = 0.228031255+0.5;// 0.23400625 + 0.5;
-    public static final double LT_BACK_OFFSET = 0.733477518+0.5;//-0.26659156 + 0.5;
-    public static final double RT_BACK_OFFSET = 1.1043222;// 0.10567640; 
-    public static final double RT_FRNT_OFFSET = 0.3417887;// 1.32572595;
+    // public static final double LT_FRNT_OFFSET = 0.228031255+0.5;// 0.23400625 + 0.5;
+    // public static final double LT_BACK_OFFSET = 0.733477518+0.5;//-0.26659156 + 0.5;
+    // public static final double RT_BACK_OFFSET = 1.1043222;// 0.10567640; 
+    // public static final double RT_FRNT_OFFSET = 0.3417887;// 1.32572595;
   
   /* ---------------------------------------------------------------------------------
   * SN1 OFFSETS
   -----------------------------------------------------------------------------------*/ 
-    // public static final double LT_FRNT_OFFSET = 0.20907;//0.21317;
-    // public static final double LT_BACK_OFFSET = 0.250096+0.5;//0.25727+0.5;//0.5446386386;
-    // public static final double RT_BACK_OFFSET = -0.199788;//-0.1986;//0.7591109064;
-    // public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
+    public static final double LT_FRNT_OFFSET = 0.207405905185;//0.20907;//0.21317;
+    public static final double LT_BACK_OFFSET = 0.7495236687;//0.250096+0.5;//0.25727+0.5;//0.5446386386;
+    public static final double RT_BACK_OFFSET = -0.19950937998;//-0.199788;//-0.1986;//0.7591109064;
+    public static final double RT_FRNT_OFFSET = 0.007320000183;//-0.00320;//0.536312100;
 
   //---------------------------------------------------------------------------------
 

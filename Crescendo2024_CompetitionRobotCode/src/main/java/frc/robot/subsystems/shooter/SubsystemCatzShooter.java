@@ -363,10 +363,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
           break;
       } 
     }
-    double vellt = HOARD_SHOOTER_VEL_LT.get();
-    double velrt = HOARD_SHOOTER_VEL_RT.get();
+    // double vellt = HOARD_SHOOTER_VEL_LT.get();
+    // double velrt = HOARD_SHOOTER_VEL_RT.get();
 
-    io.setShooterEnabled(vellt, velrt);
+    // io.setShooterEnabled(vellt, velrt);
   
       //-------------------------------------------------------------------------------------------
       //

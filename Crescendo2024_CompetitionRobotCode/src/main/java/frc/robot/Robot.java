@@ -39,6 +39,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
     Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+
     switch (BuildConstants.DIRTY) {
       case 0:
          Logger.recordMetadata
@@ -56,8 +57,8 @@ public class Robot extends LoggedRobot {
     switch (CatzConstants.currentMode) {
       // Running on a real robot, log to a USB stick
       case REAL:
-        // Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
-        // Logger.addDataReceiver(new NT4Publisher  ());
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
+        Logger.addDataReceiver(new NT4Publisher  ());
         
         // new PowerDistribution(1, ModuleType.kRev);
         break;
