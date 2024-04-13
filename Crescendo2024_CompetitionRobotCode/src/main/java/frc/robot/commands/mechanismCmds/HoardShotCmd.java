@@ -46,11 +46,11 @@ public class HoardShotCmd extends Command {
   private static final InterpolatingDoubleTreeMap shooterVelPivotTable = new InterpolatingDoubleTreeMap();
 
   static {
-    shooterVelPivotTable.put(1.478, 1.0); //TODO need to test values
+    shooterVelPivotTable.put(1.28, 35.0); 
 
-    shooterVelPivotTable.put(1.875, 0.885);
-    // newShooterPivotTable.put(1.875, 0.82);
-    // newShooterPivotTable.put(1.875, 0.95);
+    shooterVelPivotTable.put(1.2, 30.0);
+
+    shooterVelPivotTable.put(0.972, 25.0);
   }
 
   private Translation2d m_targetXY;
@@ -83,8 +83,8 @@ public class HoardShotCmd extends Command {
   public void execute() {
     double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
     
-    hoardVelRT = shooterVelPivotTable.get(newDist);
-    hoardVelLT = shooterVelPivotTable.get(newDist) - SHOOTER_VEL_DIFFERENCE;
+    hoardVelRT = shooterVelPivotTable.get(newDist) * 1.85;
+    hoardVelLT = shooterVelPivotTable.get(newDist);
 
     shooter.setFlyWheelVelocities(hoardVelLT, hoardVelRT);
     turret.aimAtGoal(m_targetXY, false);

@@ -229,7 +229,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
         case ROLLERS_IN_GROUND:
           if (inputs.LoadBeamBrkState) {
-            m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
+            setRollersOff();
+            m_currentRollerState = IntakeRollerState.ROLLERS_OFF;
           }
           break;
 

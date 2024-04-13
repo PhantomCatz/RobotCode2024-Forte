@@ -135,9 +135,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
   public static final double FLYWHEEL_THRESHOLD_OFFSET = 5;
 
 
-  //Will be changed to a final double when confirmed speed, right now those speeds are made up
-  public static LoggedTunableNumber HOARD_SHOOTER_VEL_LT = new LoggedTunableNumber("HoardLTVelShooter", 35); // For Hoarding 
-  public static LoggedTunableNumber HOARD_SHOOTER_VEL_RT = new LoggedTunableNumber("HoardRTVelShooter", 50); 
+  // public static LoggedTunableNumber HOARD_SHOOTER_VEL_LT = new LoggedTunableNumber("HoardLTVelShooter", 35);
+  // public static LoggedTunableNumber HOARD_SHOOTER_VEL_RT = new LoggedTunableNumber("HoardRTVelShooter", 50); 
+  public static final double HOARD_SHOOTER_VEL_LT = 35;
+  public static final double HOARD_SHOOTER_VEL_RT = 65;
 
   private double m_velocityThresholdRT;
   private double m_velocityThresholdLT;
@@ -599,10 +600,10 @@ public class SubsystemCatzShooter extends SubsystemBase {
 
     if(CatzConstants.currentRobotMode == RobotMode.HOARD) {
 
-      m_velocityThresholdLT = -HOARD_SHOOTER_VEL_LT.get() + FLYWHEEL_THRESHOLD_OFFSET;
-      m_velocityThresholdRT =  HOARD_SHOOTER_VEL_RT.get() - FLYWHEEL_THRESHOLD_OFFSET;
-      velocityLT = HOARD_SHOOTER_VEL_RT.get();
-      velocityRT = HOARD_SHOOTER_VEL_LT.get();
+      m_velocityThresholdLT = -HOARD_SHOOTER_VEL_LT + FLYWHEEL_THRESHOLD_OFFSET;
+      m_velocityThresholdRT =  HOARD_SHOOTER_VEL_RT - FLYWHEEL_THRESHOLD_OFFSET;
+      velocityLT = HOARD_SHOOTER_VEL_RT;
+      velocityRT = HOARD_SHOOTER_VEL_LT;
     } else {
 
       m_velocityThresholdLT = -SHOOTER_VELOCITY_LT + FLYWHEEL_THRESHOLD_OFFSET;

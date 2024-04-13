@@ -117,6 +117,232 @@ public class CatzAutonomous {
 
     //--------------------------------------------------------------------------------------------
     //  
+    //      4 NOTE Autonomous Paths
+    //  
+    //--------------------------------------------------------------------------------------------
+
+    private final double FOUR_PIECE_AUTON_INTAKE_TIMEOUT = 4.0;
+    /*
+     * Robot Starting Position: Upper Speaker
+     * Seems to be redundant with 4 piece auton, only advantage is having code for different starting positions depending on
+     * alliance's capabilities
+     */
+
+    private PathPlannerPath US_W1_3_1 = PathPlannerPath.fromPathFile("US_W1-3_1");
+    private PathPlannerPath US_W1_3_2 = PathPlannerPath.fromPathFile("ver2 US_W1-3_2");
+    private PathPlannerPath US_W1_3_3 = PathPlannerPath.fromPathFile("ver2 US_W1-3_3");
+
+    private Command US_W13() {
+        return new SequentialCommandGroup(
+            setAutonStartPose(US_W1_3_1),
+            shooter.cmdShooterRamp(),
+            // shooter.cmdSetKeepShooterOn(true),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_1),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_2),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_3),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            // shooter.cmdSetKeepShooterOn(false),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
+        );
+    }
+
+    /*
+     * Modified version of US_W1_3 to return to subwoofer to shoot with fixed shooter pivot angle
+     */
+
+    private PathPlannerPath sub_US_W1_3_2 = PathPlannerPath.fromPathFile("sub US_W1-3_2");
+    private PathPlannerPath sub_US_W1_3_3 = PathPlannerPath.fromPathFile("sub US_W1-3_3");
+    private PathPlannerPath sub_US_W1_3_4 = PathPlannerPath.fromPathFile("sub US_W1-3_4");
+    private PathPlannerPath sub_US_W1_3_5 = PathPlannerPath.fromPathFile("sub US_W1-3_5");
+    private PathPlannerPath sub_US_W1_3_6 = PathPlannerPath.fromPathFile("sub US_W1-3_6");
+
+    private Command sub_US_W13() {
+        return new SequentialCommandGroup(
+            setAutonStartPose(US_W1_3_1),
+            shooter.cmdShooterRamp(),
+            // shooter.cmdSetKeepShooterOn(true),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_1),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_US_W1_3_2),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_US_W1_3_3),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_US_W1_3_4),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_US_W1_3_5),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_US_W1_3_6),
+            // shooter.cmdSetKeepShooterOn(false),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
+        );
+    }
+
+    private Command US_W13_TEST_DRIVE() {
+        return new SequentialCommandGroup(
+            setAutonStartPose(PathPlannerPath.fromPathFile("US_W1-3_1")),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_1"))),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_2"))),
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_3")))
+        );
+    }
+
+    /*
+     * Robot Starting Position: Upper Speaker
+     * Seems to be redundant with 4 piece auton, only advantage is having code for different starting positions depending on
+     * alliance's capabilities
+     */
+    private PathPlannerPath LS_W1_3_1 = PathPlannerPath.fromPathFile("LS_W1-3_1");
+    private PathPlannerPath LS_W1_3_2 = PathPlannerPath.fromPathFile("LS_W1-3_2");
+    private PathPlannerPath LS_W1_3_3 = PathPlannerPath.fromPathFile("LS_W1-3_3");
+
+    private Command LS_W13() {
+        return new SequentialCommandGroup(
+            setAutonStartPose(LS_W1_3_1),
+            shooter.cmdShooterRamp(),
+            // shooter.cmdSetKeepShooterOn(true),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS_W1_3_1),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS_W1_3_2),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS_W1_3_3),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            // shooter.cmdSetKeepShooterOn(false),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
+        );
+    }
+
+    /*
+     * Modified version of LS_W13 to accomodate fixed shooter pivot angle
+     */
+    private PathPlannerPath sub_LS_W1_3_2 = PathPlannerPath.fromPathFile("sub LS_W1-3_2");
+    private PathPlannerPath sub_LS_W1_3_3 = PathPlannerPath.fromPathFile("sub LS_W1-3_3");
+    private PathPlannerPath sub_LS_W1_3_4 = PathPlannerPath.fromPathFile("sub LS_W1-3_4");
+    private PathPlannerPath sub_LS_W1_3_5 = PathPlannerPath.fromPathFile("sub LS_W1-3_5");
+    private PathPlannerPath sub_LS_W1_3_6 = PathPlannerPath.fromPathFile("sub LS_W1-3_6");
+
+    private Command sub_LS_W13() {
+        return new SequentialCommandGroup(
+            setAutonStartPose(LS_W1_3_1),
+            shooter.cmdShooterRamp(),
+            // shooter.cmdSetKeepShooterOn(true),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS_W1_3_1),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_LS_W1_3_2),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_LS_W1_3_3),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_LS_W1_3_4),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_LS_W1_3_5),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_LS_W1_3_6),
+            // shooter.cmdSetKeepShooterOn(false),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
+        );
+    }
+
+    //https://docs.google.com/presentation/d/19F_5L03n90t7GhtzQhD4mYNEMkdFsUGoDSb4tT9HqNI/edit#slide=id.g268da342b19_1_0
+
+    private PathPlannerPath S4PW1 = PathPlannerPath.fromPathFile("S4PW1");
+    private PathPlannerPath S4PW2 = PathPlannerPath.fromPathFile("S4PW2");
+    private PathPlannerPath S4PW3 = PathPlannerPath.fromPathFile("S4PW3");
+
+    private Command speaker4PieceWing(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(S4PW1),
+            shooter.cmdShooterRamp(),
+            // shooter.cmdSetKeepShooterOn(true),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(S4PW1),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(S4PW2),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(S4PW3),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            // shooter.cmdSetKeepShooterOn(false),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
+        );
+    }
+
+    private PathPlannerPath sub_S4PW1 = PathPlannerPath.fromPathFile("sub S4PW1");
+    private PathPlannerPath sub_S4PW2 = PathPlannerPath.fromPathFile("sub S4PW2");
+    private PathPlannerPath sub_S4PW3 = PathPlannerPath.fromPathFile("sub S4PW3");
+    private PathPlannerPath sub_S4PW4 = PathPlannerPath.fromPathFile("sub S4PW4");
+    private PathPlannerPath sub_S4PW5 = PathPlannerPath.fromPathFile("sub S4PW5");
+    private PathPlannerPath sub_S4PW6 = PathPlannerPath.fromPathFile("sub S4PW6");
+
+    private Command sub_speaker4PieceWing(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(sub_S4PW1),
+            shooter.cmdShooterRamp(),
+            // shooter.cmdSetKeepShooterOn(true),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_S4PW1),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_S4PW2),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_S4PW3),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_S4PW4),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
+
+            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_S4PW5),
+                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
+            new PPTrajectoryFollowingCmd(sub_S4PW6),
+            // shooter.cmdSetKeepShooterOn(false),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
+        );
+    }
+
+    //--------------------------------------------------------------------------------------------
+    //  
     //      Priority Autonomous Paths
     //  
     //--------------------------------------------------------------------------------------------
@@ -187,156 +413,6 @@ public class CatzAutonomous {
         );
     }
 
-    private final double FOUR_PIECE_AUTON_INTAKE_TIMEOUT = 4.0;
-    /*
-     * Robot Starting Position: Upper Speaker
-     * Seems to be redundant with 4 piece auton, only advantage is having code for different starting positions depending on
-     * alliance's capabilities
-     */
-
-    private PathPlannerPath US_W1_3_1 = PathPlannerPath.fromPathFile("US_W1-3_1");
-    private PathPlannerPath US_W1_3_2 = PathPlannerPath.fromPathFile("ver2 US_W1-3_2");
-    private PathPlannerPath US_W1_3_3 = PathPlannerPath.fromPathFile("ver2 US_W1-3_3");
-
-    private Command US_W13() {
-        return new SequentialCommandGroup(
-            setAutonStartPose(US_W1_3_1),
-            shooter.cmdShooterRamp(),
-            // shooter.cmdSetKeepShooterOn(true),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_1),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_2),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_3),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            // shooter.cmdSetKeepShooterOn(false),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd()
-        );
-    }
-
-    private PathPlannerPath sub_US_W1_3_2 = PathPlannerPath.fromPathFile("sub US_W1-3_2");
-    private PathPlannerPath sub_US_W1_3_3 = PathPlannerPath.fromPathFile("sub US_W1-3_3");
-    private PathPlannerPath sub_US_W1_3_4 = PathPlannerPath.fromPathFile("sub US_W1-3_4");
-    private PathPlannerPath sub_US_W1_3_5 = PathPlannerPath.fromPathFile("sub US_W1-3_5");
-    private PathPlannerPath sub_US_W1_3_6 = PathPlannerPath.fromPathFile("sub US_W1-3_6");
-
-    private Command sub_US_W13() {
-        return new SequentialCommandGroup(
-            setAutonStartPose(US_W1_3_1),
-            shooter.cmdShooterRamp(),
-            // shooter.cmdSetKeepShooterOn(true),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(US_W1_3_1),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            new PPTrajectoryFollowingCmd(sub_US_W1_3_2),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_US_W1_3_3),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            new PPTrajectoryFollowingCmd(sub_US_W1_3_4),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_US_W1_3_5),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            new PPTrajectoryFollowingCmd(sub_US_W1_3_6),
-            // shooter.cmdSetKeepShooterOn(false),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd()
-        );
-    }
-
-    private Command US_W13_TEST_DRIVE() {
-        return new SequentialCommandGroup(
-            setAutonStartPose(PathPlannerPath.fromPathFile("US_W1-3_1")),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_1"))),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_2"))),
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("US_W1-3_3")))
-        );
-    }
-
-    /*
-     * Robot Starting Position: Upper Speaker
-     * Seems to be redundant with 4 piece auton, only advantage is having code for different starting positions depending on
-     * alliance's capabilities
-     */
-    private PathPlannerPath LS_W1_3 = PathPlannerPath.fromPathFile("LS_W1-3_1");
-    private PathPlannerPath LS_W2_3 = PathPlannerPath.fromPathFile("LS_W1-3_2");
-    private PathPlannerPath LS_W3_3 = PathPlannerPath.fromPathFile("LS_W1-3_3");
-
-    private Command LS_W13() {
-        return new SequentialCommandGroup(
-            setAutonStartPose(LS_W1_3),
-            shooter.cmdShooterRamp(),
-            // shooter.cmdSetKeepShooterOn(true),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS_W1_3),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS_W2_3),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS_W3_3),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            // shooter.cmdSetKeepShooterOn(false),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd()
-        );
-    }
-
-    /*
-     * Modified version of LS_W13 to accomodate fixed shooter pivot angle
-     */
-    private PathPlannerPath sub_LS_W1_3_2 = PathPlannerPath.fromPathFile("sub LS_W1-3_2");
-    private PathPlannerPath sub_LS_W1_3_3 = PathPlannerPath.fromPathFile("sub LS_W1-3_3");
-    private PathPlannerPath sub_LS_W1_3_4 = PathPlannerPath.fromPathFile("sub LS_W1-3_4");
-    private PathPlannerPath sub_LS_W1_3_5 = PathPlannerPath.fromPathFile("sub LS_W1-3_5");
-    private PathPlannerPath sub_LS_W1_3_6 = PathPlannerPath.fromPathFile("sub LS_W1-3_6");
-
-    private Command sub_LS_W13() {
-        return new SequentialCommandGroup(
-            setAutonStartPose(LS_W1_3),
-            shooter.cmdShooterRamp(),
-            // shooter.cmdSetKeepShooterOn(true),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(LS_W1_3),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            new PPTrajectoryFollowingCmd(sub_LS_W1_3_2),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_LS_W1_3_3),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            new PPTrajectoryFollowingCmd(sub_LS_W1_3_4),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_LS_W1_3_5),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            new PPTrajectoryFollowingCmd(sub_LS_W1_3_6),
-            // shooter.cmdSetKeepShooterOn(false),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd()
-        );
-    }
-    
     /*
      * Robot Starting Position: Lower Speaker
      * Sequence: Shoots preload into speaker
@@ -523,71 +599,6 @@ public class CatzAutonomous {
     //      Autonomous Paths
     //  
     //--------------------------------------------------------------------------------------------
-    //https://docs.google.com/presentation/d/19F_5L03n90t7GhtzQhD4mYNEMkdFsUGoDSb4tT9HqNI/edit#slide=id.g268da342b19_1_0
-
-    private PathPlannerPath S4PW1 = PathPlannerPath.fromPathFile("S4PW1");
-    private PathPlannerPath S4PW2 = PathPlannerPath.fromPathFile("S4PW2");
-    private PathPlannerPath S4PW3 = PathPlannerPath.fromPathFile("S4PW3");
-
-    private Command speaker4PieceWing(){
-        return new SequentialCommandGroup(
-            setAutonStartPose(S4PW1),
-            shooter.cmdShooterRamp(),
-            // shooter.cmdSetKeepShooterOn(true),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(S4PW1),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(S4PW2),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(S4PW3),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            // shooter.cmdSetKeepShooterOn(false),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd()
-        );
-    }
-
-    private PathPlannerPath sub_S4PW1 = PathPlannerPath.fromPathFile("sub S4PW1");
-    private PathPlannerPath sub_S4PW2 = PathPlannerPath.fromPathFile("sub S4PW2");
-    private PathPlannerPath sub_S4PW3 = PathPlannerPath.fromPathFile("sub S4PW3");
-    private PathPlannerPath sub_S4PW4 = PathPlannerPath.fromPathFile("sub S4PW4");
-    private PathPlannerPath sub_S4PW5 = PathPlannerPath.fromPathFile("sub S4PW5");
-    private PathPlannerPath sub_S4PW6 = PathPlannerPath.fromPathFile("sub S4PW6");
-
-    private Command sub_speaker4PieceWing(){
-        return new SequentialCommandGroup(
-            setAutonStartPose(sub_S4PW1),
-            shooter.cmdShooterRamp(),
-            // shooter.cmdSetKeepShooterOn(true),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_S4PW1),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            new PPTrajectoryFollowingCmd(sub_S4PW2),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_S4PW3),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            new PPTrajectoryFollowingCmd(sub_S4PW4),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd(),
-
-            new ParallelCommandGroup(new PPTrajectoryFollowingCmd(sub_S4PW5),
-                                     new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(FOUR_PIECE_AUTON_INTAKE_TIMEOUT)),
-            new PPTrajectoryFollowingCmd(sub_S4PW6),
-            // shooter.cmdSetKeepShooterOn(false),
-            shooter.cmdShooterRamp(),
-            new HomeToSpeakerCmd()
-        );
-    }
     
     private Command mid(){
         return new SequentialCommandGroup(

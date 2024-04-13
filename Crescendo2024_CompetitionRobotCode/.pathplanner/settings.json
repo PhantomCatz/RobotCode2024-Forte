@@ -15,6 +15,7 @@
     "LS_W1-3",
     "LS_W3",
     "MCHA",
+    "subwoofer_LS_W1-3",
     "S4PCSW",
     "S4PW",
     "Scoring_C1-3",
@@ -24,9 +25,8 @@
     "US-Counter_C1-2",
     "US_W1",
     "US_W1-3",
-    "subwoof_LS_W1-3",
-    "subwoof_S4PW",
-    "subwoof_US_W1-3"
+    "subwoofer_S4PW",
+    "subwoofer_US_W1-3"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.0,
