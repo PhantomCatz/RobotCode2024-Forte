@@ -364,11 +364,16 @@ public class SubsystemCatzShooter extends SubsystemBase {
           break;
       } 
     }
+
+    //-------------------------------------------------------------------------------------------------
+    //TODO shooter shuffleboard value testing
+    //-------------------------------------------------------------------------------------------------
     // double vellt = HOARD_SHOOTER_VEL_LT.get();
     // double velrt = HOARD_SHOOTER_VEL_RT.get();
 
     // io.setShooterEnabled(vellt, velrt);
   
+
       //-------------------------------------------------------------------------------------------
       //
       // servo periodic logic
@@ -447,6 +452,7 @@ public class SubsystemCatzShooter extends SubsystemBase {
     // importantShooterLogs();
 
   } //end of shooter periodic
+  
   
   //-------------------------------------------------------------------------------------
   // Debug Logger For Shooter 
@@ -615,6 +621,9 @@ public class SubsystemCatzShooter extends SubsystemBase {
       io.setShooterEnabled(velocityLT, velocityRT);    
   }
 
+  //-----------------------------------------------------------------------------
+  // Manual flywheel velocity setting from hoarding linear interpolation table
+  //-----------------------------------------------------------------------------
   public void setFlyWheelVelocities(double leftVel, double rightVel) {
       m_velocityThresholdLT = -leftVel + FLYWHEEL_THRESHOLD_OFFSET;
       m_velocityThresholdRT =  rightVel - FLYWHEEL_THRESHOLD_OFFSET;

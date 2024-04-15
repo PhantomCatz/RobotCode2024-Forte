@@ -19,10 +19,6 @@ import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class HoardShotCmd extends Command {
 
-  private double hoardVelLT;
-  private double hoardVelRT;
-
-  private static final double SHOOTER_VEL_DIFFERENCE = 23.0;
 
   //subsystem declaration
   private SubsystemCatzElevator   elevator   = SubsystemCatzElevator.getInstance();
@@ -31,6 +27,12 @@ public class HoardShotCmd extends Command {
   private SubsystemCatzTurret     turret     = SubsystemCatzTurret.getInstance();
   private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
+  private static final double SHOOTER_VEL_RT_SCALAR = 1.85;
+
+  private boolean isInOffensiveMode = false;
+  private double hoardVelLT;
+  private double hoardVelRT;
+
   //------------------------------------------------------------------------------------------------
   //
   // Interpolation tables
@@ -38,10 +40,8 @@ public class HoardShotCmd extends Command {
   //------------------------------------------------------------------------------------------------
   //------------------------------------------------------------------------------------------------
   //  Shooter EL angle look up table key: 
-  //    Param 1: Distance in meters from back wall to Center of the robot
-  //    Param 2: pivot position % of max elevation units
-  // TBD - how did we determine distance interval?
-  // TBD - explain why two distance values
+  //    Param 1: Distance in meters from center of robot to shot note location
+  //    Param 2: RPS shooter motor shaft units for lower rps side (left)
   //------------------------------------------------------------------------------------------------
   private static final InterpolatingDoubleTreeMap shooterVelPivotTable = new InterpolatingDoubleTreeMap();
 
@@ -55,9 +55,11 @@ public class HoardShotCmd extends Command {
 
   private Translation2d m_targetXY;
 
-  /** Creates a new HomeToHoardShotCmd. */
-  public HoardShotCmd() {
+
+  //constructor for hoard
+  public HoardShotCmd(boolean isInOffensiveMode) {
     addRequirements(turret, shooter, intake, elevator);  
+    this.isInOffensiveMode = isInOffensiveMode; 
   }
 
   // Called when the command is initially scheduled.
@@ -65,16 +67,32 @@ public class HoardShotCmd extends Command {
   public void initialize() {
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
-    turret.updateTargetPositionTurret(CatzMechanismConstants.STOW_PRESET);
 
-    if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
-      
-      //translation of the blue alliance Hoarding
-      m_targetXY = new Translation2d(0.0, FieldConstants.HOARD_LOCATION_Y);
+
+    //alliance color + hoard Mode target defining
+    if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) { 
+
+      //in blue alliance hoarding mode
+      if(isInOffensiveMode) {
+
+        //translation of the blue alliance offensive hoarding location
+        m_targetXY = new Translation2d(0.0, FieldConstants.HOARD_LOCATION_Y);
+      } else {
+              
+        //translation of the blue alliance Hoarding Defense location
+        m_targetXY = new Translation2d(6.64, 6.96);
+      }
 
     } else {
-      //translation of the Red alliance Hoarding
-      m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.HOARD_LOCATION_Y);     
+
+      //is in red alliance Hoarding
+      if(isInOffensiveMode) {
+        //translation of the Red alliance Hoarding
+        m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.HOARD_LOCATION_Y);  
+      } else {
+        //translation of the Red alliance Hoarding
+        m_targetXY = new Translation2d(9.18 , 6.96); 
+      }
     }
   }
 
@@ -83,17 +101,17 @@ public class HoardShotCmd extends Command {
   public void execute() {
     double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
     
-    hoardVelRT = shooterVelPivotTable.get(newDist) * 1.85;
-    hoardVelLT = shooterVelPivotTable.get(newDist);
+    //scale shooter velocities based off the lower shooter velocity
+    hoardVelRT = shooterVelPivotTable.get(newDist) * SHOOTER_VEL_RT_SCALAR; //max scale
+    hoardVelLT = shooterVelPivotTable.get(newDist);                         //min scale
 
+
+    //set shooter velocities without state machine
     shooter.setFlyWheelVelocities(hoardVelLT, hoardVelRT);
+
+    //auto aim turret
     turret.aimAtGoal(m_targetXY, false);
 
-  }
-
-  public double setVelocitySpin(double velRT){ //jank calculation for spin
-    double value = velRT - (velRT*0.2);
-    return value;
   }
 
   // Called once the command ends or is interrupted.

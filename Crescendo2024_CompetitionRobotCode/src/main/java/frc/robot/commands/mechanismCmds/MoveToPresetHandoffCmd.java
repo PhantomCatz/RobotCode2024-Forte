@@ -226,7 +226,7 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean elevatorState = elevator.getElevatorInPos();
    // boolean shooterServoState = shooter.getShooterServoInPos();
     // System.out.println(intakeState +" "+ turretState + " "+  elevatorState);
-    return(intakeState && turretState);// shooterServoState); //TODO, removed returning of elevator state
+    return(intakeState && turretState && elevatorState);// shooterServoState); //TODO shooter servo state removed until servos added back on
   }
 
   @Override

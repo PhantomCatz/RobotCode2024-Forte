@@ -2,7 +2,6 @@ package frc.robot.commands.mechanismCmds;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import org.littletonrobotics.junction.Logger;
@@ -13,7 +12,6 @@ import frc.robot.CatzAutonomous;
 import frc.robot.CatzConstants;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.CatzConstants.FieldConstants;
-import frc.robot.subsystems.LEDs.LEDSection.LEDMode;
 import frc.robot.subsystems.LEDs.SubsystemCatzLED;
 import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
@@ -22,7 +20,6 @@ import frc.robot.subsystems.shooter.SubsystemCatzShooter;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterNoteState;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
-import frc.robot.subsystems.vision.SubsystemCatzVision;
 
 
 public class HomeToSpeakerCmd extends Command {
@@ -44,8 +41,6 @@ public class HomeToSpeakerCmd extends Command {
   //  Shooter EL angle look up table key: 
   //    Param 1: Distance in meters from back wall to Center of the robot
   //    Param 2: pivot position % of max elevation units
-  // TBD - how did we determine distance interval?
-  // TBD - explain why two distance values
   //------------------------------------------------------------------------------------------------
   private static final InterpolatingDoubleTreeMap shooterPivotTable = new InterpolatingDoubleTreeMap();
 
@@ -112,7 +107,7 @@ public class HomeToSpeakerCmd extends Command {
       shooter.startShooterFlywheel(); 
     }
 
-    if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {    //TBD - we should do this once on startup vs every cmd call //TTTchanging to red 
+    if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) {  
       
       //translation of the blue alliance speaker
       m_targetXY = new Translation2d(0.0, FieldConstants.SPEAKER_COORD_MTRS_Y);
