@@ -89,6 +89,7 @@ public class SubsystemCatzLED extends SubsystemBase {
 
                     if(SubsystemCatzIntake.getInstance().getIntakeLoadBeamBreakBroken()){
                         //note is currently in the intake
+                        top.colorSolid(Color.kPink); top.ledMode = LEDMode.Blink;
                         mid.colorSolid(Color.kPink); mid.ledMode = LEDMode.Blink;
                         bot.colorSolid(mode.color); bot.ledMode = LEDMode.Blink;
 

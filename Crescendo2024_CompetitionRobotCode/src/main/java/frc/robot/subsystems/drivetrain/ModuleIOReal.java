@@ -7,6 +7,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -80,7 +81,7 @@ public class ModuleIOReal implements ModuleIO {
             //neutral mode
         talonConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
             //pid
-        driveConfigs.kP = 1.0;
+        driveConfigs.kP = 0.01; //1.0 if using velocity Torque 0.01 for velocity dutycycle
         driveConfigs.kI = 0.0;
         driveConfigs.kD = 0.0;
  
@@ -106,7 +107,7 @@ public class ModuleIOReal implements ModuleIO {
 
     @Override
     public void setDriveVelocityIO(double velocity) {
-        DRIVE_MOTOR.setControl(new VelocityTorqueCurrentFOC(velocity));
+        DRIVE_MOTOR.setControl(new VelocityDutyCycle(velocity));
     }
 
     @Override

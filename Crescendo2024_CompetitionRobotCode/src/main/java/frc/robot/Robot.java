@@ -57,8 +57,8 @@ public class Robot extends LoggedRobot {
     switch (CatzConstants.currentMode) {
       // Running on a real robot, log to a USB stick
       case REAL:
-        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
-        Logger.addDataReceiver(new NT4Publisher  ());
+        // Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
+        // Logger.addDataReceiver(new NT4Publisher  ());
         
         // new PowerDistribution(1, ModuleType.kRev);
         break;
@@ -72,13 +72,12 @@ public class Robot extends LoggedRobot {
       // Replaying a log, set up replay source
       case REPLAY:
         setUseTiming(false); // Run as fast as possible
-        String logPath = LogFileUtil.findReplayLog();
-        Logger.setReplaySource(new WPILOGReader(logPath));
-        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        // Logger.setReplaySource(new WPILOGReader(logPath));
+        // Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
         break;
     }
     // Start AdvantageKit logger
-    Logger.start();
+    // Logger.start();
 
     //instantiate the robot subsystems and commands using an object
     m_robotContainer = new RobotContainer();
@@ -147,24 +146,27 @@ public class Robot extends LoggedRobot {
         lead.bot.ledMode = LEDMode.Solid;
 
     //checklist done leds
-    // if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || 
-    //     SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
-    //   latchedChecklistCounter = 1;
-    //   lead.top.colorSolid(Color.kGreen); 
-    //   lead.top.ledMode = LEDMode.Blink;
+      if(SubsystemCatzVision.getInstance().getAprilTagID(2) == 263 ||
+          SubsystemCatzVision.getInstance().getAprilTagID(1) == 263 || 
+          SubsystemCatzVision.getInstance().getAprilTagID(0) == 263) { 
+          latchedChecklistCounter = 1;
+          lead.top.colorSolid(Color.kGreen); 
+          lead.top.ledMode = LEDMode.Blink;
 
-    // } else if(latchedChecklistCounter == 1) {
-    //   lead.top.colorSolid(Color.kGreen); 
-    //   lead.top.ledMode = LEDMode.Solid;
-    // } else {
-    //   lead.top.colorSolid(Color.kOrangeRed); 
-    //   lead.top.ledMode = LEDMode.Solid;
-    // }
+      } else if(latchedChecklistCounter == 1) {
+          lead.top.colorSolid(Color.kGreen); 
+          lead.top.ledMode = LEDMode.Solid;
+      } else {
+          lead.top.colorSolid(Color.kPink); 
+          lead.top.ledMode = LEDMode.Blink;
+      }
 
   }
 
   @Override
-  public void disabledExit() {}
+  public void disabledExit() {
+    latchedChecklistCounter = 0; //resets checklist
+  }
 
   @Override
   public void autonomousInit() {

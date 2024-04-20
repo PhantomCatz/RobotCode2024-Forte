@@ -45,7 +45,7 @@ public class VisionIOLimeLight implements VisionIO {
 
         // collects pose information based off network tables and orients itself depending on alliance side
         //creating new pose3d object based of pose from network tables
-        double[] visionPoseInfo = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+        double[] visionPoseInfo = NetworkTableInstance.getDefault().getTable(name).getEntry("botpose_wpiblue").getDoubleArray(new double[7]); // this was 6 TODO
         inputs.tagCount = llresults.targetingResults.targets_Fiducials.length;
         inputs.maxDistance = llresults.targetingResults.botpose_avgdist;
 
@@ -67,22 +67,32 @@ public class VisionIOLimeLight implements VisionIO {
             // sets input timestamp
             inputs.isNewVisionPose = true;
             
+            //take new pose info from the limelight api
             visionPose2d = new Pose2d(visionPoseInfo[0],visionPoseInfo[1], new Rotation2d());
+
+            //set a previous vision position depending on if we see an apriltag
             if(prevVisionPos == null){
                 prevVisionPos = visionPose2d;
             }
 
-            // System.out.println(visionPose2d.getTranslation().getDistance(prevVisionPos.getTranslation()));
+            //logic for filtering bad estimates
             double error = visionPose2d.getTranslation().getDistance(prevVisionPos.getTranslation());
+            
+            //-------------------------------------------------------
+            // error should be greater than 0 but less than 0.1 for vision estimates to be considered good
+            //------------------------------------------------
             if(error == 0.0){
+                //obtained a null error reading
                 inputs.isNewVisionPose = false;
                 return;
             }
             if(error > 0.1){
+
                 badData = true;
             }
 
             if(!badData){
+                //set new vision data if reading is considered good
                 inputs.x = visionPose2d.getX();
                 inputs.y = visionPose2d.getY();
                 inputs.rotation = visionPose2d.getRotation().getRadians();
@@ -90,12 +100,10 @@ public class VisionIOLimeLight implements VisionIO {
             }
             
             prevVisionPos = visionPose2d;
-            badData = false;
-
-            //data used for pose estimator
-           
+            badData = false;           
         } 
         else {
+            //limelight is not correct and doesn't currently have a target to look for
             inputs.isNewVisionPose = false;
             prevVisionPos = null;
         }

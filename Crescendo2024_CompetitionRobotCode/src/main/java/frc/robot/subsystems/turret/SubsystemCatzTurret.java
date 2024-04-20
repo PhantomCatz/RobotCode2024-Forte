@@ -78,7 +78,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private static final double LIMELIGHT_kI = 0.0;
   private static final double LIMELIGHT_kD = 0.0;
 
-  private final double TURRET_ANGLE_THRESHOLD_DEG = 3.0;
+  private final static double TURRET_ANGLE_THRESHOLD_DEG = 3.0;
   private final double TURRET_APRILTAG_OFFSET_THRESHOLD = 5.0;
 
   private double m_turretTargetDegree;
@@ -95,7 +95,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   private TurretState m_prevTurretState;
 
 
-  private boolean m_turretInPos;
+  private boolean m_turretInPos = false;
 
   private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();   
 
@@ -160,7 +160,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
   public void periodic() {
   
     io.updateInputs(inputs);
-    // Logger.processInputs("turret", inputs);
+    Logger.processInputs("turret", inputs);
 
     currentTurretDegree = -inputs.turretEncValue; 
     
@@ -197,6 +197,8 @@ public class SubsystemCatzTurret extends SubsystemBase {
           //  Intake angle is wihin valid range.
           //------------------------------------------------------------------------------------------
           io.turretSetPwr(manualTurretPwr);
+        } else {
+          io.turretSetPwr(0.0);
         }
 
       } else if(m_currentTurretState == TurretState.AUTO) {
@@ -248,6 +250,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
 
     //In position check
     if(m_currentTurretState == TurretState.AUTO){
+
       if(m_closedLoopError < TURRET_ANGLE_THRESHOLD_DEG) {     
         m_turretInPos = true;
       }else{
@@ -270,9 +273,9 @@ public class SubsystemCatzTurret extends SubsystemBase {
     // Logger.recordOutput("turret/offsetXTurret",        offsetAprilTagX);
     //Logger.recordOutput("turret/PwrPID", apriltagTrackingPower);
     // Logger.recordOutput("turret/currentTurretState", currentTurretState);
-    //Logger.recordOutput("turret/closedlooperror",      m_closedLoopError);
+    Logger.recordOutput("turret/closedlooperror",      m_closedLoopError);
     // Logger.recordOutput("turret/setpositionpwr", setPositionPower);
-    // Logger.recordOutput("turret/m_TurretinPos", m_turretInPos);
+    Logger.recordOutput("turret/m_TurretinPos", m_turretInPos);
   }   //End of periodic()
 
 
@@ -286,7 +289,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
       //  We are aiming using April Tags - Check if we are looking at he April Tag on the Speaker.
       //  If we are then we will TBD.  Otherwise we will TBD
       //--------------------------------------------------------------------------------------------
-      System.out.println(SubsystemCatzVision.getInstance().getAprilTagID(2));
+      //System.out.println(SubsystemCatzVision.getInstance().getAprilTagID(2));
       if(SubsystemCatzVision.getInstance().getAprilTagID(2) == 7 ||
          SubsystemCatzVision.getInstance().getAprilTagID(2) == 4){
           
@@ -430,6 +433,7 @@ public class SubsystemCatzTurret extends SubsystemBase {
       m_turretTargetDegree *= -1;
     });
   }
+
 
 
 }

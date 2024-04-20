@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.CatzConstants.AllianceColor;
 import frc.robot.CatzConstants.CatzMechanismConstants;
 import frc.robot.commands.DriveCmds.PPTrajectoryFollowingCmd;
+import frc.robot.commands.mechanismCmds.HoardShotCmd;
 import frc.robot.commands.mechanismCmds.HomeToSpeakerCmd;
 import frc.robot.commands.mechanismCmds.MoveToPresetHandoffCmd;
 import frc.robot.commands.utilCmds.WaitUntilSecondsLeft;
@@ -42,8 +44,8 @@ public class CatzAutonomous {
     private SubsystemCatzDrivetrain drivetrain = SubsystemCatzDrivetrain.getInstance();
 
     private static AllianceColor allianceColor = AllianceColor.Blue;
-    private static LoggedDashboardChooser<CatzConstants.AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
-    private static LoggedDashboardChooser<Command> pathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
+    private static LoggedDashboardChooser<AllianceColor> chosenAllianceColor = new LoggedDashboardChooser<>("alliance selector");
+    private static LoggedDashboardChooser<Command> autoPathChooser = new LoggedDashboardChooser<>("Chosen Autonomous Path");
 
     PathConstraints autoPathfindingConstraints = new PathConstraints(
         4.8, 4.0, 
@@ -61,28 +63,30 @@ public class CatzAutonomous {
     *
     *-------------------------------------------------------------------------------------------------------------------*/
 
-        pathChooser.addOption("Score and Wait US_W1", US_W1());
-        pathChooser.addOption("Score and Wait LS_W3", LS_W3()); 
-        pathChooser.addOption("Score and Wait CS_W2", CS_W2());
+        autoPathChooser.addOption("Score and Wait US_W1", US_W1());
+        autoPathChooser.addOption("Score and Wait LS_W3", LS_W3()); 
+        autoPathChooser.addOption("Score and Wait CS_W2", CS_W2());
         
-        pathChooser.addOption("ScoringC13", US_C13());
-        pathChooser.addOption("ScoringC35", US_C35());
-        pathChooser.addOption("Hoard C1-2", US_C12_Hoard());
-        pathChooser.addOption("Hoard C4-5", LS_C45_Hoard());
+        autoPathChooser.addOption("ScoringC13", US_C13());
+        autoPathChooser.addOption("ScoringC35", US_C35());
+        autoPathChooser.addOption("Hoard C1-2", US_C12_Hoard());
+        autoPathChooser.addOption("Hoard C4-5", LS_C45_Hoard());
         
         //4 Note Autons
-        pathChooser.addOption("Scoring US W1-3", US_W13());
-        pathChooser.addOption("Scoring LS W1-3", LS_W13());
-        pathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
+        autoPathChooser.addOption("Scoring US W1-3", US_W13());
+        autoPathChooser.addOption("Scoring LS W1-3", LS_W13());
+        autoPathChooser.addOption("Speaker 4 Piece Wing", speaker4PieceWing());
 
         //Subwoofer 4 Note Autons
-        pathChooser.addOption("Subwoofer US W1-3", sub_US_W13());
-        pathChooser.addOption("Subwoofer LS W1-3", sub_LS_W13());
-        pathChooser.addOption("Subwoofer CS W1-3", sub_speaker4PieceWing());
+        autoPathChooser.addOption("Subwoofer US W1-3", sub_US_W13());
+        autoPathChooser.addOption("Subwoofer LS W1-3", sub_LS_W13());
+        autoPathChooser.addOption("Subwoofer CS W1-3", sub_speaker4PieceWing());
+
+        autoPathChooser.addOption("", getCommand());
 
         //Semi Illegal Paths 
-        pathChooser.addOption("1 Wing Bulldoze Under", WingBulldozeUnder());
-        pathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
+        autoPathChooser.addOption("1 Wing Bulldoze Under", WingBulldozeUnder());
+        autoPathChooser.addOption("1 Wing Bulldoze Above", WingBulldozeAbove());
 
     //-----------------------------------------------------------------------------------------------------------------------
 
@@ -99,13 +103,12 @@ public class CatzAutonomous {
         // pathChooser.addOption("DriveStraightMid", driveTranslateAutoMid());
         // pathChooser.addOption("DriveStraightLeft", driveTranslateAutoLeft());
         // pathChooser.addOption("Curve", curveAuto());
-        pathChooser.addOption("Test", test());
+        autoPathChooser.addOption("Test", test());
     }
 
     //configured dashboard
     public Command getCommand() {
-        return pathChooser.get(); 
-
+        return CS_W1111();
     }
 
     public static CatzAutonomous getInstance(){
@@ -526,6 +529,14 @@ public class CatzAutonomous {
         );
     }
 
+
+    private Command CS_W1111(){
+        return new SequentialCommandGroup(
+            setAutonStartPose(CS_W2_1),
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
+        );
+    }
     /*
      * Robot Starting Position: Lower Speaker
      * Sequence: Shoots preload into speaker
@@ -542,18 +553,18 @@ public class CatzAutonomous {
     private Command LS_C45_Hoard() {
         return new SequentialCommandGroup(
             setAutonStartPose(Hoard_C4_5_1),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(Hoard_C4_5_1),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(5.0)),
             new PPTrajectoryFollowingCmd(Hoard_C4_5_2),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(Hoard_C4_5_3),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND).withTimeout(4.0)),
             new PPTrajectoryFollowingCmd(Hoard_C4_5_4),
-            new HomeToSpeakerCmd(),
-            shooter.cmdShooterRamp()
+            shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd()
         );
     }
         
@@ -564,12 +575,12 @@ public class CatzAutonomous {
     private Command WingBulldozeUnder() {
         return new SequentialCommandGroup(
             setAutonStartPose(PathPlannerPath.fromPathFile("1WingBulldozeUnder-1")),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new ParallelCommandGroup(new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-1")),
                                         new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)),
-            new HomeToSpeakerCmd(),
             shooter.cmdShooterRamp(),
+            new HomeToSpeakerCmd(),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-2")),
             new PPTrajectoryFollowingCmd(PathPlannerPath.fromPathFile("1WingBulldozeUnder-3"))
         );
@@ -946,7 +957,7 @@ public class CatzAutonomous {
     }
 
     public void chooseAllianceColor() {
-        allianceColor = chosenAllianceColor.get();
+        allianceColor = AllianceColor.Blue;
     }
 
 }

@@ -162,21 +162,25 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
             //pose estimators standard dev are increase x, y, rotatinal radians values to trust vision less   
             xyStdDev = 0;
 
+            //tag count
             if(visionOdometry.get(i).getNumOfTagsVisible() >= 2){
 
                 //vision is trusted more with more tags visible
-                xyStdDev = 3; 
-            }else if(visionOdometry.get(i).getAvgArea() >= 0.15){
-
-                //vision is trusted more with tags that are closer to the target which inherhently take more of the frame
                 xyStdDev = 5; 
-            }else if(visionOdometry.get(i).getAvgArea() >= 0.12){ 
-                //if vision takes up less than 12% of the frame
-                xyStdDev = 10; 
-            }else if(visionOdometry.get(i).getAvgArea() <= 0.05){
+            } else {
+                xyStdDev = 1000;
+            }
 
-                //Do not trust vision inputs
-                xyStdDev = 100; 
+            if(SubsystemCatzVision.getInstance().getAprilTagID(1) == 4) {
+
+            }
+            
+            if(visionOdometry.get(i).getAvgArea() <= 0.05){
+
+                //Do not trust vision inputs if the tag size is extermely small
+                xyStdDev = 1000; 
+            } else {
+                xyStdDev = 5;
             }
 
             if(DriverStation.isAutonomous()){
@@ -187,7 +191,7 @@ public class SubsystemCatzDrivetrain extends SubsystemBase {
                 VecBuilder.fill(xyStdDev, xyStdDev,99999999.0)
             ); //gyro can be purely trusted for pose calculations so always trust it more than vision
             
-            if(visionOdometry.get(i).hasTarget() && DriverStation.isTeleop()){ //-999.0 indicates that limelight had bad data or no target
+            if(visionOdometry.get(i).hasTarget()) { 
                 m_poseEstimator.addVisionMeasurement(
                     new Pose2d(visionOdometry.get(i).getPose().getTranslation(),getRotation2d()), //only use vison for x,y pose, because gyro is already accurate enough
                     visionOdometry.get(i).getTimestamp()

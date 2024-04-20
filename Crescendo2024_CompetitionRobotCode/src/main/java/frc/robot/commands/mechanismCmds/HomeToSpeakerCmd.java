@@ -97,8 +97,6 @@ public class HomeToSpeakerCmd extends Command {
 
   @Override
   public void initialize() {
-    timer.reset();
-    timer.start();
 
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
@@ -120,6 +118,9 @@ public class HomeToSpeakerCmd extends Command {
 
     Logger.recordOutput("Speaker", m_targetXY);
 
+    timer.reset();
+    timer.start();
+
   }
 
   
@@ -131,28 +132,42 @@ public class HomeToSpeakerCmd extends Command {
   @Override 
   public void execute() {
   
-      // servoPos = shooterPivotTable.get(newDist);
+       servoPos = shooterPivotTable.get(newDist);
 
-      //   //use pose to pose linear interpolation table for servo
-      // newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
-      // servoPos = shooterPivotTable.get(newDist);
+         //use pose to pose linear interpolation table for servo
+       newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
+       servoPos = shooterPivotTable.get(newDist);
 
     
 
-      // shooter.updateShooterServo(servoPos);
+       shooter.updateShooterServo(servoPos);
       
-
       turret.aimAtGoal(m_targetXY, false); //change back to false if auto aim doesn't work
       
-  
-      if((turret.getTurretInPos() && shooter.isAutonShooterRamped() && timer.hasElapsed(1.0)) || timer.hasElapsed(AUTON_TIMEOUT_SEC)){
+    if(DriverStation.isAutonomous()){
 
-        if(DriverStation.isAutonomous()){
+      if((turret.getTurretInPos() && 
+          shooter.isAutonShooterRamped() //&& 
+          //timer.hasElapsed(1.0)
+          )) 
+        {
+        //mechanisms are in position
           shooter.setShooterState(ShooterState.SHOOTING);
-        }
+          System.out.println("mech in pos");
 
-      }  
-  }
+      } else {
+
+        if(timer.hasElapsed(AUTON_TIMEOUT_SEC)) {
+            // timeout has been reached
+            shooter.setShooterState(ShooterState.SHOOTING);
+
+            System.out.println("timeout");
+          
+
+        }  
+      }
+      }
+    }
 
   @Override
   public boolean isFinished(){

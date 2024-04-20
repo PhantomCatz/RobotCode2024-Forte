@@ -171,22 +171,28 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
 
         triggerModeHoard.and(xboxDrv.leftStick())
                       .onTrue(new MoveToPresetHandoffCmd(
-                        NoteDestination.AMP, NoteSource.INTAKE_GROUND)
+                        NoteDestination.SPEAKER, NoteSource.INTAKE_GROUND)
                       ); //DEPLOY INTAKE AND STOWS TO AMP SCORE DOWN POS
 
         triggerModeHoard.and(xboxAux.rightBumper())
-                        .onTrue(new ParallelCommandGroup(new HoardShotCmd(false),
-                                                         Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL)))
+                        .onTrue(
+                                new SequentialCommandGroup(//new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE).withTimeout(1.0),
+                                                           new HoardShotCmd(false))
                         );  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
 
-        triggerModeHoard.and(xboxAux.y())
-                        .onTrue(new ParallelCommandGroup(new HoardShotCmd(true),
-                                                         Commands.runOnce(()->shooter.setShooterState(ShooterState.START_SHOOTER_FLYWHEEL)))
+        triggerModeHoard.and(xboxAux.leftBumper())
+                        .onTrue(
+                                new SequentialCommandGroup(//new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE).withTimeout(1.0),
+                                                           new HoardShotCmd(true))
                         );  //MOVES TURRET/SERVOS TO CORRECT POS + RAMPS UP SHOOTER
   
         triggerModeHoard.and(xboxAux.b())
                         .onTrue(shooter.cmdShoot()
                         );    //TO SHOOT (NEED TO RAMP UP FIRST)
+
+        triggerModeHoard.and(xboxAux.x()).
+                        onTrue(new MoveToPreset(CatzMechanismConstants.SUBWOOFER_PRESET)
+                        );
 
         triggerModeHoard.and(xboxAux.x())
                         .onTrue(new MoveToPreset(CatzMechanismConstants.INTAKE_HOARD_PRESET)
@@ -196,13 +202,13 @@ import frc.robot.subsystems.vision.SubsystemCatzVision;
                         .onTrue(intake.cmdRollerOut()
                         );        // INTAKE ROLLERS SHOOT
 
-        triggerModeHoard.and(xboxAux.leftBumper())
-                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
-                        );     //NOTE IN SHOOTER TRANSFERED TO INTAKE
+        // triggerModeHoard.and(xboxAux.leftBumper())
+        //                 .onTrue(new MoveToPresetHandoffCmd(NoteDestination.AMP, NoteSource.FROM_SHOOTER)
+        //                 );     //NOTE IN SHOOTER TRANSFERED TO INTAKE
 
-        triggerModeHoard.and(xboxAux.rightBumper())
-                        .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)
-                        ); //NOTE IN INTAKE TRANSFERED TO SHOOTER
+        // triggerModeHoard.and(xboxAux.rightBumper())
+        //                 .onTrue(new MoveToPresetHandoffCmd(NoteDestination.SPEAKER, NoteSource.FROM_INTAKE)
+        //                 ); //NOTE IN INTAKE TRANSFERED TO SHOOTER
 
     //------------------------------------------------------------------------------------  
     // CLIMB MODE

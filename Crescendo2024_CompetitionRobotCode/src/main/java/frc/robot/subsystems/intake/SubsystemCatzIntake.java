@@ -229,8 +229,7 @@ public class SubsystemCatzIntake extends SubsystemBase {
 
         case ROLLERS_IN_GROUND:
           if (inputs.LoadBeamBrkState) {
-            setRollersOff();
-            m_currentRollerState = IntakeRollerState.ROLLERS_OFF;
+            m_currentRollerState = IntakeRollerState.BEAM_BREAK_CHECK;
           }
           break;
 
@@ -388,8 +387,8 @@ public class SubsystemCatzIntake extends SubsystemBase {
 // -------------------------------------------------------------------------------------
   public void importantIntakeLogs(){
   //Long Term
-    // Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
-    // Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
+    Logger.recordOutput("intake/targetAngle", m_targetPositionDeg);
+    Logger.recordOutput("intake/currentAngle", m_currentPositionDeg);
     }
   public void debugLogsIntake(){  // Keep these commented if not being USED
     

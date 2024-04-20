@@ -4,6 +4,10 @@
 
 package frc.robot.commands.mechanismCmds;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.InterpolatingMatrixTreeMap;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +19,7 @@ import frc.robot.subsystems.drivetrain.SubsystemCatzDrivetrain;
 import frc.robot.subsystems.elevator.SubsystemCatzElevator;
 import frc.robot.subsystems.intake.SubsystemCatzIntake;
 import frc.robot.subsystems.shooter.SubsystemCatzShooter;
+import frc.robot.subsystems.shooter.SubsystemCatzShooter.ShooterState;
 import frc.robot.subsystems.turret.SubsystemCatzTurret;
 
 public class HoardShotCmd extends Command {
@@ -33,6 +38,8 @@ public class HoardShotCmd extends Command {
   private double hoardVelLT;
   private double hoardVelRT;
 
+  private int traceID = -1;
+
   //------------------------------------------------------------------------------------------------
   //
   // Interpolation tables
@@ -46,12 +53,30 @@ public class HoardShotCmd extends Command {
   private static final InterpolatingDoubleTreeMap shooterVelPivotTable = new InterpolatingDoubleTreeMap();
 
   static {
-    shooterVelPivotTable.put(1.28, 35.0); 
+    shooterVelPivotTable.put(1.28, 30.0); 
 
-    shooterVelPivotTable.put(1.2, 30.0);
+    shooterVelPivotTable.put(1.2, 25.0);
 
-    shooterVelPivotTable.put(0.972, 25.0);
+    shooterVelPivotTable.put(0.972, 20.0);
   }
+
+
+  //------------------------------------------------------------------------------------------------
+  //  Shooter EL angle look up table key: 
+  //    Param 1: RPS shooter motor shaft units for lower rps side (left)
+  //    Param 2: Distance offeset to apply to translation
+  //------------------------------------------------------------------------------------------------
+  private static final InterpolatingDoubleTreeMap shooterOffsetTable = new InterpolatingDoubleTreeMap();
+
+  static {
+    shooterOffsetTable.put(30.0, 0.1524); 
+
+    shooterOffsetTable.put(25.0, 0.3048);
+
+    shooterOffsetTable.put(20.0, 0.4572);
+  }
+
+
 
   private Translation2d m_targetXY;
 
@@ -65,20 +90,24 @@ public class HoardShotCmd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    
     intake.updateAutoTargetPositionIntake(CatzMechanismConstants.AUTO_AIM_PRESET.getIntakePivotTargetAngle());
     elevator.updateTargetPositionElevator(CatzMechanismConstants.AUTO_AIM_PRESET.getElevatorTargetRev());
+    shooter.updateShooterServo(SubsystemCatzShooter.SERVO_MAX_POS);
 
+    //Auto Aim Fixed
+    turret.setTurretTargetDegree(SubsystemCatzTurret.HOME_POSITION_DEG); // TODO, only velocity is auto controlled
 
     //alliance color + hoard Mode target defining
     if(CatzAutonomous.getInstance().getAllianceColor() == CatzConstants.AllianceColor.Blue) { 
-
+      
       //in blue alliance hoarding mode
       if(isInOffensiveMode) {
-
+        traceID = 1;
         //translation of the blue alliance offensive hoarding location
         m_targetXY = new Translation2d(0.0, FieldConstants.HOARD_LOCATION_Y);
       } else {
-              
+        traceID = 2;
         //translation of the blue alliance Hoarding Defense location
         m_targetXY = new Translation2d(6.64, 6.96);
       }
@@ -87,9 +116,11 @@ public class HoardShotCmd extends Command {
 
       //is in red alliance Hoarding
       if(isInOffensiveMode) {
+        traceID = 3;
         //translation of the Red alliance Hoarding
         m_targetXY = new Translation2d(0.0 + CatzConstants.FieldConstants.FIELD_LENGTH_MTRS , FieldConstants.HOARD_LOCATION_Y);  
       } else {
+        traceID = 4;
         //translation of the Red alliance Hoarding
         m_targetXY = new Translation2d(9.18 , 6.96); 
       }
@@ -99,19 +130,29 @@ public class HoardShotCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double newDist = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
-    
+    double newDist    = m_targetXY.getDistance(drivetrain.getPose().getTranslation());
+
+
     //scale shooter velocities based off the lower shooter velocity
     hoardVelRT = shooterVelPivotTable.get(newDist) * SHOOTER_VEL_RT_SCALAR; //max scale
     hoardVelLT = shooterVelPivotTable.get(newDist);                         //min scale
 
+    //obtain the offest from the target based on the lower end of shooter velocites to prevent flaying
+    double distOffsetMeters = shooterOffsetTable.get(hoardVelRT);
+
+    //modify target position depending on distance offset obtained
+    // m_targetXY.equals(new Translation2d(m_targetXY.getX(), m_targetXY.getY() + distOffsetMeters));
 
     //set shooter velocities without state machine
     shooter.setFlyWheelVelocities(hoardVelLT, hoardVelRT);
 
     //auto aim turret
-    turret.aimAtGoal(m_targetXY, false);
+    // turret.aimAtGoal(m_targetXY, false);//TODO auto aim fixed, only velocity is auto controlled
 
+    Logger.recordOutput("Hoarding/distanceToTarget", newDist);
+    Logger.recordOutput("Hoarding/VelRT", hoardVelRT);
+    Logger.recordOutput("Hoarding/Offsetmeters", distOffsetMeters);
+    Logger.recordOutput("Hoarding/TraceID", traceID);
   }
 
   // Called once the command ends or is interrupted.

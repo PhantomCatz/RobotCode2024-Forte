@@ -47,9 +47,9 @@ public class SubsystemCatzVision extends SubsystemBase {
     public static SubsystemCatzVision getInstance() {
         if(instance == null) {
             instance = new SubsystemCatzVision(new VisionIO[] {
-                // new VisionIOLimeLight("limelight-udon"),    //index 0 left
-                // new VisionIOLimeLight("limelight-soba"),    //index 1 right
-                // new VisionIOLimeLight("limelight-ramen"),   //index 2 turret
+                new VisionIOLimeLight("limelight-udon"),    //index 0 left
+                new VisionIOLimeLight("limelight-soba"),    //index 1 right
+                new VisionIOLimeLight("limelight-ramen"),   //index 2 turret
             });
         }
         return instance;

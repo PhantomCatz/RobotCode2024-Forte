@@ -91,6 +91,7 @@ public class MoveToPresetHandoffCmd extends Command {
 
       case FROM_INTAKE:
         m_targetMechPoseStart = CatzMechanismConstants.STOW_PRESET;
+        //intake.setRollersIn();
 
         if(m_noteDestination == NoteDestination.HOARD ||
            m_noteDestination == NoteDestination.SPEAKER) {
@@ -224,9 +225,9 @@ public class MoveToPresetHandoffCmd extends Command {
     boolean intakeState   = intake.getIntakeInPos(); 
     boolean turretState   = turret.getTurretInPos();
     boolean elevatorState = elevator.getElevatorInPos();
-   // boolean shooterServoState = shooter.getShooterServoInPos();
-    // System.out.println(intakeState +" "+ turretState + " "+  elevatorState);
-    return(intakeState && turretState && elevatorState);// shooterServoState); //TODO shooter servo state removed until servos added back on
+    boolean shooterServoState = shooter.getShooterServoInPos();
+     //System.out.println(intakeState +" "+ turretState +" "+  elevatorState +" "+ shooterServoState);
+    return(intakeState && turretState && elevatorState);// && shooterServoState); //TODO shooter servo state removed until servos added back on
   }
 
   @Override
