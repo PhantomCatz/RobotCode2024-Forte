@@ -175,11 +175,12 @@ public final class CatzConstants {
     // public static final double LT_BACK_OFFSET = 0.2372954059;           //mag encoder 1
     // public static final double RT_BACK_OFFSET = 0.60861531521+0.5;      //mag encoder 2
     // public static final double RT_FRNT_OFFSET = 0.838318270957+0.5;      //mag encoder 3
-    //sn1
-    public static final double LT_FRNT_OFFSET =  0.21317;
-    public static final double LT_BACK_OFFSET = 0.25727+0.5;//0.5446386386;
-    public static final double RT_BACK_OFFSET = -0.1986;//0.7591109064;
-    public static final double RT_FRNT_OFFSET = -0.00320;//0.536312100;
+    
+    //sn1                                      joe-overtime
+    public static final double LT_FRNT_OFFSET =  0.7861863+0.5;
+    public static final double LT_BACK_OFFSET =  -0.681128;//0.5446386386;
+    public static final double RT_BACK_OFFSET = -0.08729177;//0.7591109064;
+    public static final double RT_FRNT_OFFSET = -0.8016687+0.5;//0.536312100;
 
 
     public static final int LT_FRNT_DRIVE_ID = 1;
@@ -193,13 +194,13 @@ public final class CatzConstants {
     public static final int RT_FRNT_STEER_ID = 8;
 
     public static final int LT_FRNT_ENC_PORT = 9;
-    public static final int LT_BACK_ENC_PORT = 8; 
+    public static final int LT_BACK_ENC_PORT = 6;//8; 
     public static final int RT_BACK_ENC_PORT = 7;
-    public static final int RT_FRNT_ENC_PORT = 6; 
+    public static final int RT_FRNT_ENC_PORT = 8;//6; 
 
     //--------------------------------------MTR CONFIGS------------------------------------
     public static final Rotation2d defaultRot = new Rotation2d(0.0);
-    private static final double ROBOT_WIDTH = Units.inchesToMeters(23.5); //29 atlas
+    private static final double ROBOT_WIDTH =  Units.inchesToMeters(23.5); //29 atlas
     private static final double ROBOT_LENGTH = Units.inchesToMeters(24); //29 atlas
 
     public static final double ESTIMATION_COEFFICIENT = 0.025;

@@ -27,56 +27,56 @@ public class Robot extends LoggedRobot {
   public static SubsystemCatzLED lead;
   @Override
   public void robotInit() {
-  //   // Record metadata
-  //   Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
-  //   Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-  //   Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-  //   Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
-  //   Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-  //   switch (BuildConstants.DIRTY) {
-  //     case 0:
-  //        Logger.recordMetadata("GitDirty", "All changes committed");
-  //        break;
-  //     case 1:
-  //        Logger.recordMetadata("GitDirty", "Uncomitted changes");
-  //        break;
-  //      default:
-  //        Logger.recordMetadata("GitDirty", "Unknown");
-  //        break;
-  //  }
+    // Record metadata
+    Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    switch (BuildConstants.DIRTY) {
+      case 0:
+         Logger.recordMetadata("GitDirty", "All changes committed");
+         break;
+      case 1:
+         Logger.recordMetadata("GitDirty", "Uncomitted changes");
+         break;
+       default:
+         Logger.recordMetadata("GitDirty", "Unknown");
+         break;
+   }
 
-  //   // Set up data receivers & replay source
-  //   switch (CatzConstants.currentMode) {
-  //     // Running on a real robot, log to a USB stick
-  //     case REAL:
+    // Set up data receivers & replay source
+    switch (CatzConstants.currentMode) {
+      // Running on a real robot, log to a USB stick
+      case REAL:
 
-  //       Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
-  //       Logger.addDataReceiver(new NT4Publisher());
+        Logger.addDataReceiver(new WPILOGWriter("/media/sda1/Logs/"));
+        Logger.addDataReceiver(new NT4Publisher());
         
-  //      // new PowerDistribution(1, ModuleType.kRev);
-  //       break;
+       // new PowerDistribution(1, ModuleType.kRev);
+        break;
 
-  //     // Running a physics simulator, log to local folder
-  //     case SIM:
-  //       Logger.addDataReceiver(new WPILOGWriter("F:/robotics code projects/loggingfiles/"));
-  //       Logger.addDataReceiver(new NT4Publisher());
-  //       break;
+      // Running a physics simulator, log to local folder
+      case SIM:
+        Logger.addDataReceiver(new WPILOGWriter("F:/robotics code projects/loggingfiles/"));
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
 
-  //     // Replaying a log, set up replay source
-  //     case REPLAY:
-  //       setUseTiming(false); // Run as fast as possible
-  //       String logPath = LogFileUtil.findReplayLog();
-  //       Logger.setReplaySource(new WPILOGReader(logPath));
-  //       Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
-  //       break;
-  //   }
-  //   // Start AdvantageKit logger
-  //   Logger.start();
+      // Replaying a log, set up replay source
+      case REPLAY:
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog();
+        Logger.setReplaySource(new WPILOGReader(logPath));
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        break;
+    }
+    // Start AdvantageKit logger
+    Logger.start();
 
-  //   //instantiate the robot subsystems and commands using an object
-  //   m_robotContainer = new RobotContainer();
+    //instantiate the robot subsystems and commands using an object
+    m_robotContainer = new RobotContainer();
 
-  //   DriverStation.silenceJoystickConnectionWarning(true);
+    DriverStation.silenceJoystickConnectionWarning(true);
 
     lead = new SubsystemCatzLED();
 

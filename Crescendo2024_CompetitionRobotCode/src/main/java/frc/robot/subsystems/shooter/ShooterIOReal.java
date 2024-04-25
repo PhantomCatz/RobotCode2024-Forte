@@ -145,7 +145,7 @@ public class ShooterIOReal implements ShooterIO {
         //Initialize motors and check if motors are initialized correctly
         for(int i=0;i<2;i++) {
             initializationStatus = shooterArray[i].getConfigurator().apply(talonConfigs);
-             if(!initializationStatus.isOK())
+             if(!initializationStatus.isOK()) {}
                 System.out.println("Failed to Configure CAN ID for shooter "+ shooterArray.toString());
         }
     }
